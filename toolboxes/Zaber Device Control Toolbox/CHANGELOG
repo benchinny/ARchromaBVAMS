@@ -1,0 +1,69 @@
+1.2.2 (2019/08)
+---------------
+* Device.waitforidle() now waits for all axes to stop moving on 
+  multi-axis controllers.
+
+1.2.1 (2019/08)
+---------------
+* Fixed a bug in the Python device database update script, and updated 
+  device database content.
+
+1.2.0 (2018/09)
+---------------
+* Added support for large integers and decimal places in ASCII protool 
+  commands. 64-bit integers can now be used as arguments for commands.
+  Floating-point types can also be used in cases where a command accepts
+  decimal places, and the fractional part will be preserved when converting
+  the command to an ASCII string. Note that this toolbox currently has
+  no information about which device command parameters allow decimal 
+  places, so it is the user's responsibility to use floating-point data 
+  only where needed. This information can be obtained from the Zaber
+  protocol manuals.
+* Unit conversions to device units are now rounded to the nearest integer.
+* Added a new minimal ASCII example that can serve as a starting point 
+  for user programs.
+* The automatic device detection methods now return their result arrays
+  sorted by device address.
+* Added unit conversion support for direct drive devices, which do not
+  have a microstep resolution setting. This change includes adding a new
+  boolean field to the DeviceUnits class and the device database .mat 
+  file, and the Python script that generates the .mat file has been 
+  updated accordingly.
+* Changed all web links to use HTTPS for security, and fixed a broken link
+  to the Zaber Getting Started Guide.
+* Added more information about unit conversion to the user guide.
+* Changed the command-line options of the Python script that updates
+  the device database: Default behavior is still to update all data and 
+  clean up the downloaded database, but now the options to skip some of 
+  the steps work properly. 
+* The Python database update script will now merge new enum values 
+  with old ones to avoid deleting legacy values, and new names will not 
+  be added if they differ only in case from old names.
+* The Python database update script now identifies itself in the User-Agent
+  HTTP header when downloading database updates. Zaber uses this 
+  information to track the frequency of usage of the script.
+* This release has been tested with MATLAB releases R2016a through R2018a.
+* Known issue: The AsciiMessage.Data property is an array of doubles, which
+  means it may not accurately represent integers bigger than 9x10^15. If
+  this becomes a problem, future releases may change this property to a 
+  cell array.
+
+1.1.0 (2018/01)
+---------------
+* Fixed incorrect velocity unit conversions.
+* Fixed compatibility with MATLAB R2016a and R2017a.
+* Changed behavior for unrecognized devices. Devices not listed in 
+  DeviceDatabase.mat will now function instead of throwing an error, but 
+  unit conversions will be incorrect and a generic device name will 
+  be assigned.
+* Changed the behavior of the Python script that updates the device 
+  database. The default behavior is now to update both the device table 
+  and the enumerations, but not to download the source database if it
+  is already present. To force a fresh download, either use the --download
+  command-line option or delete any existing sqlite3 file in the directory.
+
+1.0.0 (2016/11)
+---------------
+* Initial implementation. First public release.
+
+
