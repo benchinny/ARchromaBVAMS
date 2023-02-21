@@ -1,0 +1,1 @@
+%fuse left and right LCA&TCA parameters 

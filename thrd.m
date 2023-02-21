@@ -1,0 +1,172 @@
+%% create threads
+clc;
+%clear all; 
+close all;
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Algorithm for filtering in the frequency Domain
+% Step1: Given ain input image f(x,y) of size M x N, obtain the pading
+% parameters P and Q. Typically, we select P = 2M and Q = 2N
+% Step2: Form a padded image fp(x,y) of size P X Q by appending the
+% necessary number of zeros to f(x,y).
+% Step3: Multiply fp(x,y) by (-1)^(x+y)
+% Step4: Compute the DFT, F(u,v) of the image from Step 3
+% Step5: Generate a Real, Symmetric Filter Function H(u,v) of size P X Q
+% with center at coordinates (P/2,Q/2), 
+% Step 6:Form the product G(u,v) = H(u,v)F(u,v) using array multiplication
+% Obtain the processed image 
+% Step 7: gp(x,y) = {real{inverse DFT[G(u,v)]}(-1)^(x+y)
+% Step 8: Obtain the final processed result g(x,y) by extracting the M X N region
+% from the top, left quadrant of gp(x,y)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Algorith Implementation
+% Step1: Given ain input image f(x,y) of size M x N, obtain the pading
+% parameters P and Q. Typically, we select P = 2M and Q = 2N
+a = imread('cameraman.tif');
+% Converting the image class into "double"
+b = rand(1080, 1920); %im2double(a);
+% reading the image size
+[m,n] = size(b);
+% creating a null array of size 2m X 2n
+c = zeros(2*m,2*n);
+% reading the size of the null array
+[p,q] = size(c);
+% Step 2
+% appdending the original image with the null array to create a padding
+% image hence it is Step 2
+for i = 1:p
+    for j = 1:q
+        if i <= m && j<= n
+            c(i,j) = b(i,j);
+        else
+            c(i,j) = 0;
+        end
+    end
+end
+imshow(b);title('original image');
+figure;
+imshow(c);title('padded image');
+% Step 3
+% creating a null array of size p X q 
+d = zeros(p,q);
+% Multiplying the padded image with (-1)^(x+y)
+for i = 1:p
+    for j = 1:q
+        d(i,j) = c(i,j).*(-1).^(i + j);
+    end
+end
+figure;
+imshow(d);title('pre processed image for calculating DFT');
+% Step 4 
+% Computing the 2D DFT using "fft2" matlab command
+e = fft2(d);
+figure;imshow(e);title('2D DFT of the pre processed image');
+%%%%%%%%%%%%%%%%%%%%
+% Step 5
+% Generating the Real, Symmetric Filter Function
+% Here we will implement a "Low Pass Filter" using "freqspace" matlab
+% command
+[x,y] = freqspace([p q],'meshgrid');
+z = zeros(p,q);
+for i = 1:p
+    for j = 1:q
+        %z(i,j) = sqrt(x(i,j).^2 + y(i,j).^2);
+        z(i,j) = sqrt((x(i,j).^2)./1 + (y(i,j).^2)./24);
+
+    end
+end
+% Choosing the Cut off Frequency and hence defining the low pass filter
+% mask 
+H = zeros(p,q);
+for i = 1:p
+    for j = 1:q
+%         if (z(i,j) >= 0.025)&(z(i,j) <= 0.05)  % here 0.4 is the cut-off frequency of the LPF
+        if (z(i,j) >= 0.025)&(z(i,j) <= 0.05)  % here 0.4 is the cut-off frequency of the LPF
+
+            H(i,j) = 1;
+        else
+            H(i,j) = 0;
+        end
+    end
+end
+figure;imshow(H);title('Low Pass Filter Mask');
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Step 6:Form the product G(u,v) = H(u,v)F(u,v) using array multiplication
+% Obtain the processed image 
+% from the previous program lines we know that, 
+% e : the 2D DFT output of pre processed image
+% H : the mask for Low Pass Filter
+% let out is the variable 
+h1 = e.*H;
+figure;
+imshow(h1);title('Low passed output');
+% Step 7: gp(x,y) = {real{inverse DFT[G(u,v)]}(-1)^(x+y)
+% calculation of inverse 2D DFT of the "out"
+h2 = ifft2(h1);
+figure;
+imshow(h2);title('output image after inverse 2D DFT');
+% post process operation 
+h3 = zeros(p,q);
+for i = 1:p
+    for j = 1:q
+        h3(i,j) = h2(i,j).*((-1).^(i+j));
+    end
+end
+figure;
+imshow(h3);title('Post Processed image');
+% Step 8: Obtain the final processed result g(x,y) by extracting the M X N region
+% from the top, left quadrant of gp(x,y)
+% let the smoothed image or low pass filtered image is "out"
+out = zeros(m,n);
+for i = 1:m
+    for j = 1:n
+        out(i,j) = h3(i,j);
+    end
+end
+figure;
+imshow([b out]);title('input image                 output image');
+figure; out1=out>=median(out(:));
+imshow(out1); title(['thresholded output pix ratio' num2str(sum(out1(:))./prod(  size(out1) ) )])
+% 
+% %%out2 introduce a black boundary blue and red pixels
+% kr=[-1 -1 -1; -1 8 -1; -1 -1 -1];
+% B=ones(3);
+% kr=kron(kr,B);
+% 
+% 
+% out2=conv2(double(out1), kr, 'same');
+% figure; imshow(out2)
+% 
+% out22=(out2==0);
+% figure; imshow(out22)
+% 
+% out3=cat(3, out1.*out22, zeros(size(out1)), (out1==0).*out22);
+% % E=Eti(0.3, 22,size(out1)); 
+% % E=(E~=0); %imshow(E)
+% % out3=out3.*E;
+% figure; imshow(out3); title(['thresholded output pix ratio' num2str(sum(out1(:))./prod(  size(out1) ) )])
+% 
+% 
+% 
+% 
+% 
+out33=cat(3, out1, zeros(size(out1)), out1==0);
+% E=Eti(0.3, 22,size(out1)); 
+% E=(E~=0); %imshow(E)
+% out3=out3.*E;
+figure; imshow(out33); title(['thresholded output pix ratio' num2str(sum(out1(:))./prod(  size(out1) ) )])
+imwrite(out33, 'imgs\thrd1.png') %% save images
+% out4=cat(3, out1==0, zeros(size(out1)), out1);
+% out4=out4.*E;
+% figure; imshow(out4); title(['thresholded output pix ratio' num2str(sum(out1(:))./prod(  size(out1) ) )])
+% 
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% % Program developed by : Jagadeesh Samudrala, Asst. Prof, Dept. of ECE,
+% % Aditya Engineering College, Surampalem, East Godavari Dist, Andhra
+% % Pradesh, India.
+% % for any Questions mail me at: samudrala.naren@gmail.com
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 
+
+
+
+
