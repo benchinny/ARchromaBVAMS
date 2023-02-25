@@ -222,7 +222,7 @@ elseif zbr==1; %sca;
             
             %         p1=[power_dispL power_dispR; powerL powerR; rot image_displayed];
             p1(k0,:)=[power_dispL power_dispR powerL powerR rot n4(k0)]; %important!!!!
-            save('JnJ\LCAtmp', 'p1', 'im_path');
+            % save('JnJ\LCAtmp', 'p1', 'im_path');
             
             
         catch ERROR

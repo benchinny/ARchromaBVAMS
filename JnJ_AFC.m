@@ -23,7 +23,7 @@ end
                 zR0=fnz0(RfarPower, double(ACL~=0)); zR=zR0(:,3:4);
           elseif tcaCorrect==1; load(TCAfnmR, 'TCAp'); zR=TCAp.sbjTCA; end; %zR=[0 0; 10 10; 20 20]; end; %TCAfnmR=TCAfnm; 
           
-         if exist('AFCim0')==0 | isempty(AFCim0)==1; AFCfnm0='AFCim220510.mat'; load(AFCfnm0);  end %E optotype base 3 17secs to load
+         if exist('AFCim0')==0 | isempty(AFCim0)==1; AFCfnm0='C:\Users\bankslab\Documents\Ben_data\AFCim220510.mat'; load(AFCfnm0);  end %E optotype base 3 17secs to load
 
 
 fprintf('Best shpere refraction: L = %f  , R = %f\n', sr(1), sr(2));
@@ -35,7 +35,7 @@ fprintf('Display power: L = %f  , R = %f\n',opto(name_map('l_disp')).control.get
 
 disp(['Subject #' n2s(sn) ey ' EYE ACL' n2s(ACL) ' EXPERIMENT ' ex ' PRESS CTRL+C TO ABORT OR ANY OTHER KEY TO START']); KbWait([], 2);
 
-[window1, window2, vbl0]=strt_psych0(screenNumber-1, screenNumber, 0);
+[window1, window2, vbl0]=strt_psych0(screenNumber-2, screenNumber-1, 0);
 
         %%input a output b
         
@@ -87,8 +87,9 @@ disp(['Subject #' n2s(sn) ey ' EYE ACL' n2s(ACL) ' EXPERIMENT ' ex ' PRESS CTRL+
 
          if sv == 1;
 %             AFCfls0=['JnJ\S' num2str(sn) 'V' num2str(vs) '_AFC_' ey 'ACL' n2s(ACL) '_' tme];
-    save(AFCfls0, 'AFCp'); 
-    load(['JnJ\AFCfls' ey(1) '.mat'], 'AFCfls'); AFCfls{sn-1000,vs}=AFCfls0; save(['JnJ\AFCfls' ey(1) '.mat'], 'AFCfls'); 
+    % save(AFCfls0, 'AFCp'); 
+    load(['JnJ\AFCfls' ey(1) '.mat'], 'AFCfls'); AFCfls{sn-1000,vs}=AFCfls0; 
+    % save(['JnJ\AFCfls' ey(1) '.mat'], 'AFCfls'); 
 end
          
          

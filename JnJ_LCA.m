@@ -23,7 +23,7 @@ opto(name_map('l_disp')).control.getFocalPower.focal_power;
             zaber(name_map('l_trombone')).move(l_trombone_f(8));%[8.619 13.8]
             zaber(name_map('l_trombone')).control.waitforidle();
             
-[window1, window2, vbl0]=strt_psych0(screenNumber-1, screenNumber, 0);
+[window1, window2, vbl0]=strt_psych0(screenNumber-2, screenNumber-1, 0);
  cf=ones(3,2); [iLf iRf]=cwin3(imread('texture0_1080_newfill_malt.png'), imread('texture0_1080_newfill_malt.png') , cf, rc00, window2, window1);                
 %ListenChar(2);                    
 fprintf('Best shpere refraction: L = %f  , R = %f\n', sr(1), sr(2));
@@ -80,12 +80,13 @@ KbWait([], 2);
         %if sv==1; save(['data\S' num2str(sn) ey '_' ex '_ACL' n2s(ACL) '_' tme], 'a0', 'a10', 'a11', 'a12', 'a13', 'a14', 'a15', 'a16', 'a17', 'a18', 'a19' ,'LCAim','PupCtr_RtX','PupCtr_RtY','PupCtr_LtX','PupCtr_LtY','z0','ACL', 'LCAp'); end
         if sv==1; 
             LCAfls0=['JnJ\S' num2str(sn) 'V' num2str(vs) ey '_' ex '_ACL' n2s(ACL) '_' tme];
-            save(LCAfls0, 'LCAp'); 
-            load(['JnJ\LCAfls' ey(1) '.mat'], 'LCAfls'); LCAfls{sn-1000,vs}=LCAfls0; save(['JnJ\LCAfls' ey(1) '.mat'], 'LCAfls'); 
+            % save(LCAfls0, 'LCAp'); 
+            load(['JnJ\LCAfls' ey(1) '.mat'], 'LCAfls'); LCAfls{sn-1000,vs}=LCAfls0; 
+            % save(['JnJ\LCAfls' ey(1) '.mat'], 'LCAfls'); 
         end
 
 %         save('JnJ\SPTtmp', 'aFull', 'aHalf', '-append');
-                save('JnJ\SPTtmp', 'LCAp', '-append');
+                % save('JnJ\SPTtmp', 'LCAp', '-append');
 
         %input(['\n PLEASE UPDATE PUPIL CENTER IN LABVIEW \n' 'rtX: ' n2s2(PupCtr_RtX) ' rtY: ' n2s2(PupCtr_RtY) ' ltX: ' n2s2(PupCtr_LtX) ' ltY: ' n2s2(PupCtr_LtY)])
         

@@ -4,7 +4,7 @@ global ek uk dk lk rk st snt  black white grey screenXpixels screenYpixels xCent
 % edit JJVC_stro
 % addpath([pwd '\JnJ']); addpath([pwd '\fcns']); addpath([pwd '\imgs']); addpath([pwd '\apps']); addpath([pwd '\toolboxes']); addpath([pwd '\data']); addpath([pwd '\psignifit-master']); addpath([pwd '\data\System TCA\Data Processing']);  addpath(genpath(fullfile('toolboxes')));
 % addpath([pwd '\JnJ']); addpath([pwd '\fcns']); addpath([pwd '\imgs']); addpath([pwd '\apps']); addpath([pwd '\toolboxes']); addpath([pwd '\psignifit-master']); addpath([pwd '\data\System TCA\Data Processing']);  addpath(genpath(fullfile('toolboxes')));
-addpath([pwd '\fcns']); addpath('G:\My Drive\exp_bvams\code_repo\imgs\'); addpath([pwd '\apps']); addpath([pwd '\toolboxes']); addpath([pwd '\psignifit-master']); addpath([pwd '\Users\bankslab\Documents\Ben_data\data\System TCA\Data Processing\']);  addpath(genpath(fullfile('toolboxes')));
+addpath([pwd '\fcns']); addpath('G:\My Drive\exp_bvams\code_repo\imgs\'); addpath([pwd '\apps']); addpath([pwd '\toolboxes']); addpath([pwd '\psignifit-master']); addpath(['\Users\bankslab\Documents\Ben_data\data\System TCA\Data Processing\']);  addpath(genpath(fullfile('toolboxes')));
 cls
 % 0.00384deg/pixels,  260.417 pixels/degree, 4.34 pixels/arcmin,  0.7234 pixels/arcsec
 c0=0.00384; %deg/pixels

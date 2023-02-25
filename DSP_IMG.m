@@ -6,7 +6,7 @@
 %%211102 DSP_IMG
 
 clear LCAim
-[window1, window2, vbl0]=strt_psych0(screenNumber-1, screenNumber, 0);
+[window1, window2, vbl0]=strt_psych0(screenNumber-2, screenNumber-1, 0);
 
         %%input a output b
         cf=ones(3,2);
