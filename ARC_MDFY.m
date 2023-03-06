@@ -10,8 +10,9 @@
 sn=input('Enter subject number?'); sn=sn+1000;
 vs=input('Enter visit number?'); 
 
-load JnJ\LCAflsL; LeftLCA=LCAfls{sn-1000,2};
-load JnJ\LCAflsR; RightLCA=LCAfls{sn-1000,2};
+filePath = 'G:\My Drive\exp_bvams\code_repo\ARC\';
+load([filePath 'LCAflsL']); LeftLCA=LCAfls{sn-1000,2};
+load([filePath 'LCAflsR']); RightLCA=LCAfls{sn-1000,2};
 
 ETMv=ETMm(find(ETMm(:,1)==(sn-1000) & ETMm(:,2)==vs), 3:end);
 AFCv=AFCm(find(AFCm(:,1)==(sn-1000) & AFCm(:,2)==vs), 3:end);

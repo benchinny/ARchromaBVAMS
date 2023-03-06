@@ -6,6 +6,7 @@ vs=input('Enter visit number? ');
 sr=input('input best spherical refraction in vector format [Left Right]: ');
 ey=input('which eye are we testing (type 0 for Left or 1 for Right)? ');
 if ey==0; ey='Left'; elseif ey==1; ey='Right'; end
+filePath = 'G:\My Drive\exp_bvams\code_repo\ARC\';
 
 %   power_disp_min  initial_power_disp max_power_disp mag_min   mag  mag_max rotation reptitions
 %a0=[8               13.5                  17             0.9    1     1.3     -3       6];
@@ -79,14 +80,14 @@ KbWait([], 2);
         LCAp=VRCMp; LCAp.Full=aFull; LCAp.Half=aHalf; LCAp.im=LCAim; LCAp.sr=sr;
         %if sv==1; save(['data\S' num2str(sn) ey '_' ex '_ACL' n2s(ACL) '_' tme], 'a0', 'a10', 'a11', 'a12', 'a13', 'a14', 'a15', 'a16', 'a17', 'a18', 'a19' ,'LCAim','PupCtr_RtX','PupCtr_RtY','PupCtr_LtX','PupCtr_LtY','z0','ACL', 'LCAp'); end
         if sv==1; 
-            LCAfls0=['JnJ\S' num2str(sn) 'V' num2str(vs) ey '_' ex '_ACL' n2s(ACL) '_' tme];
-            % save(LCAfls0, 'LCAp'); 
-            load(['JnJ\LCAfls' ey(1) '.mat'], 'LCAfls'); LCAfls{sn-1000,vs}=LCAfls0; 
-            % save(['JnJ\LCAfls' ey(1) '.mat'], 'LCAfls'); 
+            LCAfls0=[filePath 'S' num2str(sn) 'V' num2str(vs) ey '_' ex '_ACL' n2s(ACL) '_' tme];
+            save(LCAfls0, 'LCAp'); 
+            load([filePath 'LCAfls' ey(1) '.mat'], 'LCAfls'); LCAfls{sn-1000,vs}=LCAfls0; 
+            save([filePath 'LCAfls' ey(1) '.mat'], 'LCAfls'); 
         end
 
 %         save('JnJ\SPTtmp', 'aFull', 'aHalf', '-append');
-                % save('JnJ\SPTtmp', 'LCAp', '-append');
+                save([filePath 'SPTtmp.mat'], 'LCAp');
 
         %input(['\n PLEASE UPDATE PUPIL CENTER IN LABVIEW \n' 'rtX: ' n2s2(PupCtr_RtX) ' rtY: ' n2s2(PupCtr_RtY) ' ltX: ' n2s2(PupCtr_LtX) ' ltY: ' n2s2(PupCtr_LtY)])
         
