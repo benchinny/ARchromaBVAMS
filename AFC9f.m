@@ -67,7 +67,6 @@ i1=ones(sz); i255=255.*i1;
 %    wn=cwin0(img0, 'Stereo', cf, rc00, window1, window2);
               [iLf0 iRf0]=cwin3(im2L0, im2R0, cf, rc00, window1, window2);
 
-
 %tcpip
     log.CRITICAL = 5;
     log.ERROR = 4;
@@ -80,7 +79,7 @@ i1=ones(sz); i255=255.*i1;
 
     if scene.enable_tcp
         cmsg('TCP enabled', log.INFO, log.LEVEL);
-        scene.tcp_socket = tcpip('169.229.228.200', 31000, 'NetworkRole', 'server');
+        scene.tcp_socket = tcpip('169.229.228.75', 31000, 'NetworkRole', 'server');
         cmsg('Waiting for TCP socket connection...', log.INFO, log.LEVEL);
         fopen(scene.tcp_socket);
         cmsg('TCP connected!', log.INFO, log.LEVEL);
