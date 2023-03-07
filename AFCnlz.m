@@ -4,18 +4,20 @@ vs=input('Visit Number? ')
 ey=input('Eye? 1forRight 2forBinocular ');
 filePath = 'G:\My Drive\exp_bvams\code_repo\';
 
-load('JnJrand211130', 'TCAm')
-c0=TCAm(sn-1000, vs-1);
+% LEAVE THE FOLLOWING TWO LINES OF CODE UNCOMMENTED UNTIL I FIGURE OUT 
+% WHAT c0 IS FOR
+% load('JnJrand211130', 'TCAm')
+% c0=TCAm(sn-1000, vs-1);
 if ey(1)==2
-    load('G:\My Drive\exp_bvams\code_repo\JnJ\AFCflsB.mat'); c1=2;
+    load('G:\My Drive\exp_bvams\code_repo\ARC\AFCflsB.mat'); c1=2;
 elseif ey(1)==1
-    load('G:\My Drive\exp_bvams\code_repo\JnJ\AFCflsR.mat'); c1=1;
+    load('G:\My Drive\exp_bvams\code_repo\ARC\AFCflsR.mat'); c1=1;
 end
-         fnm=AFCfls{sn-1000, vs}; load([filePath fnm])
+         fnm=AFCfls{sn-1000, vs}; load(fnm)
          
 
  %        [jsonFile,jsonPath] = uigetfile('*.json','' , 'G:\.shortcut-targets-by-id\17-MjlIMJ6eySxBl-1ikM1jyh1UQiX26y\code_repo\JnJ')
-         [jsonFile,jsonPath] = uigetfile('*.json','' , 'G:\My Drive\m-wamvideocapture\videos\processed\alwaysrecord_notcp') %stim conputer
+         [jsonFile,jsonPath] = uigetfile('*.json','' , 'G:\My Drive\ARchromaVideoCapture\videos\processed\centralperipheral_real') %stim conputer
          %         [jsonFile,jsonPath] = uigetfile('*.json','' , 'G:\My Drive\m-wamvideocapture\videos\processed\alwaysrecord_notcp')
 
 %         dt=jsondecode(jsonFile);
@@ -47,7 +49,7 @@ end
            
            %x3=[]; y3=[]; v1=[-0.5:0.25:4]; v2=v1(AFCv); v3=[];
            clear x2 y2
-           x3=[]; y3=[]; v1=[-0.5:0.25:4]; v2=AFCp.v00; v3=[]; x4=ones(1,19); x5=zeros(length(v1), 4); y5=x5; 
+           x3=[]; y3=[]; v1=AFCp.v0; v2=AFCp.v00; v3=[]; x4=ones(1,length(v2)); x5=zeros(length(v1), 4); y5=x5; 
 
            for k0=1:length(v2)
               x2{k0}=x0{k0}-mean(x1);
@@ -77,8 +79,14 @@ end
            v2' 
            x7=(x6+y6)./2
            
-m=[repmat([sn-1000 vs c0 c1], [76 1]) [1:76]' v2' x7' x6' y6'];
-a=repmat(uint32(str2num(fnm(end-9:end))), [76 1]);
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% SECTION COMMENTED OUT BY BEN FOR NOW
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% m=[repmat([sn-1000 vs c0 c1], [76 1]) [1:76]' v2' x7' x6' y6'];
+% a=repmat(uint32(str2num(fnm(end-9:end))), [76 1]);
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% STUFF BELOW WAS ALREADY COMMENTED OUT
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %m=[repmat([sn vs c0 c1], [8 1]) [1:8]' y0' v' vL' vH' repmat(double(a), [8 1])]
 %m=[repmat([sn vs c0 c1], [76 1]) [1:76]' v2' x7' x6' y6'], [repmat(uint32(str2num(fnm(end-9:end))), [76 1])]]
 

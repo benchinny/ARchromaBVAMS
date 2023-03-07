@@ -14,10 +14,10 @@ filePath = 'G:\My Drive\exp_bvams\code_repo\ARC\';
 load([filePath 'LCAflsL']); LeftLCA=LCAfls{sn-1000,2};
 load([filePath 'LCAflsR']); RightLCA=LCAfls{sn-1000,2};
 
-ETMv=ETMm(find(ETMm(:,1)==(sn-1000) & ETMm(:,2)==vs), 3:end);
-AFCv=AFCm(find(AFCm(:,1)==(sn-1000) & AFCm(:,2)==vs), 3:end);
-TCAmm=(TCAm==4|TCAm==5); tcaCorrect=double(TCAmm(sn-1000, vs-1))
-ACLvv=[0 2 1 2 1]; ACLmm=ACLvv(TCAm); ACL=double(ACLmm(sn-1000, vs-1)); %ACL=0;
+focStmOptDst = -0.5:0.5:4;
+AFCv=randperm(length(focStmOptDst));
+tcaCorrect=0;
+ACL=1; %ACL=0;
 %Select Left file
 %load('S10004_LCA_LeftACL0_2104061444.mat', 'a18');%Marty's Left eye LCA dat from April 6
 %load('S10003_LCA_LeftACL0_2104301034.mat', 'a18');%AR Austin's Left eye data from April 30
