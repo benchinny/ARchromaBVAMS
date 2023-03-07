@@ -2,11 +2,16 @@
 ex='AFC'; %ey=input('which eye? Right/Binc');
 ey=input('which eye are we testing (type 1 for Right or 2 for Binocular)? ');
 if ey==1; ey='Right'; elseif ey==2; ey='Binc'; end
+filePath = 'G:\My Drive\exp_bvams\code_repo\ARC\';
 
 %   power_disp_min  initial_power_disp    max_power_dsp mag_min mag   mag_max rotation reptitions
 % a0=[8               13.5                  17             0.9    1     1.3     -3       6];
 % a0=[8               13.5                  17             0.9    1     1.4     -3       6];
 
+% ----TURN IT OFF FOR NOW! ---
+tcaCorrect = 0;
+display('ARC_AFC: WARNING! For now, tcaCorrect has been manually set at 0');
+% ----------------------------
 
 if tcaCorrect==1
 load JnJ\TCAflsL; TCAfnmL=TCAfls{sn-1000,vs};
@@ -23,7 +28,7 @@ end
                 zR0=fnz0(RfarPower, double(ACL~=0)); zR=zR0(:,3:4);
           elseif tcaCorrect==1; load(TCAfnmR, 'TCAp'); zR=TCAp.sbjTCA; end; %zR=[0 0; 10 10; 20 20]; end; %TCAfnmR=TCAfnm; 
           
-         if exist('AFCim0')==0 | isempty(AFCim0)==1; AFCfnm0='C:\Users\bankslab\Documents\Ben_data\AFCim220510.mat'; load(AFCfnm0);  end %E optotype base 3 17secs to load
+         if exist('AFCim0')==0 | isempty(AFCim0)==1; AFCfnm0='G:\My Drive\exp_bvams\code_repo\AFCim220510.mat'; load(AFCfnm0);  end %E optotype base 3 17secs to load
 
 
 fprintf('Best shpere refraction: L = %f  , R = %f\n', sr(1), sr(2));
@@ -60,17 +65,17 @@ disp(['Subject #' n2s(sn) ey ' EYE ACL' n2s(ACL) ' EXPERIMENT ' ex ' PRESS CTRL+
         %           LCAim{1}='E500by500inv.png'
         %           LCAim{2}='E500by500inv.png'
         %           LCAim{3}='E500by500inv.png'
-        v0=[-0.5:0.25:4]; %v00=[9	17	12	6	5	16	8	18	13	19	1	2	15	10	11	3	4	14	7	13	19	5	12	1	6	18	8	7	9	17	4	16	2	14	3	11	15	10	9	19	4	7	12	8	6	18	3	14	10	17	13	1	15	5	2	16	11	1	8	16	19	5	13	11	7	2	10	9	6	3	18	4	17	12	15	14] 
+        v0=[-0.5:0.5:4]; %v00=[9	17	12	6	5	16	8	18	13	19	1	2	15	10	11	3	4	14	7	13	19	5	12	1	6	18	8	7	9	17	4	16	2	14	3	11	15	10	9	19	4	7	12	8	6	18	3	14	10	17	13	1	15	5	2	16	11	1	8	16	19	5	13	11	7	2	10	9	6	3	18	4	17	12	15	14] 
         %v00=[2	1	19	6	10	3	8	11	14	12	17	7	5	15	9	13	4	18	16	2	7	9	8	15	11	5	16	17	14	18	10	19	13	4	12	3	1	6	18	1	10	5	11	8	17	19	13	12	4	16	2	6	9	3	14	15	7	8	5	4	19	16	2	15	9	7	18	14	11	12	17	13	1	6	10	3]
         %v00=[2	14	18	11	1	4	10	17	7	3	6	16	13	5	15	9	8	12	19	12	4	19	8	5	16	11	18	7	3	2	13	6	9	15	14	1	17	10	10	9	19	17	13	3	12	16	11	18	4	6	15	2	14	8	7	1	5	16	8	15	19	6	12	18	1	10	2	9	13	17	4	3	14	11	5	7]
-        v00=v0(randperm(length(unique(AFCv(1:4))))); %v00=2; %v00=v00(1:10)%v000=v000(1:19); %v000=zeros(1,10);
+        v00=v0(randperm(length(unique(AFCv(1:10))))); %v00=2; %v00=v00(1:10)%v000=v000(1:19); %v000=zeros(1,10);
         % v000=randi(5, 1, 10)-1
         %v000=[-1:1]
         %v00=[2 2 2 2 2];
 %          [v1 t1]=AFC7f(LCAim, v000,  sr, window1, window2); %p1(a10):data, p2:avg, p3:sd, (a13)p4:sys+eye, p5(a14):EyeLCA, p6:trom pwr
 %         [v1 t1 dgs]=AFC8f(LCAim, v00,  sr, window1, window2); %p1(a10):data, p2:avg, p3:sd, (a13)p4:sys+eye, p5(a14):EyeLCA, p6:trom pwr
 
-            AFCfls0=['JnJ\S' num2str(sn) 'V' num2str(vs) '_AFC_' ey 'ACL' n2s(ACL) '_' tme];
+            AFCfls0=[filePath 'S' num2str(sn) 'V' num2str(vs) '_AFC_' ey 'ACL' n2s(ACL) '_' tme];
 %             AFCp=AFC8f(LCAim,zR, zL, v00,  sr, window1, window2); %p1(a10):data, p2:avg, p3:sd, (a13)p4:sys+eye, p5(a14):EyeLCA, p6:trom pwr
               AFCp=AFC9f(AFCim0, AFCim1, zL, zR, v00, sr, window1, window2);
 
@@ -87,9 +92,9 @@ disp(['Subject #' n2s(sn) ey ' EYE ACL' n2s(ACL) ' EXPERIMENT ' ex ' PRESS CTRL+
 
          if sv == 1;
 %             AFCfls0=['JnJ\S' num2str(sn) 'V' num2str(vs) '_AFC_' ey 'ACL' n2s(ACL) '_' tme];
-    % save(AFCfls0, 'AFCp'); 
-    load(['JnJ\AFCfls' ey(1) '.mat'], 'AFCfls'); AFCfls{sn-1000,vs}=AFCfls0; 
-    % save(['JnJ\AFCfls' ey(1) '.mat'], 'AFCfls'); 
+    save(AFCfls0, 'AFCp'); 
+    load([filePath 'AFCfls' ey(1) '.mat'], 'AFCfls'); AFCfls{sn-1000,vs}=AFCfls0; 
+    save([filePath 'AFCfls' ey(1) '.mat'], 'AFCfls'); 
 end
          
          

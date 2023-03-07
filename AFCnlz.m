@@ -2,15 +2,16 @@ function AFCnlz
 sn=input('Subject Number? '); sn=sn+1000;
 vs=input('Visit Number? ')
 ey=input('Eye? 1forRight 2forBinocular ');
+filePath = 'G:\My Drive\exp_bvams\code_repo\';
 
 load('JnJrand211130', 'TCAm')
 c0=TCAm(sn-1000, vs-1);
 if ey(1)==2
-    load AFCflsB.mat; c1=2;
+    load('G:\My Drive\exp_bvams\code_repo\JnJ\AFCflsB.mat'); c1=2;
 elseif ey(1)==1
-    load AFCflsR.mat; c1=1;
+    load('G:\My Drive\exp_bvams\code_repo\JnJ\AFCflsR.mat'); c1=1;
 end
-         fnm=AFCfls{sn-1000, vs}; load(fnm)
+         fnm=AFCfls{sn-1000, vs}; load([filePath fnm])
          
 
  %        [jsonFile,jsonPath] = uigetfile('*.json','' , 'G:\.shortcut-targets-by-id\17-MjlIMJ6eySxBl-1ikM1jyh1UQiX26y\code_repo\JnJ')
@@ -86,12 +87,19 @@ a=repmat(uint32(str2num(fnm(end-9:end))), [76 1]);
 % xlswrite('tstX.xlsx', m, 'A10:I18')
 %load('JnJ\ACMDflnm', 'ACMDflnm'); m0=xlsread(ACMDflnm); ACMDflnm=['JnJ\ACMDxls' fnm(end-9:end) '.xlsx'];
 
-[afcFile,afcPath] = uigetfile('*.xlsx','' , 'G:\.shortcut-targets-by-id\17-MjlIMJ6eySxBl-1ikM1jyh1UQiX26y\code_repo\JnJ')
-m0=xlsread([afcPath afcFile]); ACMDflnm=['JnJ\ACMDxls' fnm(end-9:end) '.xlsx'];
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% COMMENTED OUT BY BEN FOR NOW
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% [afcFile,afcPath] = uigetfile('*.xlsx','' , 'G:\.shortcut-targets-by-id\17-MjlIMJ6eySxBl-1ikM1jyh1UQiX26y\code_repo\JnJ')
+% m0=xlsread([afcPath afcFile]); ACMDflnm=['JnJ\ACMDxls' fnm(end-9:end) '.xlsx'];
+% 
+% xlswrite(ACMDflnm, m0);
+% xlswrite(ACMDflnm, m, ['A' n2s(size(m0,1)+2) ':I' n2s(size(m0,1)+77)]);
+% xlswrite(ACMDflnm, a, ['J' n2s(size(m0,1)+2) ':J' n2s(size(m0,1)+77)]);
 
-xlswrite(ACMDflnm, m0);
-xlswrite(ACMDflnm, m, ['A' n2s(size(m0,1)+2) ':I' n2s(size(m0,1)+77)]);
-xlswrite(ACMDflnm, a, ['J' n2s(size(m0,1)+2) ':J' n2s(size(m0,1)+77)]);
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% STUFF BELOW WAS ALREADY COMMENTED OUT
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %save('JnJ\ACMDflnm', 'ACMDflnm');
 
 % 
