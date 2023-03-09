@@ -11,13 +11,14 @@ sn=input('Enter subject number?'); sn=sn+1000;
 vs=input('Enter visit number?'); 
 
 filePath = 'G:\My Drive\exp_bvams\code_repo\ARC\';
-load([filePath 'LCAflsL']); LeftLCA=LCAfls{sn-1000,2};
-load([filePath 'LCAflsR']); RightLCA=LCAfls{sn-1000,2};
 
-focStmOptDst = -0.5:0.5:4;
-AFCv=randperm(length(focStmOptDst));
 tcaCorrect=0;
-ACL=1; %ACL=0;
+ACL=0; %ACL=0;
+
+if ACL==1
+   load([filePath 'LCAflsL']); LeftLCA=LCAfls{sn-1000,2};
+   load([filePath 'LCAflsR']); RightLCA=LCAfls{sn-1000,2};
+
 %Select Left file
 %load('S10004_LCA_LeftACL0_2104061444.mat', 'a18');%Marty's Left eye LCA dat from April 6
 %load('S10003_LCA_LeftACL0_2104301034.mat', 'a18');%AR Austin's Left eye data from April 30
@@ -26,7 +27,10 @@ ACL=1; %ACL=0;
  %load('S10003Left_LCA_ACL0_2112071212', 'a18', 'a19');%AR Austin's Left eye data from 211207
 %load('S10102Left_LCA_ACL0_2112211038', 'a18', 'a19');%AR Austin's Left eye data from 211207
 %load('S1001V5Left_LCA_ACL0_2202151638',  'aFull', 'aHalf'); %ACL=0
-load(LeftLCA,  'LCAp'); aFull=LCAp.Full; aHalf=LCAp.Half; sr=LCAp.sr; clear LCAp
+   load(LeftLCA,  'LCAp'); aFull=LCAp.Full; aHalf=LCAp.Half; sr=LCAp.sr; clear LCAp
+else
+    sr = [0 0];
+end
 
 % %LCA task
 % a18(2,1)=14.6;
@@ -36,7 +40,7 @@ load(LeftLCA,  'LCAp'); aFull=LCAp.Full; aHalf=LCAp.Half; sr=LCAp.sr; clear LCAp
 
 power0=8;
 %Initialize powers
-power_dispL=14+sr(1); %aFull.p9(2,1);
+power_dispL=12+sr(1); %aFull.p9(2,1);
 if ACL==0 powerL=opL(1); elseif ACL==1; powerL=aFull.p9(5,1); elseif ACL==2; powerL=aHalf.p9(5,1); end
 deg=-3; 
 trombone_power_left=powerL;
@@ -51,11 +55,15 @@ trombone_power_left=powerL;
 % load('S10009Right_LCA_ACL0_2107201444.mat', 'a18');% Fabio Rt eye data July 20
 %load('S10003Right_LCA_ACL0_2112071148.mat', 'a18', 'a19'); %AR Austin's Right eye data from 211207
 %  load('S10102Right_LCA_ACL0_2112211023.mat', 'a18', 'a19'); %AR Austin's Right eye data from 211207
-load(RightLCA, 'LCAp'); aFull=LCAp.Full; aHalf=LCAp.Half; sr=LCAp.sr; clear LCAp
+if ACL==1
+   load(RightLCA, 'LCAp'); aFull=LCAp.Full; aHalf=LCAp.Half; sr=LCAp.sr; clear LCAp
+else
+    sr = [0 0];
+end
 % %LCA task 
 
 %Initialize powers
-power_dispR=14.4+sr(2); %aFull.p9(2,2) ;
+power_dispR=12+sr(2); %aFull.p9(2,2) ;
 if ACL==0; powerR=opR(1); elseif ACL==1; powerR=aFull.p9(5,2); elseif ACL==2; powerR=aHalf.p9(5,2); end
 trombone_power_right=powerR;
 %CHANGE DISPLAY OPTOTUNE LEFT
