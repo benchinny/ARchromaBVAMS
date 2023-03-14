@@ -3,9 +3,11 @@ ex='AFC'; %ey=input('which eye? Right/Binc');
 ey=input('which eye are we testing (type 1 for Right or 2 for Binocular)? ');
 if ey==1; ey='Right'; elseif ey==2; ey='Binc'; end
 filePath = 'G:\My Drive\exp_bvams\code_repo\ARC\';
-focStmOptDst = [0 4 8 12];
-AFCvTmp=randperm(length(focStmOptDst));
-AFCv = [AFCvTmp AFCvTmp];
+% focStmOptDst = [-0.5 0 0.5 1 2 4 6];
+% AFCvTmp=randperm(length(focStmOptDst));
+% AFCv = [2 1 2 3 2 4 2 5 2 6 2 7];
+focStmOptDst = [0 1 0 1 0 1];
+AFCv = [1 2 1 2 1 2];
 if ~exist('sr')
    sr = [0 0]; 
 end
