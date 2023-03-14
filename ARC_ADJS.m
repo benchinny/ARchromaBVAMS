@@ -1,7 +1,11 @@
 %%211102 DSP_IMG
 
-clear LCAim
+ey = 'R';
 [window1, window2, vbl0]=strt_psych0(screenNumber-2, screenNumber-1, 0);
+power_dispL_min = 5;
+power_dispL_max = 16;
+power_dispR_min = 5;
+power_dispR_max = 16.4;
 
 %%input a output b
 cf=ones(3,2);
@@ -26,8 +30,12 @@ opto(name_map('l_disp')).control.getFocalPower.focal_power
 
 [iLf iRf]=cwin3(imread("black.png"), imread(im2R) , cf, rc00, window2, window1);
 
+power_dispL = 14;
+power_dispR = 14.4;
+
 addpath(genpath(fullfile('toolboxes')));
 KbName('UnifyKeyNames');
+KbWait([], 2); 
 
 %% Control loop
 ListenChar(2);
@@ -36,14 +44,45 @@ try
     while opt_chk==0
         [ keyIsDown, keyTime, keyCode ] = KbCheck;
         if keyIsDown
-            kbLCA5; %kbLCA3; %kbLCA4; %take input from keyboard
-            %kbLCA4; change trombone poistion/magnification too
-            lmtLCA; %check optotune and thrombone limits
+            if keyCode(KbName('RightArrow')) | keyCode(KbName('6'))
+                if ey(1)=='R'
+                    power_dispR=power_dispR+0.1;
+                elseif ey(1)=='L'
+                    power_dispL=power_dispL+0.1;
+                else 
+                    power_dispR=power_dispR+0.1;
+                    power_dispL=power_dispL+0.1;
+                end
+                %end
+            elseif keyCode(KbName('LeftArrow')) | keyCode(KbName('4'))
+                if ey(1)=='R'
+                    power_dispR=power_dispR-0.1;
+                elseif ey(1)=='L'
+                    power_dispL=power_dispL-0.1;
+                else
+                    power_dispR=power_dispR-0.1;
+                    power_dispL=power_dispL-0.1;
+                end
+            elseif keyCode(KbName('Return')) %| keyCode(KbName('Return'))
+                opt_chk=1;    
+            else
+                disp('WRONG KEY'); snd(100, 0.25);
+            end
+            
+            if power_dispL < power_dispL_min
+                power_dispL = power_dispL_min;
+            elseif power_dispL > power_dispL_max;
+                power_dispL = power_dispL_max;
+            end
+
+            if power_dispR < power_dispR_min
+                power_dispR = power_dispR_min;
+            elseif power_dispR > power_dispR_max;
+                power_dispR = power_dispR_max;
+            end            
 
             opto(name_map('l_disp')).control.setFocalPower(power_dispL);
             opto(name_map('r_disp')).control.setFocalPower(power_dispR);
-
-            [PupCtr_LtX,PupCtr_LtY,PupCtr_RtX,PupCtr_RtY]=findPupilCenter(powerL,powerR);
 
             fprintf('Display power: L = %f  , R = %f\n',power_dispL, power_dispR);
 
@@ -82,5 +121,4 @@ ListenChar(0);
 KbWait([], 2);
 [iLf iRf]=cwin3(imread("black.png"), imread("black.png") , cf, rc00, window2, window1);
 
-clear LCAim
 sca   
