@@ -40,7 +40,7 @@ end
 
 power0=8;
 %Initialize powers
-power_dispL=12+sr(1); %aFull.p9(2,1);
+power_dispL=14+sr(1); %aFull.p9(2,1);
 if ACL==0 powerL=opL(1); elseif ACL==1; powerL=aFull.p9(5,1); elseif ACL==2; powerL=aHalf.p9(5,1); end
 deg=-3; 
 trombone_power_left=powerL;
@@ -63,7 +63,7 @@ end
 % %LCA task 
 
 %Initialize powers
-power_dispR=12+sr(2); %aFull.p9(2,2) ;
+power_dispR=14.4+sr(2); %aFull.p9(2,2) ;
 if ACL==0; powerR=opR(1); elseif ACL==1; powerR=aFull.p9(5,2); elseif ACL==2; powerR=aHalf.p9(5,2); end
 trombone_power_right=powerR;
 %CHANGE DISPLAY OPTOTUNE LEFT
