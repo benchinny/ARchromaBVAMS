@@ -3,8 +3,15 @@ ex='AFC'; %ey=input('which eye? Right/Binc');
 ey=input('which eye are we testing (type 1 for Right or 2 for Binocular)? ');
 if ey==1; ey='Right'; elseif ey==2; ey='Binc'; end
 filePath = 'G:\My Drive\exp_bvams\code_repo\ARC\';
+
+expSubType = 'OLD';
+% expSubType = 'STP';
+% expSubType = 'SIN';
+% expSubType = 'RGB';
+
 focStmOptDst = [0 1 0 1 0 1];
 AFCv = [1 2 1 2 1 2];
+
 if ~exist('sr')
    sr = [0 0]; 
 end
