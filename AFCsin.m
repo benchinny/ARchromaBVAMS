@@ -13,6 +13,12 @@ function AFCp=AFCsin(e0, e1, bxyL, bxyR, v0, sr, window1, window2)
 % function [p1 p2 p3 p4 p5 p6 p7 p8 p9]=AFC0f(im_path, p0, window1, window2)
 %p1(k0,:)=[power_dispL power_dispR powerL powerR rot];
 global sz cf rc00 name_map zaber opto log
+
+nStmSteps = 16; % number of steps for cosine ramp
+nStmSteps = round(nStmSteps/2)*2; % make sure it's even number
+tIntervalStm = 0.2; % how long to pause after each step
+nFrmStmPlat = 4; % number of frames for which the stimulus plateaus
+
 ms=10;
 [j4L j3L j2L j1L j0L]=d4i(bxyL, ms); % system+subject TCA
 [j4R j3R j2R j1R j0R]=d4i(bxyR, ms); % system+subject TCA
@@ -87,11 +93,13 @@ t0=zeros(length(v0), 6); t1=t0; t2=t0;
 % stage) 0stop 1record figure this out with Steve
 disp('ready to start');  KbWait([], 2); 
 for k0=1:length(v0)
-
+      xSin = 0:(1/(nStmSteps-1)):1; % support for sinusoidal modulation
+      sinValues = (sin(2*pi*xSin-pi/2)+1).*0.5; % the modulation itself
+      sinValues = v0(k0).*[sinValues(1:length(sinValues)/2) ones([1 nFrmStmPlat]) sinValues(((length(sinValues)/2)+1):length(sinValues))];
       %wn=cwin0(img1, 'Stereo', cf, rc00, window1, window2);
       [iLf1 iRf1]=cwin3(im2L1, im2R1, cf, rc00, window1, window2);
-      opto(name_map('l_disp')).control.setFocalPower(power_dispL-v0(k0));
-      opto(name_map('r_disp')).control.setFocalPower(power_dispR-v0(k0));
+      opto(name_map('l_disp')).control.setFocalPower(power_dispL);
+      opto(name_map('r_disp')).control.setFocalPower(power_dispR);
       zaber(name_map('rotation')).move_deg(dgs(k0)); %%-6400
 
       %disp( n2s(v0(k0)));        
@@ -101,13 +109,21 @@ for k0=1:length(v0)
       KbWait([], 2); 
 
       if scene.enable_tcp; send_tcp0(scene, 1); end; t0(k0,:)=clock;
-      for k1=1:3; snd(1000, 0.2); pause(0.8); end
+      
+      snd(1000, 0.2); pause(0.8);
+      for i = 1:length(sinValues)
+         opto(name_map('l_disp')).control.setFocalPower(power_dispL-sinValues(i));
+         opto(name_map('r_disp')).control.setFocalPower(power_dispR-sinValues(i));
+         pause(tIntervalStm);
+      end
+      snd(1000, 0.2); pause(0.8);
+     
       if scene.enable_tcp; send_tcp0(scene, 0); end %stage) 0stop 1record
       %pause(3);
       %wn=cwin0(img0, 'Stereo', cf, rc00, window1, window2);
       [iLf0 iRf0]=cwin3(im2L0, im2R0, cf, rc00, window1, window2);
-      opto(name_map('l_disp')).control.setFocalPower(power_dispL-2);
-      opto(name_map('r_disp')).control.setFocalPower(power_dispR-2);
+      opto(name_map('l_disp')).control.setFocalPower(power_dispL);
+      opto(name_map('r_disp')).control.setFocalPower(power_dispR);
     %           zaber(name_map('rotation')).move_deg(-3); %%-6400
       zaber(name_map('rotation')).move_deg(dgs0); %%-6400
 

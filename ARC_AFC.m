@@ -4,12 +4,12 @@ ey=input('which eye are we testing (type 1 for Right or 2 for Binocular)? ');
 if ey==1; ey='Right'; elseif ey==2; ey='Binc'; end
 filePath = 'G:\My Drive\exp_bvams\code_repo\ARC\';
 
-expSubType = 'OLD';
+% expSubType = 'OLD';
 % expSubType = 'STP';
-% expSubType = 'SIN';
+expSubType = 'SIN';
 % expSubType = 'RGB';
 
-focStmOptDst = [0 1 0 1 0 1];
+focStmOptDst = [1 2 1 2 1 2];
 AFCv = [1 2 1 2 1 2];
 
 if ~exist('sr')
@@ -60,7 +60,11 @@ if ey(1)=='R'; cf(:,2)=0; elseif ey(1)=='L'; cf(:,1)=0; end
 v0=focStmOptDst; 
 v00=v0(AFCv); 
 AFCfls0=[filePath 'S' num2str(sn) 'V' num2str(vs) '_AFC_' ey 'ACL' n2s(ACL) '_' tme];
-AFCp=AFC9f(AFCim0, AFCim1, zL, zR, v00, sr, window1, window2);
+if strcmp(expSubType,'OLD')
+   AFCp=AFC9f(AFCim0, AFCim1, zL, zR, v00, sr, window1, window2);
+elseif strcmp(expSubType,'SIN')
+   AFCp=AFCsin(AFCim0, AFCim1, zL, zR, v00, sr, window1, window2);
+end
 
 AFCp.v0=v0;
 AFCp.v00=v00;
