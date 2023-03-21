@@ -1,4 +1,4 @@
-function AFCnlz         
+function AFCnlzTest        
 sn=input('Subject Number? '); sn=sn+1000;
 vs=input('Visit Number? ')
 ey=input('Eye? 1forRight 2forBinocular ');

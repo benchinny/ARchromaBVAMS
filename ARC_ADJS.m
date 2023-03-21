@@ -13,7 +13,8 @@ cf=ones(3,2);
 %initial  power=13.5 AR    
 %LCAim='texture0_1080_newfill_malt.png';    
 %im2R='black.png';       
-im2L='texture0_1080_newfill_malt.png';
+% im2L='texture0_1080_newfill_malt.png';
+im2L='vrn10_G_sd1.png';
 im2R=im2L ;
 
 deg=-3;            
