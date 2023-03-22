@@ -9,8 +9,8 @@ filePath = 'G:\My Drive\exp_bvams\code_repo\ARC\';
 expSubType = 'SIN';
 % expSubType = 'RGB';
 
-focStmOptDst = [1 2 1 2 1 2];
-AFCv = [1 2 1 2 1 2];
+focStmOptDst = [2 3];
+AFCv = [1 2 1 2];
 
 if ~exist('sr')
    sr = [0 0]; 
@@ -63,7 +63,8 @@ AFCfls0=[filePath 'S' num2str(sn) 'V' num2str(vs) '_AFC_' ey 'ACL' n2s(ACL) '_' 
 if strcmp(expSubType,'OLD')
    AFCp=AFC9f(AFCim0, AFCim1, zL, zR, v00, sr, window1, window2);
 elseif strcmp(expSubType,'SIN')
-   AFCp=AFCsin(AFCim0, AFCim1, zL, zR, v00, sr, window1, window2);
+   [im2L0, im2L1, im2R0, im2R1] = AFCtcaStmImg(AFCim0, AFCim1, zL, zR); 
+   AFCp=AFCsin(im2L0, im2L1, im2R0, im2R1, v00, sr, window1, window2);
 end
 
 AFCp.v0=v0;
