@@ -61,11 +61,9 @@ for k0=1:size(v2,1)
    y3=[y3 y2{k0}'];
    sinValuesTmp = AFCp.sinValues(k0,:);
    tSin = 0:(1/(length(sinValuesTmp)-1)):1;
-   for i = 1:size(v2,2)
-       tSinInterp = 0:(1/(length(x2{k0})-1)):1;
-       v3 = [v3 interp1(tSin,sinValuesTmp,tSinInterp)];
-   end
-   v3=[v3 v2(k0).*ones(1,length(x2{k0}))];
+   tSinInterp = 0:(1/(length(x2{k0})-1)):1;
+   v3 = [v3 interp1(tSin,sinValuesTmp,tSinInterp)];
+%   v3=[v3 v2(k0).*ones(1,length(x2{k0}))];
 %    i1=find(v2(k0)==v1)
 %    x5(i1, x4(i1))=mean(x2{k0}./-3.59);
 %    y5(i1, x4(i1))=mean(y2{k0}./-3.33);
@@ -75,7 +73,7 @@ for k0=1:size(v2,1)
 end
 
 x3=x3./-3.59; y3=y3./-3.33;
-plot([1:length(x3)], [v3; x3; y3])
+plot([1:length(x3)], [v3; x3+mean(AFCp.meanv00); y3+mean(AFCp.meanv00)])
 xlabel('Frame'); ylabel('Power (Diopters)'); title('Autorefractor measurement'); legend('Demand', 'Horizontal', 'Vertical')
            
 % %figure; plot(v1, mean(x5,2))
