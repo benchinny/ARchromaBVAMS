@@ -1,6 +1,6 @@
 %%220508 AFC9f include TCA correction 
 % function [v1 t3 dgs]=AFC8f(im_path, v0, sr, window1, window2)
-function AFCp=AFCsin(im2L0, im2L1, im2R0, im2R1, v0, sr, window1, window2)
+function AFCp=AFCsin(im2L0, im2L1, im2R0, im2R1, v0, meanv0, sr, window1, window2)
 
 %v0 vector of accomodations
 %        control: [1×1 Zaber.AsciiDevice]
@@ -14,8 +14,12 @@ function AFCp=AFCsin(im2L0, im2L1, im2R0, im2R1, v0, sr, window1, window2)
 %p1(k0,:)=[power_dispL power_dispR powerL powerR rot];
 global sz cf rc00 name_map zaber opto log
 
-nStmSteps = 16; % number of steps for cosine ramp
-nStmSteps = round(nStmSteps/2)*2; % make sure it's even number
+if size(v0,1)~=size(meanv0,1)
+    error('AFCsin: v0 and meanv0 must have the same number of rows!');
+end
+
+nRmpSteps = 16; % number of steps for cosine ramp
+nRmpSteps = round(nRmpSteps/2)*2; % make sure it's even number
 tIntervalStm = 0.2; % how long to pause after each step
 nFrmStmPlat = 4; % number of frames for which the stimulus plateaus
 
@@ -54,16 +58,22 @@ dgs=atand(ipd.*v0)./2-3; dgs(dgs<=-3)=-3; %degrees to rotate
 dgs0=atand(ipd.*2)./2-3; dgs0(dgs0<=-3)=-3; %degrees to rotate
 
 t0=zeros(length(v0), 6); t1=t0; t2=t0;
+sinValuesAll = [];
 % stage) 0stop 1record figure this out with Steve
 disp('ready to start');  KbWait([], 2); 
-for k0=1:length(v0)
-      xSin = 0:(1/(nStmSteps-1)):1; % support for sinusoidal modulation
-      sinValues = (sin(2*pi*xSin-pi/2)+1).*0.5; % the modulation itself
-      sinValues = v0(k0).*[sinValues(1:length(sinValues)/2) ones([1 nFrmStmPlat]) sinValues(((length(sinValues)/2)+1):length(sinValues))];
+for k0=1:size(v0,1)
+      tSin = 0:(1/(nRmpSteps-1)):1; % support for sinusoidal modulation
+      sinValues = [];
+      for i = 1:size(v0,2)
+         sinValuesTmp = (sin(2*pi*tSin-pi/2)+1).*0.5; % the modulation itself
+         sinValuesTmp = meanv0(k0)+v0(k0,i).*[sinValuesTmp(1:length(sinValuesTmp)/2) ones([1 nFrmStmPlat]) sinValuesTmp(((length(sinValuesTmp)/2)+1):length(sinValuesTmp))];
+         sinValues = [sinValues sinValuesTmp];
+      end
+      sinValuesAll(k0,:) = sinValues;
       %wn=cwin0(img1, 'Stereo', cf, rc00, window1, window2);
       [iLf1 iRf1]=cwin3(im2L1, im2R1, cf, rc00, window1, window2);
-      opto(name_map('l_disp')).control.setFocalPower(power_dispL);
-      opto(name_map('r_disp')).control.setFocalPower(power_dispR);
+      opto(name_map('l_disp')).control.setFocalPower(power_dispL-meanv0(k0));
+      opto(name_map('r_disp')).control.setFocalPower(power_dispR-meanv0(k0));
       zaber(name_map('rotation')).move_deg(dgs(k0)); %%-6400
 
       %disp( n2s(v0(k0)));        
@@ -86,8 +96,8 @@ for k0=1:length(v0)
       %pause(3);
       %wn=cwin0(img0, 'Stereo', cf, rc00, window1, window2);
       [iLf0 iRf0]=cwin3(im2L0, im2R0, cf, rc00, window1, window2);
-      opto(name_map('l_disp')).control.setFocalPower(power_dispL);
-      opto(name_map('r_disp')).control.setFocalPower(power_dispR);
+      opto(name_map('l_disp')).control.setFocalPower(power_dispL-meanv0(k0));
+      opto(name_map('r_disp')).control.setFocalPower(power_dispR-meanv0(k0));
     %           zaber(name_map('rotation')).move_deg(-3); %%-6400
       zaber(name_map('rotation')).move_deg(dgs0); %%-6400
 
@@ -108,3 +118,4 @@ AFCp.t3=cat(3, t0, t1, t2);
 AFCp.dgs=dgs;
 AFCp.imL0=im2L0;  AFCp.imR0=im2R0;
 AFCp.imL1=im2L1;  AFCp.imR1=im2R1;
+AFCp.sinValues = sinValuesAll;
