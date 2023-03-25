@@ -9,8 +9,8 @@ filePath = 'G:\My Drive\exp_bvams\code_repo\ARC\';
 expSubType = 'SIN';
 % expSubType = 'RGB';
 
-focStmOptDst = [0 0; 1 2; 2 1];
-meanFocstmOptDst = [1.5 1.5 1.5]';
+focStmOptDst = [0; 1; 2];
+meanFocstmOptDst = [0 1.5 1.5]';
 AFCv = [1 2 3 2 3]';
 % focStmOptDst = [1];
 % meanFocstmOptDst = [1.5]';
