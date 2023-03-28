@@ -9,9 +9,9 @@ filePath = 'G:\My Drive\exp_bvams\code_repo\ARC\';
 expSubType = 'SIN';
 % expSubType = 'RGB';
 
-focStmOptDst = [0; 1; 2];
-meanFocstmOptDst = [0 1.5 1.5]';
-AFCv = [1 2 3 2 3]';
+focStmOptDst = [0 0; 0 0; 0 0];
+meanFocstmOptDst = [0 12 14]';
+AFCv = [1 2 3]';
 % focStmOptDst = [1];
 % meanFocstmOptDst = [1.5]';
 % AFCv = [1]';
@@ -64,7 +64,10 @@ if ey(1)=='R'; cf(:,2)=0; elseif ey(1)=='L'; cf(:,1)=0; end
 v0=focStmOptDst; 
 v00=v0(AFCv,:); 
 meanv00 = meanFocstmOptDst(AFCv);
-[im2L0, im2L1, im2R0, im2R1] = AFCtcaStmImg(AFCim0, AFCim1, zL, zR);
+% [im2L0, im2L1, im2R0, im2R1] = AFCtcaStmImg(AFCim0, AFCim1, zL, zR);
+% im2 = imread('G:\My Drive\exp_bvams\code_repo\imgs\vrn10_G_sd1.png');
+im2 = 255.*insertText(zeros([500 500]),[125 75],'c','TextColor','green','BoxColor','black','FontSize',200);
+im2L0 = im2; im2R0 = im2; im2L1 = im2; im2R1 = im2;
 AFCfls0=[filePath 'S' num2str(sn) 'V' num2str(vs) '_AFC_' ey 'ACL' n2s(ACL) '_' tme];
 if strcmp(expSubType,'OLD')
    AFCp=AFC9f(AFCim0, AFCim1, zL, zR, v00, sr, window1, window2);

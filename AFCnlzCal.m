@@ -16,7 +16,10 @@ elseif ey(1)==1
 end
 fnm=AFCfls{sn-1000, vs}; load(fnm)
 
-fileNamesAll = {'G:\My Drive\ARchromaVideoCapture\videos\processed\centralperipheral_real\2023-03-24 16.20.json' ...
+fileNamesAll = {'G:\My Drive\ARchromaVideoCapture\videos\processed\centralperipheral_real\2023-03-24 16.03.json' ...
+                'G:\My Drive\ARchromaVideoCapture\videos\processed\centralperipheral_real\2023-03-24 16.15.json' ...
+                'G:\My Drive\ARchromaVideoCapture\videos\processed\centralperipheral_real\2023-03-24 16.17.json' ...
+                'G:\My Drive\ARchromaVideoCapture\videos\processed\centralperipheral_real\2023-03-24 16.20.json' ...
                 'G:\My Drive\ARchromaVideoCapture\videos\processed\centralperipheral_real\2023-03-24 16.24.json' ...
                 'G:\My Drive\ARchromaVideoCapture\videos\processed\centralperipheral_real\2023-03-24 16.27.json' ...
                 'G:\My Drive\ARchromaVideoCapture\videos\processed\centralperipheral_real\2023-03-24 16.29.json'};
@@ -36,7 +39,12 @@ for i = 1:length(fileNamesAll)
     t3 = [t3; t3tmp];
 end
 
-AFCp.v00 = 100/3.34 - 100./(0.1.*(35.95-[0:0.5:7 7.5 8.0 8.5 8.5 8.5]));
+% AFCp.v00 = [100/3.34 - 100./(0.1.*(43.53-[0:0.5:7])) ...
+%             100/3.34 - 100./(0.1.*(35.95-[0:0.5:7 7.5 8.0 8.5 8.5 8.5]))];
+AFCp.v00 = [(1.*(43.53-[0:0.5:7])) (1.*(35.95-[0:0.5:7 7.5 8.0 8.5 8.5 8.5]))];
+% AFCp.v00 = [100/3.34 - 100./(0.1.*(43.53-[0:0.5:9])) ...
+%             100/3.34 - 100./(0.1.*(35.95-[0:0.5:7.5]))];
+% AFCp.v00 = [1:35];
 anchorValue = AFCp.v00(1);
 AFCp.v00 = AFCp.v00-anchorValue;
 
@@ -98,7 +106,7 @@ for i = 1:length(x2)
    plot(AFCp.v00(i)+anchorValue,mean(y2{i}),'bo');
 end
 set(gca,'FontSize',15);
-xlabel('Refractive error (D)'); ylabel('Distance between bars (pixels)');
+xlabel('Distance from lens to retina (mm)'); ylabel('Distance between bars (pixels)');
 legend('Left - Right bars','Top - bottom bars');
 % %figure; plot(v1, mean(x5,2))
 % figure; errorbar(v1, mean(x5,2), std(x5,0, 2)./sqrt(4))

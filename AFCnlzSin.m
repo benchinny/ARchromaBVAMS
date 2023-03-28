@@ -73,7 +73,7 @@ for k0=1:size(v2,1)
 end
 
 x3=x3./-3.59; y3=y3./-3.33;
-plot([1:length(x3)], [v3; x3+mean(AFCp.meanv00); y3+mean(AFCp.meanv00)])
+plot([1:length(x3)], [v3; x3; y3])
 xlabel('Frame'); ylabel('Power (Diopters)'); title('Autorefractor measurement'); legend('Demand', 'Horizontal', 'Vertical')
            
 % %figure; plot(v1, mean(x5,2))
