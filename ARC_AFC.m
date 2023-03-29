@@ -10,7 +10,7 @@ expSubType = 'SIN';
 % expSubType = 'RGB';
 
 focStmOptDst = [0 0; 0 0; 0 0];
-meanFocstmOptDst = [0 12 14]';
+meanFocstmOptDst = [0 4 6.5]';
 AFCv = [1 2 3]';
 % focStmOptDst = [1];
 % meanFocstmOptDst = [1.5]';
@@ -66,7 +66,10 @@ v00=v0(AFCv,:);
 meanv00 = meanFocstmOptDst(AFCv);
 % [im2L0, im2L1, im2R0, im2R1] = AFCtcaStmImg(AFCim0, AFCim1, zL, zR);
 % im2 = imread('G:\My Drive\exp_bvams\code_repo\imgs\vrn10_G_sd1.png');
-im2 = 255.*insertText(zeros([500 500]),[125 75],'c','TextColor','green','BoxColor','black','FontSize',200);
+% im2 = 255.*insertText(zeros([500 500]),[125 75],'b','TextColor','green','BoxColor','black','FontSize',200);
+im2 = AFCwordStim('car',[500 500],[70 70; 160 70; 260 70]);
+im2(im2>0) = 255;
+im2 = flipud(im2);
 im2L0 = im2; im2R0 = im2; im2L1 = im2; im2R1 = im2;
 AFCfls0=[filePath 'S' num2str(sn) 'V' num2str(vs) '_AFC_' ey 'ACL' n2s(ACL) '_' tme];
 if strcmp(expSubType,'OLD')

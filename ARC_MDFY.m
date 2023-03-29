@@ -14,6 +14,7 @@ filePath = 'G:\My Drive\exp_bvams\code_repo\ARC\';
 
 tcaCorrect=0;
 ACL=0; %ACL=0;
+bFlexTrombones = true;
 
 if ACL==1
    load([filePath 'LCAflsL']); LeftLCA=LCAfls{sn-1000,2};
@@ -76,7 +77,9 @@ opto(name_map('l_disp')).control.getFocalPower.focal_power
             opto(name_map('l_t_near')).control.setFocalPower(powerL); %[6.8400 24.9500]
 %            opto(name_map('l_t_far')).control.setFocalPower(powerL); %[7.2400 27.2950]
             %zaber(name_map('l_trombone')).move(l_trombone_f(powerL));%[8.619 13.8]
-            zaber(name_map('l_trombone')).move(l_trombone_f(power0));%[8.619 13.8]
+            if bFlexTrombones
+               zaber(name_map('l_trombone')).move(l_trombone_f(power0));%[8.619 13.8]
+            end
             zaber(name_map('l_trombone')).control.waitforidle();
             
             [opto(name_map('l_t_near')).control.getFocalPower.focal_power...
@@ -114,7 +117,9 @@ opto(name_map('r_disp')).control.getFocalPower.focal_power
             opto(name_map('r_t_near')).control.setFocalPower(powerR); %[6.8550 25.2250]
             opto(name_map('r_t_far')).control.setFocalPower(powerR); %[7.2400 27.2950]
 %             zaber(name_map('r_trombone')).move(r_trombone_f(powerR)); %[7 20]
-            zaber(name_map('r_trombone')).move(r_trombone_f(power0)); %[7 20]
+            if bFlexTrombones
+               zaber(name_map('r_trombone')).move(r_trombone_f(power0)); %[7 20]
+            end
             zaber(name_map('r_trombone')).control.waitforidle();
             
             
