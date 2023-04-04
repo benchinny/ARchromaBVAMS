@@ -1,6 +1,6 @@
 %%220508 AFC9f include TCA correction 
 % function [v1 t3 dgs]=AFC8f(im_path, v0, sr, window1, window2)
-function AFCp=AFCsin(im2L0, im2L1, im2R0, im2R1, v0, meanv0, sr, window1, window2)
+function AFCp=AFCstep(im2L0, im2L1, im2R0, im2R1, v0, meanv0, sr, window1, window2)
 
 %v0 vector of accomodations
 %        control: [1×1 Zaber.AsciiDevice]
@@ -15,13 +15,13 @@ function AFCp=AFCsin(im2L0, im2L1, im2R0, im2R1, v0, meanv0, sr, window1, window
 global sz cf rc00 name_map zaber opto log
 
 if size(v0,1)~=size(meanv0,1)
-    error('AFCsin: v0 and meanv0 must have the same number of rows!');
+    error('AFCstep: v0 and meanv0 must have the same number of rows!');
 end
 
-nRmpSteps = 16; % number of steps for cosine ramp
+nRmpSteps = 10; % number of steps for cosine ramp
 nRmpSteps = round(nRmpSteps/2)*2; % make sure it's even number
 tIntervalStm = 0.2; % how long to pause after each step
-nFrmStmPlat = 4; % number of frames for which the stimulus plateaus
+nFrmStmPlat = 10; % number of frames for which the stimulus plateaus
 
 power_dispR=14.4+sr(2); %starting display power
 power_dispL=14+sr(1); %starting display power
@@ -65,8 +65,8 @@ for k0=1:size(v0,1)
       tSin = 0:(1/(nRmpSteps-1)):1; % support for sinusoidal modulation
       sinValues = [];
       for i = 1:size(v0,2)
-         sinValuesTmp = (sin(2*pi*tSin-pi/2)+1).*0.5; % the modulation itself
-         sinValuesTmp = meanv0(k0)+v0(k0,i).*[sinValuesTmp(1:length(sinValuesTmp)/2) ones([1 nFrmStmPlat]) sinValuesTmp(((length(sinValuesTmp)/2)+1):length(sinValuesTmp))];
+         sinValuesTmp = (sin(2*pi*tSin-pi*1/2)+1).*0.5; % the modulation itself
+         sinValuesTmp = meanv0(k0)+v0(k0,i).*[zeros([1 nFrmStmPlat]) sinValuesTmp(1:length(sinValuesTmp)/2) ones([1 nFrmStmPlat])];
          sinValues = [sinValues sinValuesTmp];
       end
       sinValuesAll(k0,:) = sinValues;
