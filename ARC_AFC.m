@@ -7,10 +7,11 @@ filePath = 'G:\My Drive\exp_bvams\code_repo\ARC\';
 % expSubType = 'OLD';
 % expSubType = 'STP';
 % expSubType = 'SIN';
+% expSubType = 'STEP';
 expSubType = 'RGB';
 
-focStmOptDst = [0 0; 4 6];
-meanFocstmOptDst = [0 0]';
+focStmOptDst = [0; 0];
+meanFocstmOptDst = [2 2]';
 AFCv = [1 2]';
 % focStmOptDst = [1];
 % meanFocstmOptDst = [1.5]';
@@ -65,21 +66,23 @@ v0=focStmOptDst;
 v00=v0(AFCv,:); 
 meanv00 = meanFocstmOptDst(AFCv);
 % [im2L0, im2L1, im2R0, im2R1] = AFCtcaStmImg(AFCim0, AFCim1, zL, zR);
-im0 = imread('G:\My Drive\exp_bvams\code_repo\imgs\vrn10_R_sd1.png');
-im1 = imread('G:\My Drive\exp_bvams\code_repo\imgs\vrn10_B_sd1.png');
 % im2 = 255.*insertText(zeros([500 500]),[125 75],'b','TextColor','green','BoxColor','black','FontSize',200);
 % im2 = AFCwordStim('car',[500 500],[70 70; 160 70; 260 70]);
 % im2(im2>0) = 255;
 % im2 = flipud(im2);
-im2L0 = im0; im2R0 = im0; im2L1 = im1; im2R1 = im1;
 AFCfls0=[filePath 'S' num2str(sn) 'V' num2str(vs) '_AFC_' ey 'ACL' n2s(ACL) '_' tme];
 if strcmp(expSubType,'OLD')
    AFCp=AFC9f(AFCim0, AFCim1, zL, zR, v00, sr, window1, window2);
 elseif strcmp(expSubType,'SIN')
+   [im2L0, im2L1, im2R0, im2R1] = AFCtcaStmImg(AFCim0, AFCim1, zL, zR);
    AFCp=AFCsin(im2L0, im2L1, im2R0, im2R1, v00, meanv00, sr, window1, window2);
 elseif strcmp(expSubType,'STEP')
+   [im2L0, im2L1, im2R0, im2R1] = AFCtcaStmImg(AFCim0, AFCim1, zL, zR); 
    AFCp=AFCstep(im2L0, im2L1, im2R0, im2R1, v00, meanv00, sr, window1, window2); 
 elseif strcmp(expSubType,'RGB')
+   im0 = imread('G:\My Drive\exp_bvams\code_repo\imgs\vrn10_B_sd1.png');
+   im1 = imread('G:\My Drive\exp_bvams\code_repo\imgs\vrn10_R_sd1.png');    
+   im2L0 = im0; im2R0 = im0; im2L1 = im1; im2R1 = im1;
    AFCp=AFCchangeImg(im2L0, im2L1, im2R0, im2R1, v00, meanv00, sr, window1, window2);    
 end
 
