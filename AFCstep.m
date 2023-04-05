@@ -25,8 +25,8 @@ nFrmStmPlat = 10; % number of frames for which the stimulus plateaus
 
 power_dispR=14.4+sr(2); %starting display power
 power_dispL=14+sr(1); %starting display power
-opto(name_map('r_disp')).control.setFocalPower(power_dispR);
-opto(name_map('l_disp')).control.setFocalPower(power_dispL);
+opto(name_map('r_disp')).control.setFocalPower(power_dispR-meanv0(1));
+opto(name_map('l_disp')).control.setFocalPower(power_dispL-meanv0(1));
 
 % wn=cwin0(img0, 'Stereo', cf, rc00, window1, window2);
 [iLf0 iRf0]=cwin3(im2L0, im2R0, cf, rc00, window1, window2);
@@ -38,7 +38,7 @@ log.WARNING = 3;
 log.INFO = 2;
 log.DEBUG = 1;
 log.LEVEL = log.DEBUG;
-scene.enable_tcp=1;
+scene.enable_tcp=0;
 scene.trial_num=1;
 
 if scene.enable_tcp

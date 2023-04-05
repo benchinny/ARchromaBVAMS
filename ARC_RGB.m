@@ -1,5 +1,5 @@
 %%220508 JnJ_AFC AFC9f include TCA correction. 
-ex='AFC'; %ey=input('which eye? Right/Binc');
+ex='RGB'; %ey=input('which eye? Right/Binc');
 ey=input('which eye are we testing (type 1 for Right or 2 for Binocular)? ');
 if ey==1; ey='Right'; elseif ey==2; ey='Binc'; end
 filePath = 'G:\My Drive\exp_bvams\code_repo\ARC\';
