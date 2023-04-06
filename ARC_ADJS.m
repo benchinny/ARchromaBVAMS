@@ -13,8 +13,8 @@ cf=ones(3,2);
 %initial  power=13.5 AR    
 %LCAim='texture0_1080_newfill_malt.png';    
 %im2R='black.png';       
-% im2L='texture0_1080_newfill_malt.png';
-im2L='vrn10_G_sd1.png';
+im2L='texture0_1080_newfill_malt.png';
+%im2L='vrn10_G_sd1.png';
 im2R=im2L ;
 
 deg=-3;            
@@ -33,6 +33,14 @@ opto(name_map('l_disp')).control.getFocalPower.focal_power
 
 power_dispL = 14;
 power_dispR = 14.4;
+
+rightTrombonePowerNear = opto(name_map('r_t_near')).control.getFocalPower.focal_power;
+rightTrombonePowerFar = opto(name_map('r_t_far')).control.getFocalPower.focal_power;
+rightTrombonePosition = zaber(name_map('r_trombone')).control.getposition;
+
+fprintf('Trombone Near R = %f  , Trombone Far R = %f\n',rightTrombonePowerNear, rightTrombonePowerFar);
+
+fprintf('\n');
 
 addpath(genpath(fullfile('toolboxes')));
 KbName('UnifyKeyNames');
@@ -84,7 +92,7 @@ try
 
             opto(name_map('l_disp')).control.setFocalPower(power_dispL);
             opto(name_map('r_disp')).control.setFocalPower(power_dispR);
-
+            
             fprintf('Display power: L = %f  , R = %f\n',power_dispL, power_dispR);
 
             fprintf('\n');

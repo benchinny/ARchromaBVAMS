@@ -14,6 +14,8 @@ expSubType = 'RGB';
 
 focStmOptDst = [0; 0];
 meanFocstmOptDst = [5 5]';
+rgb1 = [1 0 1; 1 0 1];
+rgb2 = [0.5 0 1; 0 0 1];
 AFCv = [1 1]';
 % focStmOptDst = [1];
 % meanFocstmOptDst = [1.5]';
@@ -67,6 +69,8 @@ if ey(1)=='R'; cf(:,2)=0; elseif ey(1)=='L'; cf(:,1)=0; end
 v0=focStmOptDst; 
 v00=v0(AFCv,:); 
 meanv00 = meanFocstmOptDst(AFCv);
+rgb100 = rgb1(AFCv,:);
+rgb200 = rgb2(AFCv,:);
 % [im2L0, im2L1, im2R0, im2R1] = AFCtcaStmImg(AFCim0, AFCim1, zL, zR);
 % im2 = 255.*insertText(zeros([500 500]),[125 75],'b','TextColor','green','BoxColor','black','FontSize',200);
 % im2 = AFCwordStim('car',[500 500],[70 70; 160 70; 260 70]);
@@ -82,10 +86,10 @@ elseif strcmp(expSubType,'STEP')
    [im2L0, im2L1, im2R0, im2R1] = AFCtcaStmImg(AFCim0, AFCim1, zL, zR); 
    AFCp=AFCstep(im2L0, im2L1, im2R0, im2R1, v00, meanv00, sr, window1, window2); 
 elseif strcmp(expSubType,'RGB')
-   im0 = imread('G:\My Drive\exp_bvams\code_repo\imgs\vrn10_B_sd1.png');
-   im1 = imread('G:\My Drive\exp_bvams\code_repo\imgs\vrn10_R_sd1.png');    
-   im2L0 = im0; im2R0 = im0; im2L1 = im1; im2R1 = im1;
-   AFCp=AFCchangeImg(im2L0, im2L1, im2R0, im2R1, v00, meanv00, sr, window1, window2);    
+   imB = imread('G:\My Drive\exp_bvams\code_repo\imgs\vrn10_B_sd1.png');
+   imPattern = squeeze(imB(:,:,3));
+   clear imB;
+   AFCp=AFCrgb(imPattern,rgb100,rgb200,v00, meanv00, sr, window1, window2);    
 end
 
 AFCp.v0=v0;
