@@ -1,6 +1,6 @@
 %%220508 AFC9f include TCA correction 
 % function [v1 t3 dgs]=AFC8f(im_path, v0, sr, window1, window2)
-function AFCp=AFCrgb(im2L0, im2L1, im2R0, im2R1, v0, meanv0, sr, window1, window2)
+function AFCp=AFCrgb(imPattern, rgb0, rgb1, v0, meanv0, sr, window1, window2)
 
 %v0 vector of accomodations
 %        control: [1×1 Zaber.AsciiDevice]
@@ -28,8 +28,11 @@ power_dispL=14+sr(1); %starting display power
 opto(name_map('r_disp')).control.setFocalPower(power_dispR-meanv0(1));
 opto(name_map('l_disp')).control.setFocalPower(power_dispL-meanv0(1));
 
+im2R0(:,:,1) = imPattern.*rgb0(1,1);
+im2R0(:,:,2) = imPattern.*rgb0(1,2);
+im2R0(:,:,3) = imPattern.*rgb0(1,3);
 % wn=cwin0(img0, 'Stereo', cf, rc00, window1, window2);
-[iLf0 iRf0]=cwin3(im2L0, im2R0, cf, rc00, window1, window2);
+[iLf0 iRf0]=cwin3(imread('black.png'), im2R0, cf, rc00, window1, window2);
 
 %tcpip
 log.CRITICAL = 5;
@@ -70,8 +73,14 @@ for k0=1:size(v0,1)
          sinValues = [sinValues sinValuesTmp];
       end
       sinValuesAll(k0,:) = sinValues;
+      im2R0(:,:,1) = imPattern.*rgb0(k0,1);
+      im2R0(:,:,2) = imPattern.*rgb0(k0,2);
+      im2R0(:,:,3) = imPattern.*rgb0(k0,3);
+      im2R1(:,:,1) = imPattern.*rgb1(k0,1);
+      im2R1(:,:,2) = imPattern.*rgb1(k0,2);
+      im2R1(:,:,3) = imPattern.*rgb1(k0,3);
       %wn=cwin0(img1, 'Stereo', cf, rc00, window1, window2);
-      [iLf0 iRf0]=cwin3(im2L0, im2R0, cf, rc00, window1, window2);
+      [iLf0 iRf0]=cwin3(imread('black.png'), im2R0, cf, rc00, window1, window2);
       opto(name_map('l_disp')).control.setFocalPower(power_dispL-meanv0(k0));
       opto(name_map('r_disp')).control.setFocalPower(power_dispR-meanv0(k0));
       zaber(name_map('rotation')).move_deg(dgs(k0)); %%-6400
@@ -90,7 +99,7 @@ for k0=1:size(v0,1)
          opto(name_map('r_disp')).control.setFocalPower(power_dispR-sinValues(i));
          pause(tIntervalStm);
       end
-      [iLf1 iRf1]=cwin3(im2L1, im2R1, cf, rc00, window1, window2);
+      [iLf1 iRf1]=cwin3(imread('black.png'), im2R1, cf, rc00, window1, window2);
       for i = (floor(length(sinValues)/2)+1):length(sinValues)
          opto(name_map('l_disp')).control.setFocalPower(power_dispL-sinValues(i));
          opto(name_map('r_disp')).control.setFocalPower(power_dispR-sinValues(i));
@@ -101,7 +110,7 @@ for k0=1:size(v0,1)
       if scene.enable_tcp; send_tcp0(scene, 0); end %stage) 0stop 1record
       %pause(3);
       %wn=cwin0(img0, 'Stereo', cf, rc00, window1, window2);
-      [iLf0 iRf0]=cwin3(im2L0, im2R0, cf, rc00, window1, window2);
+      [iLf0 iRf0]=cwin3(imread('black.png'), im2R0, cf, rc00, window1, window2);
       opto(name_map('l_disp')).control.setFocalPower(power_dispL-meanv0(k0));
       opto(name_map('r_disp')).control.setFocalPower(power_dispR-meanv0(k0));
     %           zaber(name_map('rotation')).move_deg(-3); %%-6400
