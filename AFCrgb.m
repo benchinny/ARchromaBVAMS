@@ -71,7 +71,7 @@ for k0=1:size(v0,1)
       end
       sinValuesAll(k0,:) = sinValues;
       %wn=cwin0(img1, 'Stereo', cf, rc00, window1, window2);
-      [iLf1 iRf1]=cwin3(im2L1, im2R1, cf, rc00, window1, window2);
+      [iLf0 iRf0]=cwin3(im2L0, im2R0, cf, rc00, window1, window2);
       opto(name_map('l_disp')).control.setFocalPower(power_dispL-meanv0(k0));
       opto(name_map('r_disp')).control.setFocalPower(power_dispR-meanv0(k0));
       zaber(name_map('rotation')).move_deg(dgs(k0)); %%-6400
@@ -85,11 +85,17 @@ for k0=1:size(v0,1)
       if scene.enable_tcp; send_tcp0(scene, 1); end; t0(k0,:)=clock;
       
       snd(1000, 0.2); pause(0.8);
-      for i = 1:length(sinValues)
+      for i = 1:floor(length(sinValues)/2)
          opto(name_map('l_disp')).control.setFocalPower(power_dispL-sinValues(i));
          opto(name_map('r_disp')).control.setFocalPower(power_dispR-sinValues(i));
          pause(tIntervalStm);
       end
+      [iLf1 iRf1]=cwin3(im2L1, im2R1, cf, rc00, window1, window2);
+      for i = (floor(length(sinValues)/2)+1):length(sinValues)
+         opto(name_map('l_disp')).control.setFocalPower(power_dispL-sinValues(i));
+         opto(name_map('r_disp')).control.setFocalPower(power_dispR-sinValues(i));
+         pause(tIntervalStm);
+      end      
       snd(1000, 0.2); pause(0.8);
      
       if scene.enable_tcp; send_tcp0(scene, 0); end %stage) 0stop 1record

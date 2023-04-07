@@ -2,9 +2,9 @@
 
 ey = 'R';
 [window1, window2, vbl0]=strt_psych0(screenNumber-2, screenNumber-1, 0);
-power_dispL_min = 5;
+power_dispL_min = 7;
 power_dispL_max = 16;
-power_dispR_min = 5;
+power_dispR_min = 7;
 power_dispR_max = 16.4;
 
 %%input a output b
@@ -55,22 +55,22 @@ try
         if keyIsDown
             if keyCode(KbName('RightArrow')) | keyCode(KbName('6'))
                 if ey(1)=='R'
-                    power_dispR=power_dispR+0.1;
+                    power_dispR=power_dispR+0.05;
                 elseif ey(1)=='L'
-                    power_dispL=power_dispL+0.1;
+                    power_dispL=power_dispL+0.05;
                 else 
-                    power_dispR=power_dispR+0.1;
-                    power_dispL=power_dispL+0.1;
+                    power_dispR=power_dispR+0.05;
+                    power_dispL=power_dispL+0.05;
                 end
                 %end
             elseif keyCode(KbName('LeftArrow')) | keyCode(KbName('4'))
                 if ey(1)=='R'
-                    power_dispR=power_dispR-0.1;
+                    power_dispR=power_dispR-0.05;
                 elseif ey(1)=='L'
-                    power_dispL=power_dispL-0.1;
+                    power_dispL=power_dispL-0.05;
                 else
-                    power_dispR=power_dispR-0.1;
-                    power_dispL=power_dispL-0.1;
+                    power_dispR=power_dispR-0.05;
+                    power_dispL=power_dispL-0.05;
                 end
             elseif keyCode(KbName('Return')) %| keyCode(KbName('Return'))
                 opt_chk=1;    
