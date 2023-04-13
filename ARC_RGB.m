@@ -97,6 +97,8 @@ AFCp.v00=v00;
 AFCp.AFCv=AFCv;
 AFCp.meanv00 = meanv00;
 AFCp.imfnm=AFCfnm0;
+AFCp.rgb100 = rgb100;
+AFCp.rgb200 = rgb200;
 
 if sv == 1
 %             AFCfls0=['JnJ\S' num2str(sn) 'V' num2str(vs) '_AFC_' ey 'ACL' n2s(ACL) '_' tme];
