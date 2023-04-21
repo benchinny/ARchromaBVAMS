@@ -75,7 +75,7 @@ opto(name_map('l_disp')).control.getFocalPower.focal_power
 %CHANGE LEFT TROMBONE
 % powerL=a18(5,1);
             opto(name_map('l_t_near')).control.setFocalPower(powerL); %[6.8400 24.9500]
-%            opto(name_map('l_t_far')).control.setFocalPower(powerL); %[7.2400 27.2950]
+            opto(name_map('l_t_far')).control.setFocalPower(powerL); %[7.2400 27.2950]
             %zaber(name_map('l_trombone')).move(l_trombone_f(powerL));%[8.619 13.8]
             if bFlexTrombones
                zaber(name_map('l_trombone')).move(l_trombone_f(power0));%[8.619 13.8]
@@ -83,7 +83,7 @@ opto(name_map('l_disp')).control.getFocalPower.focal_power
             zaber(name_map('l_trombone')).control.waitforidle();
             
             [opto(name_map('l_t_near')).control.getFocalPower.focal_power...
-%            opto(name_map('l_t_far')).control.getFocalPower.focal_power...
+            opto(name_map('l_t_far')).control.getFocalPower.focal_power...
             zaber(name_map('l_trombone')).control.getposition]
 
 %ROTATION LEFT
