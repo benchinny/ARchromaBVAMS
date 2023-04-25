@@ -67,7 +67,7 @@ for k0=1:size(v0,1)
       for i = 1:size(v0,2)
          sinValuesTmp = (sin(2*pi*tSin-pi*1/2)+1).*0.5; % the modulation itself
          sinValuesTmp = meanv0(k0)+v0(k0,i).*[zeros([1 nFrmStmPlat]) sinValuesTmp(1:length(sinValuesTmp)/2) ones([1 nFrmStmPlat])];
-         sinValues = [sinValues sinValuesTmp];
+         sinValues = [sinValues imresize([meanv0 meanv0+v0(k0,i) meanv0+v0(k0,i)],[1 length(sinValuesTmp)],'nearest')];
       end
       sinValuesAll(k0,:) = sinValues;
       %wn=cwin0(img1, 'Stereo', cf, rc00, window1, window2);
