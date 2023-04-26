@@ -14,7 +14,7 @@ expSubType = 'RGB';
 
 focStmOptDst = [4.5; 4.5];
 meanFocstmOptDst = [2 2]';
-AFCv = [1 1 1 1]';
+AFCv = [1 1]';
 % focStmOptDst = [1];
 % meanFocstmOptDst = [1.5]';
 % AFCv = [1]';
@@ -82,10 +82,12 @@ elseif strcmp(expSubType,'STEP')
    [im2L0, im2L1, im2R0, im2R1] = AFCtcaStmImg(AFCim0, AFCim1, zL, zR); 
    AFCp=AFCstep(im2L0, im2L1, im2R0, im2R1, v00, meanv00, sr, window1, window2); 
 elseif strcmp(expSubType,'RGB')
-   im0 = AFCwordStim('car',[500 500],[70 70; 160 70; 260 70]);
+   % im0 = imread('G:\My Drive\exp_bvams\code_repo\imgs\vrn10_R_sd1.png');
+   % im1 = imread('G:\My Drive\exp_bvams\code_repo\imgs\vrn10_B_sd1.png');
+   im0 = AFCwordStim('one',[500 500],[70 70; 160 70; 260 70]);
    im0(im0>1) = 255;
    im0 = flipud(im0);
-   im1 = AFCwordStim('one',[500 500],[70 70; 160 70; 260 70]);   
+   im1 = AFCwordStim('uno',[500 500],[70 70; 160 70; 260 70]);   
    im1(im1>0) = 255;
    im1 = flipud(im1);
    im2L0 = im0; im2R0 = im0; im2L1 = im1; im2R1 = im1;

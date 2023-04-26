@@ -67,7 +67,7 @@ for k0=1:size(v2,1)
    tSin = 0:(1/(length(sinValuesTmp)-1)):1;
    tSinInterp = 0:(1/(length(x2{k0})-1)):1;
    v3 = [v3 interp1(tSin,sinValuesTmp,tSinInterp)];
-   rgbValues = [rgbValues imresize([rgb100(k0,:)' rgb200(k0,:)'],[3 length(tSinInterp)],'nearest')];
+   rgbValues = [rgbValues imresize([AFCp.rgb100(k0,:)' AFCp.rgb200(k0,:)'],[3 length(tSinInterp)],'nearest')];
 %   v3=[v3 v2(k0).*ones(1,length(x2{k0}))];
 %    i1=find(v2(k0)==v1)
 %    x5(i1, x4(i1))=mean(x2{k0}./-3.59);
@@ -78,9 +78,13 @@ for k0=1:size(v2,1)
 end
 
 x3=x3./-2.87; y3=y3./-2.58;
-plot([1:length(x3)], [v3; x3; y3])
-xlabel('Frame'); ylabel('Power (Diopters)'); title('Autorefractor measurement'); legend('Demand', 'Horizontal', 'Vertical')
-           
+plot([1:length(x3)], [x3; y3])
+hold on;
+plot([1:length(x3)], [rgbValues(1,:)],'r')
+plot([1:length(x3)], [rgbValues(2,:)],'g')
+plot([1:length(x3)], [rgbValues(3,:)],'b')
+xlabel('Frame'); ylabel('Power (Diopters)'); title('Autorefractor measurement'); legend('R', 'G', 'B', 'Horizontal', 'Vertical')
+
 % %figure; plot(v1, mean(x5,2))
 % figure; errorbar(v1, mean(x5,2), std(x5,0, 2)./sqrt(4))
 % hold on;

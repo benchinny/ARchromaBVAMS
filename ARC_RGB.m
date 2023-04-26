@@ -12,11 +12,11 @@ vs = vs+vsIncrement;
 % expSubType = 'STEP';
 expSubType = 'RGB';
 
-focStmOptDst = [0; 0];
-meanFocstmOptDst = [5 5]';
-rgb1 = [1 0 1; 1 0 1];
-rgb2 = [0.5 0 1; 0 0 1];
-AFCv = [1 1]';
+focStmOptDst = [0; 0; 0; 0; 0];
+meanFocstmOptDst = [5 5 5 5 5]';
+rgb1 = [0.6 0 1; 0.6 0 1; 0.6 0 1; 0.6 0 0; 1 0 0];
+rgb2 = [0.45 0 1; 0.33 0 1; 0 0 1; 0.6 0 1; 0 0 1];
+AFCv = [1 2 3 4 5]';
 % focStmOptDst = [1];
 % meanFocstmOptDst = [1.5]';
 % AFCv = [1]';
