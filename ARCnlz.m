@@ -4,9 +4,7 @@ vs=input('Visit Number? ');
 ey=input('Eye? 1forRight 2forBinocular ');
 filePath = 'G:\My Drive\exp_bvams\code_repo\';
 
-cmpInfo = psyComputerInfo;
-
-if strcmp(cmpInfo.userShortName,'benchin')
+if strcmp(getenv('username'),'benchin')
     % THIS JUST LOADS A FILE CONTAINING FILE NAMES OF .mat FILES CONTAINING
     % METADATA FOR EACH EXPERIMENT BLOCK
     if ey(1)==2
@@ -106,6 +104,10 @@ for i = 1:size(uniqueRGBvalues,1)
     bar(2,mean(x3(indMean2)),'FaceColor',uniqueRGBvalues(i,4:6));
     bar(3,mean(y3(indMean1)),'FaceColor',uniqueRGBvalues(i,1:3));
     bar(4,mean(y3(indMean2)),'FaceColor',uniqueRGBvalues(i,4:6));
+    errorbar(1,mean(x3(indMean1)),std(x3(indMean1)),'.k');
+    errorbar(2,mean(x3(indMean2)),std(x3(indMean2)),'.k');
+    errorbar(3,mean(y3(indMean1)),std(y3(indMean1)),'.k');
+    errorbar(4,mean(y3(indMean2)),std(y3(indMean2)),'.k');
     axis square;
     ylabel('Mean Accommodative Response (D)');
     set(gca,'FontSize',15);
