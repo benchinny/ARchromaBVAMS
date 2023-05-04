@@ -104,36 +104,10 @@ for i = 1:size(uniqueConditions,1)
     blinkCutoff = 3; % CUTOFF FOR REMOVING OUTLIERS
     x3(x3>blinkCutoff | x3<-blinkCutoff) = 0;
     y3(y3>blinkCutoff | y3<-blinkCutoff) = 0;
+    % STORE ACCOMMODATION AND COLOR VALUES FOR PLOTTING
     timeSeries{i,1} = x3;
     timeSeries{i,2} = y3;
     rgbValuesAll{i} = rgbValues;
-
-%     figure;
-%     set(gcf,'Position',[429 518 956 420]);
-% 
-%     indMean1 = abs(rgbValues(1,:)-uniqueConditions(i,1))<0.001 & ...
-%                abs(rgbValues(2,:)-uniqueConditions(i,2))<0.001 & ...
-%                abs(rgbValues(3,:)-uniqueConditions(i,3))<0.001;
-%     indMean2 = abs(rgbValues(1,:)-uniqueConditions(i,4))<0.001 & ...
-%                abs(rgbValues(2,:)-uniqueConditions(i,5))<0.001 & ...
-%                abs(rgbValues(3,:)-uniqueConditions(i,6))<0.001; 
-% 
-%     subplot(1,2,2);
-%     hold on;
-%     bar(1,mean(x3(indMean1)),'FaceColor',uniqueConditions(i,1:3));
-%     bar(2,mean(x3(indMean2)),'FaceColor',uniqueConditions(i,4:6));
-%     bar(3,mean(y3(indMean1)),'FaceColor',uniqueConditions(i,1:3));
-%     bar(4,mean(y3(indMean2)),'FaceColor',uniqueConditions(i,4:6));
-%     errorbar(1,mean(x3(indMean1)),std(x3(indMean1)),'.k');
-%     errorbar(2,mean(x3(indMean2)),std(x3(indMean2)),'.k');
-%     errorbar(3,mean(y3(indMean1)),std(y3(indMean1)),'.k');
-%     errorbar(4,mean(y3(indMean2)),std(y3(indMean2)),'.k');
-%     axis square;
-%     ylabel('Mean Accommodative Response (D)');
-%     set(gca,'FontSize',15);
-%     set(gca,'XTick',[1:4]);
-%     set(gca,'XTickLabel',{'Horz','Horz','Vert','Vert'});
-%     title(['Step change = ' num2str(uniqueConditions(i,end)*optDistScale) 'D']);
 end
 
 for i = 1:size(uniqueRGBvalues,1)
@@ -160,8 +134,10 @@ for i = 1:size(uniqueRGBvalues,1)
     for j = 1:length(stepSizes)
         indUnq = ismember(uniqueConditions(:,1:6),uniqueRGBvalues(i,:),'rows') ...
                   & abs(uniqueConditions(:,7)-stepSizes(j))<0.001;   
-        bar(j,mean(meanChangeX(indUnq)),'FaceColor','w');
-        bar(j+length(stepSizes),mean(meanChangeY(indUnq)),'FaceColor','w');
+        bar(j,mean(meanChangeX(indUnq,:)),'FaceColor','w');
+        bar(j+length(stepSizes),mean(meanChangeY(indUnq,:)),'FaceColor','w');
+        errorbar(j,mean(meanChangeX(indUnq,:)),std(meanChangeX(indUnq,:)),'k');
+        errorbar(j+length(stepSizes),mean(meanChangeY(indUnq,:)),std(meanChangeY(indUnq,:)),'k');
         stepString = '-+';
         changeLabels{j} = ['H' stepString(int16(1+(1+sign(stepSizes(j)))/2))]
         changeLabels{j+length(stepSizes)} = ['V' stepString(int16(1+(1+sign(stepSizes(j)))/2))];
