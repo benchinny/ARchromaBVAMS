@@ -6,6 +6,8 @@ vsEmpty = [];
 for i = 1:size(AFCfls,2)
     if isempty(AFCfls{sn-1000,i})
         vsEmpty = [vsEmpty i];
+    else
+        vsEmpty = [vsEmpty size(AFCfls,2)+1];
     end
 end
 vs=input(['Enter visit number? Next unused visit number is ' num2str(vsEmpty(1)) '\n']); 

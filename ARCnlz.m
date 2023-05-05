@@ -1,11 +1,11 @@
 function ARCnlz         
 
 sn = 4; 
-vs = 20;
+vs = 23;
 ey = 1; % 1 for Right eye, 2 for Binocular ');
 filePath = 'G:\My Drive\exp_bvams\code_repo\';
 
-if strcmp(getenv('username'),'benchin')
+if strcmp(getenv('username'),'bankslab')
     % THIS JUST LOADS A FILE CONTAINING FILE NAMES OF .mat FILES CONTAINING
     % METADATA FOR EACH EXPERIMENT BLOCK    
     if ey(1)==2
@@ -14,7 +14,7 @@ if strcmp(getenv('username'),'benchin')
         load([filePath 'ARC\AFCflsR.mat']); c1=1;
     end
     % LOADS .mat FILE CONTAINING METADATA FOR EXPERIMENT BLOCK    
-    fnm=AFCfls{sn-1000, vs}; load(fnm);
+    fnm=AFCfls{sn, vs}; load(fnm);
     % LOADS FILE OF ACTUAL DATA    
     [jsonFile,jsonPath] = uigetfile('*.json','' , 'G:\My Drive\ARchromaVideoCapture\videos\processed\centralperipheral_real'); %stim conputer
 else
@@ -101,7 +101,7 @@ for i = 1:size(uniqueConditions,1)
        rgbValues = [rgbValues imresize([AFCp.rgb100(indCnd(k0),:)' AFCp.rgb200(indCnd(k0),:)'],[3 length(tSinInterp)],'nearest')];
     end
     x3=x3./xScale; y3=y3./yScale;
-    blinkCutoff = 3; % CUTOFF FOR REMOVING OUTLIERS
+    blinkCutoff = 10; % CUTOFF FOR REMOVING OUTLIERS
     x3(x3>blinkCutoff | x3<-blinkCutoff) = 0;
     y3(y3>blinkCutoff | y3<-blinkCutoff) = 0;
     % STORE ACCOMMODATION AND COLOR VALUES FOR PLOTTING
