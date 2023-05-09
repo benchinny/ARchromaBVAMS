@@ -28,9 +28,15 @@ power_dispL=14+sr(1); %starting display power
 opto(name_map('r_disp')).control.setFocalPower(power_dispR-meanv0(1));
 opto(name_map('l_disp')).control.setFocalPower(power_dispL-meanv0(1));
 
-im2R0(:,:,1) = imPattern.*rgb0(1,1);
-im2R0(:,:,2) = imPattern.*rgb0(1,2);
-im2R0(:,:,3) = imPattern.*rgb0(1,3);
+if size(imPattern,3)>1
+    indImPattern = int16(round(rand)+1);
+else
+    indImPattern = 1;
+end
+im2R0(:,:,1) = imPattern(:,:,indImPattern).*rgb0(1,1);
+im2R0(:,:,2) = imPattern(:,:,indImPattern).*rgb0(1,2);
+im2R0(:,:,3) = imPattern(:,:,indImPattern).*rgb0(1,3);
+
 % wn=cwin0(img0, 'Stereo', cf, rc00, window1, window2);
 [iLf0 iRf0]=cwin3(im2R0, im2R0, cf, rc00, window1, window2);
 
@@ -41,7 +47,7 @@ log.WARNING = 3;
 log.INFO = 2;
 log.DEBUG = 1;
 log.LEVEL = log.DEBUG;
-scene.enable_tcp=1;
+scene.enable_tcp=0;
 scene.trial_num=1;
 
 if scene.enable_tcp
@@ -73,12 +79,17 @@ for k0=1:size(v0,1)
          sinValues = [sinValues imresize([meanv0 meanv0+v0(k0,i)],[1 length(sinValuesTmp)],'nearest')];
       end
       sinValuesAll(k0,:) = sinValues;
-      im2R0(:,:,1) = imPattern.*rgb0(k0,1);
-      im2R0(:,:,2) = imPattern.*rgb0(k0,2);
-      im2R0(:,:,3) = imPattern.*rgb0(k0,3);
-      im2R1(:,:,1) = imPattern.*rgb1(k0,1);
-      im2R1(:,:,2) = imPattern.*rgb1(k0,2);
-      im2R1(:,:,3) = imPattern.*rgb1(k0,3);
+      if size(imPattern,3)>1
+        indImPattern = int16(round(rand)+1);
+      else
+        indImPattern = 1;
+      end
+      im2R0(:,:,1) = imPattern(:,:,indImPattern).*rgb0(k0,1);
+      im2R0(:,:,2) = imPattern(:,:,indImPattern).*rgb0(k0,2);
+      im2R0(:,:,3) = imPattern(:,:,indImPattern).*rgb0(k0,3);
+      im2R1(:,:,1) = imPattern(:,:,indImPattern).*rgb1(k0,1);
+      im2R1(:,:,2) = imPattern(:,:,indImPattern).*rgb1(k0,2);
+      im2R1(:,:,3) = imPattern(:,:,indImPattern).*rgb1(k0,3);
       %wn=cwin0(img1, 'Stereo', cf, rc00, window1, window2);
       [iLf0 iRf0]=cwin3(im2R0, im2R0, cf, rc00, window1, window2);
       opto(name_map('l_disp')).control.setFocalPower(power_dispL-meanv0(k0));
@@ -105,7 +116,8 @@ for k0=1:size(v0,1)
          opto(name_map('r_disp')).control.setFocalPower(power_dispR-sinValues(i));
          pause(tIntervalStm);
       end      
-      snd(1000, 0.2); pause(0.8);
+      snd(1000, 0.1); pause(0.2);
+      snd(1000, 0.1); pause(0.8);
      
       if scene.enable_tcp; send_tcp0(scene, 0); end %stage) 0stop 1record
       %pause(3);
