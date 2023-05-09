@@ -30,6 +30,7 @@ else
     fnmTmp=AFCfls{sn, vs}; load([dataDirectory fnmTmp(37:end)])
     % CONVERTING DATE OF .mat FILE TO JSON FILE NAME
     dateCode = fnmTmp((end-9):end);
+%    dateCode(end) = dateCode(end)+1;
     jsonFile = ['20' dateCode(1:2) '-' dateCode(3:4) '-' dateCode(5:6) ' ' dateCode(7:8) '.' dateCode(9:10) '.json'];
     jsonPath = dataDirectory;
 end
@@ -139,7 +140,7 @@ for i = 1:size(uniqueRGBvalues,1)
         errorbar(j,mean(meanChangeX(indUnq,:)),std(meanChangeX(indUnq,:)),'k');
         errorbar(j+length(stepSizes),mean(meanChangeY(indUnq,:)),std(meanChangeY(indUnq,:)),'k');
         stepString = '-+';
-        changeLabels{j} = ['H' stepString(int16(1+(1+sign(stepSizes(j)))/2))]
+        changeLabels{j} = ['H' stepString(int16(1+(1+sign(stepSizes(j)))/2))];
         changeLabels{j+length(stepSizes)} = ['V' stepString(int16(1+(1+sign(stepSizes(j)))/2))];
     end
     ylabel('Mean Accommodative Response (D)');
