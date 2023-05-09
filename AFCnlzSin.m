@@ -14,6 +14,7 @@ elseif ey(1)==1
     load('G:\My Drive\exp_bvams\code_repo\ARC\AFCflsR.mat'); c1=1;
 end
 fnm=AFCfls{sn-1000, vs}; load(fnm)
+opticalDistanceScale = 0.82;
 
 %  [jsonFile,jsonPath] = uigetfile('*.json','' , 'G:\.shortcut-targets-by-id\17-MjlIMJ6eySxBl-1ikM1jyh1UQiX26y\code_repo\JnJ')
 [jsonFile,jsonPath] = uigetfile('*.json','' , 'G:\My Drive\ARchromaVideoCapture\videos\processed\centralperipheral_real') %stim conputer
@@ -38,12 +39,15 @@ end
 
 %i0=find(AFCv==3);
 i0=find(AFCp.v00(:,1)==0);
+i0 = 1;
            
 x1=[]; y1=[];
 for k0=1:length(i0)
  x1=[x1 x0{i0(k0)}'];
  y1=[y1 y0{i0(k0)}'];  
 end
+x1 = x1(1:10);
+y1 = y1(1:10);
            
 %x3=[]; y3=[]; v1=[-0.5:0.25:4]; v2=v1(AFCv); v3=[];
 clear x2 y2
@@ -62,7 +66,7 @@ for k0=1:size(v2,1)
    sinValuesTmp = AFCp.sinValues(k0,:);
    tSin = 0:(1/(length(sinValuesTmp)-1)):1;
    tSinInterp = 0:(1/(length(x2{k0})-1)):1;
-   v3 = [v3 interp1(tSin,sinValuesTmp,tSinInterp)];
+   v3 = [v3 opticalDistanceScale.*interp1(tSin,sinValuesTmp,tSinInterp)];
 %   v3=[v3 v2(k0).*ones(1,length(x2{k0}))];
 %    i1=find(v2(k0)==v1)
 %    x5(i1, x4(i1))=mean(x2{k0}./-3.59);
@@ -72,7 +76,7 @@ for k0=1:size(v2,1)
 %    x4(i1)=x4(i1)+1;
 end
 
-x3=x3./-3.59; y3=y3./-3.33;
+x3=x3./-2.87; y3=y3./-2.58;
 plot([1:length(x3)], [v3; x3; y3])
 xlabel('Frame'); ylabel('Power (Diopters)'); title('Autorefractor measurement'); legend('Demand', 'Horizontal', 'Vertical')
            

@@ -14,7 +14,7 @@ expSubType = 'RGB';
 
 focStmOptDst = [4.5; 4.5];
 meanFocstmOptDst = [2 2]';
-AFCv = [1 1]';
+AFCv = [1]';
 % focStmOptDst = [1];
 % meanFocstmOptDst = [1.5]';
 % AFCv = [1]';
