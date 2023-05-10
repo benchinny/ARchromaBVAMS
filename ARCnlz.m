@@ -1,7 +1,7 @@
 function ARCnlz         
 
-sn = 4; 
-vs = 23;
+sn = 6; 
+vs = 3;
 ey = 1; % 1 for Right eye, 2 for Binocular ');
 filePath = 'G:\My Drive\exp_bvams\code_repo\';
 
@@ -79,12 +79,14 @@ for i = 1:size(uniqueConditions,1)
     clear x2 y2 x3 y3;
     x3=[]; y3=[]; 
     rgbValues = [];
+    trialMarkerForPlot = [];
     for k0=1:size(indCnd,1)
        % ANALYZING SUBJECT'S ACCOMMODATION
        x2{k0}=x0{indCnd(k0)}-mean(x1); % MEAN CENTERING
        y2{k0}=y0{indCnd(k0)}-mean(y1); % MEAN CENTERING
        x3=[x3 x2{k0}'];
        y3=[y3 y2{k0}'];
+       trialMarkerForPlot(k0) = length(x3);
        % ACCOMMODATIVE DEMAND FROM EXPERIMENT 
        sinValuesTmp = AFCp.sinValues(indCnd(k0),:);
        tSin = 0:(1/(length(sinValuesTmp)-1)):1;
@@ -96,8 +98,8 @@ for i = 1:size(uniqueConditions,1)
        if abs(corr(accContinuous',diffVec'))<0.95
            error('ARCnlz: you may want to check whether the step change occurs halfway through the trial, or not!');
        end
-       meanChangeX(i,k0) = sum(diffVec.*x2{k0}')./xScale
-       meanChangeY(i,k0) = sum(diffVec.*y2{k0}')./yScale
+       meanChangeX(i,k0) = sum(diffVec.*x2{k0}')./xScale;
+       meanChangeY(i,k0) = sum(diffVec.*y2{k0}')./yScale;
        % VECTOR OF RGB VALUES FOR PLOTTING
        rgbValues = [rgbValues imresize([AFCp.rgb100(indCnd(k0),:)' AFCp.rgb200(indCnd(k0),:)'],[3 length(tSinInterp)],'nearest')];
     end
@@ -109,6 +111,7 @@ for i = 1:size(uniqueConditions,1)
     timeSeries{i,1} = x3;
     timeSeries{i,2} = y3;
     rgbValuesAll{i} = rgbValues;
+    trialMarkerForPlotCell{i} = trialMarkerForPlot;
 end
 
 for i = 1:size(uniqueRGBvalues,1)
@@ -118,16 +121,21 @@ for i = 1:size(uniqueRGBvalues,1)
     set(gcf,'Position',[207 534 1240 420]);
     for j = 1:length(stepSizes)
         indUnq = ismember(uniqueConditions(:,1:6),uniqueRGBvalues(i,:),'rows') ...
-                  & abs(uniqueConditions(:,7)-stepSizes(j))<0.001;        
+                  & abs(uniqueConditions(:,7)-stepSizes(j))<0.001;     
+        trialMarkers = trialMarkerForPlotCell{indUnq};
         subplot(1,length(stepSizes)+1,j);
         set(gca,'FontSize',15);
         hold on;
-        plot([1:length(timeSeries{indUnq,1})], [timeSeries{indUnq,1}; timeSeries{indUnq,2}])
-        rgbValuesTmp = rgbValuesAll{indUnq};
-        plot([1:length(timeSeries{indUnq,1})], [rgbValuesTmp(1,:)],'r')
-        plot([1:length(timeSeries{indUnq,1})], [rgbValuesTmp(2,:)],'g')
-        plot([1:length(timeSeries{indUnq,1})], [rgbValuesTmp(3,:)],'b')
-        xlabel('Frame'); ylabel('Power (Diopters)'); title(['Step size = ' num2str(stepSizes(j)*optDistScale)]); legend('Horizontal', 'Vertical','R', 'G', 'B')        
+        plot([1:length(timeSeries{indUnq,1})], [timeSeries{indUnq,1}; timeSeries{indUnq,2}]);
+        ylimTmp = ylim;
+        for k = 1:length(trialMarkers)
+            plot(trialMarkers(k).*[1 1],ylimTmp,'-','Color',[0.5 0.5 0.5],'LineWidth',1);
+        end        
+        xlabel('Frame'); ylabel('Power (Diopters)'); 
+        title(['Step = ' num2str(stepSizes(j)*optDistScale) ...
+              ', RGB = [' num2str(uniqueRGBvalues(i,1)) ' ' num2str(uniqueRGBvalues(i,2)) ' ' num2str(uniqueRGBvalues(i,3)) '] to ['...
+              num2str(uniqueRGBvalues(i,4)) ' ' num2str(uniqueRGBvalues(i,5)) ' ' num2str(uniqueRGBvalues(i,6)) ']']); 
+        legend('Horizontal', 'Vertical');
     end
     subplot(1,length(stepSizes)+1,length(stepSizes)+1);
     hold on;
