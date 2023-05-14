@@ -1,7 +1,7 @@
 function ARCnlz         
 
-sn = 6; 
-vs = 3;
+sn = 4; 
+vs = 22;
 ey = 1; % 1 for Right eye, 2 for Binocular ');
 filePath = 'G:\My Drive\exp_bvams\code_repo\';
 
@@ -28,10 +28,21 @@ else
     end
     % LOADS .mat FILE CONTAINING METADATA FOR EXPERIMENT BLOCK
     fnmTmp=AFCfls{sn, vs}; load([dataDirectory fnmTmp(37:end)])
+    dateCodeAll = [];
     % CONVERTING DATE OF .mat FILE TO JSON FILE NAME
     dateCode = fnmTmp((end-9):end);
-%    dateCode(end) = dateCode(end)+1;
-    jsonFile = ['20' dateCode(1:2) '-' dateCode(3:4) '-' dateCode(5:6) ' ' dateCode(7:8) '.' dateCode(9:10) '.json'];
+    dateCodeAll = [dateCodeAll; dateCode];
+    dateCode(end) = dateCode(end)-1; % THE NEXT FEW LINES ARE FOR ADDING ROBUSTNESS
+    dateCodeAll = [dateCodeAll; dateCode];
+    dateCode(end) = dateCode(end)+2;
+    dateCodeAll = [dateCodeAll; dateCode];
+    jsonFile = [];
+    for j = 1:size(dateCodeAll,1) % FOR ROBUSTNESS: SOMETIMES THE FILENAMES DON'T MATCH EXACTLY
+        jsonFileStr = ['20' dateCodeAll(j,1:2) '-' dateCodeAll(j,3:4) '-' dateCodeAll(j,5:6) ' ' dateCodeAll(j,7:8) '.' dateCodeAll(j,9:10) '.json'];
+        if isfile([dataDirectory jsonFileStr])
+            jsonFile = jsonFileStr;
+        end
+    end
     jsonPath = dataDirectory;
 end
 
