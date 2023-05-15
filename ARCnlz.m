@@ -1,80 +1,71 @@
 function ARCnlz         
 
-sn = 6; 
-vs = 3:4;
+sn = 4; 
+vs = 21:23;
 ey = 1; % 1 for Right eye, 2 for Binocular ');
 filePath = 'G:\My Drive\exp_bvams\code_repo\';
 
-if strcmp(getenv('username'),'bankslab')
-    % THIS JUST LOADS A FILE CONTAINING FILE NAMES OF .mat FILES CONTAINING
-    % METADATA FOR EACH EXPERIMENT BLOCK    
-    if ey(1)==2
-        load([filePath 'ARC\AFCflsB.mat']); c1=2;
-    elseif ey(1)==1
-        load([filePath 'ARC\AFCflsR.mat']); c1=1;
-    end
-    % LOADS .mat FILE CONTAINING METADATA FOR EXPERIMENT BLOCK    
-    fnm=AFCfls{sn, vs}; load(fnm);
-    % LOADS FILE OF ACTUAL DATA    
-    [jsonFile,jsonPath] = uigetfile('*.json','' , 'G:\My Drive\ARchromaVideoCapture\videos\processed\centralperipheral_real'); %stim conputer
-else
-    dataDirectory = '/Users/benchin/Documents/ARchroma/';
-    % THIS JUST LOADS A FILE CONTAINING FILE NAMES OF .mat FILES CONTAINING
-    % METADATA FOR EACH EXPERIMENT BLOCK
-    if ey(1)==2
-        load([dataDirectory 'AFCflsB.mat']); c1=2;
-    elseif ey(1)==1
-        load([dataDirectory 'AFCflsR.mat']); c1=1;
-    end
-    x = [];
-    y = [];
-    t3 = [];
-    for i = 1:length(vs)
-        % LOADS .mat FILE CONTAINING METADATA FOR EXPERIMENT BLOCK
-        fnmTmp=AFCfls{sn, vs(i)}; 
-        load([dataDirectory fnmTmp(37:end)]);
-        if i==1
-           AFCpAll = AFCp;
-        else
-           AFCpAll = structmerge(AFCpAll,AFCp,length(AFCp.v00));
-        end
-        dateCodeAll = [];
-        % CONVERTING DATE OF .mat FILE TO JSON FILE NAME
-        dateCode = fnmTmp((end-9):end);
-        dateCodeAll = [dateCodeAll; dateCode];
-        dateCode(end) = dateCode(end)-1; % THE NEXT FEW LINES ARE FOR ADDING ROBUSTNESS
-        dateCodeAll = [dateCodeAll; dateCode];
-        dateCode(end) = dateCode(end)+2;
-        dateCodeAll = [dateCodeAll; dateCode];
-        jsonFile = [];
-        for j = 1:size(dateCodeAll,1) % FOR ROBUSTNESS: SOMETIMES THE FILENAMES DON'T MATCH EXACTLY
-            jsonFileStr = ['20' dateCodeAll(j,1:2) '-' dateCodeAll(j,3:4) '-' dateCodeAll(j,5:6) ' ' dateCodeAll(j,7:8) '.' dateCodeAll(j,9:10) '.json'];
-            if isfile([dataDirectory jsonFileStr])
-                jsonFile = jsonFileStr;
-            end
-        end
-        jsonPath = dataDirectory;
-        dt=jsondecode(fileread([jsonPath jsonFile]));
-        % GRABS RAW PIXEL SEPARATIONS BETWEEN AUTOREFRACTOR BARS
-        x=[x; -1.*[(cell2mat(struct2cell(dt.ext_right_mu))-cell2mat(struct2cell(dt.ext_left_mu)))]];
-        y=[y; -1.*[(cell2mat(struct2cell(dt.ext_bottom_mu))-cell2mat(struct2cell(dt.ext_top_mu)))]];
-           
-        % THIS BLOCK SORTS THE DATA BY TRIAL
-        t3=[t3; cell2mat(struct2cell(dt.time_totalsecs))];           
-    end
-    AFCp = AFCpAll;
-end
 
 if strcmp(getenv('username'),'bankslab')
-   % dt=jsondecode(jsonFile);
-   dt=jsondecode(fileread([jsonPath jsonFile]));
-   % GRABS RAW PIXEL SEPARATIONS BETWEEN AUTOREFRACTOR BARS
-   x=-1.*[(cell2mat(struct2cell(dt.ext_right_mu))-cell2mat(struct2cell(dt.ext_left_mu)))];
-   y=-1.*[(cell2mat(struct2cell(dt.ext_bottom_mu))-cell2mat(struct2cell(dt.ext_top_mu)))];
-           
-   % THIS BLOCK SORTS THE DATA BY TRIAL
-   t3=cell2mat(struct2cell(dt.time_totalsecs));   
+   dataDirectory = [filePath 'ARC\'];
+else
+   dataDirectory = '/Users/benchin/Documents/ARchroma/'; 
 end
+% THIS JUST LOADS A FILE CONTAINING FILE NAMES OF .mat FILES CONTAINING
+% METADATA FOR EACH EXPERIMENT BLOCK
+if ey(1)==2
+    load([dataDirectory 'AFCflsB.mat']); c1=2;
+elseif ey(1)==1
+    load([dataDirectory 'AFCflsR.mat']); c1=1;
+end
+x = [];
+y = [];
+t3 = [];
+for i = 1:length(vs)
+    if strcmp(getenv('username'),'bankslab')
+        fnm=AFCfls{sn, vs(i)};
+        fnmTmp = fnm;
+        load(fnm);
+    else
+        % LOADS .mat FILE CONTAINING METADATA FOR EXPERIMENT BLOCK
+        fnmTmp=AFCfls{sn, vs(i)};         
+        load([dataDirectory fnmTmp(37:end)]);
+    end
+    if i==1
+       AFCpAll = AFCp;
+    else
+       AFCpAll = structmerge(AFCpAll,AFCp,length(AFCp.v00));
+    end
+    dateCodeAll = [];
+    % CONVERTING DATE OF .mat FILE TO JSON FILE NAME
+    dateCode = fnmTmp((end-9):end);
+    dateCodeAll = [dateCodeAll; dateCode];
+    dateCode(end) = dateCode(end)-1; % THE NEXT FEW LINES ARE FOR ADDING ROBUSTNESS
+    dateCodeAll = [dateCodeAll; dateCode];
+    dateCode(end) = dateCode(end)+2;
+    dateCodeAll = [dateCodeAll; dateCode];
+    if strcmp(getenv('username'),'bankslab')
+        jsonDirectory = 'G:\My Drive\ARchromaVideoCapture\videos\processed\centralperipheral_real\';
+    else
+        jsonDirectory = dataDirectory;
+    end    
+    jsonFile = [];
+    for j = 1:size(dateCodeAll,1) % FOR ROBUSTNESS: SOMETIMES THE FILENAMES DON'T MATCH EXACTLY
+        jsonFileStr = ['20' dateCodeAll(j,1:2) '-' dateCodeAll(j,3:4) '-' dateCodeAll(j,5:6) ' ' dateCodeAll(j,7:8) '.' dateCodeAll(j,9:10) '.json'];
+        if isfile([jsonDirectory jsonFileStr])
+            jsonFile = jsonFileStr;
+        end
+    end
+    jsonPath = jsonDirectory;
+    dt=jsondecode(fileread([jsonPath jsonFile]));
+    % GRABS RAW PIXEL SEPARATIONS BETWEEN AUTOREFRACTOR BARS
+    x=[x; -1.*[(cell2mat(struct2cell(dt.ext_right_mu))-cell2mat(struct2cell(dt.ext_left_mu)))]];
+    y=[y; -1.*[(cell2mat(struct2cell(dt.ext_bottom_mu))-cell2mat(struct2cell(dt.ext_top_mu)))]];
+
+    % THIS BLOCK SORTS THE DATA BY TRIAL
+    t3=[t3; cell2mat(struct2cell(dt.time_totalsecs))];           
+end
+AFCp = AFCpAll;
 
 v0=[find(diff(t3)>1); length(t3)];
 i0=1;
