@@ -12,7 +12,7 @@ vs = vs+vsIncrement;
 % expSubType = 'STEP';
 expSubType = 'RGB';
 blockType = 'random';
-focStmOptDst = 1.25;
+focStmOptDst = -1.25;
 meanFocstmOptDst = 4.375;
 
 if strcmp(blockType,'fixed')
@@ -39,7 +39,8 @@ if strcmp(blockType,'fixed')
 
             nCnd = size(rgb1,1);
             % TRIALS
-            AFCv = [1:nCnd fliplr(1:nCnd) 1:nCnd fliplr(1:nCnd)]';
+%            AFCv = [1:nCnd fliplr(1:nCnd) 1:nCnd fliplr(1:nCnd)]';
+            AFCv = [1:nCnd fliplr(1:nCnd)]';
             focStmOptDst = focStmOptDst.*ones([nCnd 1]);
             meanFocstmOptDst = meanFocstmOptDst.*ones([nCnd 1]);    
 end
@@ -48,7 +49,7 @@ if strcmp(blockType,'random')
     nCnd = 40; % NUMBER OF CONDITIONS
     rVals = [0.62 0.48 0.37 0.28]'; % POSSIBLE RED PRIMARY VALUES
     bVals = [1.00 0.76 0.57 0.43]'; % POSSIBLE BLUE PRIMARY VALUES
-    stepVals = [1.25 0.75 -0.75 -1.25]'; % POSSIBLE STEP VALUES
+    stepVals = 1.25.*[1.25 0.75 -0.75 -1.25]'; % POSSIBLE STEP VALUES
     indCnd = reshape(randsample(1:length(rVals),nCnd*5,1),[nCnd 5]);
     rgb1 = [rVals(indCnd(:,1)) zeros([nCnd 1]) bVals(indCnd(:,2))];
     rgb2 = [rVals(indCnd(:,3)) zeros([nCnd 1]) bVals(indCnd(:,4))];

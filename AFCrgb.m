@@ -47,7 +47,7 @@ log.WARNING = 3;
 log.INFO = 2;
 log.DEBUG = 1;
 log.LEVEL = log.DEBUG;
-scene.enable_tcp=0;
+scene.enable_tcp=1;
 scene.trial_num=1;
 
 if scene.enable_tcp
@@ -102,7 +102,7 @@ for k0=1:size(v0,1)
       snd(250, 0.25); %pause(2.75);
       
       KbName('UnifyKeyNames');
-      KbWait([], 2); 
+ %     KbWait([], 2); 
       exitLoop = 0;
       % Control loop
       ListenChar(2);
@@ -145,7 +145,7 @@ for k0=1:size(v0,1)
           rethrow(ERROR)
       end
       ListenChar(0);
-      KbWait([], 0.5);      
+%      KbWait([], 2);      
       if exitLoop
          break; 
       end

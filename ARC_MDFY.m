@@ -3,14 +3,20 @@ sn=input('Enter subject number?'); sn=sn+1000;
 
 load('G:\My Drive\exp_bvams\code_repo\ARC\AFCflsR.mat');
 vsEmpty = [];
-for i = 1:size(AFCfls,2)
-    if isempty(AFCfls{sn-1000,i})
-        vsEmpty = [vsEmpty i];
-    else
-        vsEmpty = [vsEmpty size(AFCfls,2)+1];
+if sn-1000 <= size(AFCfls,1)
+    for i = 1:size(AFCfls,2)
+        if isempty(AFCfls{sn-1000,i})
+            vsEmpty = [vsEmpty i];
+        else
+            vsEmpty = [vsEmpty size(AFCfls,2)+1];
+        end
     end
+    vs=input(['Enter visit number? Next unused visit number is ' num2str(vsEmpty(1)) '\n']); 
+else
+    vsEmpty = 1;
+    vs=input(['Enter visit number? Next unused visit number is ' num2str(vsEmpty(1)) '\n']); 
 end
-vs=input(['Enter visit number? Next unused visit number is ' num2str(vsEmpty(1)) '\n']); 
+
 clear AFCfls;
 
 filePath = 'G:\My Drive\exp_bvams\code_repo\ARC\';

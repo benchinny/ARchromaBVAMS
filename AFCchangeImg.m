@@ -38,7 +38,7 @@ log.WARNING = 3;
 log.INFO = 2;
 log.DEBUG = 1;
 log.LEVEL = log.DEBUG;
-scene.enable_tcp=0;
+scene.enable_tcp=1;
 scene.trial_num=1;
 
 if scene.enable_tcp
@@ -96,7 +96,8 @@ for k0=1:size(v0,1)
          opto(name_map('r_disp')).control.setFocalPower(power_dispR-sinValues(i));
          pause(tIntervalStm);
       end      
-      snd(1000, 0.2); pause(0.8);
+      snd(1000, 0.1); pause(0.2);
+      snd(1000, 0.1); pause(0.8);
      
       if scene.enable_tcp; send_tcp0(scene, 0); end %stage) 0stop 1record
       %pause(3);
