@@ -100,8 +100,56 @@ for k0=1:size(v0,1)
       fprintf('TRL= %f, L = %f  , R = %f , DEG = %f, Demand = %f\n' ,k0, opto(name_map('l_disp')).control.getFocalPower.focal_power, opto(name_map('r_disp')).control.getFocalPower.focal_power, (zaber(name_map('rotation')).control.getposition)./2.1333E3, v0(k0) );
 
       snd(250, 0.25); %pause(2.75);
+      
+      KbName('UnifyKeyNames');
       KbWait([], 2); 
-
+      exitLoop = 0;
+      % Control loop
+      ListenChar(2);
+      try
+          opt_chk=0;
+          while opt_chk==0
+              [ keyIsDown, keyTime, keyCode ] = KbCheck;
+              if keyIsDown
+                  if keyCode(KbName('RightArrow')) | keyCode(KbName('5'))
+                      opt_chk = 1;
+                      %end
+                  elseif keyCode(KbName('Return')) %| keyCode(KbName('Return'))
+                      exitLoop = 1;
+                      opt_chk = 1;
+                  else
+                      disp('WRONG KEY'); snd(100, 0.25);
+                  end     
+              end
+              % Key debounce routine, which waits for key to be released
+              while keyIsDown
+                  [ keyIsDown, keyTime, keyCode ] = KbCheck;
+              end
+          end
+      catch ERROR
+          if enable_optotunes
+              for p = 1:6
+                  opto(p).control.Close();
+              end
+          end
+          if enable_trombones
+              fclose(port);
+              delete(port);
+          end
+          a = instrfind();
+          if ~isempty(a) %isempty(Obj) returns logical 1 (true) if Obj is an empty ExptData object. Otherwise, it returns logical 0 (false). An empty ExptData object contains no data elements.
+              fclose(a);
+              delete(a)
+              clear a
+          end
+          rethrow(ERROR)
+      end
+      ListenChar(0);
+      KbWait([], 0.5);      
+      if exitLoop
+         break; 
+      end
+      
       if scene.enable_tcp; send_tcp0(scene, 1); end; t0(k0,:)=clock;
       
       snd(1000, 0.2); pause(0.8);

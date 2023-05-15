@@ -11,7 +11,7 @@ vs = vs+vsIncrement;
 % expSubType = 'SIN';
 % expSubType = 'STEP';
 expSubType = 'RGB';
-blockType = 'fixed';
+blockType = 'random';
 focStmOptDst = 1.25;
 meanFocstmOptDst = 4.375;
 
