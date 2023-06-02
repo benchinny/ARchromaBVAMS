@@ -1,7 +1,7 @@
 function ARCnlz         
 
-sn = 4; 
-vs = 21:23;
+sn = 12; 
+vs = 3:7;
 ey = 1; % 1 for Right eye, 2 for Binocular ');
 filePath = 'G:\My Drive\exp_bvams\code_repo\';
 
@@ -127,9 +127,16 @@ for i = 1:size(uniqueConditions,1)
        rgbValues = [rgbValues imresize([AFCp.rgb100(indCnd(k0),:)' AFCp.rgb200(indCnd(k0),:)'],[3 length(tSinInterp)],'nearest')];
     end
     x3=x3./xScale; y3=y3./yScale;
-    blinkCutoff = 10; % CUTOFF FOR REMOVING OUTLIERS
-    x3(x3>blinkCutoff | x3<-blinkCutoff) = 0;
-    y3(y3>blinkCutoff | y3<-blinkCutoff) = 0;
+    % REMOVING OUTLIERS
+    x3diff = [0 diff(x3)];
+    y3diff = [0 diff(y3)];
+    x3outliers = abs(x3diff)>1 | abs(x3)>5;
+    y3outliers = abs(y3diff)>1 | abs(y3)>5;
+    meanx3 = mean(x3(~x3outliers));
+    meany3 = mean(y3(~y3outliers));
+    x3(x3outliers) = meanx3;
+    y3(y3outliers) = meany3;
+
     % STORE ACCOMMODATION AND COLOR VALUES FOR PLOTTING
     timeSeries{i,1} = x3;
     timeSeries{i,2} = y3;
