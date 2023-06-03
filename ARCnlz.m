@@ -1,7 +1,19 @@
 function ARCnlz         
 
-sn = 12; 
-vs = 3:7;
+sn = 12; % CURRENTLY HAVE SUBJECTS 11 THROUGH 15
+
+if sn==11 % 'VISIT' NUMBERS
+   vs = [2 3 4 7];
+   excludeTrials = [];
+elseif sn==12
+   vs = [3:7];
+   excludeTrials = [87 7 3 4 5 90 91 10];
+elseif sn==13 || sn==14 || sn==15
+   vs = 1:4;
+   excludeTrials = [];
+else
+   error('ARCnlz: unhandled subject number!');
+end
 ey = 1; % 1 for Right eye, 2 for Binocular ');
 filePath = 'G:\My Drive\exp_bvams\code_repo\';
 
@@ -134,14 +146,15 @@ for i = 1:size(uniqueConditions,1)
     y3outliers = abs(y3diff)>1 | abs(y3)>5;
     meanx3 = mean(x3(~x3outliers));
     meany3 = mean(y3(~y3outliers));
-    x3(x3outliers) = meanx3;
-    y3(y3outliers) = meany3;
+%     x3(x3outliers) = meanx3;
+%     y3(y3outliers) = meany3;
 
     % STORE ACCOMMODATION AND COLOR VALUES FOR PLOTTING
     timeSeries{i,1} = x3;
     timeSeries{i,2} = y3;
     rgbValuesAll{i} = rgbValues;
     trialMarkerForPlotCell{i} = trialMarkerForPlot;
+    indCndCell{i} = indCnd;
 end
 
 for i = 1:size(uniqueRGBvalues,1)
@@ -153,6 +166,7 @@ for i = 1:size(uniqueRGBvalues,1)
         indUnq = ismember(uniqueConditions(:,1:6),uniqueRGBvalues(i,:),'rows') ...
                   & abs(uniqueConditions(:,7)-stepSizes(j))<0.001;     
         trialMarkers = trialMarkerForPlotCell{indUnq};
+        indCndMarkers = indCndCell{indUnq};
         subplot(1,length(stepSizes)+1,j);
         set(gca,'FontSize',15);
         hold on;
@@ -160,6 +174,7 @@ for i = 1:size(uniqueRGBvalues,1)
         ylimTmp = ylim;
         for k = 1:length(trialMarkers)
             plot(trialMarkers(k).*[1 1],ylimTmp,'-','Color',[0.5 0.5 0.5],'LineWidth',1);
+            text(trialMarkers(k)-length(timeSeries{indUnq,1})./(2*length(trialMarkers)),ylimTmp(2)/2,num2str(indCndMarkers(k)));
         end        
         xlabel('Frame'); ylabel('Power (Diopters)'); 
         title(['Step = ' num2str(stepSizes(j)*optDistScale) ...
