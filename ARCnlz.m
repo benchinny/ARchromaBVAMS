@@ -1,16 +1,23 @@
 function ARCnlz         
 
-sn = 12; % CURRENTLY HAVE SUBJECTS 11 THROUGH 15
+sn = 15; % CURRENTLY HAVE SUBJECTS 11 THROUGH 15
+bEXCLUDE = true;
 
 if sn==11 % 'VISIT' NUMBERS
    vs = [2 3 4 7];
    excludeTrials = [];
 elseif sn==12
    vs = [3:7];
-   excludeTrials = [87 7 3 4 5 90 91 10];
-elseif sn==13 || sn==14 || sn==15
+   excludeTrials = [87 7 3 4 5 90 91 10 6 86 88];
+elseif sn==13
    vs = 1:4;
-   excludeTrials = [];
+   excludeTrials = [59 39 38 58 77 56 60 74];
+elseif sn==14
+   vs = 1:4;
+   excludeTrials = [];    
+elseif sn==15
+   vs = 1:4;
+   excludeTrials = [12 32 30];  
 else
    error('ARCnlz: unhandled subject number!');
 end
@@ -111,6 +118,9 @@ rgbValuesAll = {};
 for i = 1:size(uniqueConditions,1)
     % INDEX OF COLOR CONDITIONS
     indCnd = find(ismember([AFCp.rgb100 AFCp.rgb200 AFCp.v00],uniqueConditions(i,:),'rows'));
+    if bEXCLUDE
+       indCnd = indCnd(~ismember(indCnd,excludeTrials));
+    end
     clear x2 y2 x3 y3;
     x3=[]; y3=[]; 
     rgbValues = [];
@@ -146,8 +156,10 @@ for i = 1:size(uniqueConditions,1)
     y3outliers = abs(y3diff)>1 | abs(y3)>5;
     meanx3 = mean(x3(~x3outliers));
     meany3 = mean(y3(~y3outliers));
-%     x3(x3outliers) = meanx3;
-%     y3(y3outliers) = meany3;
+    if bEXCLUDE
+        x3(x3outliers) = meanx3;
+        y3(y3outliers) = meany3;
+    end
 
     % STORE ACCOMMODATION AND COLOR VALUES FOR PLOTTING
     timeSeries{i,1} = x3;
