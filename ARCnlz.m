@@ -1,6 +1,6 @@
 function ARCnlz         
 
-sn = 15; % CURRENTLY HAVE SUBJECTS 11 THROUGH 15
+sn = 11; % CURRENTLY HAVE SUBJECTS 11 THROUGH 15
 bEXCLUDE = true;
 
 if sn==11 % 'VISIT' NUMBERS
@@ -169,17 +169,27 @@ for i = 1:size(uniqueConditions,1)
     indCndCell{i} = indCnd;
 end
 
+figSize = 3;
+
 for i = 1:size(uniqueRGBvalues,1)
     indRGB = ismember(uniqueConditions(:,1:6),uniqueRGBvalues(i,:),'rows');
     stepSizes = uniqueConditions(indRGB,7);
-    figure;
-    set(gcf,'Position',[207 534 1240 420]);
+    rowNum = mod(i,figSize);
+    if rowNum==0
+       rowNum = figSize;
+    end
+    if rowNum==1
+        figNum = floor(i/figSize)+1;
+        figure(figNum);
+        set(gcf,'Position',[207 189 1240 765]);
+    end
     for j = 1:length(stepSizes)
+        colNum = length(stepSizes)+1;
         indUnq = ismember(uniqueConditions(:,1:6),uniqueRGBvalues(i,:),'rows') ...
                   & abs(uniqueConditions(:,7)-stepSizes(j))<0.001;     
         trialMarkers = trialMarkerForPlotCell{indUnq};
         indCndMarkers = indCndCell{indUnq};
-        subplot(1,length(stepSizes)+1,j);
+        subplot(figSize,colNum,j+(rowNum-1)*colNum);
         set(gca,'FontSize',15);
         hold on;
         plot([1:length(timeSeries{indUnq,1})], [timeSeries{indUnq,1}; timeSeries{indUnq,2}]);
@@ -194,7 +204,7 @@ for i = 1:size(uniqueRGBvalues,1)
               num2str(uniqueRGBvalues(i,4)) ' ' num2str(uniqueRGBvalues(i,5)) ' ' num2str(uniqueRGBvalues(i,6)) ']']); 
         legend('Horizontal', 'Vertical');
     end
-    subplot(1,length(stepSizes)+1,length(stepSizes)+1);
+    subplot(figSize,length(stepSizes)+1,colNum+colNum*(rowNum-1));
     hold on;
     changeLabels = {};
     for j = 1:length(stepSizes)
@@ -212,6 +222,7 @@ for i = 1:size(uniqueRGBvalues,1)
     set(gca,'FontSize',15);
     set(gca,'XTick',[1:length(stepSizes)*2]);
     set(gca,'XTickLabel',changeLabels);        
+    ylim([-2 2]);
 end
 
 end
