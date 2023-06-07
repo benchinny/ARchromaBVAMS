@@ -2,6 +2,7 @@ function ARCnlz
 
 sn = 11; % CURRENTLY HAVE SUBJECTS 11 THROUGH 15
 bEXCLUDE = true;
+bSTACK = true;
 
 if sn==11 % 'VISIT' NUMBERS
    vs = [2 3 4 7];
@@ -147,6 +148,8 @@ for i = 1:size(uniqueConditions,1)
        end       
        x3=[x3 x3tmp];
        y3=[y3 y3tmp];
+       x3stack(indCnd(k0),1:length(x3tmp)) = x3tmp;
+       y3stack(indCnd(k0),1:length(y3tmp)) = y3tmp;
        trialMarkerForPlot(k0) = length(x3);
        % ACCOMMODATIVE DEMAND FROM EXPERIMENT 
        sinValuesTmp = AFCp.sinValues(indCnd(k0),:);
@@ -220,18 +223,29 @@ for i = 1:size(uniqueRGBvalues,1)
         indCndMarkers = indCndCell{indUnq};
         subplot(figSize,colNum,j+(rowNum-1)*colNum);
         set(gca,'FontSize',15);
-        hold on;
-        plot([1:length(timeSeries{indUnq,1})], [timeSeries{indUnq,1}; timeSeries{indUnq,2}]);
-        ylimTmp = ylim;
-        for k = 1:length(trialMarkers)
-            plot(trialMarkers(k).*[1 1],ylimTmp,'-','Color',[0.5 0.5 0.5],'LineWidth',1);
-            text(trialMarkers(k)-length(timeSeries{indUnq,1})./(2*length(trialMarkers)),ylimTmp(2)/2,num2str(indCndMarkers(k)));
-        end        
+        if bSTACK
+            hold on;
+            plot(x3stack(indCndMarkers,:)','-','Color',[0 0.45 0.74]);
+            plot(y3stack(indCndMarkers,:)','-','Color',[0.85 0.33 0.1]);
+            plot(mean(x3stack(indCndMarkers,:),1),'-','Color',[0 0.45 0.74],'LineWidth',2);
+            plot(mean(y3stack(indCndMarkers,:),1),'-','Color',[0.85 0.33 0.1],'LineWidth',2);
+            xlim([0 220]);
+        else
+            hold on;
+            plot([1:length(timeSeries{indUnq,1})], [timeSeries{indUnq,1}; timeSeries{indUnq,2}]);
+            ylimTmp = ylim;
+            for k = 1:length(trialMarkers)
+                plot(trialMarkers(k).*[1 1],ylimTmp,'-','Color',[0.5 0.5 0.5],'LineWidth',1);
+                text(trialMarkers(k)-length(timeSeries{indUnq,1})./(2*length(trialMarkers)),ylimTmp(2)/2,num2str(indCndMarkers(k)));
+            end
+        end
         xlabel('Frame'); ylabel('Power (Diopters)'); 
         title(['Step = ' num2str(stepSizes(j)*optDistScale) ...
               ', RGB = [' num2str(uniqueRGBvalues(i,1)) ' ' num2str(uniqueRGBvalues(i,2)) ' ' num2str(uniqueRGBvalues(i,3)) '] to ['...
               num2str(uniqueRGBvalues(i,4)) ' ' num2str(uniqueRGBvalues(i,5)) ' ' num2str(uniqueRGBvalues(i,6)) ']']); 
-        legend('Horizontal', 'Vertical');
+        if ~bSTACK
+           legend('Horizontal', 'Vertical');
+        end
     end
     subplot(figSize,length(stepSizes)+1,colNum+colNum*(rowNum-1));
     hold on;
