@@ -1,11 +1,13 @@
-function ARCnlz_linearModel         
+function [weightsRBS1_x, weightsRBS1_y] = ARCnlz_linearModel         
 
 sn = 11; % CURRENTLY HAVE SUBJECTS 11 THROUGH 15
 bEXCLUDE = true;
 gammaFactorR = 2.4;
+gammaFactorB = 2.4;
+scaleFactor = 0.8;
 
 if sn==11 % 'VISIT' NUMBERS
-   vs = [2 3 4 7];
+   vs = [2 3 4 5 6 7];
    excludeTrials = [];
 elseif sn==12
    vs = [3:7];
@@ -164,8 +166,8 @@ for i = 1:size(uniqueConditions,1)
        if abs(corr(accContinuous',diffVec'))<0.95
            error('ARCnlz_linearModel: you may want to check whether the step change occurs halfway through the trial, or not!');
        end
-       meanChangeX(i,k0) = sum(diffVec.*x2{k0}')./xScale;
-       meanChangeY(i,k0) = sum(diffVec.*y2{k0}')./yScale;
+       meanChangeX{i} = sum(diffVec.*x2{k0}')./xScale;
+       meanChangeY{i} = sum(diffVec.*y2{k0}')./yScale;
        % VECTOR OF RGB VALUES FOR PLOTTING
        rgbValues = [rgbValues imresize([AFCp.rgb100(indCnd(k0),:)' AFCp.rgb200(indCnd(k0),:)'],[3 length(tSinInterp)],'nearest')];
     end
@@ -176,8 +178,16 @@ for i = 1:size(uniqueConditions,1)
     rgbValuesAll{i} = rgbValues;
     trialMarkerForPlotCell{i} = trialMarkerForPlot;
     indCndCell{i} = indCnd;
-    meanChangeXvec(indCnd) = meanChangeX(i,:);
-    meanChangeYvec(indCnd) = meanChangeY(i,:);
+    meanChangeXvec(indCnd) = meanChangeX{i};
+    meanChangeYvec(indCnd) = meanChangeY{i};
 end
+
+deltaR = AFCp.rgb200(:,1).^gammaFactorR - AFCp.rgb100(:,1).^gammaFactorR;
+deltaB = AFCp.rgb200(:,3).^gammaFactorB - AFCp.rgb100(:,3).^gammaFactorB    ;
+deltaS = AFCp.v00*scaleFactor;
+delta1 = ones(size(deltaR));
+
+weightsRBS1_x = [deltaR deltaB deltaS delta1]\(meanChangeXvec');
+weightsRBS1_y = [deltaR deltaB deltaS delta1]\(meanChangeYvec');
 
 end
