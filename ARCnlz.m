@@ -3,6 +3,7 @@ function ARCnlz
 sn = 11; % CURRENTLY HAVE SUBJECTS 11 THROUGH 15
 bEXCLUDE = true;
 bSTACK = true;
+gammaFactorR = 2.4;
 
 if sn==11 % 'VISIT' NUMBERS
    vs = [2 3 4 7];
@@ -202,10 +203,16 @@ indR2BorB2R = (uniqueRGBvalues(:,1)>0.0001 & uniqueRGBvalues(:,2)<0.0001 ...
              & uniqueRGBvalues(:,5)<0.0001 & uniqueRGBvalues(:,6)<0.0001);
 
 uniqueRGBvalues = [uniqueRGBvalues(indSame,:); uniqueRGBvalues(indR2BorB2R,:); uniqueRGBvalues(indB2mixed,:); uniqueRGBvalues(indR2mixed,:)];
+biasPlotTags = cumsum([sum(indSame) sum(indR2BorB2R) sum(indB2mixed) sum(indR2mixed)]);
+
+biasX = [];
+biasY = [];
 
 for i = 1:size(uniqueRGBvalues,1)
     indRGB = ismember(uniqueConditions(:,1:6),uniqueRGBvalues(i,:),'rows');
     stepSizes = uniqueConditions(indRGB,7);
+    biasX(i,:) = mean(meanChangeX(indRGB,:),1);
+    biasY(i,:) = mean(meanChangeY(indRGB,:),1);
     rowNum = mod(i,figSize);
     if rowNum==0
        rowNum = figSize;
@@ -267,5 +274,65 @@ for i = 1:size(uniqueRGBvalues,1)
     set(gca,'XTickLabel',changeLabels);        
     ylim([-2 2]);
 end
+
+figure;
+set(gcf,'Position',[207 189 1240 765]);
+subplot(2,2,1);
+hold on;
+for i = 1:biasPlotTags(1)
+    errorbar(i,mean(biasX(i,:)),std(biasX(i,:)),'.','LineWidth',2,'MarkerSize',15,'Color',uniqueRGBvalues(i,1:3));
+    plot(i,mean(biasX(i,:)),'o','LineWidth',2,'MarkerSize',15,'MarkerFaceColor','w','Color',uniqueRGBvalues(i,1:3));
+end
+axis square;
+set(gca,'FontSize',15);
+set(gca,'XTick',1:biasPlotTags(1));
+xlabel('Condition');
+ylabel('Accommodative Bias (D)');
+xlim([0 biasPlotTags(1)+1]);
+ylim([-2 2]);
+title('Narrowband no change');
+
+subplot(2,2,2);
+hold on;
+for i = (biasPlotTags(1)+1):biasPlotTags(2)
+    errorbar(i-biasPlotTags(1),mean(biasX(i,:)),std(biasX(i,:)),'.','LineWidth',2,'MarkerSize',15,'Color',uniqueRGBvalues(i,1:3));
+    plot(i-biasPlotTags(1),mean(biasX(i,:)),'o','LineWidth',2,'MarkerSize',15,'MarkerFaceColor','w','Color',uniqueRGBvalues(i,1:3));
+end
+axis square;
+set(gca,'FontSize',15);
+set(gca,'XTick',1:(biasPlotTags(2)-biasPlotTags(1)));
+xlabel('Condition');
+ylabel('Accommodative Bias (D)');
+xlim([0 biasPlotTags(2)-biasPlotTags(1)+1]);
+ylim([-2 2]);
+title('Narrowband with change');
+
+subplot(2,2,3);
+hold on;
+for i = (biasPlotTags(2)+1):biasPlotTags(3)
+    errorbar(uniqueRGBvalues(i,4).^gammaFactorR,mean(biasX(i,:)),std(biasX(i,:)),'.','LineWidth',2,'MarkerSize',15,'Color',uniqueRGBvalues(i,1:3));
+    plot(uniqueRGBvalues(i,4).^gammaFactorR,mean(biasX(i,:)),'o','LineWidth',2,'MarkerSize',15,'MarkerFaceColor','w','Color',uniqueRGBvalues(i,1:3));
+end
+axis square;
+set(gca,'FontSize',15);
+xlabel('Amount of red (% max)');
+ylabel('Accommodative Bias (D)');
+xlim([-0.1 0.4]);
+ylim([-1 1]);
+title('Blue to mixed');
+
+subplot(2,2,4);
+hold on;
+for i = (biasPlotTags(3)+1):biasPlotTags(4)
+    errorbar(uniqueRGBvalues(i,1).^gammaFactorR,mean(biasX(i,:)),std(biasX(i,:)),'.','LineWidth',2,'MarkerSize',15,'Color',uniqueRGBvalues(i,1:3));
+    plot(uniqueRGBvalues(i,1).^gammaFactorR,mean(biasX(i,:)),'o','LineWidth',2,'MarkerSize',15,'MarkerFaceColor','w','Color',uniqueRGBvalues(i,1:3));
+end
+axis square;
+set(gca,'FontSize',15);
+xlabel('Amount of red (% max)');
+ylabel('Accommodative Bias (D)');
+xlim([-0.1 0.4]);
+ylim([-1 1]);
+title('Red to mixed');
 
 end
