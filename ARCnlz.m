@@ -115,6 +115,9 @@ yScale = -2.58; % SCALE FACTOR CONVERTING PIXELS TO DIOPTERS
 optDistScale = 0.8;
 timeSeries = {};
 rgbValuesAll = {};
+x3stack = zeros([length(AFCp.AFCv) 400]);
+y3stack = zeros([length(AFCp.AFCv) 400]);
+
 for i = 1:size(uniqueConditions,1)
     % INDEX OF COLOR CONDITIONS
     indCnd = find(ismember([AFCp.rgb100 AFCp.rgb200 AFCp.v00],uniqueConditions(i,:),'rows'));
@@ -129,8 +132,21 @@ for i = 1:size(uniqueConditions,1)
        % ANALYZING SUBJECT'S ACCOMMODATION
        x2{k0}=x0{indCnd(k0)}-mean(x1); % MEAN CENTERING
        y2{k0}=y0{indCnd(k0)}-mean(y1); % MEAN CENTERING
-       x3=[x3 x2{k0}'];
-       y3=[y3 y2{k0}'];
+       x3tmp = (x2{k0}')./xScale;
+       y3tmp = (y2{k0}')./yScale;
+       % REMOVING OUTLIERS
+       x3diff = [0 diff(x3tmp)];
+       y3diff = [0 diff(y3tmp)];
+       x3outliers = abs(x3diff)>1 | abs(x3tmp)>5;
+       y3outliers = abs(y3diff)>1 | abs(y3tmp)>5;
+       meanx3 = mean(x3tmp(~x3outliers));
+       meany3 = mean(y3tmp(~y3outliers));
+       if bEXCLUDE
+           x3tmp(x3outliers) = meanx3;
+           y3tmp(y3outliers) = meany3;
+       end       
+       x3=[x3 x3tmp];
+       y3=[y3 y3tmp];
        trialMarkerForPlot(k0) = length(x3);
        % ACCOMMODATIVE DEMAND FROM EXPERIMENT 
        sinValuesTmp = AFCp.sinValues(indCnd(k0),:);
@@ -147,18 +163,6 @@ for i = 1:size(uniqueConditions,1)
        meanChangeY(i,k0) = sum(diffVec.*y2{k0}')./yScale;
        % VECTOR OF RGB VALUES FOR PLOTTING
        rgbValues = [rgbValues imresize([AFCp.rgb100(indCnd(k0),:)' AFCp.rgb200(indCnd(k0),:)'],[3 length(tSinInterp)],'nearest')];
-    end
-    x3=x3./xScale; y3=y3./yScale;
-    % REMOVING OUTLIERS
-    x3diff = [0 diff(x3)];
-    y3diff = [0 diff(y3)];
-    x3outliers = abs(x3diff)>1 | abs(x3)>5;
-    y3outliers = abs(y3diff)>1 | abs(y3)>5;
-    meanx3 = mean(x3(~x3outliers));
-    meany3 = mean(y3(~y3outliers));
-    if bEXCLUDE
-        x3(x3outliers) = meanx3;
-        y3(y3outliers) = meany3;
     end
 
     % STORE ACCOMMODATION AND COLOR VALUES FOR PLOTTING
