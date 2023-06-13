@@ -13,7 +13,8 @@ cf=ones(3,2);
 %initial  power=13.5 AR    
 %LCAim='texture0_1080_newfill_malt.png';    
 %im2R='black.png';       
-im2L='texture0_1080_newfill_malt.png';
+% im2L='texture0_1080_newfill_malt.png';
+im2L = 'G:\My Drive\exp_bvams\code_repo\imgs\TCA_r540_k120_b108_cw5_sbm7.png';
 %im2L='vrn10_G_sd1.png';
 im2R=im2L ;
 
@@ -29,7 +30,8 @@ opto(name_map('r_disp')).control.getFocalPower.focal_power
 opto(name_map('l_disp')).control.setFocalPower(14+sr(1));%-dmnd(k0));
 opto(name_map('l_disp')).control.getFocalPower.focal_power
 
-[iLf iRf]=cwin3(imread("black.png"), imread(im2R) , cf, rc00, window2, window1);
+testim = imread(im2R);
+[iLf iRf]=cwin3(imread("black.png"), testim , cf, rc00, window2, window1);
 
 power_dispL = 14;
 power_dispR = 14.4;

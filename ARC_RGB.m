@@ -12,8 +12,8 @@ vs = vs+vsIncrement;
 % expSubType = 'STEP';
 expSubType = 'RGB';
 blockType = 'random';
-focStmOptDst = -1.25;
-meanFocstmOptDst = 4.375;
+focStmOptDst = 1*1.25;
+meanFocstmOptDst = 3.5*1.25;
 
 if strcmp(blockType,'fixed')
     rgb1 = [0.62 0.00 0.00; ...
@@ -46,7 +46,7 @@ if strcmp(blockType,'fixed')
 end
 
 if strcmp(blockType,'random')
-    nCnd = 40; % NUMBER OF CONDITIONS
+    nCnd = 20; % NUMBER OF CONDITIONS
     rVals = [0.62 0.48 0.37 0.28]'; % POSSIBLE RED PRIMARY VALUES
     bVals = [1.00 0.76 0.57 0.43]'; % POSSIBLE BLUE PRIMARY VALUES
     stepVals = 1.25.*[1.25 0.75 -0.75 -1.25]'; % POSSIBLE STEP VALUES
