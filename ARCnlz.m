@@ -1,6 +1,6 @@
 function ARCnlz         
 
-sn = 11; % CURRENTLY HAVE SUBJECTS 11 THROUGH 15
+sn = 17; % CURRENTLY HAVE SUBJECTS 11 THROUGH 15
 bEXCLUDE = true;
 bSTACK = true;
 gammaFactorR = 2.4;
@@ -18,8 +18,14 @@ elseif sn==14
    vs = 1:4;
    excludeTrials = [];    
 elseif sn==15
+   vs = [7:10];
+   excludeTrials = [49];  
+elseif sn==16
+   vs = 2:5;
+   excludeTrials = [];     
+elseif sn==17
    vs = 1:4;
-   excludeTrials = [12 32 30];  
+   excludeTrials = [];        
 else
    error('ARCnlz: unhandled subject number!');
 end
@@ -237,6 +243,7 @@ for i = 1:size(uniqueRGBvalues,1)
             plot(mean(x3stack(indCndMarkers,:),1),'-','Color',[0 0.45 0.74],'LineWidth',2);
             plot(mean(y3stack(indCndMarkers,:),1),'-','Color',[0.85 0.33 0.1],'LineWidth',2);
             xlim([0 220]);
+            ylim([-3 3]);
         else
             hold on;
             plot([1:length(timeSeries{indUnq,1})], [timeSeries{indUnq,1}; timeSeries{indUnq,2}]);
@@ -245,6 +252,7 @@ for i = 1:size(uniqueRGBvalues,1)
                 plot(trialMarkers(k).*[1 1],ylimTmp,'-','Color',[0.5 0.5 0.5],'LineWidth',1);
                 text(trialMarkers(k)-length(timeSeries{indUnq,1})./(2*length(trialMarkers)),ylimTmp(2)/2,num2str(indCndMarkers(k)));
             end
+            ylim([-3 3]);
         end
         xlabel('Frame'); ylabel('Power (Diopters)'); 
         title(['Step = ' num2str(stepSizes(j)*optDistScale) ...
