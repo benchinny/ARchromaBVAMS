@@ -38,7 +38,7 @@ end
            end
              
            %i0=find(AFCv==3);
-           i0=find(AFCp.v00==0);
+           i0=find(AFCp.v00==-3.125);
 
            
            x1=[]; y1=[];

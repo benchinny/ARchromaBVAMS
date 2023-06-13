@@ -1,6 +1,6 @@
 %%220508 AFC9f include TCA correction 
 % function [v1 t3 dgs]=AFC8f(im_path, v0, sr, window1, window2)
-function AFCp=AFCchangeWord(word1, word2, v0, meanv0, sr, window1, window2)
+function AFCp=AFCchangeWord(word1, word2, v0, meanv0, sr, window1, window2,wordColor,recordAccommodation)
 
 %v0 vector of accomodations
 %        control: [1×1 Zaber.AsciiDevice]
@@ -29,10 +29,10 @@ opto(name_map('r_disp')).control.setFocalPower(power_dispR-meanv0(1));
 opto(name_map('l_disp')).control.setFocalPower(power_dispL-meanv0(1));
 
 % MAKING WORD STIMULI
-im0 = AFCwordStim(word1(1,:),[500 500],[70 70; 160 70; 260 70]);
+im0 = AFCwordStim(word1(1,:),[500 500],[70 70; 160 70; 260 70],wordColor);
 im0(im0>1) = 255;
 im0 = flipud(im0);
-im1 = AFCwordStim(word2(1,:),[500 500],[70 70; 160 70; 260 70]);   
+im1 = AFCwordStim(word2(1,:),[500 500],[70 70; 160 70; 260 70],wordColor);   
 im1(im1>0) = 255;
 im1 = flipud(im1);
 im2L0 = im0; im2R0 = im0; im2L1 = im1; im2R1 = im1;
@@ -47,7 +47,7 @@ log.WARNING = 3;
 log.INFO = 2;
 log.DEBUG = 1;
 log.LEVEL = log.DEBUG;
-scene.enable_tcp=1;
+scene.enable_tcp=recordAccommodation;
 scene.trial_num=1;
 
 if scene.enable_tcp
@@ -72,10 +72,10 @@ sinValuesAll = [];
 disp('ready to start');  KbWait([], 2); 
 for k0=1:size(v0,1)
       % MAKING WORD STIMULI
-      im0 = AFCwordStim(word1(k0,:),[500 500],[70 70; 160 70; 260 70]);
+      im0 = AFCwordStim(word1(k0,:),[500 500],[70 70; 160 70; 260 70],wordColor);
       im0(im0>1) = 255;
       im0 = flipud(im0);
-      im1 = AFCwordStim(word2(k0,:),[500 500],[70 70; 160 70; 260 70]);   
+      im1 = AFCwordStim(word2(k0,:),[500 500],[70 70; 160 70; 260 70],wordColor);   
       im1(im1>0) = 255;
       im1 = flipud(im1);
       im2L0 = im0; im2R0 = im0; im2L1 = im1; im2R1 = im1;    
