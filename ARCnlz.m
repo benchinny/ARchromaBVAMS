@@ -1,9 +1,11 @@
 function ARCnlz         
 
-sn = 17; % CURRENTLY HAVE SUBJECTS 11 THROUGH 15
-bEXCLUDE = true;
-bSTACK = true;
-gammaFactorR = 2.4;
+sn = 17; % CURRENTLY HAVE SUBJECTS 11 THROUGH 17
+bEXCLUDE = true; % EXCLUDE BLINKS AND BAD TRIALS? 
+bSTACK = true; % STACK ACCOMMODATIVE TRACES IN FIGURES?
+bLeaveOutTransitions = false; % LEAVE OUT FIRST 50 FRAMES AND TRANSITION PERIOD OF ACCOMMODATION?
+
+gammaFactorR = 2.4; % GAMMA CORRECTION FOR MONITOR RGB PRIMARY VALUES
 
 if sn==11 % 'VISIT' NUMBERS
    vs = [2 3 4 7];
@@ -165,9 +167,13 @@ for i = 1:size(uniqueConditions,1)
        accContinuous = interp1(tSin,sinValuesTmp,tSinInterp); 
        % THIS IS AN OBNOXIOUS WAY OF COMPUTING THE AVERAGE CHANGE WITHIN A
        % TRIAL, BUT IT WORKS AND MAY BE A BIT MORE ROBUST
-       diffVec = imresize([-2/length(accContinuous) 2/length(accContinuous)],size(accContinuous),'nearest');
-       if abs(corr(accContinuous',diffVec'))<0.95
-           error('ARCnlz: you may want to check whether the step change occurs halfway through the trial, or not!');
+       if bLeaveOutTransitions
+          diffVec = imresize([0 -4/length(accContinuous) 0 4/length(accContinuous)],size(accContinuous),'nearest');
+       else
+           diffVec = imresize([-2/length(accContinuous) 2/length(accContinuous)],size(accContinuous),'nearest');
+           if abs(corr(accContinuous',diffVec'))<0.95
+               error('ARCnlz: you may want to check whether the step change occurs halfway through the trial, or not!');
+           end
        end
        meanChangeX(i,k0) = sum(diffVec.*x2{k0}')./xScale;
        meanChangeY(i,k0) = sum(diffVec.*y2{k0}')./yScale;
