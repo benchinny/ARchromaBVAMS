@@ -1,4 +1,4 @@
-function imgWord = AFCwordStim(word2display,imSzPix,charLocations)
+function imgWord = AFCwordStim(word2display,imSzPix,charLocations,wordColor)
 
 % function imgWord = AFCwordStim(word2display,imSize)
 %
@@ -15,7 +15,7 @@ end
 
    imgWord = zeros(imSzPix);
    for i = 1:length(word2display)
-       imgWord = insertText(imgWord,charLocations(i,:),word2display(i),'TextColor','green','BoxColor','black','FontSize',200); 
+       imgWord = insertText(imgWord,charLocations(i,:),word2display(i),'TextColor',wordColor,'BoxColor','black','FontSize',200); 
    end
    imgWord = imgWord.*255;
 end

@@ -12,11 +12,13 @@ vs = vs+vsIncrement;
 % expSubType = 'STEP';
 expSubType = 'WRD';
 
+wordColor = 'green';
+recordAccommodation = 0;
 focStmOptDst = 1.25.*[1.75];
-meanFocstmOptDst = 1.25.*[2.25]';
+meanFocstmOptDst = 1.25.*[3.25]';
 AFCv = [1 1 1]';
 % focStmOptDst = 1.25.*[-2];
-% meanFocstmOptDst = 1.25.*[2.5]';
+% meanFocstmOptDst = 1.25.*[3.5]';
 % AFCv = [1 1 1]';
 
 if ~exist('sr')
@@ -88,7 +90,7 @@ elseif strcmp(expSubType,'WRD')
    word2 = repmat(['uno';'car';'ace';'sun';'one';'row'],[8 1]);
    word1 = word1(randperm(size(word1,1)),:);
    word2 = word2(randperm(size(word1,1)),:);
-   AFCp=AFCchangeWord(word1, word2, v00, meanv00, sr, window1, window2);    
+   AFCp=AFCchangeWord(word1, word2, v00, meanv00, sr, window1, window2,wordColor,recordAccommodation);    
 end
 
 AFCp.v0=v0;
