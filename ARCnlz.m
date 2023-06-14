@@ -349,4 +349,16 @@ xlim([-0.1 0.4]);
 ylim([-1 1]);
 title('Red to mixed');
 
+if bSTACK
+    for i = 1:size(uniqueRGBvalues,1)
+        indRGB = ismember(uniqueConditions(:,1:6),uniqueRGBvalues(i,:),'rows');
+        stepSizes = uniqueConditions(indRGB,7);    
+        for j = 1:length(stepSizes)
+            indUnq = ismember(uniqueConditions(:,1:6),uniqueRGBvalues(i,:),'rows') ...
+                      & abs(uniqueConditions(:,7)-stepSizes(j))<0.001;    
+            indCndMarkers = indCndCell{indUnq};        
+        end
+    end
+end
+
 end
