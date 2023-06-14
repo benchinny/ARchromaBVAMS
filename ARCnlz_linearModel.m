@@ -1,6 +1,6 @@
 function [weightsRBS1_x, weightsRBS1_y] = ARCnlz_linearModel         
 
-sn = 11; % CURRENTLY HAVE SUBJECTS 11 THROUGH 15
+sn = 17; % CURRENTLY HAVE SUBJECTS 11 THROUGH 15
 bEXCLUDE = true;
 gammaFactorR = 2.4;
 gammaFactorB = 2.4;
@@ -11,16 +11,22 @@ if sn==11 % 'VISIT' NUMBERS
    excludeTrials = [];
 elseif sn==12
    vs = [3:7];
-   excludeTrials = [87 7 3 4 5 90 91 10 6 86 88];
+   excludeTrials = [];
 elseif sn==13
    vs = 1:4;
-   excludeTrials = [59 39 38 58 77 56 60 74];
+   excludeTrials = [];
 elseif sn==14
    vs = 1:4;
    excludeTrials = [];    
 elseif sn==15
-   vs = 1:4;
-   excludeTrials = [12 32 30];  
+   vs = 7:12;
+   excludeTrials = [];  
+elseif sn==16
+   vs = 1:6;
+   excludeTrials = [];     
+elseif sn==17
+   vs = 1:6;
+   excludeTrials = [];        
 else
    error('ARCnlz_linearModel: unhandled subject number!');
 end
@@ -31,7 +37,7 @@ filePath = 'G:\My Drive\exp_bvams\code_repo\';
 if strcmp(getenv('username'),'bankslab')
    dataDirectory = [filePath 'ARC\'];
 else
-   dataDirectory = '/Users/benchin/Documents/ARchroma/'; 
+   dataDirectory = '/home/ben/Documents/ARchroma/'; 
 end
 % THIS JUST LOADS A FILE CONTAINING FILE NAMES OF .mat FILES CONTAINING
 % METADATA FOR EACH EXPERIMENT BLOCK
@@ -54,8 +60,12 @@ for i = 1:length(vs)
         load([dataDirectory fnmTmp(37:end)]);
     end
     if i==1
+       AFCp = rmfield(AFCp,'v0');
+       AFCp = rmfield(AFCp,'AFCv');
        AFCpAll = AFCp;
     else
+       AFCp = rmfield(AFCp,'v0'); 
+       AFCp = rmfield(AFCp,'AFCv');
        AFCpAll = structmerge(AFCpAll,AFCp,length(AFCp.v00));
     end
     dateCodeAll = [];
@@ -118,8 +128,8 @@ yScale = -2.58; % SCALE FACTOR CONVERTING PIXELS TO DIOPTERS
 optDistScale = 0.8;
 timeSeries = {};
 rgbValuesAll = {};
-x3stack = zeros([length(AFCp.AFCv) 400]);
-y3stack = zeros([length(AFCp.AFCv) 400]);
+x3stack = zeros([length(AFCp.v00) 400]);
+y3stack = zeros([length(AFCp.v00) 400]);
 meanChangeXvec = [];
 meanChangeYvec = [];
 

@@ -37,8 +37,10 @@ filePath = 'G:\My Drive\exp_bvams\code_repo\';
 
 if strcmp(getenv('username'),'bankslab')
    dataDirectory = [filePath 'ARC\'];
-else
+elseif strcmp(getenv("USER"),'benchin')
    dataDirectory = '/Users/benchin/Documents/ARchroma/'; 
+elseif strcmp(getenv("USER"),'Emily')
+   dataDirectory = '';
 end
 % THIS JUST LOADS A FILE CONTAINING FILE NAMES OF .mat FILES CONTAINING
 % METADATA FOR EACH EXPERIMENT BLOCK
@@ -349,16 +351,25 @@ xlim([-0.1 0.4]);
 ylim([-1 1]);
 title('Red to mixed');
 
+figure;
+hold on;
+set(gca,'FontSize',15);
 if bSTACK
-    for i = 1:size(uniqueRGBvalues,1)
-        indRGB = ismember(uniqueConditions(:,1:6),uniqueRGBvalues(i,:),'rows');
-        stepSizes = uniqueConditions(indRGB,7);    
-        for j = 1:length(stepSizes)
-            indUnq = ismember(uniqueConditions(:,1:6),uniqueRGBvalues(i,:),'rows') ...
-                      & abs(uniqueConditions(:,7)-stepSizes(j))<0.001;    
-            indCndMarkers = indCndCell{indUnq};        
-        end
+    for i = 1:size(uniqueConditions,1) 
+        trace2plot = mean(x3stack(indCndCell{i},:),1);
+        trace2plot = trace2plot(trace2plot~=0);
+        ind1stHalf = imresize([1 0],[1 length(trace2plot)],'nearest');
+        ind1stHalf = logical(ind1stHalf);
+        ind2ndHalf = imresize([0 1],[1 length(trace2plot)],'nearest');
+        ind2ndHalf = logical(ind2ndHalf);
+        plot(find(ind1stHalf),trace2plot(ind1stHalf),'-','Color',uniqueConditions(i,1:3),'LineWidth',2);
+        plot(find(ind2ndHalf),trace2plot(ind2ndHalf),'-','Color',uniqueConditions(i,4:6),'LineWidth',2);
+%        plot(mean(y3stack(indCndCell{i},:),1),'-','Color',[0.85 0.33 0.1],'LineWidth',2);
     end
 end
+xlim([0 220]);
+ylim([-3 3]);
+xlabel('Frame'); ylabel('Power (Diopters)'); 
+
 
 end
