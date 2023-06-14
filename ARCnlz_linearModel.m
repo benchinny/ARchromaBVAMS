@@ -36,9 +36,12 @@ filePath = 'G:\My Drive\exp_bvams\code_repo\';
 
 if strcmp(getenv('username'),'bankslab')
    dataDirectory = [filePath 'ARC\'];
-else
-   dataDirectory = '/home/ben/Documents/ARchroma/'; 
+elseif strcmp(getenv("USER"),'benchin')
+   dataDirectory = '/Users/benchin/Documents/ARchroma/'; 
+elseif strcmp(getenv("USER"),'emily')
+   dataDirectory = '/Users/emily/Library/CloudStorage/GoogleDrive-emilyacooper@gmail.com/Shared drives/ARChroma/Analysis/';
 end
+
 % THIS JUST LOADS A FILE CONTAINING FILE NAMES OF .mat FILES CONTAINING
 % METADATA FOR EACH EXPERIMENT BLOCK
 if ey(1)==2

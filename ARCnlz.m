@@ -1,4 +1,4 @@
-function ARCnlz         
+%function ARCnlz         
 
 sn = 17; % CURRENTLY HAVE SUBJECTS 11 THROUGH 17
 bEXCLUDE = true; % EXCLUDE BLINKS AND BAD TRIALS? 
@@ -39,9 +39,10 @@ if strcmp(getenv('username'),'bankslab')
    dataDirectory = [filePath 'ARC\'];
 elseif strcmp(getenv("USER"),'benchin')
    dataDirectory = '/Users/benchin/Documents/ARchroma/'; 
-elseif strcmp(getenv("USER"),'Emily')
-   dataDirectory = '';
+elseif strcmp(getenv("USER"),'emily')
+   dataDirectory = '/Users/emily/Library/CloudStorage/GoogleDrive-emilyacooper@gmail.com/Shared drives/ARChroma/Analysis/';
 end
+
 % THIS JUST LOADS A FILE CONTAINING FILE NAMES OF .mat FILES CONTAINING
 % METADATA FOR EACH EXPERIMENT BLOCK
 if ey(1)==2
@@ -87,6 +88,7 @@ for i = 1:length(vs)
             jsonFile = jsonFileStr;
         end
     end
+
     jsonPath = jsonDirectory;
     dt=jsondecode(fileread([jsonPath jsonFile]));
     % GRABS RAW PIXEL SEPARATIONS BETWEEN AUTOREFRACTOR BARS
@@ -372,4 +374,4 @@ ylim([-3 3]);
 xlabel('Frame'); ylabel('Power (Diopters)'); 
 
 
-end
+%end
