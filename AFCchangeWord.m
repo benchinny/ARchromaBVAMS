@@ -1,6 +1,6 @@
 %%220508 AFC9f include TCA correction 
 % function [v1 t3 dgs]=AFC8f(im_path, v0, sr, window1, window2)
-function AFCp=AFCchangeWord(word1, word2, v0, meanv0, sr, window1, window2,wordColor,recordAccommodation)
+function AFCp=AFCchangeWord(word1, word2, v0, meanv0, sr, window1, window2,wordColor,recordAccommodation,fontSize)
 
 %v0 vector of accomodations
 %        control: [1×1 Zaber.AsciiDevice]
@@ -18,6 +18,14 @@ if size(v0,1)~=size(meanv0,1)
     error('AFCchangeWord: v0 and meanv0 must have the same number of rows!');
 end
 
+if fontSize>150
+   imSzPix = [500 500];
+   charLocations = [70 70; 160 70; 260 70];
+else
+   imSzPix = [500 500];
+   charLocations = [120 170; 170 170; 230 170];;    
+end
+
 nRmpSteps = 10; % number of steps for cosine ramp
 nRmpSteps = round(nRmpSteps/2)*2; % make sure it's even number
 tIntervalStm = 0.2; % how long to pause after each step
@@ -29,10 +37,10 @@ opto(name_map('r_disp')).control.setFocalPower(power_dispR-meanv0(1));
 opto(name_map('l_disp')).control.setFocalPower(power_dispL-meanv0(1));
 
 % MAKING WORD STIMULI
-im0 = AFCwordStim(word1(1,:),[500 500],[70 70; 160 70; 260 70],wordColor);
+im0 = AFCwordStim(word1(1,:),imSzPix,charLocations,wordColor,fontSize);
 im0(im0>1) = 255;
 im0 = flipud(im0);
-im1 = AFCwordStim(word2(1,:),[500 500],[70 70; 160 70; 260 70],wordColor);   
+im1 = AFCwordStim(word2(1,:),imSzPix,charLocations,wordColor,fontSize);   
 im1(im1>0) = 255;
 im1 = flipud(im1);
 im2L0 = im0; im2R0 = im0; im2L1 = im1; im2R1 = im1;
@@ -72,10 +80,10 @@ sinValuesAll = [];
 disp('ready to start');  KbWait([], 2); 
 for k0=1:size(v0,1)
       % MAKING WORD STIMULI
-      im0 = AFCwordStim(word1(k0,:),[500 500],[70 70; 160 70; 260 70],wordColor);
+      im0 = AFCwordStim(word1(k0,:),imSzPix,charLocations,wordColor,fontSize);
       im0(im0>1) = 255;
       im0 = flipud(im0);
-      im1 = AFCwordStim(word2(k0,:),[500 500],[70 70; 160 70; 260 70],wordColor);   
+      im1 = AFCwordStim(word2(k0,:),imSzPix,charLocations,wordColor,fontSize);   
       im1(im1>0) = 255;
       im1 = flipud(im1);
       im2L0 = im0; im2R0 = im0; im2L1 = im1; im2R1 = im1;    

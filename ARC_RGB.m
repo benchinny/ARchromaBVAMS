@@ -12,8 +12,11 @@ vs = vs+vsIncrement;
 % expSubType = 'STEP';
 expSubType = 'RGB';
 blockType = 'random';
-focStmOptDst = 1*1.25;
-meanFocstmOptDst = 3*1.25;
+focStmOptDst = 1;
+meanFocstmOptDst = 3;
+
+focStmOptDst = focStmOptDst*1.25;
+meanFocstmOptDst = meanFocstmOptDst*1.25;
 
 if strcmp(blockType,'fixed')
     rgb1 = [0.62 0.00 0.00; ...
@@ -124,11 +127,11 @@ elseif strcmp(expSubType,'STEP')
    AFCp=AFCstep(im2L0, im2L1, im2R0, im2R1, v00, meanv00, sr, window1, window2); 
 elseif strcmp(expSubType,'RGB')
    % imB = imread('G:\My Drive\exp_bvams\code_repo\imgs\vrn10_B_sd1.png');
-   imB = AFCwordStim('car',[500 500],[70 70; 160 70; 260 70],'green');
+   imB = AFCwordStim('car',[500 500],[70 70; 160 70; 260 70],'green',200);
    imB(imB>0) = 255;
    imB = flipud(imB);   
    imPattern = squeeze(imB(:,:,2));
-   imC = AFCwordStim('arc',[500 500],[70 70; 165 70; 230 70],'green');
+   imC = AFCwordStim('arc',[500 500],[70 70; 165 70; 230 70],'green',200);
    imC(imC>0) = 255;
    imC = flipud(imC); 
    imPattern(:,:,2) = squeeze(imC(:,:,2));
