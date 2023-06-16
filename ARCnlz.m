@@ -1,9 +1,9 @@
 %function ARCnlz         
 
-sn = 17; % CURRENTLY HAVE SUBJECTS 11 THROUGH 17
+sn = 11; % CURRENTLY HAVE SUBJECTS 11 THROUGH 17
 bEXCLUDE = true; % EXCLUDE BLINKS AND BAD TRIALS? 
 bSTACK = true; % STACK ACCOMMODATIVE TRACES IN FIGURES?
-bLeaveOutTransitions = false; % LEAVE OUT FIRST 50 FRAMES AND TRANSITION PERIOD OF ACCOMMODATION?
+bLeaveOutTransitions = true; % LEAVE OUT FIRST 50 FRAMES AND TRANSITION PERIOD OF ACCOMMODATION?
 
 gammaFactorR = 2.4; % GAMMA CORRECTION FOR MONITOR RGB PRIMARY VALUES
 
@@ -27,7 +27,10 @@ elseif sn==16
    excludeTrials = [];     
 elseif sn==17
    vs = 1:4;
-   excludeTrials = [];        
+   excludeTrials = [];    
+elseif sn==19
+   vs = 5:8;
+   excludeTrials = [];       
 else
    error('ARCnlz: unhandled subject number!');
 end
@@ -38,7 +41,7 @@ filePath = 'G:\My Drive\exp_bvams\code_repo\';
 if strcmp(getenv('username'),'bankslab')
    dataDirectory = [filePath 'ARC\'];
 elseif strcmp(getenv("USER"),'benchin')
-   dataDirectory = '/Users/benchin/Documents/ARchroma/'; 
+   dataDirectory = '/Users/benchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/ARChroma/Analysis/'; 
 elseif strcmp(getenv("USER"),'emily')
    dataDirectory = '/Users/emily/Library/CloudStorage/GoogleDrive-emilyacooper@gmail.com/Shared drives/ARChroma/Analysis/';
 end
@@ -118,8 +121,8 @@ for k0=1:length(i0)
  x1=[x1 x0{i0(k0)}'];
  y1=[y1 y0{i0(k0)}'];  
 end
-x1 = x1(1:10);
-y1 = y1(1:10);
+x1 = x1(11:21);
+y1 = y1(11:21);
 
 % MAIN ANALYSIS
 uniqueConditions = unique([AFCp.rgb100 AFCp.rgb200 AFCp.v00],'rows');
@@ -151,8 +154,8 @@ for i = 1:size(uniqueConditions,1)
        % REMOVING OUTLIERS
        x3diff = [0 diff(x3tmp)];
        y3diff = [0 diff(y3tmp)];
-       x3outliers = abs(x3diff)>1 | abs(x3tmp)>5;
-       y3outliers = abs(y3diff)>1 | abs(y3tmp)>5;
+       x3outliers = abs(x3diff)>0.7 | abs(x3tmp)>5;
+       y3outliers = abs(y3diff)>0.7 | abs(y3tmp)>5;
        meanx3 = mean(x3tmp(~x3outliers));
        meany3 = mean(y3tmp(~y3outliers));
        if bEXCLUDE
