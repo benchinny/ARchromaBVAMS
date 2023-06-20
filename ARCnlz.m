@@ -295,7 +295,7 @@ for i = 1:size(uniqueRGBvalues,1)
     set(gca,'FontSize',15);
     set(gca,'XTick',[1:length(stepSizes)*2]);
     set(gca,'XTickLabel',changeLabels);        
-    ylim([-2 2]);
+    ylim([-3 3]);
 end
 
 figure;
@@ -359,24 +359,37 @@ ylim([-1 1]);
 title('Red to mixed');
 
 figure;
-hold on;
-set(gca,'FontSize',15);
+set(gcf,'Position',[182 399 1220 420]);
+stepSizeUnq = unique(uniqueConditions(:,7));
 if bSTACK
-    for i = 1:size(uniqueConditions,1) 
-        trace2plot = mean(x3stack(indCndCell{i},:),1);
-        trace2plot = trace2plot(trace2plot~=0);
-        ind1stHalf = imresize([1 0],[1 length(trace2plot)],'nearest');
-        ind1stHalf = logical(ind1stHalf);
-        ind2ndHalf = imresize([0 1],[1 length(trace2plot)],'nearest');
-        ind2ndHalf = logical(ind2ndHalf);
-        plot(find(ind1stHalf),trace2plot(ind1stHalf),'-','Color',uniqueConditions(i,1:3),'LineWidth',2);
-        plot(find(ind2ndHalf),trace2plot(ind2ndHalf),'-','Color',uniqueConditions(i,4:6),'LineWidth',2);
-%        plot(mean(y3stack(indCndCell{i},:),1),'-','Color',[0.85 0.33 0.1],'LineWidth',2);
+    for j = 1:length(stepSizeUnq)
+        clrConditionsUnq = unique(uniqueConditions(uniqueConditions(:,7)==stepSizeUnq(j),1:6),'rows');
+        subplot(1,length(stepSizeUnq),j);
+        hold on;
+        set(gca,'FontSize',15);
+        for i = 1:size(clrConditionsUnq,1) 
+            indPlot = uniqueConditions(:,1)==clrConditionsUnq(i,1) & ...
+                      uniqueConditions(:,2)==clrConditionsUnq(i,2) & ...
+                      uniqueConditions(:,3)==clrConditionsUnq(i,3) & ...
+                      uniqueConditions(:,4)==clrConditionsUnq(i,4) & ...
+                      uniqueConditions(:,5)==clrConditionsUnq(i,5) & ...
+                      uniqueConditions(:,6)==clrConditionsUnq(i,6) & ...
+                      uniqueConditions(:,7)==stepSizeUnq(j);
+            trace2plot = mean(x3stack(indCndCell{indPlot},:),1);
+            trace2plot = trace2plot(trace2plot~=0);
+            ind1stHalf = imresize([1 0],[1 length(trace2plot)],'nearest');
+            ind1stHalf = logical(ind1stHalf);
+            ind2ndHalf = imresize([0 1],[1 length(trace2plot)],'nearest');
+            ind2ndHalf = logical(ind2ndHalf);
+            plot(find(ind1stHalf),trace2plot(ind1stHalf),'-','Color',clrConditionsUnq(i,1:3),'LineWidth',2);
+            plot(find(ind2ndHalf),trace2plot(ind2ndHalf),'-','Color',clrConditionsUnq(i,4:6),'LineWidth',2);
+    %        plot(mean(y3stack(indCndCell{i},:),1),'-','Color',[0.85 0.33 0.1],'LineWidth',2);
+            xlim([0 220]);
+            ylim([-3 3]);
+            xlabel('Frame'); ylabel('Power (Diopters)'); title(['Step size = ' num2str(stepSizeUnq(j))]);
+        end
     end
 end
-xlim([0 220]);
-ylim([-3 3]);
-xlabel('Frame'); ylabel('Power (Diopters)'); 
 
 
 %end
