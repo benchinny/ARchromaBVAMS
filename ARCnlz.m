@@ -1,6 +1,6 @@
 %function ARCnlz         
 
-sn = 11; % CURRENTLY HAVE SUBJECTS 11 THROUGH 17
+sn = 17; % CURRENTLY HAVE SUBJECTS 11 THROUGH 17
 bEXCLUDE = true; % EXCLUDE BLINKS AND BAD TRIALS? 
 bSTACK = true; % STACK ACCOMMODATIVE TRACES IN FIGURES?
 bLeaveOutTransitions = true; % LEAVE OUT FIRST 50 FRAMES AND TRANSITION PERIOD OF ACCOMMODATION?
@@ -44,6 +44,8 @@ elseif strcmp(getenv("USER"),'benchin')
    dataDirectory = '/Users/benchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/ARChroma/Analysis/'; 
 elseif strcmp(getenv("USER"),'emily')
    dataDirectory = '/Users/emily/Library/CloudStorage/GoogleDrive-emilyacooper@gmail.com/Shared drives/ARChroma/Analysis/';
+elseif strcmp(getenv("USER"),'ben')
+   dataDirectory = '/home/ben/Documents/ARchroma/Analysis/';
 end
 
 % THIS JUST LOADS A FILE CONTAINING FILE NAMES OF .mat FILES CONTAINING
