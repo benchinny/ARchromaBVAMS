@@ -40,6 +40,8 @@ elseif strcmp(getenv("USER"),'benchin')
    dataDirectory = '/Users/benchin/Documents/ARchroma/'; 
 elseif strcmp(getenv("USER"),'emily')
    dataDirectory = '/Users/emily/Library/CloudStorage/GoogleDrive-emilyacooper@gmail.com/Shared drives/ARChroma/Analysis/';
+elseif strcmp(getenv("USER"),'ben')
+   dataDirectory = '/home/ben/Documents/ARchroma/Analysis/';   
 end
 
 % THIS JUST LOADS A FILE CONTAINING FILE NAMES OF .mat FILES CONTAINING
@@ -202,5 +204,25 @@ delta1 = ones(size(deltaR));
 
 weightsRBS1_x = [deltaR deltaB deltaS delta1]\(meanChangeXvec');
 weightsRBS1_y = [deltaR deltaB deltaS delta1]\(meanChangeYvec');
+
+figure;
+set(gcf,'Position',[189 395 1118 420]);
+subplot(1,2,1);
+plot([deltaR deltaB deltaS delta1]*weightsRBS1_x,meanChangeXvec,'ko','LineWidth',2);
+xlim([-3 3]);
+ylim([-3 3]);
+set(gca,'FontSize',15);
+xlabel('Prediction \DeltaD');
+ylabel('Measured \DeltaD');
+axis square;
+
+subplot(1,2,2);
+plot([deltaR deltaB deltaS delta1]*weightsRBS1_y,meanChangeYvec,'ko','LineWidth',2);
+xlim([-3 3]);
+ylim([-3 3]);
+set(gca,'FontSize',15);
+xlabel('Prediction \DeltaD');
+ylabel('Measured \DeltaD');
+axis square;
 
 end
