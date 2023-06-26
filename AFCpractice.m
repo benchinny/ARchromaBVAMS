@@ -1,6 +1,6 @@
 %%220508 AFC9f include TCA correction 
 % function [v1 t3 dgs]=AFC8f(im_path, v0, sr, window1, window2)
-function AFCp=AFCpractice(word1, word2, v0, meanv0, sr, window1, window2,wordColor,recordAccommodation,fontSize)
+function AFCp=AFCpractice(word1, v0, meanv0, sr, window1, window2,wordColor,recordAccommodation,fontSize)
 
 %v0 vector of accomodations
 %        control: [1×1 Zaber.AsciiDevice]
@@ -20,10 +20,10 @@ end
 
 if fontSize>150
    imSzPix = [500 500];
-   charLocations = [70 70; 160 70; 260 70];
+   charLocations = [160 70];
 else
    imSzPix = [500 500];
-   charLocations = [120 170; 170 170; 230 170];;    
+   charLocations = [170 170];    
 end
 
 nRmpSteps = 10; % number of steps for cosine ramp
@@ -40,10 +40,7 @@ opto(name_map('l_disp')).control.setFocalPower(power_dispL-meanv0(1));
 im0 = AFCwordStim(word1(1,:),imSzPix,charLocations,wordColor,fontSize);
 im0(im0>1) = 255;
 im0 = flipud(im0);
-im1 = AFCwordStim(word2(1,:),imSzPix,charLocations,wordColor,fontSize);   
-im1(im1>0) = 255;
-im1 = flipud(im1);
-im2L0 = im0; im2R0 = im0; im2L1 = im1; im2R1 = im1;
+im2L0 = im0; im2R0 = im0; 
 
 % wn=cwin0(img0, 'Stereo', cf, rc00, window1, window2);
 [iLf0 iRf0]=cwin3(im2L0, im2R0, cf, rc00, window1, window2);
@@ -83,10 +80,7 @@ for k0=1:size(v0,1)
       im0 = AFCwordStim(word1(k0,:),imSzPix,charLocations,wordColor,fontSize);
       im0(im0>1) = 255;
       im0 = flipud(im0);
-      im1 = AFCwordStim(word2(k0,:),imSzPix,charLocations,wordColor,fontSize);   
-      im1(im1>0) = 255;
-      im1 = flipud(im1);
-      im2L0 = im0; im2R0 = im0; im2L1 = im1; im2R1 = im1;    
+      im2L0 = im0; im2R0 = im0;    
       % MAKING CONTINUOUS ACCOMMODATIVE STIMULUS
       tSin = 0:(1/(nRmpSteps-1)):1; % support for sinusoidal modulation
       sinValues = [];
@@ -104,34 +98,17 @@ for k0=1:size(v0,1)
 
       %disp( n2s(v0(k0)));        
       fprintf('TRL= %f, L = %f  , R = %f , DEG = %f, Demand = %f\n' ,k0, opto(name_map('l_disp')).control.getFocalPower.focal_power, opto(name_map('r_disp')).control.getFocalPower.focal_power, (zaber(name_map('rotation')).control.getposition)./2.1333E3, v0(k0) );
-      fprintf(['First word is ''' word1(k0,:) ''', second word is ''' word2(k0,:) ''' \n']);
 
       snd(250, 0.25); %pause(2.75);
       KbWait([], 2); 
 
       if scene.enable_tcp; send_tcp0(scene, 1); end; t0(k0,:)=clock;
       
-      snd(1000, 0.2); pause(0.8);
-      for i = 1:floor(length(sinValues)/2)
-         opto(name_map('l_disp')).control.setFocalPower(power_dispL-sinValues(i));
-         opto(name_map('r_disp')).control.setFocalPower(power_dispR-sinValues(i));
-         pause(tIntervalStm);
-      end
-      [iLf1 iRf1]=cwin3(im2L1, im2R1, cf, rc00, window1, window2);
-      for i = (floor(length(sinValues)/2)+1):length(sinValues)
-         opto(name_map('l_disp')).control.setFocalPower(power_dispL-sinValues(i));
-         opto(name_map('r_disp')).control.setFocalPower(power_dispR-sinValues(i));
-         pause(tIntervalStm);
-      end      
-      snd(1000, 0.1); pause(0.2);
-      snd(1000, 0.1); pause(0.8);
+      snd(1000, 0.2); pause(1);
      
       if scene.enable_tcp; send_tcp0(scene, 0); end %stage) 0stop 1record
       %pause(3);
       %wn=cwin0(img0, 'Stereo', cf, rc00, window1, window2);
-      [iLf0 iRf0]=cwin3(im2L0, im2R0, cf, rc00, window1, window2);
-      opto(name_map('l_disp')).control.setFocalPower(power_dispL-meanv0(k0));
-      opto(name_map('r_disp')).control.setFocalPower(power_dispR-meanv0(k0));
     %           zaber(name_map('rotation')).move_deg(-3); %%-6400
       zaber(name_map('rotation')).move_deg(dgs0); %%-6400
 
@@ -151,5 +128,4 @@ AFCp.v1=power_dispR
 AFCp.t3=cat(3, t0, t1, t2);
 AFCp.dgs=dgs;
 AFCp.imL0=im2L0;  AFCp.imR0=im2R0;
-AFCp.imL1=im2L1;  AFCp.imR1=im2R1;
 AFCp.sinValues = sinValuesAll;

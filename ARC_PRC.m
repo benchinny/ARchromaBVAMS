@@ -6,21 +6,12 @@ filePath = 'G:\My Drive\exp_bvams\code_repo\ARC\';
 vsIncrement = input(['Increment visit number? The current visit number is ' num2str(vs) ' (1 for yes, 0 for no)']);
 vs = vs+vsIncrement;
 
-% expSubType = 'OLD';
-% expSubType = 'STP';
-% expSubType = 'SIN';
-% expSubType = 'STEP';
-expSubType = 'WRD';
-
 wordColor = 'blue';
 recordAccommodation = 0;
 fontSize = 100;
-% focStmOptDst = 1.25.*[1.75];
-% meanFocstmOptDst = 1.25.*[2.25]';
-% AFCv = [1 1 1]';
-focStmOptDst = [-1.75];
-meanFocstmOptDst = [2.75]';
-AFCv = [1 1 1]';
+meanFocstmOptDst = [1 4 1.5 3.5 2 0.5]';
+focStmOptDst = zeros(size(meanFocstmOptDst));
+AFCv = [1 2 3 4 5 6]';
 
 focStmOptDst = focStmOptDst.*1.25;
 meanFocstmOptDst = meanFocstmOptDst.*1.25;
@@ -79,23 +70,10 @@ meanv00 = meanFocstmOptDst(AFCv);
 % im2(im2>0) = 255;
 % im2 = flipud(im2);
 AFCfls0=[filePath 'S' num2str(sn) 'V' num2str(vs) '_AFC_' ey 'ACL' n2s(ACL) '_' tme];
-if strcmp(expSubType,'OLD')
-   AFCp=AFC9f(AFCim0, AFCim1, zL, zR, v00, sr, window1, window2);
-elseif strcmp(expSubType,'SIN')
-   [im2L0, im2L1, im2R0, im2R1] = AFCtcaStmImg(AFCim0, AFCim1, zL, zR);
-   AFCp=AFCsin(im2L0, im2L1, im2R0, im2R1, v00, meanv00, sr, window1, window2);
-elseif strcmp(expSubType,'STEP')
-   [im2L0, im2L1, im2R0, im2R1] = AFCtcaStmImg(AFCim0, AFCim1, zL, zR); 
-   AFCp=AFCstep(im2L0, im2L1, im2R0, im2R1, v00, meanv00, sr, window1, window2); 
-elseif strcmp(expSubType,'WRD')
-   % im0 = imread('G:\My Drive\exp_bvams\code_repo\imgs\vrn10_R_sd1.png');
-   % im1 = imread('G:\My Drive\exp_bvams\code_repo\imgs\vrn10_B_sd1.png');
-   word1 = repmat(['van';'run';'ran';'can';'son';'con'],[8 1]);
-   word2 = repmat(['uno';'car';'ace';'sun';'one';'row'],[8 1]);
-   word1 = word1(randperm(size(word1,1)),:);
-   word2 = word2(randperm(size(word1,1)),:);
-   AFCp=AFCchangeWord(word1, word2, v00, meanv00, sr, window1, window2,wordColor,recordAccommodation,fontSize);    
-end
+
+word1 = repmat(['4';'5';'6'],[8 1]);
+word1 = word1(randperm(size(word1,1)),:);
+AFCp=AFCpractice(word1, v00, meanv00, sr, window1, window2,wordColor,recordAccommodation,fontSize);    
 
 AFCp.v0=v0;
 AFCp.v00=v00;
