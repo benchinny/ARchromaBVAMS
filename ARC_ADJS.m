@@ -14,9 +14,8 @@ cf=ones(3,2);
 %LCAim='texture0_1080_newfill_malt.png';    
 %im2R='black.png';       
 % im2L='texture0_1080_newfill_malt.png';
-im2L = 'G:\My Drive\exp_bvams\code_repo\imgs\TCA_r540_k120_b108_cw5_sbm7.png';
+% im2L = 'G:\My Drive\exp_bvams\code_repo\imgs\TCA_r540_k120_b108_cw5_sbm7.png';  
 %im2L='vrn10_G_sd1.png';
-im2R=im2L ;
 
 deg=-3;            
 zaber(name_map('rotation')).move_deg(deg); %%-6400            
@@ -30,7 +29,16 @@ opto(name_map('r_disp')).control.getFocalPower.focal_power
 opto(name_map('l_disp')).control.setFocalPower(14+sr(1));%-dmnd(k0));
 opto(name_map('l_disp')).control.getFocalPower.focal_power
 
-testim = imread(im2R);
+bTexture = false;
+if bTexture
+    im2L='texture0_1080_newfill_malt.png';
+    im2R=im2L;
+    testim = imread(im2R);
+else
+    imB = AFCwordStim('car',[500 500],[70 70; 160 70; 260 70],'blue',200);
+    imB(imB>0) = 255;
+    testim = flipud(imB);   
+end
 [iLf iRf]=cwin3(imread("black.png"), testim , cf, rc00, window2, window1);
 
 power_dispL = 14;
