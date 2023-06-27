@@ -107,11 +107,14 @@ AFCp = AFCpAll;
 
 v0=[find(diff(t3)>1); length(t3)];
 i0=1;
+v1length = [];
 for k0=1:length(v0);
    v1=i0:v0(k0);
    x0{k0}=x(v1);
    y0{k0}=y(v1);
+   t0{k0}=t3(v1);
    i0=v0(k0)+1;
+   v1length(end+1) = length(v1);
 end
 
 % FINDS AUTOREFRACTOR VALUES FOR 'REFERENCE' ACCOMMODATION (SOME
@@ -252,12 +255,13 @@ for i = 1:size(uniqueRGBvalues,1)
         subplot(figSize,colNum,j+(rowNum-1)*colNum);
         set(gca,'FontSize',15);
         if bSTACK
+            frmDuration = 1/30;
             hold on;
-            plot(x3stack(indCndMarkers,:)','-','Color',[0 0.45 0.74]);
-            plot(y3stack(indCndMarkers,:)','-','Color',[0.85 0.33 0.1]);
-            plot(mean(x3stack(indCndMarkers,:),1),'-','Color',[0 0.45 0.74],'LineWidth',2);
-            plot(mean(y3stack(indCndMarkers,:),1),'-','Color',[0.85 0.33 0.1],'LineWidth',2);
-            xlim([0 220]);
+            plot([0:frmDuration:(size(x3stack,2)-1)*frmDuration],x3stack(indCndMarkers,:),'-','Color',[0 0.45 0.74]);
+            plot([0:frmDuration:(size(x3stack,2)-1)*frmDuration],y3stack(indCndMarkers,:),'-','Color',[0.85 0.33 0.1]);
+            plot([0:frmDuration:(size(x3stack,2)-1)*frmDuration],mean(x3stack(indCndMarkers,:),1),'-','Color',[0 0.45 0.74],'LineWidth',2);
+            plot([0:frmDuration:(size(x3stack,2)-1)*frmDuration],mean(y3stack(indCndMarkers,:),1),'-','Color',[0.85 0.33 0.1],'LineWidth',2);
+            xlim([0 quantile(v1length,0.05)*frmDuration]);
             ylim([-3 3]);
         else
             hold on;
@@ -269,7 +273,7 @@ for i = 1:size(uniqueRGBvalues,1)
             end
             ylim([-3 3]);
         end
-        xlabel('Frame'); ylabel('Power (Diopters)'); 
+        xlabel('Time (s)'); ylabel('Power (Diopters)'); 
         title(['Step = ' num2str(stepSizes(j)*optDistScale) ...
               ', RGB = [' num2str(uniqueRGBvalues(i,1)) ' ' num2str(uniqueRGBvalues(i,2)) ' ' num2str(uniqueRGBvalues(i,3)) '] to ['...
               num2str(uniqueRGBvalues(i,4)) ' ' num2str(uniqueRGBvalues(i,5)) ' ' num2str(uniqueRGBvalues(i,6)) ']']); 
@@ -381,12 +385,12 @@ if bSTACK
             ind1stHalf = logical(ind1stHalf);
             ind2ndHalf = imresize([0 1],[1 length(trace2plot)],'nearest');
             ind2ndHalf = logical(ind2ndHalf);
-            plot(find(ind1stHalf),trace2plot(ind1stHalf),'-','Color',clrConditionsUnq(i,1:3),'LineWidth',2);
-            plot(find(ind2ndHalf),trace2plot(ind2ndHalf),'-','Color',clrConditionsUnq(i,4:6),'LineWidth',2);
+            plot(find(ind1stHalf)*frmDuration,trace2plot(ind1stHalf),'-','Color',clrConditionsUnq(i,1:3),'LineWidth',2);
+            plot(find(ind2ndHalf)*frmDuration,trace2plot(ind2ndHalf),'-','Color',clrConditionsUnq(i,4:6),'LineWidth',2);
     %        plot(mean(y3stack(indCndCell{i},:),1),'-','Color',[0.85 0.33 0.1],'LineWidth',2);
-            xlim([0 220]);
+            xlim([0 quantile(v1length,0.05)*frmDuration]);
             ylim([-3 3]);
-            xlabel('Frame'); ylabel('Power (Diopters)'); title(['Step size = ' num2str(stepSizeUnq(j))]);
+            xlabel('Time (s)'); ylabel('Power (Diopters)'); title(['Step size = ' num2str(stepSizeUnq(j))]);
         end
     end
 end
