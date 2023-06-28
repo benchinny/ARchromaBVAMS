@@ -6,6 +6,7 @@ power_dispL_min = 7;
 power_dispL_max = 16;
 power_dispR_min = 7;
 power_dispR_max = 16.4;
+adjustIncrement = 0.5;
 
 %%input a output b
 cf=ones(3,2);
@@ -35,9 +36,12 @@ if bTexture
     im2R=im2L;
     testim = imread(im2R);
 else
-    imB = AFCwordStim('car',[500 500],[70 70; 160 70; 260 70],'blue',200);
+    wordList = ['car'; 'arc'; 'sea'; 'one'; 'uno'; 'sun'; 'new'; 'ace'; 'air'];
+    wordInd = round(rand*size(wordList,1));
+    imB = AFCwordStimImproved(wordList(wordInd,:),[320 320],'blue');
     imB(imB>0) = 255;
     testim = flipud(imB);   
+    display(['Word is ' wordList(wordInd,:)]);
 end
 [iLf iRf]=cwin3(imread("black.png"), testim , cf, rc00, window2, window1);
 
@@ -65,23 +69,30 @@ try
         if keyIsDown
             if keyCode(KbName('RightArrow')) | keyCode(KbName('6'))
                 if ey(1)=='R'
-                    power_dispR=power_dispR+0.05;
+                    power_dispR=power_dispR+adjustIncrement;
                 elseif ey(1)=='L'
-                    power_dispL=power_dispL+0.05;
+                    power_dispL=power_dispL+adjustIncrement;
                 else 
-                    power_dispR=power_dispR+0.05;
-                    power_dispL=power_dispL+0.05;
+                    power_dispR=power_dispR+adjustIncrement;
+                    power_dispL=power_dispL+adjustIncrement;
                 end
                 %end
             elseif keyCode(KbName('LeftArrow')) | keyCode(KbName('4'))
                 if ey(1)=='R'
-                    power_dispR=power_dispR-0.05;
+                    power_dispR=power_dispR-adjustIncrement;
                 elseif ey(1)=='L'
-                    power_dispL=power_dispL-0.05;
+                    power_dispL=power_dispL-adjustIncrement;
                 else
-                    power_dispR=power_dispR-0.05;
-                    power_dispL=power_dispL-0.05;
+                    power_dispR=power_dispR-adjustIncrement;
+                    power_dispL=power_dispL-adjustIncrement;
                 end
+            elseif ~bTexture & (keyCode(KbName('DownArrow')) | keyCode(KbName('5')))
+                wordInd = ceil(rand*size(wordList,1));
+                imB = AFCwordStimImproved(wordList(wordInd,:),[320 320],'blue');
+                imB(imB>0) = 255;
+                testim = flipud(imB);   
+                display(['Word is ' wordList(wordInd,:)]);
+                [iLf iRf]=cwin3(imread("black.png"), testim , cf, rc00, window2, window1);
             elseif keyCode(KbName('Return')) %| keyCode(KbName('Return'))
                 opt_chk=1;    
             else
