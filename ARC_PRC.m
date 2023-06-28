@@ -4,6 +4,7 @@ ey=input('which eye are we testing (type 1 for Right or 2 for Binocular)? ');
 if ey==1; ey='Right'; elseif ey==2; ey='Binc'; end
 filePath = 'G:\My Drive\exp_bvams\code_repo\ARC\';
 vsIncrement = input(['Increment visit number? The current visit number is ' num2str(vs) ' (1 for yes, 0 for no)']);
+vsIncrement = input(['Asking again: increment visit number? The current visit number is ' num2str(vs) ' (1 for yes, 0 for no)']);
 
 if vsIncrement>=1
    vs = vs+1;
@@ -11,10 +12,14 @@ end
 
 wordColor = 'blue';
 recordAccommodation = 0;
-fontSize = 100;
-meanFocstmOptDst = [1 4 1.5 3.5 2 0.5]';
+meanFocstmOptDst = [3 5 3 5 3 5]';
 focStmOptDst = zeros(size(meanFocstmOptDst));
 AFCv = [1 2 3 4 5 6]';
+bSizeCue = true;
+
+if max(meanFocstmOptDst)>5
+   error('ARC_PRC: max value of meanFocstmOptDst must be <=5'); 
+end
 
 focStmOptDst = focStmOptDst.*1.25;
 meanFocstmOptDst = meanFocstmOptDst.*1.25;
@@ -76,7 +81,7 @@ AFCfls0=[filePath 'S' num2str(sn) 'V' num2str(vs) '_AFC_' ey 'ACL' n2s(ACL) '_' 
 
 word1 = repmat(['cat';'cut'],[8 1]);
 word1 = word1(randperm(size(word1,1)),:);
-AFCp=AFCpractice(word1, v00, meanv00, sr, window1, window2,wordColor,recordAccommodation,fontSize);    
+AFCp=AFCpractice(word1, v00, meanv00, sr, window1, window2,wordColor,recordAccommodation,bSizeCue);    
 
 AFCp.v0=v0;
 AFCp.v00=v00;

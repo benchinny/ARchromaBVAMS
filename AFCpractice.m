@@ -1,6 +1,6 @@
 %%220508 AFC9f include TCA correction 
 % function [v1 t3 dgs]=AFC8f(im_path, v0, sr, window1, window2)
-function AFCp=AFCpractice(word1, v0, meanv0, sr, window1, window2,wordColor,recordAccommodation,fontSize)
+function AFCp=AFCpractice(word1, v0, meanv0, sr, window1, window2,wordColor,recordAccommodation,bSizeCue)
 
 %v0 vector of accomodations
 %        control: [1×1 Zaber.AsciiDevice]
@@ -18,10 +18,11 @@ if size(v0,1)~=size(meanv0,1)
     error('AFCpractice: v0 and meanv0 must have the same number of rows!');
 end
 
-imSzPix = [160 160];
+imSzPix = [320 320];
 if imSzPix(1)>320 || imSzPix(2)>320
     imSzPix = [320 320];
 end
+stimSizeScale = 3.3.*atand(1./(100./(meanv0(1).*0.8)))./atand(1./(100./(5))); % value of 3.3 gives a stimulus 3 degrees in size
 
 nRmpSteps = 10; % number of steps for cosine ramp
 nRmpSteps = round(nRmpSteps/2)*2; % make sure it's even number
@@ -34,7 +35,17 @@ opto(name_map('r_disp')).control.setFocalPower(power_dispR-meanv0(1));
 opto(name_map('l_disp')).control.setFocalPower(power_dispL-meanv0(1));
 
 % MAKING WORD STIMULI
-im0 = AFCwordStimImproved(word1(1,:),imSzPix,wordColor);
+im0initial = AFCwordStimImproved(word1(1,:),imSzPix,wordColor);
+
+if bSizeCue
+    im0 = [];
+    im0(:,:,1) = imresize(squeeze(im0initial(:,:,1)),size(squeeze(im0initial(:,:,1))).*stimSizeScale);
+    im0(:,:,2) = imresize(squeeze(im0initial(:,:,2)),size(squeeze(im0initial(:,:,2))).*stimSizeScale);
+    im0(:,:,3) = imresize(squeeze(im0initial(:,:,3)),size(squeeze(im0initial(:,:,3))).*stimSizeScale);
+else
+    im0 = im0initial;
+end
+
 im0(im0>1) = 255;
 im0 = flipud(im0);
 im2L0 = im0; im2R0 = im0; 
@@ -73,8 +84,17 @@ sinValuesAll = [];
 % stage) 0stop 1record figure this out with Steve
 disp('ready to start');  KbWait([], 2); 
 for k0=1:size(v0,1)
+      stimSizeScale = 3.3.*atand(1./(100./(meanv0(k0).*0.8)))./atand(1./(100./(5)));
       % MAKING WORD STIMULI
-      im0 = AFCwordStimImproved(word1(k0,:),imSzPix,wordColor);
+      im0initial = AFCwordStimImproved(word1(k0,:),imSzPix,wordColor);
+      if bSizeCue
+          im0 = [];
+          im0(:,:,1) = imresize(squeeze(im0initial(:,:,1)),size(squeeze(im0initial(:,:,1))).*stimSizeScale);
+          im0(:,:,2) = imresize(squeeze(im0initial(:,:,2)),size(squeeze(im0initial(:,:,2))).*stimSizeScale);
+          im0(:,:,3) = imresize(squeeze(im0initial(:,:,3)),size(squeeze(im0initial(:,:,3))).*stimSizeScale);
+      else
+          im0 = im0initial; 
+      end
       im0(im0>1) = 255;
       im0 = flipud(im0);
       im2L0 = im0; im2R0 = im0;    
