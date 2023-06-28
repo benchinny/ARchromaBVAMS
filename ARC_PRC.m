@@ -12,7 +12,7 @@ end
 
 wordColor = 'blue';
 recordAccommodation = 0;
-meanFocstmOptDst = [3 5 3 5 3 5]';
+meanFocstmOptDst = [2 4 2 4 2 4]';
 focStmOptDst = zeros(size(meanFocstmOptDst));
 AFCv = [1 2 3 4 5 6]';
 bSizeCue = true;
@@ -79,7 +79,7 @@ meanv00 = meanFocstmOptDst(AFCv);
 % im2 = flipud(im2);
 AFCfls0=[filePath 'S' num2str(sn) 'V' num2str(vs) '_AFC_' ey 'ACL' n2s(ACL) '_' tme];
 
-word1 = repmat(['cat';'cut'],[8 1]);
+word1 = repmat(['cat';'cut'],[16 1]);
 word1 = word1(randperm(size(word1,1)),:);
 AFCp=AFCpractice(word1, v00, meanv00, sr, window1, window2,wordColor,recordAccommodation,bSizeCue);    
 
@@ -98,7 +98,7 @@ end
          
 opto(name_map('l_disp')).control.setFocalPower(14+sr(1));
 opto(name_map('r_disp')).control.setFocalPower(14.4+sr(2));
-zaber(name_map('rotation')).move_deg(-3); %%-6400
+% zaber(name_map('rotation')).move_deg(-3); %%-6400
 [iLf iRf]=cwin3(imread('black.png'), imread('black.png') , cf, rc00, window2, window1);
 clear LCAim;
 sca;

@@ -159,7 +159,7 @@ end
          
 opto(name_map('l_disp')).control.setFocalPower(14+sr(1));
 opto(name_map('r_disp')).control.setFocalPower(14.4+sr(2));
-zaber(name_map('rotation')).move_deg(-3); %%-6400
+% zaber(name_map('rotation')).move_deg(-3); %%-6400
 [iLf iRf]=cwin3(imread('black.png'), imread('black.png') , cf, rc00, window2, window1);
 clear LCAim;
 sca;

@@ -111,7 +111,7 @@ for k0=1:size(v0,1)
       [iLf0 iRf0]=cwin3(im2L0, im2R0, cf, rc00, window1, window2);
       opto(name_map('l_disp')).control.setFocalPower(power_dispL-meanv0(k0));
       opto(name_map('r_disp')).control.setFocalPower(power_dispR-meanv0(k0));
-      zaber(name_map('rotation')).move_deg(dgs(k0)); %%-6400
+%      zaber(name_map('rotation')).move_deg(dgs(k0)); %%-6400
 
       %disp( n2s(v0(k0)));        
       fprintf('TRL= %f, L = %f  , R = %f , DEG = %f, Demand = %f\n' ,k0, opto(name_map('l_disp')).control.getFocalPower.focal_power, opto(name_map('r_disp')).control.getFocalPower.focal_power, (zaber(name_map('rotation')).control.getposition)./2.1333E3, v0(k0) );
@@ -185,12 +185,12 @@ for k0=1:size(v0,1)
       %pause(3);
       %wn=cwin0(img0, 'Stereo', cf, rc00, window1, window2);
     %           zaber(name_map('rotation')).move_deg(-3); %%-6400
-      zaber(name_map('rotation')).move_deg(dgs0); %%-6400
+%      zaber(name_map('rotation')).move_deg(dgs0); %%-6400
 
       t1(k0,:)=clock;
 
       %snd(2000, 0.25);  pause(2.75);
-      pause(3);
+%      pause(3);
 
       %if scene.enable_tcp; send_tcp0(scene, 0); end %stage) 0stop 1record
       t2(k0,:)=clock;
