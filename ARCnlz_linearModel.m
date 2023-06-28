@@ -1,6 +1,6 @@
 function [weightsRBS1_x, weightsRBS1_y] = ARCnlz_linearModel         
 
-sn = 17; % CURRENTLY HAVE SUBJECTS 11 THROUGH 15
+sn = 19; % CURRENTLY HAVE SUBJECTS 11 THROUGH 15
 bEXCLUDE = true;
 gammaFactorR = 2.4;
 gammaFactorB = 2.4;
@@ -26,7 +26,10 @@ elseif sn==16
    excludeTrials = [];     
 elseif sn==17
    vs = 1:6;
-   excludeTrials = [];        
+   excludeTrials = [];  
+elseif sn==19
+   vs = 5:10;
+   excludeTrials = [];     
 else
    error('ARCnlz_linearModel: unhandled subject number!');
 end
@@ -37,7 +40,7 @@ filePath = 'G:\My Drive\exp_bvams\code_repo\';
 if strcmp(getenv('username'),'bankslab')
    dataDirectory = [filePath 'ARC\'];
 elseif strcmp(getenv("USER"),'benchin')
-   dataDirectory = '/Users/benchin/Documents/ARchroma/'; 
+   dataDirectory = '/Users/benchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/ARChroma/Analysis/'; 
 elseif strcmp(getenv("USER"),'emily')
    dataDirectory = '/Users/emily/Library/CloudStorage/GoogleDrive-emilyacooper@gmail.com/Shared drives/ARChroma/Analysis/';
 elseif strcmp(getenv("USER"),'ben')
@@ -206,9 +209,19 @@ weightsRBS1_x = [deltaR deltaB deltaS delta1]\(meanChangeXvec');
 weightsRBS1_y = [deltaR deltaB deltaS delta1]\(meanChangeYvec');
 
 figure;
-set(gcf,'Position',[189 395 1118 420]);
-subplot(1,2,1);
-plot([deltaR deltaB deltaS delta1]*weightsRBS1_x,meanChangeXvec,'ko','LineWidth',2);
+set(gcf,'Position',[189 395 1280 420]);
+subplot(1,3,1);
+plot([deltaR deltaB deltaS delta1]*weightsRBS1_x,meanChangeXvec,'ko','LineWidth',1);
+xlim([-3 3]);
+ylim([-3 3]);
+set(gca,'FontSize',15);
+xlabel('Prediction \DeltaD');
+ylabel('Measured \DeltaD');
+title(['Correlation = ' num2str(corr([deltaR deltaB deltaS delta1]*weightsRBS1_x,meanChangeXvec'),3)]);
+axis square;
+
+subplot(1,3,2);
+plot([deltaR deltaB deltaS delta1]*weightsRBS1_y,meanChangeYvec,'ko','LineWidth',1);
 xlim([-3 3]);
 ylim([-3 3]);
 set(gca,'FontSize',15);
@@ -216,13 +229,17 @@ xlabel('Prediction \DeltaD');
 ylabel('Measured \DeltaD');
 axis square;
 
-subplot(1,2,2);
-plot([deltaR deltaB deltaS delta1]*weightsRBS1_y,meanChangeYvec,'ko','LineWidth',2);
-xlim([-3 3]);
-ylim([-3 3]);
-set(gca,'FontSize',15);
-xlabel('Prediction \DeltaD');
-ylabel('Measured \DeltaD');
+subplot(1,3,3);
+hold on;
+bar(1,weightsRBS1_x(1),'FaceColor','r');
+bar(2,weightsRBS1_x(2),'FaceColor','b');
+bar(3,weightsRBS1_x(3),'FaceColor','k');
+bar(4,weightsRBS1_x(4),'FaceColor','w');
+set(gca,'XTick',[1 2 3 4]);
+set(gca,'XTickLabel',{'Red' 'Blue' 'D_{opt}' 'Bias'});
+title('Weights');
+set(gca,'FontSize',20);
+ylim(max(weightsRBS1_x).*[-1.2 1.2]);
 axis square;
 
 end
