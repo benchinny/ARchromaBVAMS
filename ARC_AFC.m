@@ -4,7 +4,10 @@ ey=input('which eye are we testing (type 1 for Right or 2 for Binocular)? ');
 if ey==1; ey='Right'; elseif ey==2; ey='Binc'; end
 filePath = 'G:\My Drive\exp_bvams\code_repo\ARC\';
 vsIncrement = input(['Increment visit number? The current visit number is ' num2str(vs) ' (1 for yes, 0 for no)']);
-vs = vs+vsIncrement;
+
+if vsIncrement>=1
+   vs = vs+1;
+end
 
 % expSubType = 'OLD';
 % expSubType = 'STP';

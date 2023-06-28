@@ -18,12 +18,9 @@ if size(v0,1)~=size(meanv0,1)
     error('AFCpractice: v0 and meanv0 must have the same number of rows!');
 end
 
-if fontSize>150
-   imSzPix = [500 500];
-   charLocations = [160 70];
-else
-   imSzPix = [500 500];
-   charLocations = [170 170];    
+imSzPix = [160 160];
+if imSzPix(1)>320 || imSzPix(2)>320
+    imSzPix = [320 320];
 end
 
 nRmpSteps = 10; % number of steps for cosine ramp
@@ -37,7 +34,7 @@ opto(name_map('r_disp')).control.setFocalPower(power_dispR-meanv0(1));
 opto(name_map('l_disp')).control.setFocalPower(power_dispL-meanv0(1));
 
 % MAKING WORD STIMULI
-im0 = AFCwordStim(word1(1,:),imSzPix,charLocations,wordColor,fontSize);
+im0 = AFCwordStimImproved(word1(1,:),imSzPix,wordColor);
 im0(im0>1) = 255;
 im0 = flipud(im0);
 im2L0 = im0; im2R0 = im0; 
@@ -77,7 +74,7 @@ sinValuesAll = [];
 disp('ready to start');  KbWait([], 2); 
 for k0=1:size(v0,1)
       % MAKING WORD STIMULI
-      im0 = AFCwordStim(word1(k0,:),imSzPix,charLocations,wordColor,fontSize);
+      im0 = AFCwordStimImproved(word1(k0,:),imSzPix,wordColor);
       im0(im0>1) = 255;
       im0 = flipud(im0);
       im2L0 = im0; im2R0 = im0;    
@@ -114,16 +111,16 @@ for k0=1:size(v0,1)
                   if keyCode(KbName('5'))
                       opt_chk = 1;
                       rsp = 5;
-                      disp(['Subject response: ' num2str(rsp) ', right answer = 5']);
+                      disp(['Subject response: ' num2str(rsp) ', right answer = ' word1(k0,:)]);
                       %end
                   elseif keyCode(KbName('4')) %| keyCode(KbName('Return'))
                       opt_chk = 1;
                       rsp = 4;
-                      disp(['Subject response: ' num2str(rsp) ', right answer = 4']);
+                      disp(['Subject response: ' num2str(rsp) ', right answer = ' word1(k0,:)]);
                   elseif keyCode(KbName('6')) %| keyCode(KbName('Return'))
                       opt_chk = 1;
                       rsp = 6;
-                      disp(['Subject response: ' num2str(rsp) ', right answer = 6']);
+                      disp(['Subject response: ' num2str(rsp) ', right answer = ' word1(k0,:)]);
                   elseif keyCode(KbName('Return')) %| keyCode(KbName('Return'))
                       exitLoop = 1;
                       opt_chk = 1;
