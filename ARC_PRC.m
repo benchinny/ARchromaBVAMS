@@ -12,10 +12,10 @@ end
 
 wordColor = 'blue';
 recordAccommodation = 0;
-meanFocstmOptDst = [2 4 2 4 2 4]';
+meanFocstmOptDst = [3.5 2.5]';
 focStmOptDst = zeros(size(meanFocstmOptDst));
-AFCv = [1 2 3 4 5 6]';
-bSizeCue = true;
+AFCv = [1 2 1 2 1 2 1 2 1 2]';
+bSizeCue = false;
 
 if max(meanFocstmOptDst)>5
    error('ARC_PRC: max value of meanFocstmOptDst must be <=5'); 

@@ -7,6 +7,7 @@ power_dispL_max = 16;
 power_dispR_min = 7;
 power_dispR_max = 16.4;
 adjustIncrement = 0.5;
+stimColor = 'blue';
 
 %%input a output b
 cf=ones(3,2);
@@ -38,7 +39,7 @@ if bTexture
 else
     wordList = ['car'; 'arc'; 'sea'; 'one'; 'uno'; 'sun'; 'new'; 'ace'; 'air'];
     wordInd = round(rand*size(wordList,1));
-    imB = AFCwordStimImproved(wordList(wordInd,:),[320 320],'blue');
+    imB = AFCwordStimImproved(wordList(wordInd,:),[320 320],stimColor);
     imB(imB>0) = 255;
     testim = flipud(imB);   
     display(['Word is ' wordList(wordInd,:)]);
@@ -88,7 +89,7 @@ try
                 end
             elseif ~bTexture & (keyCode(KbName('DownArrow')) | keyCode(KbName('5')))
                 wordInd = ceil(rand*size(wordList,1));
-                imB = AFCwordStimImproved(wordList(wordInd,:),[320 320],'blue');
+                imB = AFCwordStimImproved(wordList(wordInd,:),[320 320],stimColor);
                 imB(imB>0) = 255;
                 testim = flipud(imB);   
                 display(['Word is ' wordList(wordInd,:)]);
@@ -114,7 +115,7 @@ try
             opto(name_map('l_disp')).control.setFocalPower(power_dispL);
             opto(name_map('r_disp')).control.setFocalPower(power_dispR);
             
-            fprintf('Display power: L = %f  , R = %f\n',power_dispL, power_dispR);
+            fprintf('Display power: L = %f  , R = %f , Optical Distance R = %f D \n',power_dispL, power_dispR, 0.8.*(14.4-power_dispR));
 
             fprintf('\n');
         end

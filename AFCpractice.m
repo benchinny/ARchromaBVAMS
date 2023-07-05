@@ -18,7 +18,11 @@ if size(v0,1)~=size(meanv0,1)
     error('AFCpractice: v0 and meanv0 must have the same number of rows!');
 end
 
-imSzPix = [320 320];
+if bSizeCue
+    imSzPix = [160 160];
+else
+    imSzPix = [320 320];
+end
 if imSzPix(1)>320 || imSzPix(2)>320
     imSzPix = [320 320];
 end
@@ -179,7 +183,10 @@ for k0=1:size(v0,1)
 
       if scene.enable_tcp; send_tcp0(scene, 1); end; t0(k0,:)=clock;
       
-      snd(1000, 0.2); pause(1);
+      snd(1000, 0.2); pause(2);
+      
+      snd(1000, 0.1); pause(0.2);
+      snd(1000, 0.1); pause(0.8);
      
       if scene.enable_tcp; send_tcp0(scene, 0); end %stage) 0stop 1record
       %pause(3);
