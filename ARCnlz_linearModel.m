@@ -1,6 +1,6 @@
 function [weightsRBS1_x, weightsRBS1_y] = ARCnlz_linearModel         
 
-sn = 19; % CURRENTLY HAVE SUBJECTS 11 THROUGH 15
+sn = 16; % CURRENTLY HAVE SUBJECTS 11 THROUGH 15
 bEXCLUDE = true;
 gammaFactorR = 2.4;
 gammaFactorB = 2.4;
@@ -22,7 +22,7 @@ elseif sn==15
    vs = 7:12;
    excludeTrials = [];  
 elseif sn==16
-   vs = 1:6;
+   vs = 7:12;
    excludeTrials = [];     
 elseif sn==17
    vs = 1:6;
@@ -207,6 +207,8 @@ delta1 = ones(size(deltaR));
 
 weightsRBS1_x = [deltaR deltaB deltaS delta1]\(meanChangeXvec');
 weightsRBS1_y = [deltaR deltaB deltaS delta1]\(meanChangeYvec');
+weightsS1_x = [deltaS delta1]\(meanChangeXvec');
+weightsS1_y = [deltaS delta1]\(meanChangeYvec');
 
 figure;
 set(gcf,'Position',[189 395 1280 420]);
@@ -240,6 +242,38 @@ set(gca,'XTickLabel',{'Red' 'Blue' 'D_{opt}' 'Bias'});
 title('Weights');
 set(gca,'FontSize',20);
 ylim(max(weightsRBS1_x).*[-1.2 1.2]);
+axis square;
+
+figure;
+set(gcf,'Position',[189 395 1280 420]);
+subplot(1,3,1);
+plot([deltaS delta1]*weightsS1_x,meanChangeXvec,'ko','LineWidth',1);
+xlim([-3 3]);
+ylim([-3 3]);
+set(gca,'FontSize',15);
+xlabel('Prediction \DeltaD');
+ylabel('Measured \DeltaD');
+title(['Correlation = ' num2str(corr([deltaS delta1]*weightsS1_x,meanChangeXvec'),3)]);
+axis square;
+
+subplot(1,3,2);
+plot([deltaS delta1]*weightsS1_y,meanChangeYvec,'ko','LineWidth',1);
+xlim([-3 3]);
+ylim([-3 3]);
+set(gca,'FontSize',15);
+xlabel('Prediction \DeltaD');
+ylabel('Measured \DeltaD');
+axis square;
+
+subplot(1,3,3);
+hold on;
+bar(1,weightsS1_x(1),'FaceColor','k');
+bar(2,weightsS1_x(2),'FaceColor','w');
+set(gca,'XTick',[1 2]);
+set(gca,'XTickLabel',{'D_{opt}' 'Bias'});
+title('Weights');
+set(gca,'FontSize',20);
+ylim(max(weightsS1_x).*[-1.2 1.2]);
 axis square;
 
 end
