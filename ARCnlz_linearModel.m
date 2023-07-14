@@ -1,6 +1,6 @@
 function [weightsRBS1_x, weightsRBS1_y] = ARCnlz_linearModel         
 
-sn = 17; % CURRENTLY HAVE SUBJECTS 11 THROUGH 15
+sn = 21; % CURRENTLY HAVE SUBJECTS 11 THROUGH 15
 bEXCLUDE = true;
 gammaFactorR = 2.4;
 gammaFactorB = 2.4;
@@ -30,6 +30,9 @@ elseif sn==17
 elseif sn==19
    vs = 5:10;
    excludeTrials = [];     
+elseif sn==21
+   vs = 1:6;
+   excludeTrials = [];          
 else
    error('ARCnlz_linearModel: unhandled subject number!');
 end
@@ -200,14 +203,14 @@ for i = 1:size(uniqueConditions,1)
     meanChangeYvec(indCnd) = meanChangeY{i};
 end
 
-bRELATIVE_LUM = 1;
+bRELATIVE_LUM = 0;
 
 if bRELATIVE_LUM
    deltaR = (AFCp.rgb200(:,1).^gammaFactorR)./((AFCp.rgb200(:,1).^gammaFactorR) + (AFCp.rgb200(:,3).^gammaFactorB)) ...
              - (AFCp.rgb100(:,1).^gammaFactorR)./((AFCp.rgb100(:,1).^gammaFactorR) + (AFCp.rgb100(:,3).^gammaFactorB));
    deltaB = (AFCp.rgb200(:,3).^gammaFactorB)./((AFCp.rgb200(:,3).^gammaFactorB) + (AFCp.rgb200(:,1).^gammaFactorR)) ...
              - (AFCp.rgb100(:,3).^gammaFactorB)./((AFCp.rgb100(:,3).^gammaFactorB) + (AFCp.rgb100(:,1).^gammaFactorR));
-   deltaB = [];
+%   deltaB = [];
 else
    deltaR = AFCp.rgb200(:,1).^gammaFactorR - AFCp.rgb100(:,1).^gammaFactorR;
    deltaB = AFCp.rgb200(:,3).^gammaFactorB - AFCp.rgb100(:,3).^gammaFactorB;
@@ -311,8 +314,8 @@ axis square;
 
 subplot(1,3,3);
 hold on;
-bar(1,weightsRB_x(1),'FaceColor','k');
-bar(2,weightsRB_x(2),'FaceColor','w');
+bar(1,weightsRB_x(1),'FaceColor','r');
+bar(2,weightsRB_x(2),'FaceColor','b');
 set(gca,'XTick',[1 2]);
 set(gca,'XTickLabel',{'R' 'B'});
 title('Weights');

@@ -1,6 +1,6 @@
 %function ARCnlz         
 
-sn = 17; % CURRENTLY HAVE SUBJECTS 11 THROUGH 17
+sn = 21; % CURRENTLY HAVE SUBJECTS 11 THROUGH 17
 bEXCLUDE = true; % EXCLUDE BLINKS AND BAD TRIALS? 
 bSTACK = true; % STACK ACCOMMODATIVE TRACES IN FIGURES?
 bLeaveOutTransitions = true; % LEAVE OUT FIRST 50 FRAMES AND TRANSITION PERIOD OF ACCOMMODATION?
@@ -23,13 +23,16 @@ elseif sn==15
    vs = [7:10];
    excludeTrials = [49];  
 elseif sn==16
-   vs = 2:5;
+   vs = 7:10;
    excludeTrials = [];     
 elseif sn==17
    vs = 1:4;
    excludeTrials = [];    
 elseif sn==19
    vs = 5:8;
+   excludeTrials = [];    
+elseif sn==21
+   vs = 1:4;
    excludeTrials = [];       
 else
    error('ARCnlz: unhandled subject number!');
@@ -304,7 +307,7 @@ end
 
 figure;
 set(gcf,'Position',[207 189 1240 765]);
-subplot(2,2,1);
+subplot(1,3,1);
 hold on;
 for i = 1:biasPlotTags(1)
     errorbar(i,mean(biasX(i,:)),std(biasX(i,:)),'.','LineWidth',2,'MarkerSize',15,'Color',uniqueRGBvalues(i,1:3));
@@ -319,7 +322,7 @@ xlim([0 biasPlotTags(1)+1]);
 ylim([-2 2]);
 title('Narrowband no change');
 
-subplot(2,2,2);
+subplot(1,3,2);
 hold on;
 for i = (biasPlotTags(1)+1):biasPlotTags(2)
     errorbar(i-biasPlotTags(1),mean(biasX(i,:)),std(biasX(i,:)),'.','LineWidth',2,'MarkerSize',15,'Color',uniqueRGBvalues(i,1:3));
@@ -334,22 +337,12 @@ xlim([0 biasPlotTags(2)-biasPlotTags(1)+1]);
 ylim([-2 2]);
 title('Narrowband with change');
 
-subplot(2,2,3);
+subplot(1,3,3);
 hold on;
 for i = (biasPlotTags(2)+1):biasPlotTags(3)
     errorbar(uniqueRGBvalues(i,4).^gammaFactorR,mean(biasX(i,:)),std(biasX(i,:)),'.','LineWidth',2,'MarkerSize',15,'Color',uniqueRGBvalues(i,1:3));
     plot(uniqueRGBvalues(i,4).^gammaFactorR,mean(biasX(i,:)),'o','LineWidth',2,'MarkerSize',15,'MarkerFaceColor','w','Color',uniqueRGBvalues(i,1:3));
 end
-axis square;
-set(gca,'FontSize',15);
-xlabel('Amount of red (% max)');
-ylabel('Accommodative Bias (D)');
-xlim([-0.1 0.4]);
-ylim([-1 1]);
-title('Blue to mixed');
-
-subplot(2,2,4);
-hold on;
 for i = (biasPlotTags(3)+1):biasPlotTags(4)
     errorbar(uniqueRGBvalues(i,1).^gammaFactorR,mean(biasX(i,:)),std(biasX(i,:)),'.','LineWidth',2,'MarkerSize',15,'Color',uniqueRGBvalues(i,1:3));
     plot(uniqueRGBvalues(i,1).^gammaFactorR,mean(biasX(i,:)),'o','LineWidth',2,'MarkerSize',15,'MarkerFaceColor','w','Color',uniqueRGBvalues(i,1:3));
@@ -359,8 +352,22 @@ set(gca,'FontSize',15);
 xlabel('Amount of red (% max)');
 ylabel('Accommodative Bias (D)');
 xlim([-0.1 0.4]);
-ylim([-1 1]);
-title('Red to mixed');
+ylim([-2 2]);
+title('Single to mixed');
+
+% subplot(2,2,4);
+% hold on;
+% for i = (biasPlotTags(3)+1):biasPlotTags(4)
+%     errorbar(uniqueRGBvalues(i,1).^gammaFactorR,mean(biasX(i,:)),std(biasX(i,:)),'.','LineWidth',2,'MarkerSize',15,'Color',uniqueRGBvalues(i,1:3));
+%     plot(uniqueRGBvalues(i,1).^gammaFactorR,mean(biasX(i,:)),'o','LineWidth',2,'MarkerSize',15,'MarkerFaceColor','w','Color',uniqueRGBvalues(i,1:3));
+% end
+% axis square;
+% set(gca,'FontSize',15);
+% xlabel('Amount of red (% max)');
+% ylabel('Accommodative Bias (D)');
+% xlim([-0.1 0.4]);
+% ylim([-2 2]);
+% title('Red to mixed');
 
 figure;
 set(gcf,'Position',[182 399 1220 420]);
