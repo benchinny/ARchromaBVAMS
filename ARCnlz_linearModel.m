@@ -1,6 +1,6 @@
 function [weightsRBS1_x, weightsRBS1_y] = ARCnlz_linearModel         
 
-sn = 17; % CURRENTLY HAVE SUBJECTS 11 THROUGH 15
+sn = 19; % CURRENTLY HAVE SUBJECTS 11 THROUGH 15
 bEXCLUDE = true;
 gammaFactorR = 2.4;
 gammaFactorB = 2.4;
@@ -211,7 +211,7 @@ if bRELATIVE_LUM
              - scaleEquateRB.*(AFCp.rgb100(:,1).^gammaFactorR)./(scaleEquateRB.*(AFCp.rgb100(:,1).^gammaFactorR) + (AFCp.rgb100(:,3).^gammaFactorB));
    deltaB = (AFCp.rgb200(:,3).^gammaFactorB)./((AFCp.rgb200(:,3).^gammaFactorB) + scaleEquateRB.*(AFCp.rgb200(:,1).^gammaFactorR)) ...
              - (AFCp.rgb100(:,3).^gammaFactorB)./((AFCp.rgb100(:,3).^gammaFactorB) + scaleEquateRB.*(AFCp.rgb100(:,1).^gammaFactorR));
-%   deltaB = [];
+   deltaB = [];
 else
    deltaR = AFCp.rgb200(:,1).^gammaFactorR - AFCp.rgb100(:,1).^gammaFactorR;
    deltaB = AFCp.rgb200(:,3).^gammaFactorB - AFCp.rgb100(:,3).^gammaFactorB;
@@ -250,11 +250,18 @@ axis square;
 subplot(1,3,3);
 hold on;
 bar(1,weightsRBS1_x(1),'FaceColor','r');
-bar(2,weightsRBS1_x(2),'FaceColor','b');
-bar(3,weightsRBS1_x(3),'FaceColor','k');
-bar(4,weightsRBS1_x(4),'FaceColor','w');
-set(gca,'XTick',[1 2 3 4]);
-set(gca,'XTickLabel',{'Red' 'Blue' 'D_{opt}' 'Bias'});
+if ~bRELATIVE_LUM
+   bar(2,weightsRBS1_x(2),'FaceColor','b');
+   bar(3,weightsRBS1_x(3),'FaceColor','k');
+   bar(4,weightsRBS1_x(4),'FaceColor','w');
+   set(gca,'XTick',[1 2 3 4]);
+   set(gca,'XTickLabel',{'Red' 'Blue' 'D_{opt}' 'Bias'});
+else
+   bar(2,weightsRBS1_x(2),'FaceColor','k');
+   bar(3,weightsRBS1_x(3),'FaceColor','w');
+   set(gca,'XTick',[1 2 3]);
+   set(gca,'XTickLabel',{'Red' 'D_{opt}' 'Bias'});    
+end
 title('Weights');
 set(gca,'FontSize',20);
 ylim(max(weightsRBS1_x).*[-1.2 1.2]);
@@ -315,10 +322,17 @@ axis square;
 
 subplot(1,3,3);
 hold on;
-bar(1,weightsRB_x(1),'FaceColor','r');
-bar(2,weightsRB_x(2),'FaceColor','b');
-set(gca,'XTick',[1 2]);
-set(gca,'XTickLabel',{'R' 'B'});
+if ~bRELATIVE_LUM    
+    bar(1,weightsRB_x(1),'FaceColor','r');
+    bar(2,weightsRB_x(2),'FaceColor','b');
+    set(gca,'XTick',[1 2]);
+    set(gca,'XTickLabel',{'R' 'B'});
+else
+    bar(1,weightsRB_x(1),'FaceColor','r');
+    set(gca,'XTick',[1]);
+    set(gca,'XTickLabel',{'R'});
+end
+
 title('Weights');
 set(gca,'FontSize',20);
 ylim(max(weightsRB_x).*[-1.2 1.2]);
