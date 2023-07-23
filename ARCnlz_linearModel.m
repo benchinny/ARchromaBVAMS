@@ -210,7 +210,7 @@ for i = 1:size(uniqueConditions,1)
     meanChangeYvec(indCnd) = meanChangeY{i};
 end
 
-scaleEquateRB = 1/0.31;
+scaleEquateRB = 1/0.29;
 
 if bRELATIVE_LUM
    deltaR = scaleEquateRB.*(AFCp.rgb200(:,1).^gammaFactorR)./(scaleEquateRB.*(AFCp.rgb200(:,1).^gammaFactorR) + (AFCp.rgb200(:,3).^gammaFactorB)) ...
@@ -219,7 +219,7 @@ if bRELATIVE_LUM
              - (AFCp.rgb100(:,3).^gammaFactorB)./((AFCp.rgb100(:,3).^gammaFactorB) + scaleEquateRB.*(AFCp.rgb100(:,1).^gammaFactorR));
    deltaB = [];
 else
-   deltaR = AFCp.rgb200(:,1).^gammaFactorR - AFCp.rgb100(:,1).^gammaFactorR;
+   deltaR = scaleEquateRB.*AFCp.rgb200(:,1).^gammaFactorR - scaleEquateRB.*AFCp.rgb100(:,1).^gammaFactorR;
    deltaB = AFCp.rgb200(:,3).^gammaFactorB - AFCp.rgb100(:,3).^gammaFactorB;
 end
 deltaS = AFCp.v00*scaleFactor;
