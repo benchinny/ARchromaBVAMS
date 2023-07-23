@@ -33,7 +33,6 @@ elseif sn==19
    excludeTrials = [];     
 elseif sn==21
    vs = 1:6;
-<<<<<<< HEAD
    excludeTrials = [];
 elseif sn==23
    vs = 8:13;
@@ -41,12 +40,6 @@ elseif sn==23
 elseif sn==24
    vs = 1:8;
    excludeTrials = [];     
-=======
-   excludeTrials = [];   
-elseif sn==23
-   vs = 8:13;
-   excludeTrials = [];   
->>>>>>> 2801aadd4cd12a3a6231baede5e5b8c3383f8f9b
 else
    error('ARCnlz_linearModel: unhandled subject number!');
 end
