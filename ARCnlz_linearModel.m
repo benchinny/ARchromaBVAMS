@@ -1,11 +1,11 @@
 function [weightsRBS1_x, weightsRBS1_y] = ARCnlz_linearModel         
 
-sn = 19; % CURRENTLY HAVE SUBJECTS 11 THROUGH 15
+sn = 23; % CURRENTLY HAVE SUBJECTS 11 THROUGH 15
 bEXCLUDE = true;
 gammaFactorR = 2.4;
 gammaFactorB = 2.4;
 scaleFactor = 0.8;
-bRELATIVE_LUM = 1;
+bRELATIVE_LUM = 0;
 
 if sn==11 % 'VISIT' NUMBERS
    vs = [2 3 4 5 6 7];
@@ -33,7 +33,13 @@ elseif sn==19
    excludeTrials = [];     
 elseif sn==21
    vs = 1:6;
-   excludeTrials = [];          
+   excludeTrials = [];
+elseif sn==23
+   vs = 8:13;
+   excludeTrials = [];   
+elseif sn==24
+   vs = 1:8;
+   excludeTrials = [];     
 else
    error('ARCnlz_linearModel: unhandled subject number!');
 end
