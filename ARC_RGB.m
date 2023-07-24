@@ -47,7 +47,7 @@ end
 if strcmp(blockType,'random')
     nCnd = 20; % NUMBER OF CONDITIONS
     rVals = [0.56 0.42 0.32 0.24]'; % POSSIBLE RED PRIMARY VALUES
-    bVals = [1.00 0.76 0.57 0.43]'; % POSSIBLE BLUE PRIMARY VALUES
+    bVals = [1.00 0.73 0.53 0.39]'; % POSSIBLE BLUE PRIMARY VALUES
     stepVals = 1.25.*[1.25 0.75 -0.75 -1.25]'; % POSSIBLE STEP VALUES
     indCnd = reshape(randsample(1:length(rVals),nCnd*5,1),[nCnd 5]);
     rgb1 = [rVals(indCnd(:,1)) zeros([nCnd 1]) bVals(indCnd(:,2))];
@@ -123,11 +123,11 @@ elseif strcmp(expSubType,'STEP')
    AFCp=AFCstep(im2L0, im2L1, im2R0, im2R1, v00, meanv00, sr, window1, window2); 
 elseif strcmp(expSubType,'RGB')
    % imB = imread('G:\My Drive\exp_bvams\code_repo\imgs\vrn10_B_sd1.png');
-   imB = AFCwordStim('car',[500 500],[70 70; 160 70; 260 70],'green',200);
+   imB = AFCwordStim('car',[500 500],[50 50; 140 50; 240 50],'green',200);
    imB(imB>0) = 255;
    imB = flipud(imB);   
    imPattern = squeeze(imB(:,:,2));
-   imC = AFCwordStim('arc',[500 500],[70 70; 165 70; 230 70],'green',200);
+   imC = AFCwordStim('arc',[500 500],[60 50; 165 50; 220 50],'green',200);
    imC(imC>0) = 255;
    imC = flipud(imC); 
    imPattern(:,:,2) = squeeze(imC(:,:,2));

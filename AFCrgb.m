@@ -152,20 +152,21 @@ for k0=1:size(v0,1)
       
       if scene.enable_tcp; send_tcp0(scene, 1); end; t0(k0,:)=clock;
       
-      snd(1000, 0.2); pause(0.8);
+      snd(1000, 0.2); pause(0.45);
       for i = 1:floor(length(sinValues)/2)
          opto(name_map('l_disp')).control.setFocalPower(power_dispL-sinValues(i));
          opto(name_map('r_disp')).control.setFocalPower(power_dispR-sinValues(i));
          pause(tIntervalStm);
       end
       [iLf1 iRf1]=cwin3(im2R1, im2R1, cf, rc00, window1, window2);
+      tChange = clock;
       for i = (floor(length(sinValues)/2)+1):length(sinValues)
          opto(name_map('l_disp')).control.setFocalPower(power_dispL-sinValues(i));
          opto(name_map('r_disp')).control.setFocalPower(power_dispR-sinValues(i));
          pause(tIntervalStm);
       end      
       snd(1000, 0.1); pause(0.2);
-      snd(1000, 0.1); pause(0.8);
+      snd(1000, 0.1); pause(0.25);
      
       if scene.enable_tcp; send_tcp0(scene, 0); end %stage) 0stop 1record
       %pause(3);
@@ -189,6 +190,6 @@ end
 
 if scene.enable_tcp; fclose(scene.tcp_socket); end
 AFCp.v1=power_dispR
-AFCp.t3=cat(3, t0, t1, t2);
+AFCp.t3=cat(3, t0, t1, t2,tChange);
 AFCp.dgs=dgs;
 AFCp.sinValues = sinValuesAll;
