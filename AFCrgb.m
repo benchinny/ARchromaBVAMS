@@ -29,7 +29,7 @@ opto(name_map('r_disp')).control.setFocalPower(power_dispR-meanv0(1));
 opto(name_map('l_disp')).control.setFocalPower(power_dispL-meanv0(1));
 
 if size(imPattern,3)>1
-    indImPattern = int16(round(rand)+1);
+    indImPattern = int16(round(rand*(size(imPattern,3)-1))+1);
 else
     indImPattern = 1;
 end
@@ -47,7 +47,7 @@ log.WARNING = 3;
 log.INFO = 2;
 log.DEBUG = 1;
 log.LEVEL = log.DEBUG;
-scene.enable_tcp=1;
+scene.enable_tcp=0;
 scene.trial_num=1;
 
 if scene.enable_tcp
@@ -66,7 +66,7 @@ ipd=62./1000; %atand opposite/adjacent devi
 dgs=atand(ipd.*v0)./2-3; dgs(dgs<=-3)=-3; %degrees to rotate
 dgs0=atand(ipd.*2)./2-3; dgs0(dgs0<=-3)=-3; %degrees to rotate
 
-t0=zeros(length(v0), 6); t1=t0; t2=t0;
+t0=zeros(length(v0), 6); t1=t0; t2=t0; tChange = t0;
 sinValuesAll = [];
 % stage) 0stop 1record figure this out with Steve
 disp('ready to start');  KbWait([], 2); 
@@ -80,7 +80,7 @@ for k0=1:size(v0,1)
       end
       sinValuesAll(k0,:) = sinValues;
       if size(imPattern,3)>1
-        indImPattern = int16(round(rand)+1);
+        indImPattern = int16(round(rand*(size(imPattern,3)-1))+1);
       else
         indImPattern = 1;
       end
@@ -159,7 +159,7 @@ for k0=1:size(v0,1)
          pause(tIntervalStm);
       end
       [iLf1 iRf1]=cwin3(im2R1, im2R1, cf, rc00, window1, window2);
-      tChange = clock;
+      tChange(k0,:) = clock;
       for i = (floor(length(sinValues)/2)+1):length(sinValues)
          opto(name_map('l_disp')).control.setFocalPower(power_dispL-sinValues(i));
          opto(name_map('r_disp')).control.setFocalPower(power_dispR-sinValues(i));
