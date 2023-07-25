@@ -66,3 +66,8 @@ set(gca,'XTick',[1.5 3.5 5.5 7.5 9.5]);
 set(gca,'XTickLabel',{'1' '2' '3' '4' '5'});
 legend({'Accommodative demand' 'Color'});
 
+%% COMPARE WEIGHTING MODEL AND SWITCHING MODEL
+
+weightingModelRho = [0.946 0.863 0.939 0.943 0.528 0.971 0.853];
+switchingModelRho = [];
+
