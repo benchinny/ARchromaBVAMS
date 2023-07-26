@@ -1,6 +1,6 @@
 function [weightsRBS1_x, weightsRBS1_y] = ARCnlz_linearModel         
 
-sn = 23; % CURRENTLY HAVE SUBJECTS 11 THROUGH 15
+sn = 24; % CURRENTLY HAVE SUBJECTS 11 THROUGH 15
 bEXCLUDE = true;
 gammaFactorR = 2.4;
 gammaFactorB = 2.4;
@@ -210,7 +210,7 @@ for i = 1:size(uniqueConditions,1)
     meanChangeYvec(indCnd) = meanChangeY{i};
 end
 
-scaleEquateRB = 1/0.29;
+scaleEquateRB = 1/0.25;
 
 if bRELATIVE_LUM
    deltaR = scaleEquateRB.*(AFCp.rgb200(:,1).^gammaFactorR)./(scaleEquateRB.*(AFCp.rgb200(:,1).^gammaFactorR) + (AFCp.rgb200(:,3).^gammaFactorB)) ...
