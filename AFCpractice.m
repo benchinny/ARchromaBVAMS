@@ -19,7 +19,7 @@ if size(v0,1)~=size(meanv0,1)
 end
 
 if bSizeCue
-    imSzPix = [160 160];
+    imSzPix = [320 320];
 else
     imSzPix = [320 320];
 end
@@ -40,6 +40,7 @@ opto(name_map('l_disp')).control.setFocalPower(power_dispL-meanv0(1));
 
 % MAKING WORD STIMULI
 im0initial = AFCwordStimImproved(word1(1,:),imSzPix,wordColor);
+im0initial(:,:,3) = circshift(squeeze(im0initial(:,:,3)),-15);
 
 if bSizeCue
     im0 = [];
@@ -91,6 +92,7 @@ for k0=1:size(v0,1)
       stimSizeScale = 3.3.*atand(1./(100./(meanv0(k0).*0.8)))./atand(1./(100./(5)));
       % MAKING WORD STIMULI
       im0initial = AFCwordStimImproved(word1(k0,:),imSzPix,wordColor);
+      im0initial(:,:,3) = circshift(squeeze(im0initial(:,:,3)),-15);
       if bSizeCue
           im0 = [];
           im0(:,:,1) = imresize(squeeze(im0initial(:,:,1)),size(squeeze(im0initial(:,:,1))).*stimSizeScale);
