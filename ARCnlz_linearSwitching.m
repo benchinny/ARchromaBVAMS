@@ -1,6 +1,6 @@
-function [wR, wB, wS, bias, rbThreshold] = ARCnlz_linearSwitching        
+function [wR, wS, bias, rbThreshold] = ARCnlz_linearSwitching        
 
-sn = 16; % CURRENTLY HAVE SUBJECTS 11 THROUGH 15
+sn = 24; % CURRENTLY HAVE SUBJECTS 11 THROUGH 15
 bEXCLUDE = true;
 gammaFactorR = 2.4;
 gammaFactorB = 2.4;
@@ -32,7 +32,13 @@ elseif sn==19
    excludeTrials = [];     
 elseif sn==21
    vs = 1:6;
-   excludeTrials = [];          
+   excludeTrials = [];   
+elseif sn==23
+   vs = 8:13;
+   excludeTrials = [];  
+elseif sn==24
+   vs = 1:8;
+   excludeTrials = [];     
 else
    error('ARCnlz_linearModel: unhandled subject number!');
 end
@@ -203,30 +209,29 @@ for i = 1:size(uniqueConditions,1)
     meanChangeYvec(indCnd) = meanChangeY{i};
 end
 
-scaleEquateRB = 1/0.31;
+scaleEquateRB = 1/0.25;
 
 
-deltaR = AFCp.rgb200(:,1).^gammaFactorR - AFCp.rgb100(:,1).^gammaFactorR;
+deltaR = scaleEquateRB.*AFCp.rgb200(:,1).^gammaFactorR - scaleEquateRB.*AFCp.rgb100(:,1).^gammaFactorR;
 deltaB = AFCp.rgb200(:,3).^gammaFactorB - AFCp.rgb100(:,3).^gammaFactorB;
 deltaS = AFCp.v00*scaleFactor;
 
-[wR, wB, wS, bias, rbThreshold] = ARCnlzSwitching(meanChangeXvec',deltaR,deltaB,deltaS);
+[wR, wS, bias, rbThreshold] = ARCnlzSwitching(meanChangeXvec',deltaR,deltaB,deltaS);
 
 wRorig = wR;
-wBorig = wB;
 wSorig = wS;
 biasOrig = bias;
 rbThresholdOrig = rbThreshold;
 
 wR = wR.*ones(size(deltaS));
-wB = wB.*ones(size(deltaS));
+wB = -wR.*ones(size(deltaS));
 wS = wS.*ones(size(deltaS));
 bias = bias.*ones(size(deltaS));
 
 wB(deltaR-deltaB>rbThreshold)=0;
 wR(deltaR-deltaB<=rbThreshold)=0;
 
-deltaApredicted = wR.*deltaR + wB.*deltaB + wS.*deltaS + bias;
+deltaApredicted = wR + wB + wS.*deltaS + bias;
 
 figure;
 set(gcf,'Position',[189 395 1280 420]);
@@ -252,19 +257,17 @@ axis square;
 subplot(1,3,3);
 hold on;
 bar(1,wRorig,'FaceColor','r');
-bar(2,wBorig,'FaceColor','b');
-bar(3,wSorig,'FaceColor','k');
-bar(4,biasOrig,'FaceColor','w');
-bar(5,rbThresholdOrig,'FaceColor',[0.5 0.5 0.5]);
-set(gca,'XTick',[1 2 3 4 5]);
-set(gca,'XTickLabel',{'Red' 'Blue' 'D_{opt}' 'Bias' 'Threshold'});
+bar(2,wSorig,'FaceColor','k');
+bar(3,biasOrig,'FaceColor','w');
+bar(4,rbThresholdOrig,'FaceColor',[0.5 0.5 0.5]);
+set(gca,'XTick',[1 2 3 4]);
+set(gca,'XTickLabel',{'Red' 'D_{opt}' 'Bias' 'Threshold'});
 title('Weights');
 set(gca,'FontSize',20);
-ylim(max([wRorig wBorig wSorig biasOrig rbThresholdOrig]).*[-1.2 1.2]);
+ylim(max([wRorig wSorig biasOrig rbThresholdOrig]).*[-1.2 1.2]);
 axis square;
 
 wR = wRorig;
-wB = wBorig;
 wS = wSorig;
 bias = biasOrig;
 rbThreshold = rbThresholdOrig;
