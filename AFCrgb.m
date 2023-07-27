@@ -28,11 +28,7 @@ power_dispL=14+sr(1); %starting display power
 opto(name_map('r_disp')).control.setFocalPower(power_dispR-meanv0(1));
 opto(name_map('l_disp')).control.setFocalPower(power_dispL-meanv0(1));
 
-if size(imPattern,3)>1
-    indImPattern = int16(round(rand*(size(imPattern,3)-1))+1);
-else
-    indImPattern = 1;
-end
+indImPattern = 1;
 im2R0(:,:,1) = imPattern(:,:,indImPattern).*rgb0(1,1);
 im2R0(:,:,2) = imPattern(:,:,indImPattern).*rgb0(1,2);
 im2R0(:,:,3) = imPattern(:,:,indImPattern).*rgb0(1,3);
@@ -47,7 +43,7 @@ log.WARNING = 3;
 log.INFO = 2;
 log.DEBUG = 1;
 log.LEVEL = log.DEBUG;
-scene.enable_tcp=1;
+scene.enable_tcp=0;
 scene.trial_num=1;
 
 if scene.enable_tcp
@@ -80,7 +76,10 @@ for k0=1:size(v0,1)
       end
       sinValuesAll(k0,:) = sinValues;
       if size(imPattern,3)>1
-        indImPattern = int16(round(rand*(size(imPattern,3)-1))+1);
+        indImPattern = mod(k0,size(imPattern,3));
+        if indImPattern==0
+           indImPattern = size(imPattern,3); 
+        end
       else
         indImPattern = 1;
       end

@@ -38,9 +38,23 @@ if bTexture
     testim = imread(im2R);
 else
     wordList = ['car'; 'arc'; 'sea'; 'one'; 'uno'; 'sun'; 'new'; 'ace'; 'air'];
-    wordInd = round(rand*size(wordList,1));
+    wordInd = randsample(1:size(wordList,1),1);
     imB = AFCwordStimImproved(wordList(wordInd,:),[320 320],stimColor);
     imB(imB>0) = 255;
+    if strcmp(stimColor,'blue')
+       clrInd = 3;
+    end
+    if strcmp(stimColor,'green')
+       clrInd = 2;
+    end
+    if strcmp(stimColor,'red')
+       clrInd = 1;    
+    end
+    imB(:,:,clrInd) = circshift(squeeze(imB(:,:,clrInd)),-15,1);
+    imBmono = squeeze(imB(:,:,clrInd));
+    imBmono = imresize(imBmono,[480 480]); % FOR 2/3 of [960 960] SCREEN--PIXELS FROM 90 TO 855 SPAN VIEWPORT
+    imB = zeros([size(imBmono) 3]);
+    imB(:,:,clrInd) = imBmono;
     testim = flipud(imB);   
     display(['Word is ' wordList(wordInd,:)]);
 end
@@ -88,9 +102,14 @@ try
                     power_dispL=power_dispL-adjustIncrement;
                 end
             elseif ~bTexture & (keyCode(KbName('DownArrow')) | keyCode(KbName('5')))
-                wordInd = ceil(rand*size(wordList,1));
+                wordInd = randsample(1:size(wordList,1),1);
                 imB = AFCwordStimImproved(wordList(wordInd,:),[320 320],stimColor);
                 imB(imB>0) = 255;
+                imB(:,:,clrInd) = circshift(squeeze(imB(:,:,clrInd)),-15,1);           
+                imBmono = squeeze(imB(:,:,clrInd));
+                imBmono = imresize(imBmono,[480 480]);
+                imB = zeros([size(imBmono) 3]);
+                imB(:,:,clrInd) = imBmono;
                 testim = flipud(imB);   
                 display(['Word is ' wordList(wordInd,:)]);
                 [iLf iRf]=cwin3(imread("black.png"), testim , cf, rc00, window2, window1);

@@ -123,22 +123,30 @@ elseif strcmp(expSubType,'STEP')
    AFCp=AFCstep(im2L0, im2L1, im2R0, im2R1, v00, meanv00, sr, window1, window2); 
 elseif strcmp(expSubType,'RGB')
    % imB = imread('G:\My Drive\exp_bvams\code_repo\imgs\vrn10_B_sd1.png');
-   imB = AFCwordStimImproved('car',[320 320],'green');
+   imB = AFCwordStimImproved('sun',[320 320],'green');
    imB(imB>0) = 255;
    imB = flipud(imB);   
-   imPattern = squeeze(imB(:,:,2));
-   imC = AFCwordStimImproved('arc',[320 320],'green');
+   imPatternTmp = squeeze(imB(:,:,2));
+   imPatternTmp = circshift(imPatternTmp,15,1);
+   imPattern(:,:,1) = imresize(imPatternTmp,[480 480]);
+   imC = AFCwordStimImproved('sea',[320 320],'green');
    imC(imC>0) = 255;
    imC = flipud(imC); 
-   imPattern(:,:,2) = squeeze(imC(:,:,2));
-   imD = AFCwordStimImproved('uno',[320 320],'green');
+   imPatternTmp = squeeze(imC(:,:,2));
+   imPatternTmp = circshift(imPatternTmp,15,1);
+   imPattern(:,:,2) = imresize(imPatternTmp,[480 480]);
+   imD = AFCwordStimImproved('ace',[320 320],'green');
    imD(imD>0) = 255;
    imD = flipud(imD); 
-   imPattern(:,:,3) = squeeze(imD(:,:,2));
+   imPatternTmp = squeeze(imD(:,:,2));
+   imPatternTmp = circshift(imPatternTmp,15,1);
+   imPattern(:,:,3) = imresize(imPatternTmp,[480 480]);
    imE = AFCwordStimImproved('one',[320 320],'green');
    imE(imE>0) = 255;
    imE = flipud(imE); 
-   imPattern(:,:,4) = squeeze(imE(:,:,2));   
+   imPatternTmp = squeeze(imE(:,:,2));
+   imPatternTmp = circshift(imPatternTmp,15,1);
+   imPattern(:,:,4) = imresize(imPatternTmp,[480 480]);
    AFCp=AFCrgb(imPattern,rgb100,rgb200,v00, meanv00, sr, window1, window2);    
 end
 
