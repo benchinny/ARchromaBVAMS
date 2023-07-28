@@ -43,7 +43,7 @@ log.WARNING = 3;
 log.INFO = 2;
 log.DEBUG = 1;
 log.LEVEL = log.DEBUG;
-scene.enable_tcp=0;
+scene.enable_tcp=1;
 scene.trial_num=1;
 
 if scene.enable_tcp
@@ -157,8 +157,9 @@ for k0=1:size(v0,1)
          opto(name_map('r_disp')).control.setFocalPower(power_dispR-sinValues(i));
          pause(tIntervalStm);
       end
+      tChange1(k0,:) = clock;
       [iLf1 iRf1]=cwin3(im2R1, im2R1, cf, rc00, window1, window2);
-      tChange(k0,:) = clock;
+      tChange2(k0,:) = clock;
       for i = (floor(length(sinValues)/2)+1):length(sinValues)
          opto(name_map('l_disp')).control.setFocalPower(power_dispL-sinValues(i));
          opto(name_map('r_disp')).control.setFocalPower(power_dispR-sinValues(i));
@@ -168,6 +169,7 @@ for k0=1:size(v0,1)
       snd(1000, 0.1); pause(0.1);
      
       if scene.enable_tcp; send_tcp0(scene, 0); end %stage) 0stop 1record
+      tRealEnd(k0,:) = clock;
       %pause(3);
       %wn=cwin0(img0, 'Stereo', cf, rc00, window1, window2);
       [iLf0 iRf0]=cwin3(im2R0, im2R0, cf, rc00, window1, window2);
@@ -189,6 +191,6 @@ end
 
 if scene.enable_tcp; fclose(scene.tcp_socket); end
 AFCp.v1=power_dispR
-AFCp.t3=cat(3, t0, t1, t2,tChange);
+AFCp.t3=cat(3, t0, t1, t2,tChange1,tChange2,tRealEnd);
 AFCp.dgs=dgs;
 AFCp.sinValues = sinValuesAll;
