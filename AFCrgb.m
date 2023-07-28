@@ -28,7 +28,11 @@ power_dispL=14+sr(1); %starting display power
 opto(name_map('r_disp')).control.setFocalPower(power_dispR-meanv0(1));
 opto(name_map('l_disp')).control.setFocalPower(power_dispL-meanv0(1));
 
-indImPattern = 1;
+if size(imPattern,3)>1
+   indImPattern = randsample(1:size(imPattern,3),1);
+else
+   indImPattern = 1;
+end
 im2R0(:,:,1) = imPattern(:,:,indImPattern).*rgb0(1,1);
 im2R0(:,:,2) = imPattern(:,:,indImPattern).*rgb0(1,2);
 im2R0(:,:,3) = imPattern(:,:,indImPattern).*rgb0(1,3);
@@ -62,7 +66,7 @@ ipd=62./1000; %atand opposite/adjacent devi
 dgs=atand(ipd.*v0)./2-3; dgs(dgs<=-3)=-3; %degrees to rotate
 dgs0=atand(ipd.*2)./2-3; dgs0(dgs0<=-3)=-3; %degrees to rotate
 
-t0=zeros(length(v0), 6); t1=t0; t2=t0; tChange = t0;
+t0=zeros(length(v0), 6); t1=t0; t2=t0; tChange1 = t0; tChange2 = t0; tRealEnd = t0;
 sinValuesAll = [];
 % stage) 0stop 1record figure this out with Steve
 disp('ready to start');  KbWait([], 2); 
@@ -76,10 +80,7 @@ for k0=1:size(v0,1)
       end
       sinValuesAll(k0,:) = sinValues;
       if size(imPattern,3)>1
-        indImPattern = mod(k0,size(imPattern,3));
-        if indImPattern==0
-           indImPattern = size(imPattern,3); 
-        end
+        indImPattern = randsample(1:size(imPattern,3),1);
       else
         indImPattern = 1;
       end
