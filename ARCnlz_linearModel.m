@@ -117,6 +117,13 @@ for i = 1:length(vs)
 end
 AFCp = AFCpAll;
 
+startIndices = [1; find(diff(t3)>1)+1];
+startTimesFromAutoref = t3(startIndices);
+startTimesFromComputer = squeeze(AFCp.t3(:,6,1))+squeeze(AFCp.t3(:,5,1))*60+squeeze(AFCp.t3(:,4,1))*3600;
+endIndices = [startIndices(2:end)-1; length(t3)];
+endTimesFromAutoref = t3(endIndices);
+endTimesFromComputer = squeeze(AFCp.t3(:,6,2))+squeeze(AFCp.t3(:,5,2))*60+squeeze(AFCp.t3(:,4,2))*3600;
+
 v0=[find(diff(t3)>1); length(t3)];
 i0=1;
 for k0=1:length(v0);
