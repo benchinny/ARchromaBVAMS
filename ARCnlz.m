@@ -1,6 +1,6 @@
 %function ARCnlz         
 
-sn = 23; % CURRENTLY HAVE SUBJECTS 11 THROUGH 17
+sn = 11; % CURRENTLY HAVE SUBJECTS 11 THROUGH 17
 bEXCLUDE = true; % EXCLUDE BLINKS AND BAD TRIALS? 
 bSTACK = true; % STACK ACCOMMODATIVE TRACES IN FIGURES?
 bLeaveOutTransitions = true; % LEAVE OUT FIRST 50 FRAMES AND TRANSITION PERIOD OF ACCOMMODATION?
@@ -35,7 +35,7 @@ elseif sn==21
    vs = 1:4;
    excludeTrials = [];  
 elseif sn==23
-   vs = 14:21;
+   vs = 8:11;
    excludeTrials = [];   
 elseif sn==24
    vs = 9:12;
@@ -394,7 +394,7 @@ if bSTACK
         subplot(1,length(stepSizeUnq),j);
         hold on;
         set(gca,'FontSize',15);
-        for i = 1:size(clrConditionsUnq,1) 
+        for i = [1 3 4] % 1:size(clrConditionsUnq,1) 
             indPlot = uniqueConditions(:,1)==clrConditionsUnq(i,1) & ...
                       uniqueConditions(:,2)==clrConditionsUnq(i,2) & ...
                       uniqueConditions(:,3)==clrConditionsUnq(i,3) & ...

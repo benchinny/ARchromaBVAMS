@@ -8,9 +8,9 @@ opts.UseParallel = 'never';
 opts.Display     = 'iter';
 opts.MaxIter     = 500;
 
-ub = [1 2 1 1];
-lb = [-1 -2 -1 -1];
-p0 = [2.*(rand-0.5) 4.*(rand-0.5) 2.*(rand-0.5) 1.*(rand-0.5)];
+ub = [1 2 1 0.01];
+lb = [-1 -2 -1 -0.01];
+p0 = [2.*(rand-0.5) 4.*(rand-0.5) 2.*(rand-0.5) 0];
 [pFit,mse] = fmincon(   @(p) ARCnlzSwitchingFunc(deltaA,deltaR,deltaB,deltaS,p),p0,[],[],[],[],lb,ub,[],opts);
 
 wR = pFit(1);
