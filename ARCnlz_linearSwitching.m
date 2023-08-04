@@ -1,8 +1,8 @@
-function [wR, wS, bias, rbThreshold, rhoSwitch, rhoColorSwitch] = ARCnlz_linearSwitching(sn,bPLOT)
+function [d, wS, rbThreshold, rhoSwitch, rhoColorSwitch] = ARCnlz_linearSwitching(sn,bPLOT)
 
 bEXCLUDE = true;
 gammaFactorR = 2.4;
-gammaFactorB = 2.4;
+gammaFactorB = 2.2;
 scaleFactor = 0.8;
 
 if sn==11 % 'VISIT' NUMBERS
@@ -211,28 +211,28 @@ end
 scaleEquateRB = 1/0.25;
 
 
-deltaR = scaleEquateRB.*AFCp.rgb200(:,1).^gammaFactorR - scaleEquateRB.*AFCp.rgb100(:,1).^gammaFactorR;
-deltaB = AFCp.rgb200(:,3).^gammaFactorB - AFCp.rgb100(:,3).^gammaFactorB;
+% deltaR = scaleEquateRB.*AFCp.rgb200(:,1).^gammaFactorR - scaleEquateRB.*AFCp.rgb100(:,1).^gammaFactorR;
+% deltaB = AFCp.rgb200(:,3).^gammaFactorB - AFCp.rgb100(:,3).^gammaFactorB;
 deltaS = AFCp.v00*scaleFactor;
+deltaRB1 = scaleEquateRB.*AFCp.rgb100(:,1).^gammaFactorR - AFCp.rgb100(:,3).^gammaFactorB;
+deltaRB2 = scaleEquateRB.*AFCp.rgb200(:,1).^gammaFactorR - AFCp.rgb200(:,3).^gammaFactorB;
 
-[wR, wS, bias, rbThreshold] = ARCnlzSwitching(meanChangeXvec',deltaR,deltaB,deltaS);
+[d, wS, rbThreshold, mse] = ARCnlzSwitching(meanChangeXvec',deltaRB1,deltaRB2,deltaS);
 
-wRorig = wR;
+dOrig = d;
 wSorig = wS;
-biasOrig = bias;
 rbThresholdOrig = rbThreshold;
 
-wR = wR.*ones(size(deltaS));
-wB = -wR.*ones(size(deltaS));
+c = zeros(size(deltaS));
 wS = wS.*ones(size(deltaS));
-bias = bias.*ones(size(deltaS));
 
-wB(deltaR-deltaB>rbThreshold)=0;
-wR(deltaR-deltaB<=rbThreshold)=0;
+c(deltaRB1<rbThreshold & deltaRB2>rbThreshold)=d;
+c(deltaRB1>rbThreshold & deltaRB2<rbThreshold)=-d;
 
-deltaApredicted = wR + wB + wS.*deltaS + bias;
+deltaApredicted = wS.*deltaS + c;
+
 rhoSwitch = corr(deltaApredicted,meanChangeXvec');
-rhoColorSwitch = corr(wR+wB,meanChangeXvec');
+rhoColorSwitch = corr(c,meanChangeXvec');
 
 if bPLOT
     figure;
@@ -258,21 +258,20 @@ if bPLOT
     % 
     subplot(1,3,3);
     hold on;
-    bar(1,wRorig,'FaceColor','r');
+    bar(1,dOrig,'FaceColor','r');
     bar(2,wSorig,'FaceColor','k');
-    bar(3,biasOrig,'FaceColor','w');
-    bar(4,rbThresholdOrig,'FaceColor',[0.5 0.5 0.5]);
-    set(gca,'XTick',[1 2 3 4]);
-    set(gca,'XTickLabel',{'Red' 'D_{opt}' 'Bias' 'Threshold'});
+    bar(3,rbThresholdOrig,'FaceColor',[0.5 0.5 0.5]);
+    set(gca,'XTick',[1 2 3]);
+    set(gca,'XTickLabel',{'d' 'D_{opt}' 'Threshold'});
     title('Weights');
     set(gca,'FontSize',20);
-    ylim(max([wRorig wSorig biasOrig rbThresholdOrig]).*[-1.2 1.2]);
+    ylim(max([dOrig wSorig rbThresholdOrig]).*[-1.2 1.2]);
     axis square;
 
     figure;
     set(gcf,'Position',[189 395 1280 420]);
     subplot(1,3,1);
-    plot(wR+wB,meanChangeXvec,'ko','LineWidth',1);
+    plot(c,meanChangeXvec,'ko','LineWidth',1);
     xlim([-3 3]);
     ylim([-3 3]);
     set(gca,'FontSize',15);
@@ -304,9 +303,8 @@ if bPLOT
 %     axis square;    
 end
 
-wR = wRorig;
+d = dOrig;
 wS = wSorig;
-bias = biasOrig;
 rbThreshold = rbThresholdOrig;
 
 % 
