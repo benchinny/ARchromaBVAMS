@@ -1,4 +1,4 @@
-function [weightsRBS1_x, weightsRBS1_y, rhoFull, rhoNoColor] = ARCnlz_linearModel(sn,bPLOT)
+function [weightsRBS1_x, weightsRBS1_y, rhoFull, rhoNoColor, rhoColor] = ARCnlz_linearModel(sn,bPLOT)
 
 bEXCLUDE = true;
 gammaFactorR = 2.4;
@@ -240,6 +240,7 @@ weightsRB_y = [deltaR deltaB]\(meanChangeYvec');
 
 rhoFull = corr([deltaR deltaB deltaS delta1]*weightsRBS1_x,meanChangeXvec');
 rhoNoColor = corr([deltaS delta1]*weightsS1_x,meanChangeXvec');
+rhoColor = corr([deltaR deltaB]*weightsRB_x,meanChangeXvec');
 
 if bPLOT
     figure;

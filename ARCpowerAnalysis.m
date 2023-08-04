@@ -68,17 +68,90 @@ legend({'Accommodative demand' 'Color'});
 
 %% COMPARE WEIGHTING MODEL AND SWITCHING MODEL
 
-weightingModelRho = [0.946 0.863 0.939 0.943 0.528 0.971 0.853];
-switchingModelRho = [0.901 0.799 0.905 0.925 0.51  0.943 0.835];
+% weightingModelRho = [0.946 0.863 0.939 0.943 0.528 0.971 0.853];
+% switchingModelRho = [0.901 0.799 0.905 0.925 0.51  0.943 0.835];
+% 
+% 
+% figure;
+% hold on;
+% bar([1 3 5 7 9 11 13],weightingModelRho.^2,0.4,'FaceColor','w');
+% bar([2 4 6 8 10 12 14],switchingModelRho.^2,0.4,'FaceColor','k');
+% set(gca,'FontSize',15);
+% xlabel('Subject'); ylabel('Variance Explained');
+% set(gca,'XTick',[1.5 3.5 5.5 7.5 9.5 11.5 13.5]);
+% set(gca,'XTickLabel',{'1' '2' '3' '4' '5' '6' '7'});
+% legend({'Weighting' 'Switching'});
 
+sn = [17 11 16 21 23 24];
+rhoSwitchAll = [];
+rhoFullAll = [];
+rhoNoColorAll = [];
+weightsRBSall = [];
+rhoColorAll = [];
+rhoColorSwitchAll = [];
+
+for i = 1:length(sn)
+    [wR, wS, bias, rbThreshold, rhoSwitch, rhoColorSwitch] = ARCnlz_linearSwitching(sn(i),false);
+    rhoSwitchAll(i) = rhoSwitch;
+    rhoColorSwitchAll(i) = rhoColorSwitch;
+    display(['Done with subject ' num2str(i)]);
+end
+
+for i = 1:length(sn)
+    [weightsRBS1_x, weightsRBS1_y, rhoFull, rhoNoColor,rhoColor] = ARCnlz_linearModel(sn(i),false);
+    rhoFullAll(i) = rhoFull;
+    rhoNoColorAll(i) = rhoNoColor;
+    weightsRBSall(i,:) = weightsRBS1_x;
+    rhoColorAll(i) = rhoColor;
+    display(['Done with subject ' num2str(i)]);
+end
+
+%% PLOT WEIGHTS
+
+figure;
+set(gcf,'Position',[262 314 1239 594]);
+for i = 1:size(weightsRBSall,i)
+    subplot(2,3,i);
+    hold on;
+    bar(1,weightsRBSall(i,1),'FaceColor','r');
+    bar(2,weightsRBSall(i,2),'FaceColor','b');
+    bar(3,weightsRBSall(i,3),'FaceColor','k');
+    bar(4,weightsRBSall(i,4),'FaceColor','w');
+    set(gca,'XTick',[1 2 3 4]);
+    set(gca,'XTickLabel',{'w_R' 'w_B' 'w_S' 'b'});
+    title('Weights');
+    set(gca,'FontSize',20);
+    ylim(max(weightsRBSall(i,:)).*[-1.2 1.2]);
+    axis square;
+end
+
+%% PLOT VARIANCE EXPLAINED COMPARISONS
 
 figure;
 hold on;
-bar([1 3 5 7 9 11 13],weightingModelRho.^2,0.4,'FaceColor','w');
-bar([2 4 6 8 10 12 14],switchingModelRho.^2,0.4,'FaceColor','k');
+bar([1 4 7 10 13 16],rhoFullAll.^2,0.3,'FaceColor','w');
+bar([2 5 8 11 14 17],rhoSwitchAll.^2,0.3,'FaceColor',[0.5 0.5 0.5]);
+bar([3 6 9 12 15 18],rhoNoColorAll.^2,0.3,'FaceColor','k');
 set(gca,'FontSize',15);
 xlabel('Subject'); ylabel('Variance Explained');
-set(gca,'XTick',[1.5 3.5 5.5 7.5 9.5 11.5 13.5]);
-set(gca,'XTickLabel',{'1' '2' '3' '4' '5' '6' '7'});
+set(gca,'XTick',[1.5 4.5 7.5 10.5 13.5 16.5]);
+set(gca,'XTickLabel',{'1' '2' '3' '4' '5' '6'});
+legend({'Weighting' 'Switching' 'No color'});
+
+%% PLOT VARIANCE EXPLAINED BY COLOR COMPARISONS
+
+figure;
+hold on;
+bar([1 3 5 7 9 11],rhoColorAll.^2,0.4,'FaceColor','m');
+bar([2 4 6 8 10 12],rhoColorSwitchAll.^2,0.4,'FaceColor',[0.5 0 0.5]);
+set(gca,'FontSize',15);
+xlabel('Subject'); ylabel('Variance Explained');
+set(gca,'XTick',[1.5 3.5 5.5 7.5 9.5 11.5]);
+set(gca,'XTickLabel',{'1' '2' '3' '4' '5' '6'});
 legend({'Weighting' 'Switching'});
+
+%% COMPARE WEIGHTS
+
+redWeights = [0.7076 0.1043 0.3660 0.4499 0.2045 0.4052 0.2148];
+blueWeights = [-0.2690 -0.4902 -0.2788 -0.3552 -0.0726 -0.2039 -0.1898];
 

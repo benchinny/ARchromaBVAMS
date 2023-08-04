@@ -1,4 +1,4 @@
-function [wR, wS, bias, rbThreshold, rhoSwitch] = ARCnlz_linearSwitching(sn,bPLOT)
+function [wR, wS, bias, rbThreshold, rhoSwitch, rhoColorSwitch] = ARCnlz_linearSwitching(sn,bPLOT)
 
 bEXCLUDE = true;
 gammaFactorR = 2.4;
@@ -232,6 +232,7 @@ wR(deltaR-deltaB<=rbThreshold)=0;
 
 deltaApredicted = wR + wB + wS.*deltaS + bias;
 rhoSwitch = corr(deltaApredicted,meanChangeXvec');
+rhoColorSwitch = corr(wR+wB,meanChangeXvec');
 
 if bPLOT
     figure;
@@ -267,6 +268,40 @@ if bPLOT
     set(gca,'FontSize',20);
     ylim(max([wRorig wSorig biasOrig rbThresholdOrig]).*[-1.2 1.2]);
     axis square;
+
+    figure;
+    set(gcf,'Position',[189 395 1280 420]);
+    subplot(1,3,1);
+    plot(wR+wB,meanChangeXvec,'ko','LineWidth',1);
+    xlim([-3 3]);
+    ylim([-3 3]);
+    set(gca,'FontSize',15);
+    xlabel('Prediction \DeltaD');
+    ylabel('Measured \DeltaD');
+    title(['Correlation = ' num2str(rhoColorSwitch,3)]);
+    axis square;
+    % 
+    % subplot(1,3,2);
+    % plot([deltaR deltaB deltaS delta1]*weightsRBS1_y,meanChangeYvec,'ko','LineWidth',1);
+    % xlim([-3 3]);
+    % ylim([-3 3]);
+    % set(gca,'FontSize',15);
+    % xlabel('Prediction \DeltaD');
+    % ylabel('Measured \DeltaD');
+    % axis square;
+    % 
+%     subplot(1,3,3);
+%     hold on;
+%     bar(1,wRorig,'FaceColor','r');
+%     bar(2,wSorig,'FaceColor','k');
+%     bar(3,biasOrig,'FaceColor','w');
+%     bar(4,rbThresholdOrig,'FaceColor',[0.5 0.5 0.5]);
+%     set(gca,'XTick',[1 2 3 4]);
+%     set(gca,'XTickLabel',{'Red' 'D_{opt}' 'Bias' 'Threshold'});
+%     title('Weights');
+%     set(gca,'FontSize',20);
+%     ylim(max([wRorig wSorig biasOrig rbThresholdOrig]).*[-1.2 1.2]);
+%     axis square;    
 end
 
 wR = wRorig;
