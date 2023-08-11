@@ -91,14 +91,14 @@ rhoColorAll = [];
 rhoColorSwitchAll = [];
 
 for i = 1:length(sn)
-    [wR, wS, bias, rbThreshold, rhoSwitch, rhoColorSwitch] = ARCnlz_linearSwitching(sn(i),false);
+    [d, wS, rbThreshold, rhoSwitch, rhoColorSwitch] = ARCnlz_linearSwitching(sn(i),false);
     rhoSwitchAll(i) = rhoSwitch;
     rhoColorSwitchAll(i) = rhoColorSwitch;
     display(['Done with subject ' num2str(i)]);
 end
 
 for i = 1:length(sn)
-    [weightsRBS1_x, weightsRBS1_y, rhoFull, rhoNoColor,rhoColor] = ARCnlz_linearModel(sn(i),false);
+    [weightsRBS1_x, weightsRBS1_y, rhoFull, rhoNoColor, rhoColor] = ARCnlz_linearModelnobias(sn(i),false);
     rhoFullAll(i) = rhoFull;
     rhoNoColorAll(i) = rhoNoColor;
     weightsRBSall(i,:) = weightsRBS1_x;
@@ -110,15 +110,14 @@ end
 
 figure;
 set(gcf,'Position',[262 314 1239 594]);
-for i = 1:size(weightsRBSall,i)
+for i = 1:size(weightsRBSall,1)
     subplot(2,3,i);
     hold on;
     bar(1,weightsRBSall(i,1),'FaceColor','r');
     bar(2,weightsRBSall(i,2),'FaceColor','b');
     bar(3,weightsRBSall(i,3),'FaceColor','k');
-    bar(4,weightsRBSall(i,4),'FaceColor','w');
-    set(gca,'XTick',[1 2 3 4]);
-    set(gca,'XTickLabel',{'w_R' 'w_B' 'w_S' 'b'});
+    set(gca,'XTick',[1 2 3]);
+    set(gca,'XTickLabel',{'w_R' 'w_B' 'w_S'});
     title('Weights');
     set(gca,'FontSize',20);
     ylim(max(weightsRBSall(i,:)).*[-1.2 1.2]);
@@ -155,3 +154,32 @@ legend({'Weighting' 'Switching'});
 redWeights = [0.7076 0.1043 0.3660 0.4499 0.2045 0.4052 0.2148];
 blueWeights = [-0.2690 -0.4902 -0.2788 -0.3552 -0.0726 -0.2039 -0.1898];
 
+%% COMPARE WITH AND WITHOUT BIAS TERM
+
+sn = [17 11 16 21 23 24];
+rhoFullAllnobias = [];
+rhoFullBias = [];
+
+for i = 1:length(sn)
+    [weightsRBS1_xNoBias, weightsRBS1_yNoBias, rhoFull, rhoNoColor, rhoColor] = ARCnlz_linearModelnobias(sn(i),false);
+    rhoFullAllnobias(i) = rhoFull;
+    display(['Done with subject ' num2str(i)]);
+end
+
+for i = 1:length(sn)
+    [weightsRBS1_x, weightsRBS1_y, rhoFull, rhoNoColor, rhoColor] = ARCnlz_linearModel(sn(i),false);
+    rhoFullAllBias(i) = rhoFull;
+    display(['Done with subject ' num2str(i)]);
+end
+
+%% PLOT VARIANCE EXPLAINED WITH AND WITHOUT BIAS TERM
+
+figure;
+hold on;
+bar([1 3 5 7 9 11],rhoFullAllBias.^2,0.4,'FaceColor','k');
+bar([2 4 6 8 10 12],rhoFullAllnobias.^2,0.4,'FaceColor','w');
+set(gca,'FontSize',15);
+xlabel('Subject'); ylabel('Variance Explained');
+set(gca,'XTick',[1.5 3.5 5.5 7.5 9.5 11.5]);
+set(gca,'XTickLabel',{'1' '2' '3' '4' '5' '6'});
+legend({'With bias' 'No bias'});

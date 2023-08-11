@@ -39,6 +39,9 @@ elseif sn==23
 elseif sn==24
    vs = 9:16;
    excludeTrials = [];     
+elseif sn==25
+   vs = 6:13;
+   excludeTrials = [];        
 else
    error('ARCnlz_linearModelnobias: unhandled subject number!');
 end
