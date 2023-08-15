@@ -170,6 +170,8 @@ for i = 1:size(uniqueConditions,1)
     x3=[]; y3=[]; 
     rgbValues = [];
     trialMarkerForPlot = [];
+    meanChangeXtmp = [];
+    meanChangeYtmp = [];
     for k0=1:size(indCnd,1)
        % ANALYZING SUBJECT'S ACCOMMODATION
        x2{k0}=x0{indCnd(k0)}-mean(x1); % MEAN CENTERING
@@ -203,8 +205,10 @@ for i = 1:size(uniqueConditions,1)
        if abs(corr(accContinuous',diffVec'))<0.95
            error('ARCnlz_linearModelnobias: you may want to check whether the step change occurs halfway through the trial, or not!');
        end
-       meanChangeX{i} = sum(diffVec.*x2{k0}')./xScale;
-       meanChangeY{i} = sum(diffVec.*y2{k0}')./yScale;
+%        meanChangeX{i} = sum(diffVec.*x3tmp.*xScale)./xScale;
+%        meanChangeY{i} = sum(diffVec.*y3tmp.*yScale)./yScale;
+       meanChangeXtmp(k0) = sum(diffVec.*x3tmp.*xScale)./xScale;
+       meanChangeYtmp(k0) = sum(diffVec.*y3tmp.*yScale)./yScale;
        % VECTOR OF RGB VALUES FOR PLOTTING
        rgbValues = [rgbValues imresize([AFCp.rgb100(indCnd(k0),:)' AFCp.rgb200(indCnd(k0),:)'],[3 length(tSinInterp)],'nearest')];
     end
@@ -215,8 +219,8 @@ for i = 1:size(uniqueConditions,1)
     rgbValuesAll{i} = rgbValues;
     trialMarkerForPlotCell{i} = trialMarkerForPlot;
     indCndCell{i} = indCnd;
-    meanChangeXvec(indCnd) = meanChangeX{i};
-    meanChangeYvec(indCnd) = meanChangeY{i};
+    meanChangeXvec(indCnd) = meanChangeXtmp;
+    meanChangeYvec(indCnd) = meanChangeYtmp;
 end
 
 scaleEquateRB = 1/0.25;
