@@ -1,6 +1,6 @@
 %function ARCnlz         
 
-sn = 11; % CURRENTLY HAVE SUBJECTS 11 THROUGH 17
+sn = 25; % CURRENTLY HAVE SUBJECTS 11 THROUGH 17
 bEXCLUDE = true; % EXCLUDE BLINKS AND BAD TRIALS? 
 bSTACK = true; % STACK ACCOMMODATIVE TRACES IN FIGURES?
 bLeaveOutTransitions = true; % LEAVE OUT FIRST 50 FRAMES AND TRANSITION PERIOD OF ACCOMMODATION?
@@ -43,6 +43,9 @@ elseif sn==24
 elseif sn==2
    vs = 13:14;
    excludeTrials = [];    
+elseif sn==25
+   vs = 6:9;
+   excludeTrials = [];       
 else
    error('ARCnlz: unhandled subject number!');
 end
