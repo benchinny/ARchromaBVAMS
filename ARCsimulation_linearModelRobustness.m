@@ -1,6 +1,6 @@
 %%
 
-sn = 16; % CURRENTLY HAVE SUBJECTS 11 THROUGH 15
+sn = 26; % CURRENTLY HAVE SUBJECTS 11 THROUGH 26
 bEXCLUDE = true;
 gammaFactorR = 2.4;
 gammaFactorB = 2.4;
@@ -30,9 +30,25 @@ elseif sn==17
 elseif sn==19
    vs = 5:10;
    excludeTrials = [];     
+elseif sn==21
+   vs = 1:6;
+   excludeTrials = [];
+elseif sn==23
+   vs = 14:21;
+   excludeTrials = [];   
+elseif sn==24
+   vs = 9:16;
+   excludeTrials = [];     
+elseif sn==25
+   vs = 6:13;
+   excludeTrials = [];        
+elseif sn==26
+   vs = 4:11;
+   excludeTrials = [];           
 else
-   error('ARCnlz_linearModel: unhandled subject number!');
+   error('ARCnlz_linearModelnobias: unhandled subject number!');
 end
+
 ey = 1; % 1 for Right eye, 2 for Binocular ');
 filePath = 'G:\My Drive\exp_bvams\code_repo\';
 
@@ -126,9 +142,9 @@ nRepeats = 10000;
 
 for i = 1:nRepeats
    testNoise = 0.6;
-   weightsRBS1true = [1 -0.25 0.75 0.2];
-   accRspSim = [deltaR deltaB deltaS delta1]*weightsRBS1true' + normrnd(0,testNoise,size(deltaS));
-   recoveredWeights(i,:) = [deltaR deltaB deltaS delta1]\(accRspSim);
+   weightsRBS1true = [1 -0.25 0.75];
+   accRspSim = [deltaR deltaB deltaS]*weightsRBS1true' + normrnd(0,testNoise,size(deltaS));
+   recoveredWeights(i,:) = [deltaR deltaB deltaS]\(accRspSim);
 end
 
 figure;
@@ -142,6 +158,3 @@ plot(weightsRBS1true(2).*[1 1],ylim,'k--','LineWidth',1);
 subplot(2,2,3);
 hist(recoveredWeights(:,3),101); hold on;
 plot(weightsRBS1true(3).*[1 1],ylim,'k--','LineWidth',1);
-subplot(2,2,4);
-hist(recoveredWeights(:,4),101); hold on;
-plot(weightsRBS1true(4).*[1 1],ylim,'k--','LineWidth',1);
