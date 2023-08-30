@@ -201,7 +201,7 @@ for i = 1:length(sn)
     display(['Done with subject ' num2str(i)]);
 end
 
-save('/Users/benchin/Documents/ARchroma/cache/paramsRandom','rhoFullAll','weightsRBSall');
+save('/home/ben/Documents/ARchroma/params2paramModel','rhoFullAll','rhoNoColorAll','weightsRBSall');
 
 %% COMPARE PARAMETERS FROM ALL TRIALS VS RANDOM ONLY TRIALS
 
@@ -242,3 +242,57 @@ plot([-1 0],[-1 0],'k--');
 plot(weightsRBSallAll(:,2),weightsRBSallRandom(:,2),'bo','MarkerSize',10,'MarkerFaceColor','w');
 xlabel('All trials'); ylabel('Random trials only'); title('Blue weight');
 axis square;
+
+%% COMPARE 3-PARAMETER MODEL WITH 2-PARAMETER MODEL
+
+load('/home/ben/Documents/ARchroma/params3paramModel.mat');
+rhoFullAll3param = rhoFullAll;
+weightsRBSall3param = weightsRBSall;
+rhoNoColorAll3param = rhoNoColorAll;
+load('/home/ben/Documents/ARchroma/params2paramModel.mat');
+rhoFullAll2param = rhoFullAll;
+weightsRBSall2param = weightsRBSall;
+rhoNoColorAll2param = rhoNoColorAll;
+
+figure;
+hold on;
+bar([1 3 5 7 9 11 13 15 17],rhoFullAll3param,0.4,'FaceColor','w');
+bar([2 4 6 8 10 12 14 16 18],rhoFullAll2param,0.4,'FaceColor','k');
+set(gca,'FontSize',15);
+xlabel('Subject'); ylabel('Correlation');
+set(gca,'XTick',[1.5 3.5 5.5 7.5 9.5 11.5 13.5 15.5 17.5]);
+set(gca,'XTickLabel',{'1' '2' '3' '4' '5' '6' '7' '8' '9'});
+legend({'3-parameter' '2-parameter'});
+
+figure;
+set(gcf,'Position',[251 387 1120 420]);
+set(gca,'FontSize',15);
+subplot(1,2,1);
+hold on;
+plot(weightsRBSall2param(:,1),weightsRBSall3param(:,1),'ro','MarkerSize',10);
+plot([0 1],[0 1],'k--');
+xlabel('2-param ratio'); ylabel('3-param w_R');
+axis square;
+subplot(1,2,2);
+hold on;
+plot(weightsRBSall2param(:,1),weightsRBSall3param(:,2),'bo','MarkerSize',10);
+plot([-0.1 1],[0.1 -1],'k--');
+xlabel('2-param ratio'); ylabel('3-param w_B');
+axis square;
+
+figure;
+hold on;
+bar([1 3 5 7 9 11 13 15 17],rhoFullAll2param.^2,0.4,'FaceColor','w');
+bar([2 4 6 8 10 12 14 16 18],rhoNoColorAll2param.^2,0.4,'FaceColor','k');
+set(gca,'FontSize',15);
+xlabel('Subject'); ylabel('Variance explained');
+set(gca,'XTick',[1.5 3.5 5.5 7.5 9.5 11.5 13.5 15.5 17.5]);
+set(gca,'XTickLabel',{'1' '2' '3' '4' '5' '6' '7' '8' '9'});
+legend({'With color' 'No color'});
+
+figure;
+bar(1:9,rhoFullAll2param.^2 - rhoNoColorAll2param.^2,0.4,'FaceColor','w');
+set(gca,'FontSize',15);
+xlabel('Subject'); ylabel('Variance explained due to color');
+set(gca,'XTick',1:9);
+set(gca,'XTickLabel',{'1' '2' '3' '4' '5' '6' '7' '8' '9'});
