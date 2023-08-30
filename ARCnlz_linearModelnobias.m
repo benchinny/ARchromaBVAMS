@@ -261,6 +261,17 @@ rhoFull = corr([deltaR deltaB deltaS]*weightsRBS1_x,meanChangeXvec');
 rhoNoColor = corr([deltaS]*weightsS1_x,meanChangeXvec');
 rhoColor = corr([deltaR deltaB]*weightsRB_x,meanChangeXvec');
 
+trialMeans = [deltaR deltaB deltaS]*weightsRBS1_x;
+errorIndividual = meanChangeXvec' - trialMeans;
+estResidualStd = std(errorIndividual);
+LL = sum(log(normpdf(meanChangeXvec',trialMeans,estResidualStd)));
+if bRELATIVE_LUM
+    nParams = 2;
+else
+    nParams = 3;
+end
+aic = 2*nParams-2*LL;
+
 if bPLOT
     figure;
     set(gcf,'Position',[189 395 1280 420]);

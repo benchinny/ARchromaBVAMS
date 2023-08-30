@@ -244,6 +244,13 @@ deltaApredicted = wS.*deltaS + c;
 rhoSwitch = corr(deltaApredicted,meanChangeXvec');
 rhoColorSwitch = corr(c,meanChangeXvec');
 
+trialMeans = deltaApredicted;
+errorIndividual = meanChangeXvec' - trialMeans;
+estResidualStd = std(errorIndividual);
+LL = sum(log(normpdf(meanChangeXvec',trialMeans,estResidualStd)));
+nParams = 3;
+aic = 2*nParams-2*LL;
+
 if bPLOT
     figure;
     set(gcf,'Position',[189 395 1280 420]);
