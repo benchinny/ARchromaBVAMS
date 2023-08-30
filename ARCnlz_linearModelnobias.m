@@ -4,10 +4,11 @@ bEXCLUDE = true;
 gammaFactorR = 2.4;
 gammaFactorB = 2.4;
 scaleFactor = 0.8;
-bRELATIVE_LUM = 0;
+bRELATIVE_LUM = 1;
 
 if sn==11 % 'VISIT' NUMBERS
    vs = [2 3 4 5 6 7];
+   % vs = [5 6];
    excludeTrials = [];
 elseif sn==12
    vs = [3:7];
@@ -23,27 +24,35 @@ elseif sn==15
    excludeTrials = [];  
 elseif sn==16
    vs = 7:12;
+   % vs = [11 12];  
    excludeTrials = [];     
 elseif sn==17
    vs = 1:6;
+   % vs = [5 6];
    excludeTrials = [];  
 elseif sn==19
    vs = 5:10;
+   % vs = [9 10];
    excludeTrials = [];     
 elseif sn==21
    vs = 1:6;
+   % vs = [5 6];
    excludeTrials = [];
 elseif sn==23
    vs = 14:21;
+   % vs = 18:21;
    excludeTrials = [];   
 elseif sn==24
    vs = 9:16;
+   % vs = 13:16;
    excludeTrials = [];     
 elseif sn==25
    vs = 6:13;
+   % vs = 10:13;
    excludeTrials = [];        
 elseif sn==26
    vs = 4:11;
+   % vs = 8:11;
    excludeTrials = [];           
 else
    error('ARCnlz_linearModelnobias: unhandled subject number!');
@@ -284,9 +293,8 @@ if bPLOT
        set(gca,'XTickLabel',{'Red' 'Blue' 'D_{opt}'});
     else
        bar(2,weightsRBS1_x(2),'FaceColor','k');
-       bar(3,weightsRBS1_x(3),'FaceColor','w');
-       set(gca,'XTick',[1 2 3]);
-       set(gca,'XTickLabel',{'Red' 'D_{opt}' 'Bias'});    
+       set(gca,'XTick',[1 2]);
+       set(gca,'XTickLabel',{'R-B ratio' 'D_{opt}'}); 
     end
     title('Weights');
     set(gca,'FontSize',20);

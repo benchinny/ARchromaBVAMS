@@ -183,3 +183,62 @@ xlabel('Subject'); ylabel('Variance Explained');
 set(gca,'XTick',[1.5 3.5 5.5 7.5 9.5 11.5 13.5 15.5]);
 set(gca,'XTickLabel',{'1' '2' '3' '4' '5' '6' '7' '8'});
 legend({'With bias' 'No bias'});
+
+%% COMPARE PARAMETERS FROM ALL TRIALS VS RANDOM ONLY TRIALS
+
+sn = [17 11 16 19 21 23 24 25 26];
+rhoFullAll = [];
+rhoNoColorAll = [];
+weightsRBSall = [];
+rhoColorAll = [];
+
+for i = 1:length(sn)
+    [weightsRBS1_x, weightsRBS1_y, rhoFull, rhoNoColor, rhoColor] = ARCnlz_linearModelnobias(sn(i),false);
+    rhoFullAll(i) = rhoFull;
+    rhoNoColorAll(i) = rhoNoColor;
+    weightsRBSall(i,:) = weightsRBS1_x;
+    rhoColorAll(i) = rhoColor;
+    display(['Done with subject ' num2str(i)]);
+end
+
+save('/Users/benchin/Documents/ARchroma/cache/paramsRandom','rhoFullAll','weightsRBSall');
+
+%% COMPARE PARAMETERS FROM ALL TRIALS VS RANDOM ONLY TRIALS
+
+load('/Users/benchin/Documents/ARchroma/cache/paramsAll.mat');
+rhoFullAllAll = rhoFullAll;
+weightsRBSallAll = weightsRBSall;
+load('/Users/benchin/Documents/ARchroma/cache/paramsRandom.mat');
+rhoFullAllRandom = rhoFullAll;
+weightsRBSallRandom = weightsRBSall;
+
+figure;
+set(gcf,'Position',[318 247 1135 708]);
+subplot(2,2,1);
+set(gca,'FontSize',15);
+hold on;
+plot(rhoFullAllAll,rhoFullAllRandom,'ko','MarkerSize',10);
+plot([0 1],[0 1],'k--');
+xlabel('All trials'); ylabel('Random trials only'); title('Correlation');
+axis square;
+subplot(2,2,2);
+set(gca,'FontSize',15);
+hold on;
+plot(weightsRBSallAll(:,3),weightsRBSallRandom(:,3),'ko','MarkerSize',10);
+plot([0 1],[0 1],'k--');
+xlabel('All trials'); ylabel('Random trials only'); title('Gain');
+axis square;
+subplot(2,2,3);
+set(gca,'FontSize',15);
+hold on;
+plot([0 1],[0 1],'k--');
+plot(weightsRBSallAll(:,1),weightsRBSallRandom(:,1),'ro','MarkerSize',10,'MarkerFaceColor','w');
+xlabel('All trials'); ylabel('Random trials only'); title('Red weight');
+axis square;
+subplot(2,2,4);
+set(gca,'FontSize',15);
+hold on;
+plot([-1 0],[-1 0],'k--');
+plot(weightsRBSallAll(:,2),weightsRBSallRandom(:,2),'bo','MarkerSize',10,'MarkerFaceColor','w');
+xlabel('All trials'); ylabel('Random trials only'); title('Blue weight');
+axis square;
