@@ -275,6 +275,36 @@ trialMeans = [deltaR deltaB deltaS]*weightsRBS1_x;
 errorIndividual = meanChangeXvec' - trialMeans;
 estResidualStd = std(errorIndividual);
 LL = sum(log(normpdf(meanChangeXvec',trialMeans,estResidualStd)));
+
+keyboard
+
+if(1)
+
+    % put data into table in prep for running built in matlab models
+    tbl = table(deltaR,deltaB,deltaS,meanChangeXvec','VariableNames',{'deltaR','deltaB','deltaS','resp'});
+
+    % fit two linear mixture models to data, one with color and one
+    % without, run model comparison
+    lme_nocolor = fitlme(tbl,'resp~-1+deltaS');
+    lme = fitlme(tbl,'resp~-1+deltaS+deltaB+deltaR');
+    compare(lme,lme_nocolor);
+
+    % redo this calculation using fitglme to make sure it still works
+    glme_nocolor = fitglme(tbl,'resp~-1+deltaS','Distribution','normal','link','identity');
+    glme = fitglme(tbl,'resp~-1+deltaS+deltaB+deltaR','Distribution','normal','link','identity');
+    compare(lme,lme_nocolor);
+
+    % fit glme version of switching model
+    % create a categorical predictor "colorswitch" in the table that is 'blue-red' if
+    % blue is greater then red is greater, and 'red-blue' if red is greater
+    % then blue is greater, and 'nochange' if there's no change
+
+    % You can check the category order of a categorical variable by using the categories function, and change the order by using the reordercats function.
+    glme_nocolor = fitglme(tbl,'resp~-1+deltaS+colorswitch','Distribution','normal','link','identity');
+
+end
+
+
 if bRELATIVE_LUM
     nParams = 2;
 else
