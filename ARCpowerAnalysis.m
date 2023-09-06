@@ -82,27 +82,37 @@ legend({'Accommodative demand' 'Color'});
 % set(gca,'XTickLabel',{'1' '2' '3' '4' '5' '6' '7'});
 % legend({'Weighting' 'Switching'});
 
-sn = [17 11 16 19 21 23 24 25];
+sn = [18 23 24 26 11 16 17 21];
 rhoSwitchAll = [];
 rhoFullAll = [];
 rhoNoColorAll = [];
 weightsRBSall = [];
 rhoColorAll = [];
 rhoColorSwitchAll = [];
+dAll = [];
+aicSwitchAll = [];
+aicLinAll = [];
+aicNoColorAll = [];
+weightsRBSciAll = [];
 
 for i = 1:length(sn)
-    [d, wS, rbThreshold, rhoSwitch, rhoColorSwitch] = ARCnlz_linearSwitching(sn(i),false);
+    [d, wS, rbThreshold, rhoSwitch, rhoColorSwitch, aicSwitch] = ARCnlz_linearSwitching(sn(i),false);
     rhoSwitchAll(i) = rhoSwitch;
     rhoColorSwitchAll(i) = rhoColorSwitch;
+    dAll(i) = d;
+    aicSwitchAll(i) = aicSwitch;
     display(['Done with subject ' num2str(i)]);
 end
 
 for i = 1:length(sn)
-    [weightsRBS1_x, weightsRBS1_y, rhoFull, rhoNoColor, rhoColor] = ARCnlz_linearModelnobias(sn(i),false);
+    [weightsRBS1_x, weightsRBS1_y, rhoFull, rhoNoColor, rhoColor, aicLin, aicNoColor, weightsRBSci] = ARCnlz_linearModelnobias(sn(i),false,1000);
     rhoFullAll(i) = rhoFull;
     rhoNoColorAll(i) = rhoNoColor;
     weightsRBSall(i,:) = weightsRBS1_x;
     rhoColorAll(i) = rhoColor;
+    aicLinAll(i) = aicLin;
+    aicNoColorAll(i) = aicNoColor;
+    weightsRBSciAll(:,:,i) = weightsRBSci;
     display(['Done with subject ' num2str(i)]);
 end
 
@@ -111,11 +121,15 @@ end
 figure;
 set(gcf,'Position',[262 314 1239 594]);
 for i = 1:size(weightsRBSall,1)
+    weightsRBSciTmp = squeeze(weightsRBSciAll(:,:,i));
     subplot(2,4,i);
     hold on;
     bar(1,weightsRBSall(i,1),'FaceColor','r');
+    plot([1 1],[weightsRBSciTmp(1,1) weightsRBSciTmp(2,1)],'k-');
     bar(2,weightsRBSall(i,2),'FaceColor','b');
+    plot([2 2],[weightsRBSciTmp(1,2) weightsRBSciTmp(2,2)],'k-');
     bar(3,weightsRBSall(i,3),'FaceColor','k');
+    plot([3 3],[weightsRBSciTmp(1,3) weightsRBSciTmp(2,3)],'k-');
     set(gca,'XTick',[1 2 3]);
     set(gca,'XTickLabel',{'w_R' 'w_B' 'w_S'});
     title('Weights');
@@ -123,6 +137,19 @@ for i = 1:size(weightsRBSall,1)
     ylim(1.*[-1.1 1.1]);
     axis square;
 end
+
+Rscale = [1 1 1 1 1.27 1.27 1.27 1.27];
+figure;
+set(gca,'FontSize',15);
+hold on;
+plot([0 0.33],[0 1],'k--');
+for i = 1:length(dAll)
+    plot(dAll(i),Rscale(i)*weightsRBSall(i,1)-weightsRBSall(i,2),'ko','MarkerSize',10,'MarkerFaceColor','w');
+    text(dAll(i)+0.05,Rscale(i)*weightsRBSall(i,1)-weightsRBSall(i,2),['S' num2str(i)]);
+end
+axis square;
+xlabel('d'); ylabel('w_R - w_B');
+xlim([0 1]); ylim([0 1]);
 
 %% PLOT VARIANCE EXPLAINED COMPARISONS
 
@@ -133,6 +160,17 @@ bar([2 5 8 11 14 17 20 23],rhoSwitchAll.^2,0.3,'FaceColor',[0.5 0.5 0.5]);
 bar([3 6 9 12 15 18 21 24],rhoNoColorAll.^2,0.3,'FaceColor','k');
 set(gca,'FontSize',15);
 xlabel('Subject'); ylabel('Variance Explained');
+set(gca,'XTick',[1.5 4.5 7.5 10.5 13.5 16.5 19.5 22.5]);
+set(gca,'XTickLabel',{'1' '2' '3' '4' '5' '6' '7' '8'});
+legend({'Weighting' 'Switching' 'No color'});
+
+figure;
+hold on;
+bar([1 4 7 10 13 16 19 22],aicLinAll,0.3,'FaceColor','w');
+bar([2 5 8 11 14 17 20 23],aicSwitchAll,0.3,'FaceColor',[0.5 0.5 0.5]);
+bar([3 6 9 12 15 18 21 24],aicNoColorAll,0.3,'FaceColor','k');
+set(gca,'FontSize',15);
+xlabel('Subject'); ylabel('AIC');
 set(gca,'XTick',[1.5 4.5 7.5 10.5 13.5 16.5 19.5 22.5]);
 set(gca,'XTickLabel',{'1' '2' '3' '4' '5' '6' '7' '8'});
 legend({'Weighting' 'Switching' 'No color'});
@@ -184,9 +222,9 @@ set(gca,'XTick',[1.5 3.5 5.5 7.5 9.5 11.5 13.5 15.5]);
 set(gca,'XTickLabel',{'1' '2' '3' '4' '5' '6' '7' '8'});
 legend({'With bias' 'No bias'});
 
-%% COMPARE PARAMETERS FROM ALL TRIALS VS RANDOM ONLY TRIALS
+%% COMPARE 3-PARAMETER AND 2-PARAMETER MODELS
 
-sn = [17 11 16 19 21 23 24 25 26];
+sn = [18 23 24 26 11 16 17 21];
 rhoFullAll = [];
 rhoNoColorAll = [];
 weightsRBSall = [];
@@ -256,13 +294,14 @@ rhoNoColorAll2param = rhoNoColorAll;
 
 figure;
 hold on;
-bar([1 3 5 7 9 11 13 15 17],rhoFullAll3param,0.4,'FaceColor','w');
-bar([2 4 6 8 10 12 14 16 18],rhoFullAll2param,0.4,'FaceColor','k');
+bar([1 4 7 10 13 16 19 22],rhoFullAll3param.^2,0.3,'FaceColor','w');
+bar([2 5 8 11 14 17 20 23],rhoFullAll2param.^2,0.3,'FaceColor',[0.7 0.7 0.7]);
+bar([3 6 9 12 15 18 21 24],rhoNoColorAll2param.^2,0.3,'FaceColor',[0 0 0]);
 set(gca,'FontSize',15);
-xlabel('Subject'); ylabel('Correlation');
-set(gca,'XTick',[1.5 3.5 5.5 7.5 9.5 11.5 13.5 15.5 17.5]);
-set(gca,'XTickLabel',{'1' '2' '3' '4' '5' '6' '7' '8' '9'});
-legend({'3-parameter' '2-parameter'});
+xlabel('Subject'); ylabel('Variance explained');
+set(gca,'XTick',[2 5 8 11 14 17 20 23]);
+set(gca,'XTickLabel',{'1' '2' '3' '4' '5' '6' '7' '8'});
+legend({'3-parameter' '2-parameter' 'No color'});
 
 figure;
 set(gcf,'Position',[251 387 1120 420]);
@@ -282,17 +321,17 @@ axis square;
 
 figure;
 hold on;
-bar([1 3 5 7 9 11 13 15 17],rhoFullAll2param.^2,0.4,'FaceColor','w');
-bar([2 4 6 8 10 12 14 16 18],rhoNoColorAll2param.^2,0.4,'FaceColor','k');
+bar([1 3 5 7 9 11 13 15],rhoFullAll2param.^2,0.4,'FaceColor','w');
+bar([2 4 6 8 10 12 14 16],rhoNoColorAll2param.^2,0.4,'FaceColor','k');
 set(gca,'FontSize',15);
 xlabel('Subject'); ylabel('Variance explained');
-set(gca,'XTick',[1.5 3.5 5.5 7.5 9.5 11.5 13.5 15.5 17.5]);
-set(gca,'XTickLabel',{'1' '2' '3' '4' '5' '6' '7' '8' '9'});
+set(gca,'XTick',[1.5 3.5 5.5 7.5 9.5 11.5 13.5 15.5]);
+set(gca,'XTickLabel',{'1' '2' '3' '4' '5' '6' '7' '8'});
 legend({'With color' 'No color'});
 
 figure;
-bar(1:9,rhoFullAll2param.^2 - rhoNoColorAll2param.^2,0.4,'FaceColor','w');
+bar(1:8,rhoFullAll2param.^2 - rhoNoColorAll2param.^2,0.4,'FaceColor','w');
 set(gca,'FontSize',15);
 xlabel('Subject'); ylabel('Variance explained due to color');
 set(gca,'XTick',1:9);
-set(gca,'XTickLabel',{'1' '2' '3' '4' '5' '6' '7' '8' '9'});
+set(gca,'XTickLabel',{'1' '2' '3' '4' '5' '6' '7' '8'});

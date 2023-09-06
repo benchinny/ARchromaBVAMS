@@ -1,4 +1,4 @@
-function [d, wS, rbThreshold, rhoSwitch, rhoColorSwitch] = ARCnlz_linearSwitching(sn,bPLOT)
+function [d, wS, rbThreshold, rhoSwitch, rhoColorSwitch, aic] = ARCnlz_linearSwitching(sn,bPLOT)
 
 bEXCLUDE = true;
 gammaFactorR = 2.4;
@@ -6,7 +6,8 @@ gammaFactorB = 2.2;
 scaleFactor = 0.8;
 
 if sn==11 % 'VISIT' NUMBERS
-   vs = [2 3 4 5 6 7];
+   % vs = [2 3 4 5 6 7];
+   vs = [5 6];
    excludeTrials = [];
 elseif sn==12
    vs = [3:7];
@@ -21,31 +22,43 @@ elseif sn==15
    vs = 7:12;
    excludeTrials = [];  
 elseif sn==16
-   vs = 7:12;
+   % vs = 7:12;
+   vs = [11 12];  
    excludeTrials = [];     
 elseif sn==17
-   vs = 1:6;
+   % vs = 1:6;
+   vs = [5 6];
    excludeTrials = [];  
+elseif sn==18
+   vs = 7:10;
+   % vs = [5 6];
+   excludeTrials = [];     
 elseif sn==19
    vs = 5:10;
+   % vs = [9 10];
    excludeTrials = [];     
 elseif sn==21
-   vs = 1:6;
-   excludeTrials = [];   
+   % vs = 1:6;
+   vs = [5 6];
+   excludeTrials = [];
 elseif sn==23
-   vs = 14:21;
-   excludeTrials = [];  
+   % vs = 14:21;
+   vs = 18:21;
+   excludeTrials = [];   
 elseif sn==24
-   vs = 9:16;
-   excludeTrials = [];    
+   % vs = 9:16;
+   vs = 13:16;
+   excludeTrials = [];     
 elseif sn==25
    vs = 6:13;
-   excludeTrials = [];  
+   % vs = 10:13;
+   excludeTrials = [];        
 elseif sn==26
-   vs = 4:11;
-   excludeTrials = [];     
+   % vs = 4:11;
+   vs = 8:11;
+   excludeTrials = [];           
 else
-   error('ARCnlz_linearModel: unhandled subject number!');
+   error('ARCnlz_linearModelnobias: unhandled subject number!');
 end
 ey = 1; % 1 for Right eye, 2 for Binocular ');
 filePath = 'G:\My Drive\exp_bvams\code_repo\';

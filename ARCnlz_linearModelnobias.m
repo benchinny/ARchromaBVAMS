@@ -1,14 +1,14 @@
-function [weightsRBS1_x, weightsRBS1_y, rhoFull, rhoNoColor, rhoColor] = ARCnlz_linearModelnobias(sn,bPLOT)
+function [weightsRBS1_x, weightsRBS1_y, rhoFull, rhoNoColor, rhoColor, aic, aicNoColor, weightsRBSci] = ARCnlz_linearModelnobias(sn,bPLOT,nBoot)
 
 bEXCLUDE = true;
 gammaFactorR = 2.4;
 gammaFactorB = 2.4;
 scaleFactor = 0.8;
-bRELATIVE_LUM = 1;
+bRELATIVE_LUM = 0;
 
 if sn==11 % 'VISIT' NUMBERS
-   vs = [2 3 4 5 6 7];
-   % vs = [5 6];
+   % vs = [2 3 4 5 6 7];
+   vs = [5 6];
    excludeTrials = [];
 elseif sn==12
    vs = [3:7];
@@ -23,36 +23,40 @@ elseif sn==15
    vs = 7:12;
    excludeTrials = [];  
 elseif sn==16
-   vs = 7:12;
-   % vs = [11 12];  
+   % vs = 7:12;
+   vs = [11 12];  
    excludeTrials = [];     
 elseif sn==17
-   vs = 1:6;
-   % vs = [5 6];
+   % vs = 1:6;
+   vs = [5 6];
    excludeTrials = [];  
+elseif sn==18
+   vs = 7:10;
+   % vs = [5 6];
+   excludeTrials = [];     
 elseif sn==19
    vs = 5:10;
    % vs = [9 10];
    excludeTrials = [];     
 elseif sn==21
-   vs = 1:6;
-   % vs = [5 6];
+   % vs = 1:6;
+   vs = [5 6];
    excludeTrials = [];
 elseif sn==23
-   vs = 14:21;
-   % vs = 18:21;
+   % vs = 14:21;
+   vs = 18:21;
    excludeTrials = [];   
 elseif sn==24
-   vs = 9:16;
-   % vs = 13:16;
+   % vs = 9:16;
+   vs = 13:16;
    excludeTrials = [];     
 elseif sn==25
    vs = 6:13;
    % vs = 10:13;
    excludeTrials = [];        
 elseif sn==26
-   vs = 4:11;
-   % vs = 8:11;
+   % vs = 4:11;
+   vs = 8:11;
    excludeTrials = [];           
 else
    error('ARCnlz_linearModelnobias: unhandled subject number!');
@@ -257,6 +261,12 @@ weightsS1_y = [deltaS]\(meanChangeYvec');
 weightsRB_x = [deltaR deltaB]\(meanChangeXvec');
 weightsRB_y = [deltaR deltaB]\(meanChangeYvec');
 
+for i = 1:nBoot
+   indBoot = randsample(1:length(meanChangeXvec),length(meanChangeXvec),true);
+   weightsRBSboot(i,:) = [deltaR(indBoot) deltaB(indBoot) deltaS(indBoot)]\(meanChangeXvec(indBoot)');
+end
+weightsRBSci = quantile(weightsRBSboot,[0.16 0.84]);
+
 rhoFull = corr([deltaR deltaB deltaS]*weightsRBS1_x,meanChangeXvec');
 rhoNoColor = corr([deltaS]*weightsS1_x,meanChangeXvec');
 rhoColor = corr([deltaR deltaB]*weightsRB_x,meanChangeXvec');
@@ -271,6 +281,13 @@ else
     nParams = 3;
 end
 aic = 2*nParams-2*LL;
+
+trialMeansNoColor = [deltaS]*weightsS1_x;
+errorIndividualNoColor = meanChangeXvec' - trialMeansNoColor;
+estResidualStdNoColor = std(errorIndividualNoColor);
+LLnoColor = sum(log(normpdf(meanChangeXvec',trialMeansNoColor,estResidualStdNoColor)));
+nParamsNoColor = 1;
+aicNoColor = 2*nParamsNoColor-2*LLnoColor;
 
 if bPLOT
     figure;
