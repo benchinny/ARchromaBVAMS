@@ -1,6 +1,6 @@
 %function ARCnlz         
 
-sn = 25; % CURRENTLY HAVE SUBJECTS 11 THROUGH 17
+sn = 23; % CURRENTLY HAVE SUBJECTS 11 THROUGH 17
 bEXCLUDE = true; % EXCLUDE BLINKS AND BAD TRIALS? 
 bSTACK = true; % STACK ACCOMMODATIVE TRACES IN FIGURES?
 bLeaveOutTransitions = true; % LEAVE OUT FIRST 50 FRAMES AND TRANSITION PERIOD OF ACCOMMODATION?
@@ -28,6 +28,9 @@ elseif sn==16
 elseif sn==17
    vs = 1:4;
    excludeTrials = [];    
+elseif sn==18
+   vs = 3:6;
+   excludeTrials = [];       
 elseif sn==19
    vs = 5:8;
    excludeTrials = [];    
@@ -35,17 +38,20 @@ elseif sn==21
    vs = 1:4;
    excludeTrials = [];  
 elseif sn==23
-   vs = 8:11;
+   vs = 14:17;
    excludeTrials = [];   
 elseif sn==24
    vs = 9:12;
    excludeTrials = [];      
-elseif sn==2
-   vs = 13:14;
+elseif sn==26
+   vs = 4:7;
    excludeTrials = [];    
 elseif sn==25
    vs = 6:9;
    excludeTrials = [];       
+elseif sn==27
+   vs = 5:8;
+   excludeTrials = [];          
 else
    error('ARCnlz: unhandled subject number!');
 end
@@ -295,7 +301,7 @@ for i = 1:size(uniqueRGBvalues,1)
             end
             ylim([-3 3]);
         end
-        xlabel('Time (s)'); ylabel('Power (Diopters)'); 
+        xlabel('Time (s)'); ylabel('Relative Power (Diopters)'); 
         title(['Step = ' num2str(stepSizes(j)*optDistScale) ...
               ', RGB = [' num2str(uniqueRGBvalues(i,1)) ' ' num2str(uniqueRGBvalues(i,2)) ' ' num2str(uniqueRGBvalues(i,3)) '] to ['...
               num2str(uniqueRGBvalues(i,4)) ' ' num2str(uniqueRGBvalues(i,5)) ' ' num2str(uniqueRGBvalues(i,6)) ']']); 
@@ -397,7 +403,7 @@ if bSTACK
         subplot(1,length(stepSizeUnq),j);
         hold on;
         set(gca,'FontSize',15);
-        for i = [1 3 4] % 1:size(clrConditionsUnq,1) 
+        for i = 1:size(clrConditionsUnq,1) 
             indPlot = uniqueConditions(:,1)==clrConditionsUnq(i,1) & ...
                       uniqueConditions(:,2)==clrConditionsUnq(i,2) & ...
                       uniqueConditions(:,3)==clrConditionsUnq(i,3) & ...
@@ -416,7 +422,7 @@ if bSTACK
     %        plot(mean(y3stack(indCndCell{i},:),1),'-','Color',[0.85 0.33 0.1],'LineWidth',2);
             xlim([0 quantile(v1length,0.05)*frmDuration]);
             ylim([-3 3]);
-            xlabel('Time (s)'); ylabel('Power (Diopters)'); title(['Step size = ' num2str(stepSizeUnq(j))]);
+            xlabel('Time (s)'); ylabel('Relative Power (Diopters)'); title(['Step size = ' num2str(stepSizeUnq(j))]);
         end
     end
 end
