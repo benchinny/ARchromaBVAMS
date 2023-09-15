@@ -221,10 +221,11 @@ for i = 1:size(uniqueConditions,1)
        accContinuous = interp1(tSin,sinValuesTmp,tSinInterp); 
        % THIS IS AN OBNOXIOUS WAY OF COMPUTING THE AVERAGE CHANGE WITHIN A
        % TRIAL, BUT IT WORKS AND MAY BE A BIT MORE ROBUST
-       diffVec = imresize([-2/length(accContinuous) 2/length(accContinuous)],size(accContinuous),'nearest');
-       if abs(corr(accContinuous',diffVec'))<0.95
-           error('ARCnlz_linearModelnobias: you may want to check whether the step change occurs halfway through the trial, or not!');
-       end
+%       diffVec = imresize([-2/length(accContinuous) 2/length(accContinuous)],size(accContinuous),'nearest');
+       diffVec = imresize([0 -4/length(accContinuous) 0 4/length(accContinuous)],size(accContinuous),'nearest');
+%        if abs(corr(accContinuous',diffVec'))<0.95
+%            error('ARCnlz_linearModelnobias: you may want to check whether the step change occurs halfway through the trial, or not!');
+%        end
 %        meanChangeX{i} = sum(diffVec.*x3tmp.*xScale)./xScale;
 %        meanChangeY{i} = sum(diffVec.*y3tmp.*yScale)./yScale;
        meanChangeXtmp(k0) = sum(diffVec.*x3tmp.*xScale)./xScale;
@@ -311,8 +312,8 @@ if bPLOT
     set(gcf,'Position',[189 395 1280 420]);
     subplot(1,3,1);
     plot([deltaR deltaB deltaS]*weightsRBS1_x,meanChangeXvec,'ko','LineWidth',1);
-    xlim([-3 3]);
-    ylim([-3 3]);
+    xlim([-2 2]);
+    ylim([-2 2]);
     set(gca,'FontSize',15);
     xlabel('Prediction \DeltaD');
     ylabel('Measured \DeltaD');
@@ -321,8 +322,8 @@ if bPLOT
     
     subplot(1,3,2);
     plot([deltaR deltaB deltaS]*weightsRBS1_y,meanChangeYvec,'ko','LineWidth',1);
-    xlim([-3 3]);
-    ylim([-3 3]);
+    xlim([-2 2]);
+    ylim([-2 2]);
     set(gca,'FontSize',15);
     xlabel('Prediction \DeltaD');
     ylabel('Measured \DeltaD');
@@ -349,9 +350,18 @@ if bPLOT
     figure;
     set(gcf,'Position',[189 395 1280 420]);
     subplot(1,3,1);
-    plot([deltaS]*weightsS1_x,meanChangeXvec,'ko','LineWidth',1);
-    xlim([-3 3]);
-    ylim([-3 3]);
+    % plot([deltaS]*weightsS1_x,meanChangeXvec,'ko','LineWidth',1);
+    predictionTmp = [deltaS]*weightsS1_x;
+    hold on;
+    for i = 1:length(predictionTmp)
+        deltaRtmp = deltaR(i);
+        deltaBtmp = deltaB(i);
+        RBratio = 0.25.*(deltaRtmp-deltaBtmp+2);
+        RBratio
+        plot(predictionTmp(i),meanChangeXvec(i),'o','LineWidth',1,'Color',[RBratio 0 1-RBratio],'MarkerFaceColor',[RBratio 0 1-RBratio]);
+    end
+    xlim([-2 2]);
+    ylim([-2 2]);
     set(gca,'FontSize',15);
     xlabel('Prediction \DeltaD');
     ylabel('Measured \DeltaD');
@@ -360,8 +370,8 @@ if bPLOT
     
     subplot(1,3,2);
     plot([deltaS]*weightsS1_y,meanChangeYvec,'ko','LineWidth',1);
-    xlim([-3 3]);
-    ylim([-3 3]);
+    xlim([-2 2]);
+    ylim([-2 2]);
     set(gca,'FontSize',15);
     xlabel('Prediction \DeltaD');
     ylabel('Measured \DeltaD');
@@ -381,8 +391,8 @@ if bPLOT
     set(gcf,'Position',[189 395 1280 420]);
     subplot(1,3,1);
     plot([deltaR deltaB]*weightsRB_x,meanChangeXvec,'ko','LineWidth',1);
-    xlim([-3 3]);
-    ylim([-3 3]);
+    xlim([-2 2]);
+    ylim([-2 2]);
     set(gca,'FontSize',15);
     xlabel('Prediction \DeltaD');
     ylabel('Measured \DeltaD');
@@ -391,8 +401,8 @@ if bPLOT
     
     subplot(1,3,2);
     plot([deltaR deltaB]*weightsRB_y,meanChangeYvec,'ko','LineWidth',1);
-    xlim([-3 3]);
-    ylim([-3 3]);
+    xlim([-2 2]);
+    ylim([-2 2]);
     set(gca,'FontSize',15);
     xlabel('Prediction \DeltaD');
     ylabel('Measured \DeltaD');

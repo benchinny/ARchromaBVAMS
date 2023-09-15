@@ -82,7 +82,7 @@ legend({'Accommodative demand' 'Color'});
 % set(gca,'XTickLabel',{'1' '2' '3' '4' '5' '6' '7'});
 % legend({'Weighting' 'Switching'});
 
-sn = [18 23 24 26 11 16 17 21];
+sn = [18 23 24 26 27];
 rhoSwitchAll = [];
 rhoFullAll = [];
 rhoNoColorAll = [];
@@ -122,7 +122,7 @@ figure;
 set(gcf,'Position',[262 314 1239 594]);
 for i = 1:size(weightsRBSall,1)
     weightsRBSciTmp = squeeze(weightsRBSciAll(:,:,i));
-    subplot(2,4,i);
+    subplot(1,5,i);
     hold on;
     bar(1,weightsRBSall(i,1),'FaceColor','r');
     plot([1 1],[weightsRBSciTmp(1,1) weightsRBSciTmp(2,1)],'k-');
@@ -155,25 +155,25 @@ xlim([0 1]); ylim([0 1]);
 
 figure;
 hold on;
-bar([1 4 7 10 13 16 19 22],rhoFullAll.^2,0.3,'FaceColor','w');
-bar([2 5 8 11 14 17 20 23],rhoSwitchAll.^2,0.3,'FaceColor',[0.5 0.5 0.5]);
-bar([3 6 9 12 15 18 21 24],rhoNoColorAll.^2,0.3,'FaceColor','k');
+bar([1 4 7 10 13],rhoFullAll.^2,0.3,'FaceColor','w');
+% bar([2 5 8 11 14],rhoSwitchAll.^2,0.3,'FaceColor',[0.5 0.5 0.5]);
+bar([2 5 8 11 14],rhoNoColorAll.^2,0.3,'FaceColor','k');
 set(gca,'FontSize',15);
-xlabel('Subject'); ylabel('Variance Explained');
-set(gca,'XTick',[1.5 4.5 7.5 10.5 13.5 16.5 19.5 22.5]);
-set(gca,'XTickLabel',{'1' '2' '3' '4' '5' '6' '7' '8'});
-legend({'Weighting' 'Switching' 'No color'});
+xlabel('Subject'); ylabel('Proportion Variance Explained');
+set(gca,'XTick',[1.5 4.5 7.5 10.5 13.5]);
+set(gca,'XTickLabel',{'1' '2' '3' '4' '5'});
+legend({'Weighting' 'No color'});
 
 figure;
 hold on;
-bar([1 4 7 10 13 16 19 22],aicLinAll,0.3,'FaceColor','w');
-bar([2 5 8 11 14 17 20 23],aicSwitchAll,0.3,'FaceColor',[0.5 0.5 0.5]);
-bar([3 6 9 12 15 18 21 24],aicNoColorAll,0.3,'FaceColor','k');
+bar([1 4 7 10 13],aicLinAll,0.3,'FaceColor','w');
+% bar([2 5 8 11 14],aicSwitchAll,0.3,'FaceColor',[0.5 0.5 0.5]);
+bar([2 5 8 11 14],aicNoColorAll,0.3,'FaceColor','k');
 set(gca,'FontSize',15);
 xlabel('Subject'); ylabel('AIC');
-set(gca,'XTick',[1.5 4.5 7.5 10.5 13.5 16.5 19.5 22.5]);
-set(gca,'XTickLabel',{'1' '2' '3' '4' '5' '6' '7' '8'});
-legend({'Weighting' 'Switching' 'No color'});
+set(gca,'XTick',[1.5 4.5 7.5 10.5 13.5]);
+set(gca,'XTickLabel',{'1' '2' '3' '4' '5'});
+legend({'Weighting' 'No color'});
 
 %% PLOT VARIANCE EXPLAINED BY COLOR COMPARISONS
 
