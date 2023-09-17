@@ -1,11 +1,7 @@
-%function ARCnlz         
+function [x3stack,tInterp,AFCp,indCndCell] = ARCnlzStack(sn,bPLOT)
 
-sn = 27; % CURRENTLY HAVE SUBJECTS 11 THROUGH 17
 bEXCLUDE = true; % EXCLUDE BLINKS AND BAD TRIALS? 
-bSTACK = true; % STACK ACCOMMODATIVE TRACES IN FIGURES?
 bLeaveOutTransitions = true; % LEAVE OUT FIRST 50 FRAMES AND TRANSITION PERIOD OF ACCOMMODATION?
-
-gammaFactorR = 2.4; % GAMMA CORRECTION FOR MONITOR RGB PRIMARY VALUES
 
 if sn==11 % 'VISIT' NUMBERS
    vs = [2 3 4 7];
@@ -251,63 +247,59 @@ indR2BorB2R = (uniqueRGBvalues(:,1)>0.0001 & uniqueRGBvalues(:,2)<0.0001 ...
              & uniqueRGBvalues(:,5)<0.0001 & uniqueRGBvalues(:,6)<0.0001);
 
 uniqueRGBvalues = [uniqueRGBvalues(indSame,:); uniqueRGBvalues(indR2BorB2R,:); uniqueRGBvalues(indB2mixed,:); uniqueRGBvalues(indR2mixed,:)];
-biasPlotTags = cumsum([sum(indSame) sum(indR2BorB2R) sum(indB2mixed) sum(indR2mixed)]);
 
-biasX = [];
-biasY = [];
-
-for i = 1:size(uniqueRGBvalues,1)
-    indRGB = ismember(uniqueConditions(:,1:6),uniqueRGBvalues(i,:),'rows');
-    stepSizes = uniqueConditions(indRGB,7);
-    biasX(i,:) = mean(meanChangeX(indRGB,:),1);
-    biasY(i,:) = mean(meanChangeY(indRGB,:),1);
-    rowNum = mod(i,figSize);
-    if rowNum==0
-       rowNum = figSize;
-    end
-    if rowNum==1
-        figNum = floor(i/figSize)+1;
-        figure(figNum);
-        set(gcf,'Position',[207 189 1240 765]);
-    end
-    for j = 1:length(stepSizes)
-        colNum = length(stepSizes)+1;
-        indUnq = ismember(uniqueConditions(:,1:6),uniqueRGBvalues(i,:),'rows') ...
-                  & abs(uniqueConditions(:,7)-stepSizes(j))<0.001;     
-        indCndMarkers = indCndCell{indUnq};
-        subplot(figSize,colNum,j+(rowNum-1)*colNum);
-        set(gca,'FontSize',15);
-        frmDuration = 1/30;
+if bPLOT
+    for i = 1:size(uniqueRGBvalues,1)
+        indRGB = ismember(uniqueConditions(:,1:6),uniqueRGBvalues(i,:),'rows');
+        stepSizes = uniqueConditions(indRGB,7);
+        rowNum = mod(i,figSize);
+        if rowNum==0
+           rowNum = figSize;
+        end
+        if rowNum==1
+            figNum = floor(i/figSize)+1;
+            figure(figNum);
+            set(gcf,'Position',[207 189 1240 765]);
+        end
+        for j = 1:length(stepSizes)
+            colNum = length(stepSizes)+1;
+            indUnq = ismember(uniqueConditions(:,1:6),uniqueRGBvalues(i,:),'rows') ...
+                      & abs(uniqueConditions(:,7)-stepSizes(j))<0.001;     
+            indCndMarkers = indCndCell{indUnq};
+            subplot(figSize,colNum,j+(rowNum-1)*colNum);
+            set(gca,'FontSize',15);
+            frmDuration = 0.033;
+            hold on;
+            plot([0:frmDuration:(size(x3stack,2)-1)*frmDuration],x3stack(indCndMarkers,:),'-','Color',[0 0.45 0.74]);
+            % plot([0:frmDuration:(size(x3stack,2)-1)*frmDuration],y3stack(indCndMarkers,:),'-','Color',[0.85 0.33 0.1]);
+            plot([0:frmDuration:(size(x3stack,2)-1)*frmDuration],mean(x3stack(indCndMarkers,:),1),'-','Color',[0 0.45 0.74],'LineWidth',2);
+            % plot([0:frmDuration:(size(x3stack,2)-1)*frmDuration],mean(y3stack(indCndMarkers,:),1),'-','Color',[0.85 0.33 0.1],'LineWidth',2);
+            % xlim([0 quantile(v1length,0.05)*frmDuration]);
+            xlim([0 6]);
+            ylim([-3 3]);
+            xlabel('Time (s)'); ylabel('Relative Power (Diopters)'); 
+            title(['Step = ' num2str(stepSizes(j)*optDistScale) ...
+                  ', RGB = [' num2str(uniqueRGBvalues(i,1)) ' ' num2str(uniqueRGBvalues(i,2)) ' ' num2str(uniqueRGBvalues(i,3)) '] to ['...
+                  num2str(uniqueRGBvalues(i,4)) ' ' num2str(uniqueRGBvalues(i,5)) ' ' num2str(uniqueRGBvalues(i,6)) ']']); 
+        end
+        subplot(figSize,length(stepSizes)+1,colNum+colNum*(rowNum-1));
         hold on;
-        plot([0:frmDuration:(size(x3stack,2)-1)*frmDuration],x3stack(indCndMarkers,:),'-','Color',[0 0.45 0.74]);
-        % plot([0:frmDuration:(size(x3stack,2)-1)*frmDuration],y3stack(indCndMarkers,:),'-','Color',[0.85 0.33 0.1]);
-        plot([0:frmDuration:(size(x3stack,2)-1)*frmDuration],mean(x3stack(indCndMarkers,:),1),'-','Color',[0 0.45 0.74],'LineWidth',2);
-        % plot([0:frmDuration:(size(x3stack,2)-1)*frmDuration],mean(y3stack(indCndMarkers,:),1),'-','Color',[0.85 0.33 0.1],'LineWidth',2);
-        % xlim([0 quantile(v1length,0.05)*frmDuration]);
-        xlim([0 6]);
+        changeLabels = {};
+        for j = 1:length(stepSizes)
+            indUnq = ismember(uniqueConditions(:,1:6),uniqueRGBvalues(i,:),'rows') ...
+                      & abs(uniqueConditions(:,7)-stepSizes(j))<0.001;   
+            bar(j,mean(meanChangeX(indUnq,:)),'FaceColor','w');
+            bar(j+length(stepSizes),mean(meanChangeY(indUnq,:)),'FaceColor','w');
+            errorbar(j,mean(meanChangeX(indUnq,:)),std(meanChangeX(indUnq,:)),'k');
+            errorbar(j+length(stepSizes),mean(meanChangeY(indUnq,:)),std(meanChangeY(indUnq,:)),'k');
+            stepString = '-+';
+            changeLabels{j} = ['H' stepString(int16(1+(1+sign(stepSizes(j)))/2))];
+            changeLabels{j+length(stepSizes)} = ['V' stepString(int16(1+(1+sign(stepSizes(j)))/2))];
+        end
+        ylabel('Mean Accommodative Response (D)');
+        set(gca,'FontSize',15);
+        set(gca,'XTick',[1:length(stepSizes)*2]);
+        set(gca,'XTickLabel',changeLabels);        
         ylim([-3 3]);
-        xlabel('Time (s)'); ylabel('Relative Power (Diopters)'); 
-        title(['Step = ' num2str(stepSizes(j)*optDistScale) ...
-              ', RGB = [' num2str(uniqueRGBvalues(i,1)) ' ' num2str(uniqueRGBvalues(i,2)) ' ' num2str(uniqueRGBvalues(i,3)) '] to ['...
-              num2str(uniqueRGBvalues(i,4)) ' ' num2str(uniqueRGBvalues(i,5)) ' ' num2str(uniqueRGBvalues(i,6)) ']']); 
     end
-    subplot(figSize,length(stepSizes)+1,colNum+colNum*(rowNum-1));
-    hold on;
-    changeLabels = {};
-    for j = 1:length(stepSizes)
-        indUnq = ismember(uniqueConditions(:,1:6),uniqueRGBvalues(i,:),'rows') ...
-                  & abs(uniqueConditions(:,7)-stepSizes(j))<0.001;   
-        bar(j,mean(meanChangeX(indUnq,:)),'FaceColor','w');
-        bar(j+length(stepSizes),mean(meanChangeY(indUnq,:)),'FaceColor','w');
-        errorbar(j,mean(meanChangeX(indUnq,:)),std(meanChangeX(indUnq,:)),'k');
-        errorbar(j+length(stepSizes),mean(meanChangeY(indUnq,:)),std(meanChangeY(indUnq,:)),'k');
-        stepString = '-+';
-        changeLabels{j} = ['H' stepString(int16(1+(1+sign(stepSizes(j)))/2))];
-        changeLabels{j+length(stepSizes)} = ['V' stepString(int16(1+(1+sign(stepSizes(j)))/2))];
-    end
-    ylabel('Mean Accommodative Response (D)');
-    set(gca,'FontSize',15);
-    set(gca,'XTick',[1:length(stepSizes)*2]);
-    set(gca,'XTickLabel',changeLabels);        
-    ylim([-3 3]);
 end
