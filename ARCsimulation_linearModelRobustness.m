@@ -1,6 +1,6 @@
 %%
 
-sn = 26; % CURRENTLY HAVE SUBJECTS 11 THROUGH 26
+sn = 18; % CURRENTLY HAVE SUBJECTS 11 THROUGH 26
 bEXCLUDE = true;
 gammaFactorR = 2.4;
 gammaFactorB = 2.4;
@@ -27,6 +27,9 @@ elseif sn==16
 elseif sn==17
    vs = 1:6;
    excludeTrials = [];  
+elseif sn==18
+   vs = 3:10;
+   excludeTrials = [];        
 elseif sn==19
    vs = 5:10;
    excludeTrials = [];     
@@ -129,7 +132,7 @@ deltaB = AFCp.rgb200(:,3).^gammaFactorB - AFCp.rgb100(:,3).^gammaFactorB    ;
 deltaS = AFCp.v00*scaleFactor;
 delta1 = ones(size(deltaR));
 
-trials2use = 1:120;
+trials2use = 88:128;
 
 deltaR = deltaR(trials2use);
 deltaB = deltaB(trials2use);
@@ -142,7 +145,7 @@ nRepeats = 10000;
 
 for i = 1:nRepeats
    testNoise = 0.6;
-   weightsRBS1true = [1 -0.25 0.75];
+   weightsRBS1true = [0.6 -0.4 0.9];
    accRspSim = [deltaR deltaB deltaS]*weightsRBS1true' + normrnd(0,testNoise,size(deltaS));
    recoveredWeights(i,:) = [deltaR deltaB deltaS]\(accRspSim);
 end
@@ -152,9 +155,12 @@ set(gcf,'Position',[407 246 920 645]);
 subplot(2,2,1);
 hist(recoveredWeights(:,1),101); hold on;
 plot(weightsRBS1true(1).*[1 1],ylim,'k--','LineWidth',1);
+xlabel('w_R');
 subplot(2,2,2);
 hist(recoveredWeights(:,2),101); hold on;
 plot(weightsRBS1true(2).*[1 1],ylim,'k--','LineWidth',1);
+xlabel('w_B');
 subplot(2,2,3);
 hist(recoveredWeights(:,3),101); hold on;
 plot(weightsRBS1true(3).*[1 1],ylim,'k--','LineWidth',1);
+xlabel('w_S');

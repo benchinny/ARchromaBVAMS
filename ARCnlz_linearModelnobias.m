@@ -4,7 +4,7 @@ bEXCLUDE = true;
 gammaFactorR = 2.4;
 gammaFactorB = 2.4;
 scaleFactor = 0.8;
-bRELATIVE_LUM = 0;
+bRELATIVE_LUM = 1;
 
 if sn==11 % 'VISIT' NUMBERS
    % vs = [2 3 4 5 6 7];
@@ -268,7 +268,11 @@ weightsRB_y = [deltaR deltaB]\(meanChangeYvec');
 
 for i = 1:nBoot
    indBoot = randsample(1:length(meanChangeXvec),length(meanChangeXvec),true);
-   weightsRBSboot(i,:) = [deltaR(indBoot) deltaB(indBoot) deltaS(indBoot)]\(meanChangeXvec(indBoot)');
+   if bRELATIVE_LUM
+       weightsRBSboot(i,:) = [deltaR(indBoot) deltaS(indBoot)]\(meanChangeXvec(indBoot)');
+   else
+       weightsRBSboot(i,:) = [deltaR(indBoot) deltaB(indBoot) deltaS(indBoot)]\(meanChangeXvec(indBoot)');
+   end
 end
 weightsRBSci = quantile(weightsRBSboot,[0.16 0.84]);
 
@@ -295,17 +299,31 @@ LLnoColor = sum(log(normpdf(meanChangeXvec',trialMeansNoColor,estResidualStdNoCo
 nParamsNoColor = 1;
 aicNoColor = 2*nParamsNoColor-2*LLnoColor;
 
-% put data into table in prep for running built in matlab models
-tbl = table(deltaR,deltaB,deltaS,meanChangeXvec','VariableNames',{'deltaR','deltaB','deltaS','resp'});
-
-% fit two linear mixture models to data, one with color and one
-% without, run model comparison
-lme_nocolor = fitlme(tbl,'resp~-1+deltaS');
-lme = fitlme(tbl,'resp~-1+deltaS+deltaB+deltaR');
-compare(lme,lme_nocolor);
-
-aic = 2*lme.NumVariables - 2*lme.LogLikelihood;
-aicNoColor = 2*lme_nocolor.NumVariables - 2*lme_nocolor.LogLikelihood;
+if bRELATIVE_LUM
+    % put data into table in prep for running built in matlab models
+    tbl = table(deltaR,deltaS,meanChangeXvec','VariableNames',{'deltaR','deltaS','resp'});
+    
+    % fit two linear mixture models to data, one with color and one
+    % without, run model comparison
+    lme_nocolor = fitlme(tbl,'resp~-1+deltaS');
+    lme = fitlme(tbl,'resp~-1+deltaS+deltaR');
+    compare(lme,lme_nocolor);
+    
+    aic = 2*lme.NumVariables - 2*lme.LogLikelihood;
+    aicNoColor = 2*lme_nocolor.NumVariables - 2*lme_nocolor.LogLikelihood;
+else
+    % put data into table in prep for running built in matlab models
+    tbl = table(deltaR,deltaB,deltaS,meanChangeXvec','VariableNames',{'deltaR','deltaB','deltaS','resp'});
+    
+    % fit two linear mixture models to data, one with color and one
+    % without, run model comparison
+    lme_nocolor = fitlme(tbl,'resp~-1+deltaS');
+    lme = fitlme(tbl,'resp~-1+deltaS+deltaB+deltaR');
+    compare(lme,lme_nocolor);
+    
+    aic = 2*lme.NumVariables - 2*lme.LogLikelihood;
+    aicNoColor = 2*lme_nocolor.NumVariables - 2*lme_nocolor.LogLikelihood;
+end
 
 if bPLOT
     figure;

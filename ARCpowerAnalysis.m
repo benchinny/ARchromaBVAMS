@@ -138,18 +138,18 @@ for i = 1:size(weightsRBSall,1)
     axis square;
 end
 
-Rscale = [1 1 1 1 1.27 1.27 1.27 1.27];
+Rscale = [1 1 1 1 1];
 figure;
 set(gca,'FontSize',15);
 hold on;
-plot([0 0.33],[0 1],'k--');
+plot([0 0.3],[0 1],'k--');
 for i = 1:length(dAll)
     plot(dAll(i),Rscale(i)*weightsRBSall(i,1)-weightsRBSall(i,2),'ko','MarkerSize',10,'MarkerFaceColor','w');
     text(dAll(i)+0.05,Rscale(i)*weightsRBSall(i,1)-weightsRBSall(i,2),['S' num2str(i)]);
 end
 axis square;
 xlabel('d'); ylabel('w_R - w_B');
-xlim([0 1]); ylim([0 1]);
+xlim([0 1.1]); ylim([0 1.1]);
 
 %% PLOT VARIANCE EXPLAINED COMPARISONS
 
@@ -224,14 +224,14 @@ legend({'With bias' 'No bias'});
 
 %% COMPARE 3-PARAMETER AND 2-PARAMETER MODELS
 
-sn = [18 23 24 26 11 16 17 21];
+sn = [18 23 24 26 27];
 rhoFullAll = [];
 rhoNoColorAll = [];
 weightsRBSall = [];
 rhoColorAll = [];
 
 for i = 1:length(sn)
-    [weightsRBS1_x, weightsRBS1_y, rhoFull, rhoNoColor, rhoColor] = ARCnlz_linearModelnobias(sn(i),false);
+    [weightsRBS1_x, weightsRBS1_y, rhoFull, rhoNoColor, rhoColor] = ARCnlz_linearModelnobias(sn(i),false,1000);
     rhoFullAll(i) = rhoFull;
     rhoNoColorAll(i) = rhoNoColor;
     weightsRBSall(i,:) = weightsRBS1_x;
@@ -294,13 +294,13 @@ rhoNoColorAll2param = rhoNoColorAll;
 
 figure;
 hold on;
-bar([1 4 7 10 13 16 19 22],rhoFullAll3param.^2,0.3,'FaceColor','w');
-bar([2 5 8 11 14 17 20 23],rhoFullAll2param.^2,0.3,'FaceColor',[0.7 0.7 0.7]);
-bar([3 6 9 12 15 18 21 24],rhoNoColorAll2param.^2,0.3,'FaceColor',[0 0 0]);
+bar([1 4 7 10 13],rhoFullAll3param.^2,0.3,'FaceColor','w');
+bar([2 5 8 11 14],rhoFullAll2param.^2,0.3,'FaceColor',[0.7 0.7 0.7]);
+bar([3 6 9 12 15],rhoNoColorAll2param.^2,0.3,'FaceColor',[0 0 0]);
 set(gca,'FontSize',15);
 xlabel('Subject'); ylabel('Variance explained');
-set(gca,'XTick',[2 5 8 11 14 17 20 23]);
-set(gca,'XTickLabel',{'1' '2' '3' '4' '5' '6' '7' '8'});
+set(gca,'XTick',[2 5 8 11 14]);
+set(gca,'XTickLabel',{'1' '2' '3' '4' '5'});
 legend({'3-parameter' '2-parameter' 'No color'});
 
 figure;
