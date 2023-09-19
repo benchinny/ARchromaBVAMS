@@ -47,7 +47,10 @@ elseif sn==25
    excludeTrials = [];       
 elseif sn==27
    vs = 5:8;
-   excludeTrials = [];          
+   excludeTrials = [];
+elseif sn==29
+   vs = 7:10;
+   excludeTrials = [];   
 else
    error('ARCnlz: unhandled subject number!');
 end
@@ -193,8 +196,8 @@ for i = 1:size(uniqueConditions,1)
        y3tmp = [y3tmp 0];
        t3tmp = t2{k0}';
        x3interp = interp1([t3tmp-t3tmp(1) max(tInterp)],[x3tmp],tInterp);
-       x3stack(indCnd(k0),1:length(x3interp)) = x3interp;
-       y3stack(indCnd(k0),1:length(y3tmp)) = y3tmp;
+       x3stack(indCnd(k0),1:length(x3interp)) = x3interp-x3interp(1);
+       y3stack(indCnd(k0),1:length(y3tmp)) = y3tmp-y3tmp(1);
        % ACCOMMODATIVE DEMAND FROM EXPERIMENT 
        sinValuesTmp = AFCp.sinValues(indCnd(k0),:);
        tSin = 0:(1/(length(sinValuesTmp)-1)):1;
