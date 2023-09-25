@@ -82,7 +82,7 @@ legend({'Accommodative demand' 'Color'});
 % set(gca,'XTickLabel',{'1' '2' '3' '4' '5' '6' '7'});
 % legend({'Weighting' 'Switching'});
 
-sn = [18 23 24 26 27];
+sn = [18 23 24 26 27 29];
 rhoSwitchAll = [];
 rhoFullAll = [];
 rhoNoColorAll = [];
@@ -95,17 +95,17 @@ aicLinAll = [];
 aicNoColorAll = [];
 weightsRBSciAll = [];
 
-for i = 1:length(sn)
-    [d, wS, rbThreshold, rhoSwitch, rhoColorSwitch, aicSwitch] = ARCnlz_linearSwitching(sn(i),false);
-    rhoSwitchAll(i) = rhoSwitch;
-    rhoColorSwitchAll(i) = rhoColorSwitch;
-    dAll(i) = d;
-    aicSwitchAll(i) = aicSwitch;
-    display(['Done with subject ' num2str(i)]);
-end
+% for i = 1:length(sn)
+%     [d, wS, rbThreshold, rhoSwitch, rhoColorSwitch, aicSwitch] = ARCnlz_linearSwitching(sn(i),false);
+%     rhoSwitchAll(i) = rhoSwitch;
+%     rhoColorSwitchAll(i) = rhoColorSwitch;
+%     dAll(i) = d;
+%     aicSwitchAll(i) = aicSwitch;
+%     display(['Done with subject ' num2str(i)]);
+% end
 
 for i = 1:length(sn)
-    [weightsRBS1_x, weightsRBS1_y, rhoFull, rhoNoColor, rhoColor, aicLin, aicNoColor, weightsRBSci] = ARCnlz_linearModelnobias(sn(i),false,1000);
+    [weightsRBS1_x, weightsRBS1_y, rhoFull, rhoNoColor, rhoColor, aicLin, aicNoColor, weightsRBSci] = ARCnlz_linearModelnobias(sn(i),false,1000,0);
     rhoFullAll(i) = rhoFull;
     rhoNoColorAll(i) = rhoNoColor;
     weightsRBSall(i,:) = weightsRBS1_x;
@@ -119,60 +119,74 @@ end
 %% PLOT WEIGHTS
 
 figure;
-set(gcf,'Position',[262 314 1239 594]);
+% set(gcf,'Position',[262 314 1239 594]);
 for i = 1:size(weightsRBSall,1)
     weightsRBSciTmp = squeeze(weightsRBSciAll(:,:,i));
-    subplot(1,5,i);
     hold on;
-    bar(1,weightsRBSall(i,1),'FaceColor','r');
-    plot([1 1],[weightsRBSciTmp(1,1) weightsRBSciTmp(2,1)],'k-');
-    bar(2,weightsRBSall(i,2),'FaceColor','b');
-    plot([2 2],[weightsRBSciTmp(1,2) weightsRBSciTmp(2,2)],'k-');
-    bar(3,weightsRBSall(i,3),'FaceColor','k');
-    plot([3 3],[weightsRBSciTmp(1,3) weightsRBSciTmp(2,3)],'k-');
-    set(gca,'XTick',[1 2 3]);
-    set(gca,'XTickLabel',{'w_R' 'w_B' 'w_S'});
-    title('Weights');
+    bar((3*(i-1)+1),weightsRBSall(i,1),'FaceColor','r');
+    plot((3*(i-1)+1).*[1 1],[weightsRBSciTmp(1,1) weightsRBSciTmp(2,1)],'k-');
+    bar((3*(i-1)+2),weightsRBSall(i,2),'FaceColor','b');
+    plot((3*(i-1)+2).*[1 1],[weightsRBSciTmp(1,2) weightsRBSciTmp(2,2)],'k-');
+%     bar(3,weightsRBSall(i,3),'FaceColor','k');
+%     plot([3 3],[weightsRBSciTmp(1,3) weightsRBSciTmp(2,3)],'k-');
+    set(gca,'XTick',[1.5 4.5 7.5 10.5 13.5 16.5]);
+    set(gca,'XTickLabel',{'S1' 'S2' 'S3' 'S4' 'S5' 'S6'});
     set(gca,'FontSize',20);
-    ylim(1.*[-1.1 1.1]);
-    axis square;
+    ylim(1.*[-1 1]);
+    xlabel('Subject #');
+    ylabel('Weight');
 end
 
-Rscale = [1 1 1 1 1];
 figure;
-set(gca,'FontSize',15);
-hold on;
-plot([0 0.3],[0 1],'k--');
-for i = 1:length(dAll)
-    plot(dAll(i),Rscale(i)*weightsRBSall(i,1)-weightsRBSall(i,2),'ko','MarkerSize',10,'MarkerFaceColor','w');
-    text(dAll(i)+0.05,Rscale(i)*weightsRBSall(i,1)-weightsRBSall(i,2),['S' num2str(i)]);
+% set(gcf,'Position',[262 314 1239 594]);
+for i = 1:size(weightsRBSall,1)
+    weightsRBSciTmp = squeeze(weightsRBSciAll(:,:,i));
+    hold on;
+    bar(i,weightsRBSall(i,3),'FaceColor','w','LineWidth',1);
+    plot(i.*[1 1],[weightsRBSciTmp(1,3) weightsRBSciTmp(2,3)],'k-');
+    set(gca,'XTick',[1:6]);
+    set(gca,'XTickLabel',{'S1' 'S2' 'S3' 'S4' 'S5' 'S6'});
+    set(gca,'FontSize',20);
+    ylim(1.*[0 1.15]);
+    xlabel('Subject #');
+    ylabel('Weight');
 end
-axis square;
-xlabel('d'); ylabel('w_R - w_B');
-xlim([0 1.1]); ylim([0 1.1]);
+
+% Rscale = [1 1 1 1 1];
+% figure;
+% set(gca,'FontSize',15);
+% hold on;
+% plot([0 0.3],[0 1],'k--');
+% for i = 1:length(dAll)
+%     plot(dAll(i),Rscale(i)*weightsRBSall(i,1)-weightsRBSall(i,2),'ko','MarkerSize',10,'MarkerFaceColor','w');
+%     text(dAll(i)+0.05,Rscale(i)*weightsRBSall(i,1)-weightsRBSall(i,2),['S' num2str(i)]);
+% end
+% axis square;
+% xlabel('d'); ylabel('w_R - w_B');
+% xlim([0 1.1]); ylim([0 1.1]);
 
 %% PLOT VARIANCE EXPLAINED COMPARISONS
 
 figure;
 hold on;
-bar([1 4 7 10 13],rhoFullAll.^2,0.3,'FaceColor','w');
+bar([1 4 7 10 13 16],rhoFullAll.^2,0.3,'FaceColor','w');
 % bar([2 5 8 11 14],rhoSwitchAll.^2,0.3,'FaceColor',[0.5 0.5 0.5]);
-bar([2 5 8 11 14],rhoNoColorAll.^2,0.3,'FaceColor','k');
+bar([2 5 8 11 14 17],rhoNoColorAll.^2,0.3,'FaceColor','k');
 set(gca,'FontSize',15);
 xlabel('Subject'); ylabel('Proportion Variance Explained');
-set(gca,'XTick',[1.5 4.5 7.5 10.5 13.5]);
-set(gca,'XTickLabel',{'1' '2' '3' '4' '5'});
+set(gca,'XTick',[1.5 4.5 7.5 10.5 13.5 16.5]);
+set(gca,'XTickLabel',{'1' '2' '3' '4' '5' '6'});
 legend({'Weighting' 'No color'});
 
 figure;
 hold on;
-bar([1 4 7 10 13],aicLinAll,0.3,'FaceColor','w');
+bar([1 4 7 10 13 16],aicLinAll,0.3,'FaceColor','w');
 % bar([2 5 8 11 14],aicSwitchAll,0.3,'FaceColor',[0.5 0.5 0.5]);
-bar([2 5 8 11 14],aicNoColorAll,0.3,'FaceColor','k');
+bar([2 5 8 11 14 17],aicNoColorAll,0.3,'FaceColor','k');
 set(gca,'FontSize',15);
 xlabel('Subject'); ylabel('AIC');
-set(gca,'XTick',[1.5 4.5 7.5 10.5 13.5]);
-set(gca,'XTickLabel',{'1' '2' '3' '4' '5'});
+set(gca,'XTick',[1.5 4.5 7.5 10.5 13.5 16.5]);
+set(gca,'XTickLabel',{'1' '2' '3' '4' '5' '6'});
 legend({'Weighting' 'No color'});
 
 %% PLOT VARIANCE EXPLAINED BY COLOR COMPARISONS

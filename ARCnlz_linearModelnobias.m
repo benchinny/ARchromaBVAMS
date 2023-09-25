@@ -1,10 +1,11 @@
-function [weightsRBS1_x, weightsRBS1_y, rhoFull, rhoNoColor, rhoColor, aic, aicNoColor, weightsRBSci] = ARCnlz_linearModelnobias(sn,bPLOT,nBoot)
+function [weightsRBS1_x, weightsRBS1_y, rhoFull, rhoNoColor, rhoColor, aic, aicNoColor, weightsRBSci] = ARCnlz_linearModelnobias(sn,bPLOT,nBoot,bLOWLUM)
 
 bEXCLUDE = true;
 gammaFactorR = 2.4;
-gammaFactorB = 2.4;
+gammaFactorB = 2.2;
 scaleFactor = 0.8;
-bRELATIVE_LUM = 1;
+bRELATIVE_LUM = 0;
+maxLumCdm2 = 0.87;
 
 if sn==11 % 'VISIT' NUMBERS
    % vs = [2 3 4 5 6 7];
@@ -62,6 +63,10 @@ elseif sn==27
    % vs = 4:11;
    vs = 9:12;
    excludeTrials = [];     
+elseif sn==29
+   % vs = 4:11;
+   vs = 11:14;
+   excludeTrials = [];        
 else
    error('ARCnlz_linearModelnobias: unhandled subject number!');
 end
@@ -258,6 +263,20 @@ else
 end
 deltaS = AFCp.v00*scaleFactor;
 delta1 = ones(size(deltaR));
+deltaR = deltaR.*maxLumCdm2;
+deltaB = deltaB.*maxLumCdm2;
+
+lumCutoff = 2;
+if bLOWLUM
+    indLowLum = 0.4.*(scaleEquateRB.*AFCp.rgb100(:,1).^gammaFactorR + AFCp.rgb100(:,3).^gammaFactorB)<lumCutoff | ...
+                0.4.*(scaleEquateRB.*AFCp.rgb200(:,1).^gammaFactorR + AFCp.rgb200(:,3).^gammaFactorB)<lumCutoff;
+    % indLowLum = ~indLowLum;
+    deltaR = deltaR(indLowLum);
+    deltaB = deltaB(indLowLum);
+    deltaS = deltaS(indLowLum);
+    meanChangeXvec = meanChangeXvec(indLowLum);
+    meanChangeYvec = meanChangeYvec(indLowLum);
+end
 
 weightsRBS1_x = [deltaR deltaB deltaS]\(meanChangeXvec');
 weightsRBS1_y = [deltaR deltaB deltaS]\(meanChangeYvec');
@@ -330,6 +349,8 @@ if bPLOT
     set(gcf,'Position',[189 395 1280 420]);
     subplot(1,3,1);
     plot([deltaR deltaB deltaS]*weightsRBS1_x,meanChangeXvec,'ko','LineWidth',1);
+    hold on;
+    plot([-2 2],[-2 2],'k--');
     xlim([-2 2]);
     ylim([-2 2]);
     set(gca,'FontSize',15);
@@ -372,17 +393,19 @@ if bPLOT
     predictionTmp = [deltaS]*weightsS1_x;
     hold on;
     for i = 1:length(predictionTmp)
-        deltaRtmp = deltaR(i);
-        deltaBtmp = deltaB(i);
+        deltaRtmp = (1/maxLumCdm2)*deltaR(i);
+        deltaBtmp = (1/maxLumCdm2)*deltaB(i);
         RBratio = 0.25.*(deltaRtmp-deltaBtmp+2);
         RBratio
-        plot(predictionTmp(i),meanChangeXvec(i),'o','LineWidth',1,'Color',[RBratio 0 1-RBratio],'MarkerFaceColor',[RBratio 0 1-RBratio]);
+        % plot(predictionTmp(i),meanChangeXvec(i),'o','LineWidth',1,'Color',[RBratio 0 1-RBratio],'MarkerFaceColor',[RBratio 0 1-RBratio]);
+        plot(predictionTmp(i),meanChangeXvec(i),'o','LineWidth',1,'Color','k','MarkerFaceColor','w');
     end
+    plot([-2 2],[-2 2],'k--');
     xlim([-2 2]);
     ylim([-2 2]);
     set(gca,'FontSize',15);
-    xlabel('Prediction \DeltaD');
-    ylabel('Measured \DeltaD');
+    xlabel('Prediction \DeltaA');
+    ylabel('Measured \DeltaA');
     title(['Correlation = ' num2str(rhoNoColor,3)]);
     axis square;
     

@@ -73,7 +73,11 @@ for i = 1:size(uniqueRGBvalues,1)
         frmDuration = 0.033;
         hold on;
         plot([0:frmDuration:(size(xStackAll,2)-1)*frmDuration],xStackAll(indCndMarkers,:),'-','Color',[0 0.45 0.74]);
-        plot([0:frmDuration:(size(xStackAll,2)-1)*frmDuration],mean(xStackAll(indCndMarkers,:),1),'-','Color',[0 0.45 0.74],'LineWidth',2);
+        ind1stHalf = 1:91;
+        ind2ndHalf = 91:182;
+        tSamples = [0:frmDuration:(size(xStackAll,2)-1)*frmDuration];
+        plot(tSamples(ind1stHalf),mean(xStackAll(indCndMarkers,ind1stHalf),1),'-','Color',uniqueRGBvalues(i,1:3),'LineWidth',2);
+        plot(tSamples(ind2ndHalf),mean(xStackAll(indCndMarkers,ind2ndHalf),1),'-','Color',uniqueRGBvalues(i,4:6),'LineWidth',2);
         xlim([0 6]);
         ylim([-3 3]);
         xlabel('Time (s)'); ylabel('Relative Power (Diopters)'); 
