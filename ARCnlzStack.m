@@ -51,6 +51,12 @@ elseif sn==27
 elseif sn==29
    vs = 7:10;
    excludeTrials = [];   
+elseif sn==32
+   vs = 11:14;
+   excludeTrials = []; 
+elseif sn==33
+   vs = [3 4 5 7];
+   excludeTrials = []; 
 else
    error('ARCnlz: unhandled subject number!');
 end

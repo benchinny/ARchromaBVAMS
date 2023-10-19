@@ -1,15 +1,17 @@
 %% ACTUAL POWER ANALYSIS
 
-addVarExplClr = [0.2147 0.1209 0.1658 0.1548 0.0443];
+weightsR = [0.7125 0.1385 0.2997 0.2011 0.2584 0.2179 0.2376 0.2932];
+weightsB = [-0.5044 -0.2884 -0.6663 -0.1809 -0.3804 -0.1181 -0.4334 -0.5439];
+addVarExplClr = weightsR-weightsB;
 
 %% JUST CHECKING EXPRESSION FOR STD ERROR OF THE MEAN
 
 for i = 1:10000
-    smpAddVar = randsample(addVarExplClr,5,true);
+    smpAddVar = randsample(addVarExplClr,8,true);
     muSmpAddVar(i) = mean(smpAddVar);
 end
 
-xSupport = -0.15:0.001:0.15;
+xSupport = -1:0.001:1;
 pMu = normpdf(xSupport,0,std(muSmpAddVar));
 
 figure;
@@ -82,7 +84,7 @@ legend({'Accommodative demand' 'Color'});
 % set(gca,'XTickLabel',{'1' '2' '3' '4' '5' '6' '7'});
 % legend({'Weighting' 'Switching'});
 
-sn = [18 23 24 26 27 29];
+sn = [18 23 24 26 27 29 32 33];
 rhoSwitchAll = [];
 rhoFullAll = [];
 rhoNoColorAll = [];
@@ -129,8 +131,8 @@ for i = 1:size(weightsRBSall,1)
     plot((3*(i-1)+2).*[1 1],[weightsRBSciTmp(1,2) weightsRBSciTmp(2,2)],'k-');
 %     bar(3,weightsRBSall(i,3),'FaceColor','k');
 %     plot([3 3],[weightsRBSciTmp(1,3) weightsRBSciTmp(2,3)],'k-');
-    set(gca,'XTick',[1.5 4.5 7.5 10.5 13.5 16.5]);
-    set(gca,'XTickLabel',{'S1' 'S2' 'S3' 'S4' 'S5' 'S6'});
+    set(gca,'XTick',[1.5 4.5 7.5 10.5 13.5 16.5 19.5 22.5]);
+    set(gca,'XTickLabel',{'S1' 'S2' 'S3' 'S4' 'S5' 'S6' 'S7' 'S8'});
     set(gca,'FontSize',20);
     ylim(1.*[-1 1]);
     xlabel('Subject #');
@@ -144,8 +146,8 @@ for i = 1:size(weightsRBSall,1)
     hold on;
     bar(i,weightsRBSall(i,3),'FaceColor','w','LineWidth',1);
     plot(i.*[1 1],[weightsRBSciTmp(1,3) weightsRBSciTmp(2,3)],'k-');
-    set(gca,'XTick',[1:6]);
-    set(gca,'XTickLabel',{'S1' 'S2' 'S3' 'S4' 'S5' 'S6'});
+    set(gca,'XTick',[1:8]);
+    set(gca,'XTickLabel',{'S1' 'S2' 'S3' 'S4' 'S5' 'S6' 'S7' 'S8'});
     set(gca,'FontSize',20);
     ylim(1.*[0 1.15]);
     xlabel('Subject #');
@@ -169,24 +171,24 @@ end
 
 figure;
 hold on;
-bar([1 4 7 10 13 16],rhoFullAll.^2,0.3,'FaceColor','w');
+bar([1 4 7 10 13 16 19 22],rhoFullAll.^2,0.3,'FaceColor','w');
 % bar([2 5 8 11 14],rhoSwitchAll.^2,0.3,'FaceColor',[0.5 0.5 0.5]);
-bar([2 5 8 11 14 17],rhoNoColorAll.^2,0.3,'FaceColor','k');
+bar([2 5 8 11 14 17 20 23],rhoNoColorAll.^2,0.3,'FaceColor','k');
 set(gca,'FontSize',15);
 xlabel('Subject'); ylabel('Proportion Variance Explained');
-set(gca,'XTick',[1.5 4.5 7.5 10.5 13.5 16.5]);
-set(gca,'XTickLabel',{'1' '2' '3' '4' '5' '6'});
+set(gca,'XTick',[1.5 4.5 7.5 10.5 13.5 16.5 19.5 22.5]);
+set(gca,'XTickLabel',{'1' '2' '3' '4' '5' '6' '7' '8'});
 legend({'Weighting' 'No color'});
 
 figure;
 hold on;
-bar([1 4 7 10 13 16],aicLinAll,0.3,'FaceColor','w');
+bar([1 4 7 10 13 16 19 22],aicLinAll,0.3,'FaceColor','w');
 % bar([2 5 8 11 14],aicSwitchAll,0.3,'FaceColor',[0.5 0.5 0.5]);
-bar([2 5 8 11 14 17],aicNoColorAll,0.3,'FaceColor','k');
+bar([2 5 8 11 14 17 20 23],aicNoColorAll,0.3,'FaceColor','k');
 set(gca,'FontSize',15);
 xlabel('Subject'); ylabel('AIC');
-set(gca,'XTick',[1.5 4.5 7.5 10.5 13.5 16.5]);
-set(gca,'XTickLabel',{'1' '2' '3' '4' '5' '6'});
+set(gca,'XTick',[1.5 4.5 7.5 10.5 13.5 16.5 19.5 22.5]);
+set(gca,'XTickLabel',{'1' '2' '3' '4' '5' '6' '7' '8'});
 legend({'Weighting' 'No color'});
 
 %% PLOT VARIANCE EXPLAINED BY COLOR COMPARISONS

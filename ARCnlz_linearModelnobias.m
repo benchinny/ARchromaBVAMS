@@ -67,6 +67,14 @@ elseif sn==29
    % vs = 4:11;
    vs = 11:14;
    excludeTrials = [];        
+elseif sn==32
+   % vs = 4:11;
+   vs = 15:18;
+   excludeTrials = [];           
+elseif sn==33
+   % vs = 4:11;
+   vs = 8:11;
+   excludeTrials = [];              
 else
    error('ARCnlz_linearModelnobias: unhandled subject number!');
 end
@@ -249,7 +257,7 @@ for i = 1:size(uniqueConditions,1)
     meanChangeYvec(indCnd) = meanChangeYtmp;
 end
 
-scaleEquateRB = 1/0.25;
+scaleEquateRB = 4;
 
 if bRELATIVE_LUM
    deltaR = scaleEquateRB.*(AFCp.rgb200(:,1).^gammaFactorR)./(scaleEquateRB.*(AFCp.rgb200(:,1).^gammaFactorR) + (AFCp.rgb200(:,3).^gammaFactorB)) ...
@@ -348,8 +356,17 @@ if bPLOT
     figure;
     set(gcf,'Position',[189 395 1280 420]);
     subplot(1,3,1);
-    plot([deltaR deltaB deltaS]*weightsRBS1_x,meanChangeXvec,'ko','LineWidth',1);
+%    plot([deltaR deltaB deltaS]*weightsRBS1_x,meanChangeXvec,'ko','LineWidth',1);
+    predictionTmp = [deltaR deltaB deltaS]*weightsRBS1_x;
     hold on;
+    for i = 1:length(predictionTmp)
+        deltaRtmp = (1/maxLumCdm2)*deltaR(i);
+        deltaBtmp = (1/maxLumCdm2)*deltaB(i);
+        RBratio = 0.25.*(deltaRtmp-deltaBtmp+2);
+        RBratio
+        plot(predictionTmp(i),meanChangeXvec(i),'o','LineWidth',1,'Color',[RBratio 0 1-RBratio],'MarkerFaceColor',[RBratio 0 1-RBratio]);
+        % plot(predictionTmp(i),meanChangeXvec(i),'o','LineWidth',1,'Color','k','MarkerFaceColor','w');
+    end    
     plot([-2 2],[-2 2],'k--');
     xlim([-2 2]);
     ylim([-2 2]);
@@ -397,8 +414,8 @@ if bPLOT
         deltaBtmp = (1/maxLumCdm2)*deltaB(i);
         RBratio = 0.25.*(deltaRtmp-deltaBtmp+2);
         RBratio
-        % plot(predictionTmp(i),meanChangeXvec(i),'o','LineWidth',1,'Color',[RBratio 0 1-RBratio],'MarkerFaceColor',[RBratio 0 1-RBratio]);
-        plot(predictionTmp(i),meanChangeXvec(i),'o','LineWidth',1,'Color','k','MarkerFaceColor','w');
+        plot(predictionTmp(i),meanChangeXvec(i),'o','LineWidth',1,'Color',[RBratio 0 1-RBratio],'MarkerFaceColor',[RBratio 0 1-RBratio]);
+        % plot(predictionTmp(i),meanChangeXvec(i),'o','LineWidth',1,'Color','k','MarkerFaceColor','w');
     end
     plot([-2 2],[-2 2],'k--');
     xlim([-2 2]);

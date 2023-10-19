@@ -1,6 +1,6 @@
 %%
 
-sn = [18 23 24 26 27 29];
+sn = [18 23 24 26 27 29 32 33];
 xStackAll = [];
 rgb100all = [];
 rgb200all = [];
@@ -72,11 +72,15 @@ for i = 1:size(uniqueRGBvalues,1)
         set(gca,'FontSize',15);
         frmDuration = 0.033;
         hold on;
-        plot([0:frmDuration:(size(xStackAll,2)-1)*frmDuration],xStackAll(indCndMarkers,:),'-','Color',[0 0.45 0.74]);
+        % plot([0:frmDuration:(size(xStackAll,2)-1)*frmDuration],xStackAll(indCndMarkers,:),'-','Color',[0 0.45 0.74]);
         ind1stHalf = 1:91;
         ind2ndHalf = 91:182;
         tSamples = [0:frmDuration:(size(xStackAll,2)-1)*frmDuration];
+        xStackCI1 = quantile(xStackAll(indCndMarkers,ind1stHalf),[0.16 0.84]);
+        xStackCI2 = quantile(xStackAll(indCndMarkers,ind2ndHalf),[0.16 0.84]);
+        fill([tSamples(ind1stHalf) fliplr(tSamples(ind1stHalf))],[xStackCI1(1,:) fliplr(xStackCI1(2,:))],uniqueRGBvalues(i,1:3),'EdgeColor','none');
         plot(tSamples(ind1stHalf),mean(xStackAll(indCndMarkers,ind1stHalf),1),'-','Color',uniqueRGBvalues(i,1:3),'LineWidth',2);
+        fill([tSamples(ind2ndHalf) fliplr(tSamples(ind2ndHalf))],[xStackCI2(1,:) fliplr(xStackCI2(2,:))],uniqueRGBvalues(i,4:6),'EdgeColor','none');
         plot(tSamples(ind2ndHalf),mean(xStackAll(indCndMarkers,ind2ndHalf),1),'-','Color',uniqueRGBvalues(i,4:6),'LineWidth',2);
         xlim([0 6]);
         ylim([-3 3]);
