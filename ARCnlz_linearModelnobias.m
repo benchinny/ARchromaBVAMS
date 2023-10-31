@@ -500,7 +500,7 @@ if bPLOT
     
     title('Weights');
     set(gca,'FontSize',20);
-    ylim(max(weightsRB_x).*[-1.2 1.2]);
+%    ylim(max(weightsRB_x).*[-1.2 1.2]);
     axis square;
 end
 

@@ -4,6 +4,7 @@ bEXCLUDE = true;
 gammaFactorR = 2.4;
 gammaFactorB = 2.2;
 scaleFactor = 0.8;
+maxLumCdm2 = 0.87;
 
 if sn==11 % 'VISIT' NUMBERS
    % vs = [2 3 4 5 6 7];
@@ -56,11 +57,23 @@ elseif sn==25
 elseif sn==26
    % vs = 4:11;
    vs = 8:11;
-   excludeTrials = [];           
+   excludeTrials = [];  
 elseif sn==27
    % vs = 4:11;
    vs = 9:12;
-   excludeTrials = [];      
+   excludeTrials = [];     
+elseif sn==29
+   % vs = 4:11;
+   vs = 11:14;
+   excludeTrials = [];        
+elseif sn==32
+   % vs = 4:11;
+   vs = 15:18;
+   excludeTrials = [];           
+elseif sn==33
+   % vs = 4:11;
+   vs = 8:11;
+   excludeTrials = [];              
 else
    error('ARCnlz_linearModelnobias: unhandled subject number!');
 end
@@ -215,10 +228,11 @@ for i = 1:size(uniqueConditions,1)
        accContinuous = interp1(tSin,sinValuesTmp,tSinInterp); 
        % THIS IS AN OBNOXIOUS WAY OF COMPUTING THE AVERAGE CHANGE WITHIN A
        % TRIAL, BUT IT WORKS AND MAY BE A BIT MORE ROBUST
-       diffVec = imresize([-2/length(accContinuous) 2/length(accContinuous)],size(accContinuous),'nearest');
-       if abs(corr(accContinuous',diffVec'))<0.95
-           error('ARCnlz_linearModelnobias: you may want to check whether the step change occurs halfway through the trial, or not!');
-       end
+       % diffVec = imresize([-2/length(accContinuous) 2/length(accContinuous)],size(accContinuous),'nearest');
+       diffVec = imresize([0 -4/length(accContinuous) 0 4/length(accContinuous)],size(accContinuous),'nearest');
+       % if abs(corr(accContinuous',diffVec'))<0.95
+       %     error('ARCnlz_linearModelnobias: you may want to check whether the step change occurs halfway through the trial, or not!');
+       % end
 %        meanChangeX{i} = sum(diffVec.*x3tmp.*xScale)./xScale;
 %        meanChangeY{i} = sum(diffVec.*y3tmp.*yScale)./yScale;
        meanChangeXtmp(k0) = sum(diffVec.*x3tmp.*xScale)./xScale;
@@ -239,14 +253,21 @@ end
 
 scaleEquateRB = 1/0.25;
 
-
 % deltaR = scaleEquateRB.*AFCp.rgb200(:,1).^gammaFactorR - scaleEquateRB.*AFCp.rgb100(:,1).^gammaFactorR;
 % deltaB = AFCp.rgb200(:,3).^gammaFactorB - AFCp.rgb100(:,3).^gammaFactorB;
 deltaS = AFCp.v00*scaleFactor;
 deltaRB1 = scaleEquateRB.*AFCp.rgb100(:,1).^gammaFactorR - AFCp.rgb100(:,3).^gammaFactorB;
 deltaRB2 = scaleEquateRB.*AFCp.rgb200(:,1).^gammaFactorR - AFCp.rgb200(:,3).^gammaFactorB;
+deltaRB1 = deltaRB1.*maxLumCdm2;
+deltaRB2 = deltaRB2.*maxLumCdm2;
 
-[d, wS, rbThreshold, mse] = ARCnlzSwitching(meanChangeXvec',deltaRB1,deltaRB2,deltaS);
+for i = 1:100
+   [dTmp(i), wStmp(i), rbThresholdTmp(i), mseTmp(i)] = ARCnlzSwitching(meanChangeXvec',deltaRB1,deltaRB2,deltaS);
+   [~,indBest] = min(mseTmp);
+   d = dTmp(indBest);
+   wS = wStmp(indBest);
+   rbThreshold = rbThresholdTmp(indBest);
+end
 
 dOrig = d;
 wSorig = wS;
@@ -265,9 +286,13 @@ rhoColorSwitch = corr(c,meanChangeXvec');
 
 trialMeans = deltaApredicted;
 errorIndividual = meanChangeXvec' - trialMeans;
-estResidualStd = std(errorIndividual);
+for i = 1:100
+   [stdTmp(i),LLtmp(i)] = ARCfitStdGauss(errorIndividual);
+end
+[~,bestInd] = min(LLtmp);
+estResidualStd = stdTmp(bestInd);
 LL = sum(log(normpdf(meanChangeXvec',trialMeans,estResidualStd)));
-nParams = 3;
+nParams = 4;
 aic = 2*nParams-2*LL;
 
 if bPLOT
