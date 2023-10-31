@@ -4,7 +4,7 @@ function [d, wS, rbThreshold, mse] = ARCnlzSwitching(deltaA,deltaRB1,deltaRB2,de
 opts             = optimset('fmincon');
 opts.Algorithm   = 'active-set';
 opts.LargeScale  = 'off';
-opts.UseParallel = 'never';
+% opts.UseParallel = 'never';
 opts.Display     = 'iter';
 opts.MaxIter     = 500;
 
