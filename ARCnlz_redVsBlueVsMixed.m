@@ -232,32 +232,37 @@ for i = 1:size(uniqueConditions,1)
     indCndCell{i} = indCnd;
 end
 
-x3stackRed = [];
-x3stackBlue = [];
-x3stackMixed = [];
-
+lumCutoff = 0.5;
+scaleEquateRB = 4;
+gammaFactorR = 2.4;
+gammaFactorB = 2.2;
+maxLumCdm2 = 0.87;
 unqRedValues = unique(AFCp.rgb100(:,1));
 indRedOnly = abs(AFCp.rgb100(:,1)-max(unqRedValues))<0.001 & AFCp.rgb100(:,2)==0 & AFCp.rgb100(:,3)==0;
 indBlueOnly = AFCp.rgb100(:,1)==0 & AFCp.rgb100(:,2)==0 & AFCp.rgb100(:,3)>0;
-indMixed = AFCp.rgb100(:,1)>0 & AFCp.rgb100(:,2)==0 & AFCp.rgb100(:,3)>0;
+indMixed = AFCp.rgb100(:,1)>0 & AFCp.rgb100(:,2)==0 & AFCp.rgb100(:,3)>0 & ...
+           maxLumCdm2.*(scaleEquateRB.*AFCp.rgb200(:,1).^gammaFactorR + AFCp.rgb200(:,3).^gammaFactorB)>lumCutoff;
+
+lengthHalf = 87;
+x3stackRed = x3stack(indRedOnly,1:lengthHalf);
+x3stackBlue = x3stack(indBlueOnly,1:lengthHalf);
+x3stackMixed = x3stack(indMixed,1:lengthHalf);
 
 if bPLOT
     figure;
     set(gca,'FontSize',15);
     frmDuration = 0.033;
     hold on;
-    lengthHalf = 87;
-    hold on;
     meanAnchor = mean(x3stack(indRedOnly,1));
 %    plot([0:frmDuration:(lengthHalf-1)*frmDuration],x3stack(indRedOnly,1:lengthHalf),'-','Color',[1 0 0]);
-    plot([0:frmDuration:(lengthHalf-1)*frmDuration],mean(x3stack(indRedOnly,1:lengthHalf))-meanAnchor,'-','Color',[1 0 0],'LineWidth',2);
+    plot([0:frmDuration:(lengthHalf-1)*frmDuration],mean(x3stackRed)-meanAnchor,'-','Color',[1 0 0],'LineWidth',2);
     xlim([0 3]);
     ylim([-3 3]);
     xlabel('Time (s)'); ylabel('Relative Power (Diopters)');     
     axis square;
-    plot([0:frmDuration:(lengthHalf-1)*frmDuration],mean(x3stack(indBlueOnly,1:lengthHalf))-meanAnchor,'-','Color',[0 0 1],'LineWidth',2);
+    plot([0:frmDuration:(lengthHalf-1)*frmDuration],mean(x3stackBlue)-meanAnchor,'-','Color',[0 0 1],'LineWidth',2);
 %    plot([0:frmDuration:(lengthHalf-1)*frmDuration],x3stack(indMixed,1:lengthHalf),'-','Color',[1 0 1]);
-    plot([0:frmDuration:(lengthHalf-1)*frmDuration],mean(x3stack(indMixed,1:lengthHalf))-meanAnchor,'-','Color',[1 0 1],'LineWidth',2);
+    plot([0:frmDuration:(lengthHalf-1)*frmDuration],mean(x3stackMixed)-meanAnchor,'-','Color',[1 0 1],'LineWidth',2);
 end
 
 end
