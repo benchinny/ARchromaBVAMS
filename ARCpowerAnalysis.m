@@ -351,3 +351,74 @@ set(gca,'FontSize',15);
 xlabel('Subject'); ylabel('Variance explained due to color');
 set(gca,'XTick',1:9);
 set(gca,'XTickLabel',{'1' '2' '3' '4' '5' '6' '7' '8'});
+
+%% AIC ANALYSIS
+
+sn = [18 23 24 26 27 29 32 33];
+dAll1 = [];
+rbThreshold1 = [];
+aicSwitchAll1 = [];
+dAll2 = [];
+rbThreshold2 = [];
+aicSwitchAll2 = [];
+aicLinAll = [];
+aicNoColorAll = [];
+
+for i = 1:length(sn)
+    [d, wS, rbThreshold, rhoSwitch, rhoColorSwitch, aicSwitch] = ARCnlz_linearSwitching(sn(i),false,0);
+    dAll1(i) = d;
+    rbThreshold1(i) = rbThreshold;
+    aicSwitchAll1(i) = aicSwitch;
+    [d, wS, rbThreshold, rhoSwitch, rhoColorSwitch, aicSwitch] = ARCnlz_linearSwitching(sn(i),false,0.35);
+    dAll2(i) = d;
+    rbThreshold2(i) = rbThreshold;
+    aicSwitchAll2(i) = aicSwitch;    
+    display(['Done with subject ' num2str(i)]);
+end
+
+for i = 1:length(sn)
+    [weightsRBS1_x, weightsRBS1_y, rhoFull, rhoNoColor, rhoColor, aicLin, aicNoColor, weightsRBSci] = ARCnlz_linearModelnobias(sn(i),false,1000,0);
+    aicLinAll(i) = aicLin;
+    aicNoColorAll(i) = aicNoColor;
+    display(['Done with subject ' num2str(i)]);
+end
+
+%% PLOT AIC ANALYSIS
+
+figure;
+set(gcf,'Position',[215 337 792 420]);
+hold on;
+bar([1 6 11 16 21 26 31 36],aicLinAll,0.18,'FaceColor','w');
+bar([2 7 12 17 22 27 32 37],aicSwitchAll1,0.18,'FaceColor',[0.5 0.5 0.5]);
+bar([3 8 13 18 23 28 33 38],aicSwitchAll2,0.18,'FaceColor',[0.25 0.25 0.25]);
+bar([4 9 14 19 24 29 34 39],aicNoColorAll,0.18,'FaceColor','k');
+set(gca,'FontSize',15);
+xlabel('Subject'); ylabel('AIC');
+set(gca,'XTick',[2.5 7.5 12.5 17.5 22.5 27.5 32.5 37.5]);
+set(gca,'XTickLabel',{'1' '2' '3' '4' '5' '6' '7' '8'});
+legend({'Weighting' 'Switch Float d' 'Switch 0.35 d' 'No color'});
+
+figure;
+set(gcf,'Position',[215 337 792 420]);
+hold on;
+bar([1 3 5 7 9  11 13 15],dAll1,0.4,'FaceColor','w');
+bar([2 4 6 8 10 12 14 16],dAll2,0.4,'FaceColor',[0.5 0.5 0.5]);
+plot(xlim,0.35.*[1 1],'k--');
+set(gca,'FontSize',15);
+xlabel('Subject'); ylabel('Switching d');
+set(gca,'XTick',[1.5 3.5 5.5 7.5 9.5 11.5 13.5 15.5]);
+set(gca,'XTickLabel',{'1' '2' '3' '4' '5' '6' '7' '8'});
+legend({'Switch Float d' 'Switch 0.35 d'});
+
+figure;
+set(gcf,'Position',[215 337 792 420]);
+hold on;
+bar([1 3 5 7 9  11 13 15],rbThreshold1,0.4,'FaceColor','w');
+bar([2 4 6 8 10 12 14 16],rbThreshold2,0.4,'FaceColor',[0.5 0.5 0.5]);
+set(gca,'FontSize',15);
+xlabel('Subject'); ylabel('Switching threshold');
+set(gca,'XTick',[1.5 3.5 5.5 7.5 9.5 11.5 13.5 15.5]);
+set(gca,'XTickLabel',{'1' '2' '3' '4' '5' '6' '7' '8'});
+legend({'Switch Float d' 'Switch 0.35 d'});
+ylim([-0.5 0.5]);
+

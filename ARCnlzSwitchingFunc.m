@@ -7,6 +7,8 @@ rbThreshold=p(3);
 c = zeros(size(deltaS));
 wS = wS.*ones(size(deltaS));
 
+% COMPARE DIFFERENCES BETWEEN RED AND BLUE LUMINANCES TO THRESHOLD
+% THEN ADD A POSITIVE OR NEGATIVE CONSTANT
 c(deltaRB1<rbThreshold & deltaRB2>rbThreshold)=d;
 c(deltaRB1>rbThreshold & deltaRB2<rbThreshold)=-d;
 

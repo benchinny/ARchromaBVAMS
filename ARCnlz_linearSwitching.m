@@ -1,4 +1,4 @@
-function [d, wS, rbThreshold, rhoSwitch, rhoColorSwitch, aic] = ARCnlz_linearSwitching(sn,bPLOT)
+function [d, wS, rbThreshold, rhoSwitch, rhoColorSwitch, aic] = ARCnlz_linearSwitching(sn,bPLOT,dMin)
 
 bEXCLUDE = true;
 gammaFactorR = 2.4;
@@ -256,13 +256,15 @@ scaleEquateRB = 1/0.25;
 % deltaR = scaleEquateRB.*AFCp.rgb200(:,1).^gammaFactorR - scaleEquateRB.*AFCp.rgb100(:,1).^gammaFactorR;
 % deltaB = AFCp.rgb200(:,3).^gammaFactorB - AFCp.rgb100(:,3).^gammaFactorB;
 deltaS = AFCp.v00*scaleFactor;
+
+% COMPUTE DIFFERENCES BETWEEN RED AND BLUE LUMINANCES
 deltaRB1 = scaleEquateRB.*AFCp.rgb100(:,1).^gammaFactorR - AFCp.rgb100(:,3).^gammaFactorB;
 deltaRB2 = scaleEquateRB.*AFCp.rgb200(:,1).^gammaFactorR - AFCp.rgb200(:,3).^gammaFactorB;
 deltaRB1 = deltaRB1.*maxLumCdm2;
 deltaRB2 = deltaRB2.*maxLumCdm2;
 
 for i = 1:100
-   [dTmp(i), wStmp(i), rbThresholdTmp(i), mseTmp(i)] = ARCnlzSwitching(meanChangeXvec',deltaRB1,deltaRB2,deltaS);
+   [dTmp(i), wStmp(i), rbThresholdTmp(i), mseTmp(i)] = ARCnlzSwitching(meanChangeXvec',deltaRB1,deltaRB2,deltaS,dMin);
    [~,indBest] = min(mseTmp);
    d = dTmp(indBest);
    wS = wStmp(indBest);
@@ -286,6 +288,7 @@ rhoColorSwitch = corr(c,meanChangeXvec');
 
 trialMeans = deltaApredicted;
 errorIndividual = meanChangeXvec' - trialMeans;
+% COMPUTE ERROR OF RESIDUALS USING LOG-LIKELIHOOD METHOD
 for i = 1:100
    [stdTmp(i),LLtmp(i)] = ARCfitStdGauss(errorIndividual);
 end

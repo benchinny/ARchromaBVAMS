@@ -1,4 +1,4 @@
-function [d, wS, rbThreshold, mse] = ARCnlzSwitching(deltaA,deltaRB1,deltaRB2,deltaS)
+function [d, wS, rbThreshold, mse] = ARCnlzSwitching(deltaA,deltaRB1,deltaRB2,deltaS,dMin)
 
 % SET FMINCON OPTIONS
 opts             = optimset('fmincon');
@@ -9,7 +9,7 @@ opts.Display     = 'iter';
 opts.MaxIter     = 500;
 
 ub = [1.5 2    0.5*1];
-lb = [0  -0.5 -0.5*1];
+lb = [dMin  -0.5 -0.5*1];
 p0 = [rand*1.5 rand*2 (rand-0.5)*1];
 [pFit,mse] = fmincon(   @(p) ARCnlzSwitchingFunc(deltaA,deltaRB1,deltaRB2,deltaS,p),p0,[],[],[],[],lb,ub,[],opts);
 
