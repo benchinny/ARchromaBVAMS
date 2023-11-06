@@ -302,7 +302,17 @@ if bPLOT
     figure;
     set(gcf,'Position',[189 395 1280 420]);
     subplot(1,3,1);
-    plot(deltaApredicted,meanChangeXvec,'ko','LineWidth',1);
+    hold on;
+    for i = 1:length(deltaApredicted)
+        if c(i)>0
+            clrPlot = [0.6 0 0];
+        elseif c(i)<0
+            clrPlot = [0 0 1];
+        else
+            clrPlot = [0.6 0 1];
+        end
+        plot(deltaApredicted(i),meanChangeXvec(i),'o','LineWidth',1,'Color',clrPlot,'MarkerFaceColor',clrPlot);
+    end
     xlim([-3 3]);
     ylim([-3 3]);
     set(gca,'FontSize',15);
@@ -343,16 +353,27 @@ if bPLOT
     ylabel('Measured \DeltaD');
     title(['Correlation = ' num2str(rhoColorSwitch,3)]);
     axis square;
-    % 
-    % subplot(1,3,2);
-    % plot([deltaR deltaB deltaS delta1]*weightsRBS1_y,meanChangeYvec,'ko','LineWidth',1);
-    % xlim([-3 3]);
-    % ylim([-3 3]);
-    % set(gca,'FontSize',15);
-    % xlabel('Prediction \DeltaD');
-    % ylabel('Measured \DeltaD');
-    % axis square;
-    % 
+    
+    subplot(1,3,2);
+    deltaApredictedNoColor = deltaS.*wS;
+    hold on;
+    for i = 1:length(deltaApredictedNoColor)
+       if c(i)>0
+           clrPlot = [0.6 0 0];
+       elseif c(i)<0
+           clrPlot = [0 0 1];
+       else
+           clrPlot = [0.6 0 1];
+       end        
+       plot(deltaApredictedNoColor(i),meanChangeXvec(i),'o','LineWidth',1,'Color',clrPlot,'MarkerFaceColor',clrPlot); 
+    end
+    xlim([-3 3]);
+    ylim([-3 3]);
+    set(gca,'FontSize',15);
+    xlabel('Prediction \DeltaD');
+    ylabel('Measured \DeltaD');
+    axis square;
+    
 %     subplot(1,3,3);
 %     hold on;
 %     bar(1,wRorig,'FaceColor','r');
@@ -370,77 +391,5 @@ end
 d = dOrig;
 wS = wSorig;
 rbThreshold = rbThresholdOrig;
-
-% 
-% figure;
-% set(gcf,'Position',[189 395 1280 420]);
-% subplot(1,3,1);
-% plot([deltaS delta1]*weightsS1_x,meanChangeXvec,'ko','LineWidth',1);
-% xlim([-3 3]);
-% ylim([-3 3]);
-% set(gca,'FontSize',15);
-% xlabel('Prediction \DeltaD');
-% ylabel('Measured \DeltaD');
-% title(['Correlation = ' num2str(corr([deltaS delta1]*weightsS1_x,meanChangeXvec'),3)]);
-% axis square;
-% 
-% subplot(1,3,2);
-% plot([deltaS delta1]*weightsS1_y,meanChangeYvec,'ko','LineWidth',1);
-% xlim([-3 3]);
-% ylim([-3 3]);
-% set(gca,'FontSize',15);
-% xlabel('Prediction \DeltaD');
-% ylabel('Measured \DeltaD');
-% axis square;
-% 
-% subplot(1,3,3);
-% hold on;
-% bar(1,weightsS1_x(1),'FaceColor','k');
-% bar(2,weightsS1_x(2),'FaceColor','w');
-% set(gca,'XTick',[1 2]);
-% set(gca,'XTickLabel',{'D_{opt}' 'Bias'});
-% title('Weights');
-% set(gca,'FontSize',20);
-% ylim(max(weightsS1_x).*[-1.2 1.2]);
-% axis square;
-% 
-% figure;
-% set(gcf,'Position',[189 395 1280 420]);
-% subplot(1,3,1);
-% plot([deltaR deltaB]*weightsRB_x,meanChangeXvec,'ko','LineWidth',1);
-% xlim([-3 3]);
-% ylim([-3 3]);
-% set(gca,'FontSize',15);
-% xlabel('Prediction \DeltaD');
-% ylabel('Measured \DeltaD');
-% title(['Correlation = ' num2str(corr([deltaR deltaB]*weightsRB_x,meanChangeXvec'),3)]);
-% axis square;
-% 
-% subplot(1,3,2);
-% plot([deltaR deltaB]*weightsRB_y,meanChangeYvec,'ko','LineWidth',1);
-% xlim([-3 3]);
-% ylim([-3 3]);
-% set(gca,'FontSize',15);
-% xlabel('Prediction \DeltaD');
-% ylabel('Measured \DeltaD');
-% axis square;
-% 
-% subplot(1,3,3);
-% hold on;
-% if ~bRELATIVE_LUM    
-%     bar(1,weightsRB_x(1),'FaceColor','r');
-%     bar(2,weightsRB_x(2),'FaceColor','b');
-%     set(gca,'XTick',[1 2]);
-%     set(gca,'XTickLabel',{'R' 'B'});
-% else
-%     bar(1,weightsRB_x(1),'FaceColor','r');
-%     set(gca,'XTick',[1]);
-%     set(gca,'XTickLabel',{'R'});
-% end
-% 
-% title('Weights');
-% set(gca,'FontSize',20);
-% ylim(max(weightsRB_x).*[-1.2 1.2]);
-% axis square;
 
 end
