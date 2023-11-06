@@ -1,4 +1,4 @@
-function [x3stackRed,x3stackBlue,x3stackMixed,tInterp,AFCp,indCndCell] = ARCnlz_redVsBlueVsMixed(sn,bPLOT)
+function [x3stackRed,x3stackBlue,x3stackMixed,meanRedPerTrial,meanBluePerTrial,meanMixedPerTrial,tInterp,AFCp,indCndCell] = ARCnlz_redVsBlueVsMixed(sn,bPLOT)
 
 bEXCLUDE = true; % EXCLUDE BLINKS AND BAD TRIALS? 
 bLeaveOutTransitions = true; % LEAVE OUT FIRST 50 FRAMES AND TRANSITION PERIOD OF ACCOMMODATION?
@@ -232,21 +232,46 @@ for i = 1:size(uniqueConditions,1)
     indCndCell{i} = indCnd;
 end
 
-lumCutoff = 0.5;
+lumCutoff = [0.2 65];
+% lumCutoff = [0.65 1.1];
+% lumCutoff = [1.08 1.75];
+
+whichInterval = 1;
 scaleEquateRB = 4;
 gammaFactorR = 2.4;
 gammaFactorB = 2.2;
 maxLumCdm2 = 0.87;
-unqRedValues = unique(AFCp.rgb100(:,1));
-indRedOnly = abs(AFCp.rgb100(:,1)-max(unqRedValues))<0.001 & AFCp.rgb100(:,2)==0 & AFCp.rgb100(:,3)==0;
-indBlueOnly = AFCp.rgb100(:,1)==0 & AFCp.rgb100(:,2)==0 & AFCp.rgb100(:,3)>0;
-indMixed = AFCp.rgb100(:,1)>0 & AFCp.rgb100(:,2)==0 & AFCp.rgb100(:,3)>0 & ...
-           maxLumCdm2.*(scaleEquateRB.*AFCp.rgb200(:,1).^gammaFactorR + AFCp.rgb200(:,3).^gammaFactorB)>lumCutoff;
+
+if whichInterval==1
+    rgb00 = AFCp.rgb100;
+elseif whichInterval==2
+    rgb00 = AFCp.rgb200;
+end
+
+unqRedValues = unique(rgb00(:,1));
+indRedOnly = abs(rgb00(:,1)-max(unqRedValues))<0.001 & rgb00(:,2)==0 & rgb00(:,3)==0;
+indBlueOnly = rgb00(:,1)==0 & rgb00(:,2)==0 & rgb00(:,3)>0;
+indMixed = rgb00(:,1)>0 & rgb00(:,2)==0 & rgb00(:,3)>0 & ...
+           maxLumCdm2.*(scaleEquateRB.*AFCp.rgb200(:,1).^gammaFactorR + AFCp.rgb200(:,3).^gammaFactorB)>lumCutoff(1) & ...
+           maxLumCdm2.*(scaleEquateRB.*AFCp.rgb200(:,1).^gammaFactorR + AFCp.rgb200(:,3).^gammaFactorB)<lumCutoff(2);
 
 lengthHalf = 87;
-x3stackRed = x3stack(indRedOnly,1:lengthHalf);
-x3stackBlue = x3stack(indBlueOnly,1:lengthHalf);
-x3stackMixed = x3stack(indMixed,1:lengthHalf);
+if whichInterval==1
+    x3stackRed = x3stack(indRedOnly,1:lengthHalf);
+    x3stackBlue = x3stack(indBlueOnly,1:lengthHalf);
+    x3stackMixed = x3stack(indMixed,1:lengthHalf);
+elseif whichInterval==2
+    x3stackRed = x3stack(indRedOnly,(lengthHalf+6):end);
+    x3stackBlue = x3stack(indBlueOnly,(lengthHalf+6):end);
+    x3stackMixed = x3stack(indMixed,(lengthHalf+6):end); 
+end
+
+meanMatrixRed = imresize([0 2],size(x3stackRed),'nearest');
+meanMatrixBlue = imresize([0 2],size(x3stackBlue),'nearest');
+meanMatrixMixed = imresize([0 2],size(x3stackMixed),'nearest');
+meanRedPerTrial = mean(meanMatrixRed.*x3stackRed,2);
+meanBluePerTrial = mean(meanMatrixBlue.*x3stackBlue,2);
+meanMixedPerTrial = mean(meanMatrixMixed.*x3stackMixed,2);
 
 if bPLOT
     figure;

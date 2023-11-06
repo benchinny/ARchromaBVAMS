@@ -1,4 +1,4 @@
-function [d, wS, rbThreshold, rhoSwitch, rhoColorSwitch, aic] = ARCnlz_linearSwitching(sn,bPLOT,dMin)
+function [d, wS, rbThreshold, rhoSwitch, rhoColorSwitch, aic, trialMeans] = ARCnlz_linearSwitching(sn,bPLOT,dMin)
 
 bEXCLUDE = true;
 gammaFactorR = 2.4;

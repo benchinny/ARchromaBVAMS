@@ -1,4 +1,4 @@
-%%
+%% COMPARING MEAN TRACES
 
 sn = [18 23 24 26 27 29 32 33];
 frmDuration = 0.033;
@@ -9,8 +9,8 @@ for i = 1:length(sn)
     subplot(2,4,i);
     set(gca,'FontSize',15);
     hold on;
-    [x3stackRed,x3stackBlue,x3stackMixed,tInterp,AFCp,indCndCell] = ARCnlz_redVsBlueVsMixed(sn(i),0);
-    meanAnchor = mean(x3stackMixed(:,1));
+    [x3stackRed,x3stackBlue,x3stackMixed,meanRedPerTrial,meanBluePerTrial,meanMixedPerTrial,tInterp,AFCp,indCndCell] = ARCnlz_redVsBlueVsMixed(sn(i),0);
+    meanAnchor = mean(x3stackRed(:,1));
     tSamples = [0:frmDuration:(size(x3stackMixed,2)-1)*frmDuration];
     xStackCIred = quantile(x3stackRed,[0.16 0.84])-meanAnchor;
     xStackCIblue = quantile(x3stackBlue,[0.16 0.84])-meanAnchor;
@@ -26,6 +26,26 @@ for i = 1:length(sn)
     xlim([0 3]);
     ylim([-3 3]);
     xlabel('Time (s)'); ylabel('Relative Power (Diopters)');     
+end
+
+%% HISTOGRAMS OF MEANS FOR EACH TRIAL
+
+sn = [18 23 24 26 27 29 32 33];
+frmDuration = 0.033;
+
+figure;
+set(gcf,'Position',[105 245 1479 647]);
+for i = 1:length(sn) 
+    subplot(2,4,i);
+    set(gca,'FontSize',15);
+    hold on;
+    [x3stackRed,x3stackBlue,x3stackMixed,meanRedPerTrial,meanBluePerTrial,meanMixedPerTrial,tInterp,AFCp,indCndCell] = ARCnlz_redVsBlueVsMixed(sn(i),0);
+    histogram(meanMixedPerTrial-mean(meanRedPerTrial));
+    plot((mean(meanRedPerTrial)-mean(meanRedPerTrial)).*[1 1],ylim,'r-');
+    plot((mean(meanBluePerTrial)-mean(meanRedPerTrial)).*[1 1],ylim,'b-');
+    display(['Done with subject: ' num2str(i)]);
+    axis square;
+    xlabel('Measurement'); ylabel('Count');     
 end
 
 %%

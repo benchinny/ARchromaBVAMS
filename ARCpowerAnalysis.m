@@ -422,3 +422,16 @@ set(gca,'XTickLabel',{'1' '2' '3' '4' '5' '6' '7' '8'});
 legend({'Switch Float d' 'Switch 0.35 d'});
 ylim([-0.5 0.5]);
 
+%% COMPARING OUTPUTS OF LINEAR AND SWITCHING MODELS
+
+subjNumber = 33;
+[d, wS, rbThreshold, rhoSwitch, rhoColorSwitch, aic, trialMeansSwitch] = ARCnlz_linearSwitching(subjNumber,0,0);
+
+[weightsRBS1_x, weightsRBS1_y, rhoFull, rhoNoColor, rhoColor, aic, aicNoColor, weightsRBSci, trialMeansLin] = ARCnlz_linearModelnobias(subjNumber,0,100,0);
+
+figure; 
+plot(trialMeansLin,trialMeansSwitch,'ko');
+axis square;
+set(gca,'FontSize',12);
+xlabel('Linear model prediction');
+ylabel('Switching model prediction');

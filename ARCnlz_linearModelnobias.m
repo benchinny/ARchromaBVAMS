@@ -1,4 +1,4 @@
-function [weightsRBS1_x, weightsRBS1_y, rhoFull, rhoNoColor, rhoColor, aic, aicNoColor, weightsRBSci] = ARCnlz_linearModelnobias(sn,bPLOT,nBoot,bLOWLUM)
+function [weightsRBS1_x, weightsRBS1_y, rhoFull, rhoNoColor, rhoColor, aic, aicNoColor, weightsRBSci, trialMeans] = ARCnlz_linearModelnobias(sn,bPLOT,nBoot,bLOWLUM)
 
 bEXCLUDE = true;
 gammaFactorR = 2.4;
