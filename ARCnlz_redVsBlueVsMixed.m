@@ -1,4 +1,4 @@
-function [x3stackRed,x3stackBlue,x3stackMixed,meanRedPerTrial,meanBluePerTrial,meanMixedPerTrial,tInterp,AFCp,indCndCell] = ARCnlz_redVsBlueVsMixed(sn,bPLOT)
+function [x3stackRed,x3stackBlue,x3stackMixed,meanRedPerTrial,meanBluePerTrial,meanMixedPerTrial,tInterp,AFCp,indCndCell] = ARCnlz_redVsBlueVsMixed(sn,bPLOT,lumCutoff)
 
 bEXCLUDE = true; % EXCLUDE BLINKS AND BAD TRIALS? 
 bLeaveOutTransitions = true; % LEAVE OUT FIRST 50 FRAMES AND TRANSITION PERIOD OF ACCOMMODATION?
@@ -232,10 +232,6 @@ for i = 1:size(uniqueConditions,1)
     indCndCell{i} = indCnd;
 end
 
-lumCutoff = [0.2 65];
-% lumCutoff = [0.65 1.1];
-% lumCutoff = [1.08 1.75];
-
 whichInterval = 1;
 scaleEquateRB = 4;
 gammaFactorR = 2.4;
@@ -252,8 +248,8 @@ unqRedValues = unique(rgb00(:,1));
 indRedOnly = abs(rgb00(:,1)-max(unqRedValues))<0.001 & rgb00(:,2)==0 & rgb00(:,3)==0;
 indBlueOnly = rgb00(:,1)==0 & rgb00(:,2)==0 & rgb00(:,3)>0;
 indMixed = rgb00(:,1)>0 & rgb00(:,2)==0 & rgb00(:,3)>0 & ...
-           maxLumCdm2.*(scaleEquateRB.*AFCp.rgb200(:,1).^gammaFactorR + AFCp.rgb200(:,3).^gammaFactorB)>lumCutoff(1) & ...
-           maxLumCdm2.*(scaleEquateRB.*AFCp.rgb200(:,1).^gammaFactorR + AFCp.rgb200(:,3).^gammaFactorB)<lumCutoff(2);
+           maxLumCdm2.*(scaleEquateRB.*rgb00(:,1).^gammaFactorR + rgb00(:,3).^gammaFactorB)>lumCutoff(1) & ...
+           maxLumCdm2.*(scaleEquateRB.*rgb00(:,1).^gammaFactorR + rgb00(:,3).^gammaFactorB)<lumCutoff(2);
 
 lengthHalf = 87;
 if whichInterval==1

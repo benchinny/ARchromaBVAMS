@@ -424,14 +424,22 @@ ylim([-0.5 0.5]);
 
 %% COMPARING OUTPUTS OF LINEAR AND SWITCHING MODELS
 
-subjNumber = 33;
-[d, wS, rbThreshold, rhoSwitch, rhoColorSwitch, aic, trialMeansSwitch] = ARCnlz_linearSwitching(subjNumber,0,0);
+subjNumber = [18 23 24 26 27 29 32 33];
 
-[weightsRBS1_x, weightsRBS1_y, rhoFull, rhoNoColor, rhoColor, aic, aicNoColor, weightsRBSci, trialMeansLin] = ARCnlz_linearModelnobias(subjNumber,0,100,0);
+figure;
+set(gcf,'Position',[105 245 1479 647]);  
+for i = 1:length(subjNumber)
+    [d, wS, rbThreshold, rhoSwitch, rhoColorSwitch, aic, trialMeansSwitch] = ARCnlz_linearSwitching(subjNumber(i),0,0);
+    [weightsRBS1_x, weightsRBS1_y, rhoFull, rhoNoColor, rhoColor, aic, aicNoColor, weightsRBSci, trialMeansLin] = ARCnlz_linearModelnobias(subjNumber(i),0,100,0);
+    subplot(2,4,i);
+    plot(trialMeansLin,trialMeansSwitch,'ko'); hold on;
+    plotExtent = max([xlim ylim]);
+    plot(plotExtent.*[-1 1],plotExtent.*[-1 1],'k--');
+    xlim(plotExtent.*[-1 1]);
+    ylim(plotExtent.*[-1 1]);
+    axis square;
+    set(gca,'FontSize',12);
+    xlabel('Linear model prediction');
+    ylabel('Switching model prediction');    
+end
 
-figure; 
-plot(trialMeansLin,trialMeansSwitch,'ko');
-axis square;
-set(gca,'FontSize',12);
-xlabel('Linear model prediction');
-ylabel('Switching model prediction');
