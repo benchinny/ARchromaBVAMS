@@ -1,4 +1,4 @@
-function [x3stackRed,x3stackBlue,x3stackMixed,meanRedPerTrial,meanBluePerTrial,meanMixedPerTrial,tInterp,AFCp,indCndCell] = ARCnlz_redVsBlueVsMixed(sn,bPLOT,lumCutoff)
+function [x3stackRed,x3stackBlue,x3stackMixed,x3stackMixedMoreRed,x3stackMixedMoreBlue,meanRedPerTrial,meanBluePerTrial,meanMixedPerTrial,meanMixedMoreRedPerTrial,meanMixedMoreBluePerTrial,tInterp,AFCp,indCndCell] = ARCnlz_redVsBlueVsMixed(sn,bPLOT,lumCutoff)
 
 bEXCLUDE = true; % EXCLUDE BLINKS AND BAD TRIALS? 
 bLeaveOutTransitions = true; % LEAVE OUT FIRST 50 FRAMES AND TRANSITION PERIOD OF ACCOMMODATION?
@@ -250,24 +250,36 @@ indBlueOnly = rgb00(:,1)==0 & rgb00(:,2)==0 & rgb00(:,3)>0;
 indMixed = rgb00(:,1)>0 & rgb00(:,2)==0 & rgb00(:,3)>0 & ...
            maxLumCdm2.*(scaleEquateRB.*rgb00(:,1).^gammaFactorR + rgb00(:,3).^gammaFactorB)>lumCutoff(1) & ...
            maxLumCdm2.*(scaleEquateRB.*rgb00(:,1).^gammaFactorR + rgb00(:,3).^gammaFactorB)<lumCutoff(2);
+indMixedMoreRed = rgb00(:,1)>0 & rgb00(:,2)==0 & rgb00(:,3)>0 & ...
+                  scaleEquateRB.*rgb00(:,1).^gammaFactorR > rgb00(:,3).^gammaFactorB;
+indMixedMoreBlue = rgb00(:,1)>0 & rgb00(:,2)==0 & rgb00(:,3)>0 & ...
+                  scaleEquateRB.*rgb00(:,1).^gammaFactorR < rgb00(:,3).^gammaFactorB;
 
 lengthHalf = 87;
 if whichInterval==1
     x3stackRed = x3stack(indRedOnly,1:lengthHalf);
     x3stackBlue = x3stack(indBlueOnly,1:lengthHalf);
     x3stackMixed = x3stack(indMixed,1:lengthHalf);
+    x3stackMixedMoreRed = x3stack(indMixedMoreRed,1:lengthHalf);
+    x3stackMixedMoreBlue = x3stack(indMixedMoreBlue,1:lengthHalf);
 elseif whichInterval==2
     x3stackRed = x3stack(indRedOnly,(lengthHalf+6):end);
     x3stackBlue = x3stack(indBlueOnly,(lengthHalf+6):end);
     x3stackMixed = x3stack(indMixed,(lengthHalf+6):end); 
+    x3stackMixedMoreRed = x3stack(indMixedMoreRed,(lengthHalf+6):end);
+    x3stackMixedMoreBlue = x3stack(indMixedMoreBlue,(lengthHalf+6):end);
 end
 
 meanMatrixRed = imresize([0 2],size(x3stackRed),'nearest');
 meanMatrixBlue = imresize([0 2],size(x3stackBlue),'nearest');
 meanMatrixMixed = imresize([0 2],size(x3stackMixed),'nearest');
+meanMatrixMixedMoreRed = imresize([0 2],size(x3stackMixedMoreRed),'nearest');
+meanMatrixMixedMoreBlue = imresize([0 2],size(x3stackMixedMoreBlue),'nearest');
 meanRedPerTrial = mean(meanMatrixRed.*x3stackRed,2);
 meanBluePerTrial = mean(meanMatrixBlue.*x3stackBlue,2);
 meanMixedPerTrial = mean(meanMatrixMixed.*x3stackMixed,2);
+meanMixedMoreRedPerTrial = mean(meanMatrixMixedMoreRed.*x3stackMixedMoreRed,2);
+meanMixedMoreBluePerTrial = mean(meanMatrixMixedMoreBlue.*x3stackMixedMoreBlue,2);
 
 if bPLOT
     figure;
