@@ -1,9 +1,10 @@
-function [d, wS, rbThreshold, rhoSwitch, rhoColorSwitch, aic] = ARCnlz_linearSwitching(sn,bPLOT)
+function [d, wS, rbThreshold, rhoSwitch, rhoColorSwitch, aic, trialMeans] = ARCnlz_linearSwitching(sn,bPLOT,dMin)
 
 bEXCLUDE = true;
 gammaFactorR = 2.4;
 gammaFactorB = 2.2;
 scaleFactor = 0.8;
+maxLumCdm2 = 0.87;
 
 if sn==11 % 'VISIT' NUMBERS
    % vs = [2 3 4 5 6 7];
@@ -56,11 +57,23 @@ elseif sn==25
 elseif sn==26
    % vs = 4:11;
    vs = 8:11;
-   excludeTrials = [];           
+   excludeTrials = [];  
 elseif sn==27
    % vs = 4:11;
    vs = 9:12;
-   excludeTrials = [];      
+   excludeTrials = [];     
+elseif sn==29
+   % vs = 4:11;
+   vs = 11:14;
+   excludeTrials = [];        
+elseif sn==32
+   % vs = 4:11;
+   vs = 15:18;
+   excludeTrials = [];           
+elseif sn==33
+   % vs = 4:11;
+   vs = 8:11;
+   excludeTrials = [];              
 else
    error('ARCnlz_linearModelnobias: unhandled subject number!');
 end
@@ -74,6 +87,8 @@ elseif strcmp(getenv("USER"),'benchin')
    dataDirectory = '/Users/benchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/ARChroma/Analysis/'; 
 elseif strcmp(getenv("USER"),'emily')
    dataDirectory = '/Users/emily/Library/CloudStorage/GoogleDrive-emilyacooper@gmail.com/Shared drives/ARChroma/Analysis/';
+elseif strcmp(getenv("USER"),'benjaminchin')
+   dataDirectory = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/ARChroma/Analysis/';
 elseif strcmp(getenv("USER"),'ben')
    dataDirectory = '/home/ben/Documents/ARchroma/Analysis/';   
 end
@@ -213,10 +228,11 @@ for i = 1:size(uniqueConditions,1)
        accContinuous = interp1(tSin,sinValuesTmp,tSinInterp); 
        % THIS IS AN OBNOXIOUS WAY OF COMPUTING THE AVERAGE CHANGE WITHIN A
        % TRIAL, BUT IT WORKS AND MAY BE A BIT MORE ROBUST
-       diffVec = imresize([-2/length(accContinuous) 2/length(accContinuous)],size(accContinuous),'nearest');
-       if abs(corr(accContinuous',diffVec'))<0.95
-           error('ARCnlz_linearModelnobias: you may want to check whether the step change occurs halfway through the trial, or not!');
-       end
+       % diffVec = imresize([-2/length(accContinuous) 2/length(accContinuous)],size(accContinuous),'nearest');
+       diffVec = imresize([0 -4/length(accContinuous) 0 4/length(accContinuous)],size(accContinuous),'nearest');
+       % if abs(corr(accContinuous',diffVec'))<0.95
+       %     error('ARCnlz_linearModelnobias: you may want to check whether the step change occurs halfway through the trial, or not!');
+       % end
 %        meanChangeX{i} = sum(diffVec.*x3tmp.*xScale)./xScale;
 %        meanChangeY{i} = sum(diffVec.*y3tmp.*yScale)./yScale;
        meanChangeXtmp(k0) = sum(diffVec.*x3tmp.*xScale)./xScale;
@@ -237,14 +253,23 @@ end
 
 scaleEquateRB = 1/0.25;
 
-
 % deltaR = scaleEquateRB.*AFCp.rgb200(:,1).^gammaFactorR - scaleEquateRB.*AFCp.rgb100(:,1).^gammaFactorR;
 % deltaB = AFCp.rgb200(:,3).^gammaFactorB - AFCp.rgb100(:,3).^gammaFactorB;
 deltaS = AFCp.v00*scaleFactor;
+
+% COMPUTE DIFFERENCES BETWEEN RED AND BLUE LUMINANCES
 deltaRB1 = scaleEquateRB.*AFCp.rgb100(:,1).^gammaFactorR - AFCp.rgb100(:,3).^gammaFactorB;
 deltaRB2 = scaleEquateRB.*AFCp.rgb200(:,1).^gammaFactorR - AFCp.rgb200(:,3).^gammaFactorB;
+deltaRB1 = deltaRB1.*maxLumCdm2;
+deltaRB2 = deltaRB2.*maxLumCdm2;
 
-[d, wS, rbThreshold, mse] = ARCnlzSwitching(meanChangeXvec',deltaRB1,deltaRB2,deltaS);
+for i = 1:100
+   [dTmp(i), wStmp(i), rbThresholdTmp(i), mseTmp(i)] = ARCnlzSwitching(meanChangeXvec',deltaRB1,deltaRB2,deltaS,dMin);
+   [~,indBest] = min(mseTmp);
+   d = dTmp(indBest);
+   wS = wStmp(indBest);
+   rbThreshold = rbThresholdTmp(indBest);
+end
 
 dOrig = d;
 wSorig = wS;
@@ -263,16 +288,31 @@ rhoColorSwitch = corr(c,meanChangeXvec');
 
 trialMeans = deltaApredicted;
 errorIndividual = meanChangeXvec' - trialMeans;
-estResidualStd = std(errorIndividual);
+% COMPUTE ERROR OF RESIDUALS USING LOG-LIKELIHOOD METHOD
+for i = 1:100
+   [stdTmp(i),LLtmp(i)] = ARCfitStdGauss(errorIndividual);
+end
+[~,bestInd] = min(LLtmp);
+estResidualStd = stdTmp(bestInd);
 LL = sum(log(normpdf(meanChangeXvec',trialMeans,estResidualStd)));
-nParams = 3;
+nParams = 4;
 aic = 2*nParams-2*LL;
 
 if bPLOT
     figure;
     set(gcf,'Position',[189 395 1280 420]);
     subplot(1,3,1);
-    plot(deltaApredicted,meanChangeXvec,'ko','LineWidth',1);
+    hold on;
+    for i = 1:length(deltaApredicted)
+        if c(i)>0
+            clrPlot = [0.6 0 0];
+        elseif c(i)<0
+            clrPlot = [0 0 1];
+        else
+            clrPlot = [0.6 0 1];
+        end
+        plot(deltaApredicted(i),meanChangeXvec(i),'o','LineWidth',1,'Color',clrPlot,'MarkerFaceColor',clrPlot);
+    end
     xlim([-3 3]);
     ylim([-3 3]);
     set(gca,'FontSize',15);
@@ -313,16 +353,27 @@ if bPLOT
     ylabel('Measured \DeltaD');
     title(['Correlation = ' num2str(rhoColorSwitch,3)]);
     axis square;
-    % 
-    % subplot(1,3,2);
-    % plot([deltaR deltaB deltaS delta1]*weightsRBS1_y,meanChangeYvec,'ko','LineWidth',1);
-    % xlim([-3 3]);
-    % ylim([-3 3]);
-    % set(gca,'FontSize',15);
-    % xlabel('Prediction \DeltaD');
-    % ylabel('Measured \DeltaD');
-    % axis square;
-    % 
+    
+    subplot(1,3,2);
+    deltaApredictedNoColor = deltaS.*wS;
+    hold on;
+    for i = 1:length(deltaApredictedNoColor)
+       if c(i)>0
+           clrPlot = [0.6 0 0];
+       elseif c(i)<0
+           clrPlot = [0 0 1];
+       else
+           clrPlot = [0.6 0 1];
+       end        
+       plot(deltaApredictedNoColor(i),meanChangeXvec(i),'o','LineWidth',1,'Color',clrPlot,'MarkerFaceColor',clrPlot); 
+    end
+    xlim([-3 3]);
+    ylim([-3 3]);
+    set(gca,'FontSize',15);
+    xlabel('Prediction \DeltaD');
+    ylabel('Measured \DeltaD');
+    axis square;
+    
 %     subplot(1,3,3);
 %     hold on;
 %     bar(1,wRorig,'FaceColor','r');
@@ -340,77 +391,5 @@ end
 d = dOrig;
 wS = wSorig;
 rbThreshold = rbThresholdOrig;
-
-% 
-% figure;
-% set(gcf,'Position',[189 395 1280 420]);
-% subplot(1,3,1);
-% plot([deltaS delta1]*weightsS1_x,meanChangeXvec,'ko','LineWidth',1);
-% xlim([-3 3]);
-% ylim([-3 3]);
-% set(gca,'FontSize',15);
-% xlabel('Prediction \DeltaD');
-% ylabel('Measured \DeltaD');
-% title(['Correlation = ' num2str(corr([deltaS delta1]*weightsS1_x,meanChangeXvec'),3)]);
-% axis square;
-% 
-% subplot(1,3,2);
-% plot([deltaS delta1]*weightsS1_y,meanChangeYvec,'ko','LineWidth',1);
-% xlim([-3 3]);
-% ylim([-3 3]);
-% set(gca,'FontSize',15);
-% xlabel('Prediction \DeltaD');
-% ylabel('Measured \DeltaD');
-% axis square;
-% 
-% subplot(1,3,3);
-% hold on;
-% bar(1,weightsS1_x(1),'FaceColor','k');
-% bar(2,weightsS1_x(2),'FaceColor','w');
-% set(gca,'XTick',[1 2]);
-% set(gca,'XTickLabel',{'D_{opt}' 'Bias'});
-% title('Weights');
-% set(gca,'FontSize',20);
-% ylim(max(weightsS1_x).*[-1.2 1.2]);
-% axis square;
-% 
-% figure;
-% set(gcf,'Position',[189 395 1280 420]);
-% subplot(1,3,1);
-% plot([deltaR deltaB]*weightsRB_x,meanChangeXvec,'ko','LineWidth',1);
-% xlim([-3 3]);
-% ylim([-3 3]);
-% set(gca,'FontSize',15);
-% xlabel('Prediction \DeltaD');
-% ylabel('Measured \DeltaD');
-% title(['Correlation = ' num2str(corr([deltaR deltaB]*weightsRB_x,meanChangeXvec'),3)]);
-% axis square;
-% 
-% subplot(1,3,2);
-% plot([deltaR deltaB]*weightsRB_y,meanChangeYvec,'ko','LineWidth',1);
-% xlim([-3 3]);
-% ylim([-3 3]);
-% set(gca,'FontSize',15);
-% xlabel('Prediction \DeltaD');
-% ylabel('Measured \DeltaD');
-% axis square;
-% 
-% subplot(1,3,3);
-% hold on;
-% if ~bRELATIVE_LUM    
-%     bar(1,weightsRB_x(1),'FaceColor','r');
-%     bar(2,weightsRB_x(2),'FaceColor','b');
-%     set(gca,'XTick',[1 2]);
-%     set(gca,'XTickLabel',{'R' 'B'});
-% else
-%     bar(1,weightsRB_x(1),'FaceColor','r');
-%     set(gca,'XTick',[1]);
-%     set(gca,'XTickLabel',{'R'});
-% end
-% 
-% title('Weights');
-% set(gca,'FontSize',20);
-% ylim(max(weightsRB_x).*[-1.2 1.2]);
-% axis square;
 
 end

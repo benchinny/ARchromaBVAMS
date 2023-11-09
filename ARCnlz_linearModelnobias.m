@@ -1,4 +1,4 @@
-function [weightsRBS1_x, weightsRBS1_y, rhoFull, rhoNoColor, rhoColor, aic, aicNoColor, weightsRBSci] = ARCnlz_linearModelnobias(sn,bPLOT,nBoot,bLOWLUM)
+function [weightsRBS1_x, weightsRBS1_y, rhoFull, rhoNoColor, rhoColor, aic, aicNoColor, weightsRBSci, trialMeans] = ARCnlz_linearModelnobias(sn,bPLOT,nBoot,bLOWLUM)
 
 bEXCLUDE = true;
 gammaFactorR = 2.4;
@@ -271,11 +271,13 @@ else
    deltaR = scaleEquateRB.*AFCp.rgb200(:,1).^gammaFactorR - scaleEquateRB.*AFCp.rgb100(:,1).^gammaFactorR;
    deltaB = AFCp.rgb200(:,3).^gammaFactorB - AFCp.rgb100(:,3).^gammaFactorB;
 end
+% COMPONENTS OF LINEAR REGRESSION
 deltaS = AFCp.v00*scaleFactor;
 delta1 = ones(size(deltaR));
 deltaR = deltaR.*maxLumCdm2;
 deltaB = deltaB.*maxLumCdm2;
 
+% IF EXCLUDING HIGH LUMINANCE TRIALS
 lumCutoff = 2;
 if bLOWLUM
     indLowLum = 0.4.*(scaleEquateRB.*AFCp.rgb100(:,1).^gammaFactorR + AFCp.rgb100(:,3).^gammaFactorB)<lumCutoff | ...
@@ -288,6 +290,7 @@ if bLOWLUM
     meanChangeYvec = meanChangeYvec(indLowLum);
 end
 
+% DOING THE LINEAR REGRESSION
 weightsRBS1_x = [deltaR deltaB deltaS]\(meanChangeXvec');
 weightsRBS1_y = [deltaR deltaB deltaS]\(meanChangeYvec');
 weightsS1_x = [deltaS]\(meanChangeXvec');
@@ -295,6 +298,7 @@ weightsS1_y = [deltaS]\(meanChangeYvec');
 weightsRB_x = [deltaR deltaB]\(meanChangeXvec');
 weightsRB_y = [deltaR deltaB]\(meanChangeYvec');
 
+% BOOTSTRAPPING
 for i = 1:nBoot
    indBoot = randsample(1:length(meanChangeXvec),length(meanChangeXvec),true);
    if bRELATIVE_LUM
@@ -305,29 +309,42 @@ for i = 1:nBoot
 end
 weightsRBSci = quantile(weightsRBSboot,[0.16 0.84]);
 
+% COMPUTING CORRELATIONS BETWEEN DIFFERENT MODEL PREDICTIONS AND DATA
 rhoFull = corr([deltaR deltaB deltaS]*weightsRBS1_x,meanChangeXvec');
 rhoNoColor = corr([deltaS]*weightsS1_x,meanChangeXvec');
 rhoColor = corr([deltaR deltaB]*weightsRB_x,meanChangeXvec');
 
+if bRELATIVE_LUM
+    nParams = 3;
+    nParamsNoColor = 2;
+else
+    nParams = 4;
+    nParamsNoColor = 2;
+end
+
+% COMPUTING COMPONENETS FOR AIC
 trialMeans = [deltaR deltaB deltaS]*weightsRBS1_x;
 errorIndividual = meanChangeXvec' - trialMeans;
-estResidualStd = std(errorIndividual);
-LL = sum(log(normpdf(meanChangeXvec',trialMeans,estResidualStd)));
-
-if bRELATIVE_LUM
-    nParams = 2;
-else
-    nParams = 3;
+for i = 1:100
+   [stdTmp(i),LLtmp(i)] = ARCfitStdGauss(errorIndividual);
 end
+[~,bestInd] = min(LLtmp);
+estResidualStd = stdTmp(bestInd);
+LL = sum(log(normpdf(meanChangeXvec',trialMeans,estResidualStd)));
 aic = 2*nParams-2*LL;
 
+% COMPUTING COMPONENTS FOR AIC FOR NO-COLOR MODEL
 trialMeansNoColor = [deltaS]*weightsS1_x;
 errorIndividualNoColor = meanChangeXvec' - trialMeansNoColor;
-estResidualStdNoColor = std(errorIndividualNoColor);
+for i = 1:100
+   [stdTmp(i),LLtmp(i)] = ARCfitStdGauss(errorIndividualNoColor);
+end
+[~,bestInd] = min(LLtmp);
+estResidualStdNoColor = stdTmp(bestInd);
 LLnoColor = sum(log(normpdf(meanChangeXvec',trialMeansNoColor,estResidualStdNoColor)));
-nParamsNoColor = 1;
 aicNoColor = 2*nParamsNoColor-2*LLnoColor;
 
+% FOR COMPARING MANUAL AIC COMPUTATION WITH BUILT-IN MATLAB FUNCTION
 if bRELATIVE_LUM
     % put data into table in prep for running built in matlab models
     tbl = table(deltaR,deltaS,meanChangeXvec','VariableNames',{'deltaR','deltaS','resp'});
@@ -338,8 +355,8 @@ if bRELATIVE_LUM
     lme = fitlme(tbl,'resp~-1+deltaS+deltaR');
     compare(lme,lme_nocolor);
     
-    aic = 2*lme.NumVariables - 2*lme.LogLikelihood;
-    aicNoColor = 2*lme_nocolor.NumVariables - 2*lme_nocolor.LogLikelihood;
+%    aic = 2*lme.NumPredictors - 2*lme.LogLikelihood;
+%    aicNoColor = 2*lme_nocolor.NumPredictors - 2*lme_nocolor.LogLikelihood;
 else
     % put data into table in prep for running built in matlab models
     tbl = table(deltaR,deltaB,deltaS,meanChangeXvec','VariableNames',{'deltaR','deltaB','deltaS','resp'});
@@ -350,8 +367,8 @@ else
     lme = fitlme(tbl,'resp~-1+deltaS+deltaB+deltaR');
     compare(lme,lme_nocolor);
     
-    aic = 2*lme.NumVariables - 2*lme.LogLikelihood;
-    aicNoColor = 2*lme_nocolor.NumVariables - 2*lme_nocolor.LogLikelihood;
+%    aic = 2*lme.NumPredictors - 2*lme.LogLikelihood;
+%    aicNoColor = 2*lme_nocolor.NumPredictors - 2*lme_nocolor.LogLikelihood;
 end
 
 if bPLOT
@@ -483,7 +500,7 @@ if bPLOT
     
     title('Weights');
     set(gca,'FontSize',20);
-    ylim(max(weightsRB_x).*[-1.2 1.2]);
+%    ylim(max(weightsRB_x).*[-1.2 1.2]);
     axis square;
 end
 
