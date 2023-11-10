@@ -10,15 +10,12 @@ if vsIncrement>=1
    vs = vs+1;
 end
 
-meanFocstmOptDst = 3;
-
-meanFocstmOptDst = meanFocstmOptDst*1.25;
+meanFocstmOptDst = [2 4]*1.25;
 
 rgb  = [0.56 0.00 1.00; ...
         0.56 0.00 0.00; ...
         0.00 0.00 1.00];
 
-meanFocstmOptDst = meanFocstmOptDst.*ones([size(rgb,1) 1]); 
 focStmOptDstIncr = [-0.45:0.15:0.45; -0.45:0.15:0.45; -0.45:0.15:0.45];
 focStmOptDstIncr = focStmOptDstIncr.*1.25;
 trlPerLvl = 3;

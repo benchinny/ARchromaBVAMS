@@ -2,10 +2,6 @@ function AFCp = ARCacuityAfterAccFunc(imPattern,rgb,meanFocstmOptDst,focStmOptDs
 
 global cf rc00 name_map zaber opto log
 
-if size(meanFocstmOptDst,1)~=size(focStmOptDstIncr,1)
-    error('ARCacuityAfterAccFunc: meanFocstmOptDst and focStmOptDstIncr must have the same number of rows!');
-end
-
 rgbAll = [];
 meanFocstmOptDstAll = [];
 focStmOptDstIncrAll = [];
@@ -96,6 +92,9 @@ for k0=1:length(focStmOptDstIncrAll)
       KbName('UnifyKeyNames');
  %     KbWait([], 2); 
       exitLoop = 0;
+      if k0==length(focStmOptDstIncrAll)
+          break;
+      end
       % Control loop
       ListenChar(2);
       try
@@ -179,10 +178,12 @@ end
 
 if scene.enable_tcp; fclose(scene.tcp_socket); end
 AFCp.v1=power_dispR;
-AFCp.t3=cat(3, t0, t1, t2,tChange1,tChange2,tRealEnd);
+t3=cat(3, t0, t1, t2,tChange1,tChange2,tRealEnd);
+AFCp.t3 = t3(1:end-1,:,:);
 AFCp.rgb = rgbAll(1:end-1,:);
 AFCp.meanFocstmOptDst = meanFocstmOptDstAll(1:end-1);
 AFCp.focStmOptDstIncr = focStmOptDstIncrAll(1:end-1);
 AFCp.rspAcu = rspAcu;
 AFCp.stimOrientation = stimOrientation(1:end-1);
+AFCp.im2R0 = im2R0;
 
