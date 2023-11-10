@@ -21,7 +21,7 @@ rgb  = [0.56 0.00 1.00; ...
 meanFocstmOptDst = meanFocstmOptDst.*ones([size(rgb,1) 1]); 
 focStmOptDstIncr = [-0.45:0.15:0.45; -0.45:0.15:0.45; -0.45:0.15:0.45];
 focStmOptDstIncr = focStmOptDstIncr.*1.25;
-trlPerLvl = 20;
+trlPerLvl = 3;
 
 % DEFAULT NO TCA CORRECTION
 LfarPower=opto(name_map('r_t_far')).control.getFocalPower.focal_power; 
