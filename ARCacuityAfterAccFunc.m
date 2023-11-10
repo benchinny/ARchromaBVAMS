@@ -12,18 +12,20 @@ focStmOptDstIncrAll = [];
 
 for i = 1:size(rgb,1)
    for j = 1:size(focStmOptDstIncr,2)
-       for k = 1:trlPerLvl
-           rgbAll(end+1,:) = rgb(i,:);
-           focStmOptDstIncrAll(end+1,:) = focStmOptDstIncr(j);
-           meanFocstmOptDstAll(end+1,:) = meanFocstmOptDst;
+       for l = 1:length(meanFocstmOptDst)
+           for k = 1:trlPerLvl
+               rgbAll(end+1,:) = rgb(i,:);
+               focStmOptDstIncrAll(end+1,:) = focStmOptDstIncr(j);
+               meanFocstmOptDstAll(end+1,:) = meanFocstmOptDst(l);
+           end
        end
    end
 end
 
 power_dispR=14.4; %starting display power
 power_dispL=14; %starting display power
-opto(name_map('r_disp')).control.setFocalPower(power_dispR-meanv0(1));
-opto(name_map('l_disp')).control.setFocalPower(power_dispL-meanv0(1));
+opto(name_map('r_disp')).control.setFocalPower(power_dispR-meanFocstmOptDstAll(1));
+opto(name_map('l_disp')).control.setFocalPower(power_dispL-meanFocstmOptDstAll(1));
 
 if size(imPattern,3)>1
    indImPattern = randsample(1:size(imPattern,3),1);
@@ -34,7 +36,9 @@ im2R0(:,:,1) = imPattern(:,:,indImPattern).*rgb(1,1);
 im2R0(:,:,2) = imPattern(:,:,indImPattern).*rgb(1,2);
 im2R0(:,:,3) = imPattern(:,:,indImPattern).*rgb(1,3);
 
-[iLf0 iRf0]=cwin3(im2R0, im2R0, cf, rc00, window1, window2);
+acuStim = AFCwordStimImproved('E',[320 320],'white');
+
+[iLf0 iRf0]=cwinARC(zeros(size(im2R0)), zeros(size(im2R0)), window1, window2);
 
 %tcpip
 log.CRITICAL = 5;
@@ -131,34 +135,28 @@ for k0=1:length(focStmOptDstIncrAll)
       cwinARC(im2R0, im2R0, window1, window2);
       pause(3);
       cwinARC(blackStim, blackStim, window1, window2);
+      opto(name_map('l_disp')).control.setFocalPower(power_dispL-meanFocstmOptDstAll(k0)-focStmOptDstIncrAll(k0));
+      opto(name_map('r_disp')).control.setFocalPower(power_dispR-meanFocstmOptDstAll(k0)-focStmOptDstIncrAll(k0));      
       pause(0.1);
       tChange1(k0,:) = clock;
-      cwinARC(im2R1, im2R1, window1, window2);
+      cwinARC(acuStim, acuStim, window1, window2);
       tChange2(k0,:) = clock;
-      for i = (floor(length(sinValues)/2)+1):length(sinValues)
-         opto(name_map('l_disp')).control.setFocalPower(power_dispL-sinValues(i));
-         opto(name_map('r_disp')).control.setFocalPower(power_dispR-sinValues(i));
-         pause(tIntervalStm);
-      end      
-      snd(1000, 0.1); pause(0.2);
-      snd(1000, 0.1); pause(0.1);
-     
+      pause(0.15);
+      cwinARC(blackStim, blackStim, window1, window2);
       if scene.enable_tcp; send_tcp0(scene, 0); end %stage) 0stop 1record
       tRealEnd(k0,:) = clock;
-      %pause(3);
-      [iLf0 iRf0]=cwin3(im2R0, im2R0, cf, rc00, window1, window2);
       opto(name_map('l_disp')).control.setFocalPower(power_dispL);
       opto(name_map('r_disp')).control.setFocalPower(power_dispR);
 
       t1(k0,:)=clock;
 
       %snd(2000, 0.25);  pause(2.75);
-      pause(2);
+      pause(0.5);
 
       %if scene.enable_tcp; send_tcp0(scene, 0); end %stage) 0stop 1record
       t2(k0,:)=clock;
 
-    scene.trial_num=k0;
+      scene.trial_num=k0;
 end
 
 if scene.enable_tcp; fclose(scene.tcp_socket); end
