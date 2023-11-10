@@ -36,6 +36,7 @@ end
 sn = [18 23 24 26 27 29 32 33];
 frmDuration = 0.033;
 lumCutoff = [0.2 1.75];
+meanDiffPureRedVsBlue = [];
 
 for j = 1:size(lumCutoff,1)
     figure;
@@ -50,7 +51,8 @@ for j = 1:size(lumCutoff,1)
         plot((mean(meanBluePerTrial)-mean(meanRedPerTrial)).*[1 1],ylim,'b-','LineWidth',1.5);
         display(['Done with subject: ' num2str(i)]);
         axis square;
-        xlabel('Measurement'); ylabel('Count');     
+        xlabel('Measurement'); ylabel('Count'); 
+        meanDiffPureRedVsBlue(i) = mean(meanRedPerTrial)-mean(meanBluePerTrial);
     end
 end
 
@@ -87,7 +89,7 @@ for i = 1:length(sn)
     xlabel('Time (s)'); ylabel('Relative Power (Diopters)');     
 end
 
-%% HISTOGRAMS OF MEANS FOR EACH TRIAL
+%% HISTOGRAMS OF MEANS FOR EACH TRIAL FOR MIXED MORE RED VS MORE BLUE
 
 sn = [18 23 24 26 27 29 32 33];
 frmDuration = 0.033;

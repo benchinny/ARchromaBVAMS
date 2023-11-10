@@ -363,13 +363,14 @@ rbThreshold2 = [];
 aicSwitchAll2 = [];
 aicLinAll = [];
 aicNoColorAll = [];
+meanDiffPureRedVsBlue = [0.9607 1.0299 0.9122 0.1594 0.4769 0.2107 0.8158 0.3803];
 
 for i = 1:length(sn)
     [d, wS, rbThreshold, rhoSwitch, rhoColorSwitch, aicSwitch] = ARCnlz_linearSwitching(sn(i),false,0);
     dAll1(i) = d;
     rbThreshold1(i) = rbThreshold;
     aicSwitchAll1(i) = aicSwitch;
-    [d, wS, rbThreshold, rhoSwitch, rhoColorSwitch, aicSwitch] = ARCnlz_linearSwitching(sn(i),false,0.35);
+    [d, wS, rbThreshold, rhoSwitch, rhoColorSwitch, aicSwitch] = ARCnlz_linearSwitching(sn(i),false,meanDiffPureRedVsBlue(i));
     dAll2(i) = d;
     rbThreshold2(i) = rbThreshold;
     aicSwitchAll2(i) = aicSwitch;    
@@ -396,19 +397,19 @@ set(gca,'FontSize',15);
 xlabel('Subject'); ylabel('AIC');
 set(gca,'XTick',[2.5 7.5 12.5 17.5 22.5 27.5 32.5 37.5]);
 set(gca,'XTickLabel',{'1' '2' '3' '4' '5' '6' '7' '8'});
-legend({'Weighting' 'Switch Float d' 'Switch 0.35 d' 'No color'});
+legend({'Weighting' 'Switch Float d' 'Switch fixed d' 'No color'});
 
 figure;
 set(gcf,'Position',[215 337 792 420]);
 hold on;
 bar([1 3 5 7 9  11 13 15],dAll1,0.4,'FaceColor','w');
 bar([2 4 6 8 10 12 14 16],dAll2,0.4,'FaceColor',[0.5 0.5 0.5]);
-plot(xlim,0.35.*[1 1],'k--');
+% plot(xlim,0.35.*[1 1],'k--');
 set(gca,'FontSize',15);
 xlabel('Subject'); ylabel('Switching d');
 set(gca,'XTick',[1.5 3.5 5.5 7.5 9.5 11.5 13.5 15.5]);
 set(gca,'XTickLabel',{'1' '2' '3' '4' '5' '6' '7' '8'});
-legend({'Switch Float d' 'Switch 0.35 d'});
+legend({'Switch Float d' 'Switch constrained d'});
 
 figure;
 set(gcf,'Position',[215 337 792 420]);
