@@ -1,4 +1,4 @@
-function ARCacuityAfterAccFunc(imPattern,rgb,meanFocstmOptDst,focStmOptDstIncr, window1, window2, trlPerLvl)
+function AFCp = ARCacuityAfterAccFunc(imPattern,rgb,meanFocstmOptDst,focStmOptDstIncr, window1, window2, trlPerLvl)
 
 global cf rc00 name_map zaber opto log
 
@@ -22,6 +22,9 @@ for i = 1:size(rgb,1)
    end
 end
 
+% 1 = 0°, 2 = 90°, 3 = 180°, 4 = 270° 
+stimOrientation = ceil(rand(size(focStmOptDstIncrAll))*4);
+
 power_dispR=14.4; %starting display power
 power_dispL=14; %starting display power
 opto(name_map('r_disp')).control.setFocalPower(power_dispR-meanFocstmOptDstAll(1));
@@ -36,9 +39,14 @@ im2R0(:,:,1) = imPattern(:,:,indImPattern).*rgb(1,1);
 im2R0(:,:,2) = imPattern(:,:,indImPattern).*rgb(1,2);
 im2R0(:,:,3) = imPattern(:,:,indImPattern).*rgb(1,3);
 
-acuStim = AFCwordStimImproved('E',[320 320],'white');
+acuStim = [];
+acuStimTmp = AFCwordStimImproved('E',[320 320],'white');
+acuStim(:,:,1) = acuStimTmp;
+acuStim(:,:,2) = imrotate(acuStimTmp,90);
+acuStim(:,:,3) = imrotate(acuStimTmp,180);
+acuStim(:,:,4) = imrotate(acuStimTmp,270);
 
-[iLf0 iRf0]=cwinARC(zeros(size(im2R0)), zeros(size(im2R0)), window1, window2);
+cwinARC(zeros(size(im2R0)), zeros(size(im2R0)), window1, window2);
 
 %tcpip
 log.CRITICAL = 5;
@@ -61,6 +69,8 @@ end
 t0=zeros(length(v0), 6); t1=t0; t2=t0; tChange1 = t0; tChange2 = t0; tRealEnd = t0;
 % stage) 0stop 1record figure this out with Steve
 disp('ready to start');  KbWait([], 2); 
+
+rspAcu = [];
 for k0=1:length(focStmOptDstIncrAll)
       if size(imPattern,3)>1
         indImPattern = randsample(1:size(imPattern,3),1);
@@ -89,9 +99,18 @@ for k0=1:length(focStmOptDstIncrAll)
           while opt_chk==0
               [ keyIsDown, keyTime, keyCode ] = KbCheck;
               if keyIsDown
-                  if keyCode(KbName('RightArrow')) | keyCode(KbName('5'))
+                  if keyCode(KbName('RightArrow')) | keyCode(KbName('6'))
                       opt_chk = 1;
-                      %end
+                      rspAcu(k0) = 1;
+                  elseif keyCode(KbName('LeftArrow')) | keyCode(KbName('4'))
+                      opt_chk = 1;
+                      rspAcu(k0) = 3;
+                  elseif keyCode(KbName('UpArrow')) | keyCode(KbName('8'))
+                      opt_chk = 1;
+                      rspAcu(k0) = 2;
+                  elseif keyCode(KbName('DownArrow')) | keyCode(KbName('2'))
+                      opt_chk = 1;
+                      rspAcu(k0) = 4;                      
                   elseif keyCode(KbName('Return')) %| keyCode(KbName('Return'))
                       exitLoop = 1;
                       opt_chk = 1;
@@ -139,7 +158,7 @@ for k0=1:length(focStmOptDstIncrAll)
       opto(name_map('r_disp')).control.setFocalPower(power_dispR-meanFocstmOptDstAll(k0)-focStmOptDstIncrAll(k0));      
       pause(0.1);
       tChange1(k0,:) = clock;
-      cwinARC(acuStim, acuStim, window1, window2);
+      cwinARC(acuStim(:,:,stimOrientation(k0)), acuStim(:,:,stimOrientation(k0)), window1, window2);
       tChange2(k0,:) = clock;
       pause(0.15);
       cwinARC(blackStim, blackStim, window1, window2);
@@ -162,3 +181,9 @@ end
 if scene.enable_tcp; fclose(scene.tcp_socket); end
 AFCp.v1=power_dispR;
 AFCp.t3=cat(3, t0, t1, t2,tChange1,tChange2,tRealEnd);
+AFCp.rgb = rgb;
+AFCp.meanFocstmOptDst = meanFocstmOptDst;
+AFCp.focStmOptDstIncr = focStmOptDstIncr;
+AFCp.rspAcu = rspAcu;
+AFCp.stimOrientation = stimOrientation;
+
