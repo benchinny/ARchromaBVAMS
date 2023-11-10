@@ -1,9 +1,23 @@
-function ARCacuityAfterAccFunc(imPattern,rgb,meanFocstmOptDst,focStmOptDstIncr, window1, window2)
+function ARCacuityAfterAccFunc(imPattern,rgb,meanFocstmOptDst,focStmOptDstIncr, window1, window2, trlPerLvl)
 
 global cf rc00 name_map zaber opto log
 
 if size(meanFocstmOptDst,1)~=size(focStmOptDstIncr,1)
     error('ARCacuityAfterAccFunc: meanFocstmOptDst and focStmOptDstIncr must have the same number of rows!');
+end
+
+rgbAll = [];
+meanFocstmOptDstAll = [];
+focStmOptDstIncrAll = [];
+
+for i = 1:size(rgb,1)
+   for j = 1:size(focStmOptDstIncr,2)
+       for k = 1:trlPerLvl
+           rgbAll(end+1,:) = rgb(i,:);
+           focStmOptDstIncrAll(end+1,:) = focStmOptDstIncr(j);
+           meanFocstmOptDstAll(end+1,:) = meanFocstmOptDst;
+       end
+   end
 end
 
 power_dispR=14.4; %starting display power
@@ -43,21 +57,19 @@ end
 t0=zeros(length(v0), 6); t1=t0; t2=t0; tChange1 = t0; tChange2 = t0; tRealEnd = t0;
 % stage) 0stop 1record figure this out with Steve
 disp('ready to start');  KbWait([], 2); 
-for k0=1:size(v0,1)
+for k0=1:length(focStmOptDstIncrAll)
       if size(imPattern,3)>1
         indImPattern = randsample(1:size(imPattern,3),1);
       else
         indImPattern = 1;
       end
-      im2R0(:,:,1) = imPattern(:,:,indImPattern).*rgb0(k0,1);
-      im2R0(:,:,2) = imPattern(:,:,indImPattern).*rgb0(k0,2);
-      im2R0(:,:,3) = imPattern(:,:,indImPattern).*rgb0(k0,3);
-      im2R1(:,:,1) = imPattern(:,:,indImPattern).*rgb1(k0,1);
-      im2R1(:,:,2) = imPattern(:,:,indImPattern).*rgb1(k0,2);
-      im2R1(:,:,3) = imPattern(:,:,indImPattern).*rgb1(k0,3);
-      [iLf0 iRf0]=cwin3(im2R0, im2R0, cf, rc00, window1, window2);
-      opto(name_map('l_disp')).control.setFocalPower(power_dispL-meanv0(k0));
-      opto(name_map('r_disp')).control.setFocalPower(power_dispR-meanv0(k0));
+      im2R0(:,:,1) = imPattern(:,:,indImPattern).*rgb(k0,1);
+      im2R0(:,:,2) = imPattern(:,:,indImPattern).*rgb(k0,2);
+      im2R0(:,:,3) = imPattern(:,:,indImPattern).*rgb(k0,3);
+      blackStim = zeros(size(im2R0));
+      cwinARC(blackStim, blackStim, window1, window2);
+      opto(name_map('l_disp')).control.setFocalPower(power_dispL);
+      opto(name_map('r_disp')).control.setFocalPower(power_dispR);
 
       fprintf('TRL= %f, L = %f  , R = %f , DEG = %f, Demand = %f\n' ,k0, opto(name_map('l_disp')).control.getFocalPower.focal_power, opto(name_map('r_disp')).control.getFocalPower.focal_power, (zaber(name_map('rotation')).control.getposition)./2.1333E3, v0(k0) );
 
@@ -113,15 +125,15 @@ for k0=1:size(v0,1)
       end
       
       if scene.enable_tcp; send_tcp0(scene, 1); end; t0(k0,:)=clock;
-      
       snd(1000, 0.2); pause(0.5);
-      for i = 1:floor(length(sinValues)/2)
-         opto(name_map('l_disp')).control.setFocalPower(power_dispL-sinValues(i));
-         opto(name_map('r_disp')).control.setFocalPower(power_dispR-sinValues(i));
-         pause(tIntervalStm);
-      end
+      opto(name_map('l_disp')).control.setFocalPower(power_dispL-meanFocstmOptDstAll(k0));
+      opto(name_map('r_disp')).control.setFocalPower(power_dispR-meanFocstmOptDstAll(k0));
+      cwinARC(im2R0, im2R0, window1, window2);
+      pause(3);
+      cwinARC(blackStim, blackStim, window1, window2);
+      pause(0.1);
       tChange1(k0,:) = clock;
-      [iLf1 iRf1]=cwin3(im2R1, im2R1, cf, rc00, window1, window2);
+      cwinARC(im2R1, im2R1, window1, window2);
       tChange2(k0,:) = clock;
       for i = (floor(length(sinValues)/2)+1):length(sinValues)
          opto(name_map('l_disp')).control.setFocalPower(power_dispL-sinValues(i));
@@ -134,11 +146,9 @@ for k0=1:size(v0,1)
       if scene.enable_tcp; send_tcp0(scene, 0); end %stage) 0stop 1record
       tRealEnd(k0,:) = clock;
       %pause(3);
-      %wn=cwin0(img0, 'Stereo', cf, rc00, window1, window2);
       [iLf0 iRf0]=cwin3(im2R0, im2R0, cf, rc00, window1, window2);
-      opto(name_map('l_disp')).control.setFocalPower(power_dispL-meanv0(k0));
-      opto(name_map('r_disp')).control.setFocalPower(power_dispR-meanv0(k0));
-    %           zaber(name_map('rotation')).move_deg(-3); %%-6400
+      opto(name_map('l_disp')).control.setFocalPower(power_dispL);
+      opto(name_map('r_disp')).control.setFocalPower(power_dispR);
 
       t1(k0,:)=clock;
 

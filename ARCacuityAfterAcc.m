@@ -21,6 +21,7 @@ rgb  = [0.56 0.00 1.00; ...
 meanFocstmOptDst = meanFocstmOptDst.*ones([size(rgb,1) 1]); 
 focStmOptDstIncr = [-0.45:0.15:0.45; -0.45:0.15:0.45; -0.45:0.15:0.45];
 focStmOptDstIncr = focStmOptDstIncr.*1.25;
+trlPerLvl = 20;
 
 % DEFAULT NO TCA CORRECTION
 LfarPower=opto(name_map('r_t_far')).control.getFocalPower.focal_power; 
@@ -66,7 +67,7 @@ im4 = flipud(im4);
 imPatternTmp = squeeze(im4(:,:,2));
 imPatternTmp = circshift(imPatternTmp,15,1);
 imPattern(:,:,4) = imresize(imPatternTmp,[480 480]);
-AFCp=ARCacuityAfterAccFunc(imPattern,rgb,meanFocstmOptDst,focStmOptDstIncr, window1, window2);    
+AFCp=ARCacuityAfterAccFunc(imPattern,rgb,meanFocstmOptDst,focStmOptDstIncr, window1, window2, trlPerLvl);    
 
 if sv == 1
     save(AFCfls0, 'AFCp'); 
