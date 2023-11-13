@@ -10,14 +10,11 @@ if vsIncrement>=1
    vs = vs+1;
 end
 
-meanFocstmOptDst = [2 4]*1.25;
+meanFocstmOptDst = [4]*1.25;
 
-rgb  = [0.56 0.00 1.00; ...
-        0.56 0.00 0.00; ...
-        0.00 0.00 1.00];
+rgb  = [0.56 0.00 1.00];
 
-focStmOptDstIncr = [-0.45:0.15:0.45];
-focStmOptDstIncr = focStmOptDstIncr.*1.25;
+stimSizePix = [60 120 180 240 300 360 420];
 trlPerLvl = 3;
 
 % DEFAULT NO TCA CORRECTION
@@ -64,7 +61,7 @@ im4 = flipud(im4);
 imPatternTmp = squeeze(im4(:,:,2));
 imPatternTmp = circshift(imPatternTmp,15,1);
 imPattern(:,:,4) = imresize(imPatternTmp,[480 480]);
-AFCp=ARCacuityAfterAccFunc(imPattern,rgb,meanFocstmOptDst,focStmOptDstIncr, window1, window2, trlPerLvl);    
+AFCp=ARCacuityBasicFunc(imPattern,rgb,meanFocstmOptDst,stimSizePix, window1, window2, trlPerLvl);    
 
 if sv == 1
     save(AFCfls0, 'AFCp'); 
