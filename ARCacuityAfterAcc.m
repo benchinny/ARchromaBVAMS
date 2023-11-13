@@ -16,7 +16,7 @@ rgb  = [0.56 0.00 1.00; ...
         0.56 0.00 0.00; ...
         0.00 0.00 1.00];
 
-focStmOptDstIncr = [-0.45:0.15:0.45; -0.45:0.15:0.45; -0.45:0.15:0.45];
+focStmOptDstIncr = [-0.45:0.15:0.45];
 focStmOptDstIncr = focStmOptDstIncr.*1.25;
 trlPerLvl = 3;
 

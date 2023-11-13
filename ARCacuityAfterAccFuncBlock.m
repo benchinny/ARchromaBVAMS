@@ -7,17 +7,30 @@ meanFocstmOptDstAll = [];
 focStmOptDstIncrAll = [];
 indScramble = [];
 
+% CAREFUL ATTEMPT TO BLOCK CONDITIONS SO EACH OPTICAL DISTANCE INCREMENT IS
+% PRESENTED ONCE PER BLOCK
 for i = 1:size(rgb,1)
-   for j = 1:length(meanFocstmOptDst,2)
+   for j = 1:length(meanFocstmOptDst)
        for k = 1:length(focStmOptDstIncr)
            rgbAll(end+1,:) = rgb(i,:);
            meanFocstmOptDstAll(end+1,:) = meanFocstmOptDst(j);
            focStmOptDstIncrAll(end+1,:) = focStmOptDstIncr(k);
-           indScramble = [indScramble; randperm(length(focStmOptDstIncr))'];
+       end
+       for l = 1:trlPerLvl
+          indScramble = [indScramble; randperm(length(focStmOptDstIncr))'];
        end
    end
 end
-indScramble = indScramble+imresize(length(focStmOptDstIncr).*[0:(size(rgb,1)*length(meanFocstmOptDst,1)-1)]','nearest');
+% RANDOMIZING TRIALS
+indScramble = indScramble+imresize(length(focStmOptDstIncr).*[0:(trlPerLvl*size(rgb,1)*length(meanFocstmOptDst)-1)]',size(indScramble),'nearest');
+rgbAll = repmat(rgbAll,[trlPerLvl 1]);
+meanFocstmOptDstAll = repmat(meanFocstmOptDstAll,[trlPerLvl 1]);
+focStmOptDstIncrAll = repmat(focStmOptDstIncrAll,[trlPerLvl 1]);
+rgbAll = rgbAll(indScramble,:);
+meanFocstmOptDstAll = meanFocstmOptDstAll(indScramble);
+focStmOptDstIncrAll = focStmOptDstIncrAll(indScramble);
+
+% ADD DUMMY TRIAL RIGHT AT THE END (PECULIAR TO WAY CODE IS WRITTEN)
 rgbAll(end+1,:) = [0 0 0];
 focStmOptDstIncrAll(end+1,:) = 0;
 meanFocstmOptDstAll(end+1,:) = 3;
@@ -156,7 +169,11 @@ for k0=1:length(focStmOptDstIncrAll)
       opto(name_map('l_disp')).control.setFocalPower(power_dispL-meanFocstmOptDstAll(k0));
       opto(name_map('r_disp')).control.setFocalPower(power_dispR-meanFocstmOptDstAll(k0));
       cwinARC(im2R0, im2R0, window1, window2);
-      pause(3);
+      if mod(k0,length(focStmOptDstIncr))==1
+         pause(3);
+      else
+         pause(1);
+      end
       cwinARC(blackStim, blackStim, window1, window2);
       tChange1(k0,:) = clock;
       opto(name_map('l_disp')).control.setFocalPower(power_dispL-meanFocstmOptDstAll(k0)-focStmOptDstIncrAll(k0));
