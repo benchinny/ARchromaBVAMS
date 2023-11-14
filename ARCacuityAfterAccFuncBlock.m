@@ -65,6 +65,8 @@ acuStim(:,:,:,1) = acuStimTmpRGB;
 acuStim(:,:,:,2) = imrotate(acuStimTmpRGB,90);
 acuStim(:,:,:,3) = imrotate(acuStimTmpRGB,180);
 acuStim(:,:,:,4) = imrotate(acuStimTmpRGB,270);
+noiseStim = 100.*rand([5 5 3]);
+noiseStim = int16(round(imresize(noiseStim,[50 50])));
 
 cwin3(im2R0, im2R0, cf, rc00, window1, window2);
 
@@ -75,7 +77,7 @@ log.WARNING = 3;
 log.INFO = 2;
 log.DEBUG = 1;
 log.LEVEL = log.DEBUG;
-scene.enable_tcp=0;
+scene.enable_tcp=1;
 scene.trial_num=1;
 
 if scene.enable_tcp
@@ -192,16 +194,18 @@ for k0=1:length(focStmOptDstIncrAll)
          pause(2);
       end
       cwin3(blackStim, blackStim, cf, rc00, window1, window2);
+      if scene.enable_tcp; send_tcp0(scene, 1); end; t1(k0,:)=clock;
       tChange1(k0,:) = clock;
       opto(name_map('l_disp')).control.setFocalPower(power_dispL-meanFocstmOptDstAll(k0)-focStmOptDstIncrAll(k0));
       opto(name_map('r_disp')).control.setFocalPower(power_dispR-meanFocstmOptDstAll(k0)-focStmOptDstIncrAll(k0));      
-      pause(0.1);
-      if scene.enable_tcp; send_tcp0(scene, 1); end; t1(k0,:)=clock;
+      pause(0.15);
       cwin3(squeeze(acuStim(:,:,:,stimOrientation(k0))), squeeze(acuStim(:,:,:,stimOrientation(k0))), cf, rc00, window1, window2);
       tChange2(k0,:) = clock;
+      pause(0.10);
+      cwin3(noiseStim, noiseStim, cf, rc00, window1, window2);
       pause(0.15);
-      cwin3(blackStim, blackStim, cf, rc00, window1, window2);
       if scene.enable_tcp; send_tcp0(scene, 0); end %stage) 0stop 1record
+      cwin3(blackStim, blackStim, cf, rc00, window1, window2);
       t2(k0,:)=clock;
       % opto(name_map('l_disp')).control.setFocalPower(power_dispL);
       % opto(name_map('r_disp')).control.setFocalPower(power_dispR);

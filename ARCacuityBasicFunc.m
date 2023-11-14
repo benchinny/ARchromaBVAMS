@@ -45,6 +45,8 @@ acuStim(:,:,1) = acuStimTmp;
 acuStim(:,:,2) = imrotate(acuStimTmp,90);
 acuStim(:,:,3) = imrotate(acuStimTmp,180);
 acuStim(:,:,4) = imrotate(acuStimTmp,270);
+noiseStim = 100.*rand([5 5 3]);
+noiseStim = int16(round(imresize(noiseStim,[50 50])));
 
 cwin3(im2R0, im2R0, cf, rc00, window1, window2);
 
@@ -177,6 +179,8 @@ for k0=1:length(stimSizePixAll)
       pause(0.1);      
       cwin3(squeeze(acuStim(:,:,:,stimOrientation(k0))), squeeze(acuStim(:,:,:,stimOrientation(k0))), cf, rc00, window1, window2);
       tChange2(k0,:) = clock;
+      pause(0.1);
+      cwin3(noiseStim, noiseStim, cf, rc00, window1, window2);
       pause(0.15);
       cwin3(blackStim, blackStim, cf, rc00, window1, window2);
       if scene.enable_tcp; send_tcp0(scene, 0); end %stage) 0stop 1record
