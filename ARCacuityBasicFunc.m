@@ -18,7 +18,7 @@ for i = 1:size(rgb,1)
    end
 end
 rgbAll(end+1,:) = [0 0 0];
-stimSizePixAll(end+1,:) = 0;
+stimSizePixAll(end+1,:) = 420;
 meanFocstmOptDstAll(end+1,:) = 3;
 
 % 1 = 0°, 2 = 90°, 3 = 180°, 4 = 270° 
@@ -46,7 +46,7 @@ acuStim(:,:,2) = imrotate(acuStimTmp,90);
 acuStim(:,:,3) = imrotate(acuStimTmp,180);
 acuStim(:,:,4) = imrotate(acuStimTmp,270);
 
-cwinARC(zeros(size(im2R0)), zeros(size(im2R0)), window1, window2);
+cwin3(im2R0, im2R0, cf, rc00, window1, window2);
 
 %tcpip
 log.CRITICAL = 5;
@@ -78,14 +78,26 @@ for k0=1:length(stimSizePixAll)
         indImPattern = 1;
       end
       imPatternTmp = squeeze(imPattern(:,:,indImPattern));
-      imPatternTmp = imresize(imPatternTmp,stimSizePixAll(k0).*[1 1]);
+      im2R0 = [];
       im2R0(:,:,1) = imPatternTmp.*rgbAll(k0,1);
       im2R0(:,:,2) = imPatternTmp.*rgbAll(k0,2);
       im2R0(:,:,3) = imPatternTmp.*rgbAll(k0,3);
       blackStim = zeros(size(im2R0));
-      cwinARC(blackStim, blackStim, window1, window2);
-      opto(name_map('l_disp')).control.setFocalPower(power_dispL);
-      opto(name_map('r_disp')).control.setFocalPower(power_dispR);
+      acuStim = [];
+      acuStimTmp = AFCwordStimImproved('E',[320 320],'white');
+      acuStimTmp = squeeze(acuStimTmp(:,:,2));
+      acuStimTmp = imresize(acuStimTmp,stimSizePixAll(k0).*[1 1]);
+      acuStimTmpRGB = [];
+      acuStimTmpRGB(:,:,1) = acuStimTmp.*rgbAll(k0,1);
+      acuStimTmpRGB(:,:,2) = acuStimTmp.*rgbAll(k0,2);
+      acuStimTmpRGB(:,:,3) = acuStimTmp.*rgbAll(k0,3);
+      acuStim(:,:,:,1) = acuStimTmpRGB;
+      acuStim(:,:,:,2) = imrotate(acuStimTmpRGB,90);
+      acuStim(:,:,:,3) = imrotate(acuStimTmpRGB,180);
+      acuStim(:,:,:,4) = imrotate(acuStimTmpRGB,270);      
+      cwin3(im2R0, im2R0, cf, rc00, window1, window2);
+      opto(name_map('l_disp')).control.setFocalPower(power_dispL-meanFocstmOptDstAll(k0));
+      opto(name_map('r_disp')).control.setFocalPower(power_dispR-meanFocstmOptDstAll(k0));
 
       fprintf('TRL= %f, L = %f  , R = %f , DEG = %f, Demand = %f\n' ,k0, opto(name_map('l_disp')).control.getFocalPower.focal_power, opto(name_map('r_disp')).control.getFocalPower.focal_power, (zaber(name_map('rotation')).control.getposition)./2.1333E3, meanFocstmOptDstAll(k0) );
 
@@ -94,9 +106,6 @@ for k0=1:length(stimSizePixAll)
       KbName('UnifyKeyNames');
  %     KbWait([], 2); 
       exitLoop = 0;
-      if k0==length(stimSizePixAll)
-          break;
-      end
       % Control loop
       ListenChar(2);
       try
@@ -112,10 +121,10 @@ for k0=1:length(stimSizePixAll)
                       if k0>1 rspAcu(k0-1) = 3; end
                   elseif keyCode(KbName('UpArrow')) | keyCode(KbName('8'))
                       opt_chk = 1;
-                      if k0>1 rspAcu(k0-1) = 2; end
+                      if k0>1 rspAcu(k0-1) = 4; end
                   elseif keyCode(KbName('DownArrow')) | keyCode(KbName('2'))
                       opt_chk = 1;
-                      if k0>1 rspAcu(k0-1) = 4; end                   
+                      if k0>1 rspAcu(k0-1) = 2; end                   
                   elseif keyCode(KbName('Return')) %| keyCode(KbName('Return'))
                       exitLoop = 1;
                       opt_chk = 1;
@@ -151,23 +160,25 @@ for k0=1:length(stimSizePixAll)
       if exitLoop
          break; 
       end
-      
+      if k0==length(stimSizePixAll)
+          break;
+      end      
       t0(k0,:)=clock;
       snd(1000, 0.2);
       % opto(name_map('l_disp')).control.setFocalPower(power_dispL-meanFocstmOptDstAll(k0));
       % opto(name_map('r_disp')).control.setFocalPower(power_dispR-meanFocstmOptDstAll(k0));
-      cwinARC(im2R0, im2R0, window1, window2);
-      pause(0.5);
-      cwinARC(blackStim, blackStim, window1, window2);
+      cwin3(im2R0, im2R0, cf, rc00, window1, window2);
+      pause(1);
+      cwin3(blackStim, blackStim, cf, rc00, window1, window2);
       tChange1(k0,:) = clock;
       % opto(name_map('l_disp')).control.setFocalPower(power_dispL-meanFocstmOptDstAll(k0));
       % opto(name_map('r_disp')).control.setFocalPower(power_dispR-meanFocstmOptDstAll(k0));      
-      pause(0.1);
       if scene.enable_tcp; send_tcp0(scene, 1); end; t1(k0,:)=clock;
-      cwinARC(acuStim(:,:,stimOrientation(k0)), acuStim(:,:,stimOrientation(k0)), window1, window2);
+      pause(0.1);      
+      cwin3(squeeze(acuStim(:,:,:,stimOrientation(k0))), squeeze(acuStim(:,:,:,stimOrientation(k0))), cf, rc00, window1, window2);
       tChange2(k0,:) = clock;
       pause(0.15);
-      cwinARC(blackStim, blackStim, window1, window2);
+      cwin3(blackStim, blackStim, cf, rc00, window1, window2);
       if scene.enable_tcp; send_tcp0(scene, 0); end %stage) 0stop 1record
       t2(k0,:)=clock;
       % opto(name_map('l_disp')).control.setFocalPower(power_dispL);
@@ -176,6 +187,7 @@ for k0=1:length(stimSizePixAll)
       pause(0.2);
       scene.trial_num=k0;
       tRealEnd(k0,:) = clock;
+      display(['k0 = ' num2str(k0) ', rsp length = ' num2str(length(rspAcu))]);
 end
 
 if scene.enable_tcp; fclose(scene.tcp_socket); end
@@ -188,4 +200,5 @@ AFCp.stimSizePix = stimSizePixAll(1:end-1);
 AFCp.rspAcu = rspAcu;
 AFCp.stimOrientation = stimOrientation(1:end-1);
 AFCp.im2R0 = im2R0;
+AFCp.acuStim = acuStim;
 

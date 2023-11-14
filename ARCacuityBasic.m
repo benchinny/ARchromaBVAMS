@@ -14,8 +14,8 @@ meanFocstmOptDst = [4]*1.25;
 
 rgb  = [0.56 0.00 1.00];
 
-stimSizePix = [60 120 180 240 300 360 420];
-trlPerLvl = 3;
+stimSizePix = [120 100 80 60 40];
+trlPerLvl = 20;
 
 % DEFAULT NO TCA CORRECTION
 LfarPower=opto(name_map('r_t_far')).control.getFocalPower.focal_power; 
