@@ -16,7 +16,7 @@ rgb  = [0.56 0.00 1.00; ...
         0.56 0.00 0.00; ...
         0.00 0.00 1.00];
 
-focStmOptDstIncr = [-0.45:0.15:0.45];
+focStmOptDstIncr = [-1.5:0.5:1.5];
 focStmOptDstIncr = focStmOptDstIncr.*1.25;
 trlPerLvl = 3;
 
@@ -64,7 +64,7 @@ im4 = flipud(im4);
 imPatternTmp = squeeze(im4(:,:,2));
 imPatternTmp = circshift(imPatternTmp,15,1);
 imPattern(:,:,4) = imresize(imPatternTmp,[480 480]);
-AFCp=ARCacuityAfterAccFunc(imPattern,rgb,meanFocstmOptDst,focStmOptDstIncr, window1, window2, trlPerLvl);    
+AFCp=ARCacuityAfterAccFuncBlock(imPattern,rgb,meanFocstmOptDst,focStmOptDstIncr, window1, window2, trlPerLvl);    
 
 if sv == 1
     save(AFCfls0, 'AFCp'); 

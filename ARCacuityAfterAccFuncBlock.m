@@ -66,7 +66,7 @@ acuStim(:,:,:,2) = imrotate(acuStimTmpRGB,90);
 acuStim(:,:,:,3) = imrotate(acuStimTmpRGB,180);
 acuStim(:,:,:,4) = imrotate(acuStimTmpRGB,270);
 
-cwin3(zeros(size(im2R0)), zeros(size(im2R0)), cf, rc00, window1, window2);
+cwin3(im2R0, im2R0, cf, rc00, window1, window2);
 
 %tcpip
 log.CRITICAL = 5;
@@ -113,9 +113,9 @@ for k0=1:length(focStmOptDstIncrAll)
       acuStim(:,:,:,2) = imrotate(acuStimTmpRGB,90);
       acuStim(:,:,:,3) = imrotate(acuStimTmpRGB,180);
       acuStim(:,:,:,4) = imrotate(acuStimTmpRGB,270);
-      cwin3(blackStim, blackStim, cf, rc00, window1, window2);
-      opto(name_map('l_disp')).control.setFocalPower(power_dispL);
-      opto(name_map('r_disp')).control.setFocalPower(power_dispR);
+      cwin3(im2R0, im2R0, cf, rc00, window1, window2);
+      opto(name_map('l_disp')).control.setFocalPower(power_dispL-meanFocstmOptDstAll(k0));
+      opto(name_map('r_disp')).control.setFocalPower(power_dispR-meanFocstmOptDstAll(k0));
 
       fprintf('TRL= %f, L = %f  , R = %f , DEG = %f, Demand = %f\n' ,k0, opto(name_map('l_disp')).control.getFocalPower.focal_power, opto(name_map('r_disp')).control.getFocalPower.focal_power, (zaber(name_map('rotation')).control.getposition)./2.1333E3, meanFocstmOptDstAll(k0) );
 
@@ -183,13 +183,13 @@ for k0=1:length(focStmOptDstIncrAll)
       end      
       t0(k0,:)=clock;
       snd(1000, 0.2);
-      opto(name_map('l_disp')).control.setFocalPower(power_dispL-meanFocstmOptDstAll(k0));
-      opto(name_map('r_disp')).control.setFocalPower(power_dispR-meanFocstmOptDstAll(k0));
+      % opto(name_map('l_disp')).control.setFocalPower(power_dispL-meanFocstmOptDstAll(k0));
+      % opto(name_map('r_disp')).control.setFocalPower(power_dispR-meanFocstmOptDstAll(k0));
       cwin3(im2R0, im2R0, cf, rc00, window1, window2);
       if mod(k0,length(focStmOptDstIncr))==1
          pause(3);
       else
-         pause(1);
+         pause(2);
       end
       cwin3(blackStim, blackStim, cf, rc00, window1, window2);
       tChange1(k0,:) = clock;
@@ -197,14 +197,14 @@ for k0=1:length(focStmOptDstIncrAll)
       opto(name_map('r_disp')).control.setFocalPower(power_dispR-meanFocstmOptDstAll(k0)-focStmOptDstIncrAll(k0));      
       pause(0.1);
       if scene.enable_tcp; send_tcp0(scene, 1); end; t1(k0,:)=clock;
-      cwin3(acuStim(:,:,stimOrientation(k0)), acuStim(:,:,stimOrientation(k0)), cf, rc00, window1, window2);
+      cwin3(squeeze(acuStim(:,:,:,stimOrientation(k0))), squeeze(acuStim(:,:,:,stimOrientation(k0))), cf, rc00, window1, window2);
       tChange2(k0,:) = clock;
       pause(0.15);
       cwin3(blackStim, blackStim, cf, rc00, window1, window2);
       if scene.enable_tcp; send_tcp0(scene, 0); end %stage) 0stop 1record
       t2(k0,:)=clock;
-      opto(name_map('l_disp')).control.setFocalPower(power_dispL);
-      opto(name_map('r_disp')).control.setFocalPower(power_dispR);
+      % opto(name_map('l_disp')).control.setFocalPower(power_dispL);
+      % opto(name_map('r_disp')).control.setFocalPower(power_dispR);
 
       pause(0.2);
       scene.trial_num=k0;
