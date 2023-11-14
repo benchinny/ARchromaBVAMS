@@ -97,6 +97,8 @@ for k0=1:length(stimSizePixAll)
       acuStim(:,:,:,2) = imrotate(acuStimTmpRGB,90);
       acuStim(:,:,:,3) = imrotate(acuStimTmpRGB,180);
       acuStim(:,:,:,4) = imrotate(acuStimTmpRGB,270);      
+      noiseStim = 100.*rand([5 5 3]);
+      noiseStim = int16(round(imresize(noiseStim,[50 50])));      
       cwin3(im2R0, im2R0, cf, rc00, window1, window2);
       opto(name_map('l_disp')).control.setFocalPower(power_dispL-meanFocstmOptDstAll(k0));
       opto(name_map('r_disp')).control.setFocalPower(power_dispR-meanFocstmOptDstAll(k0));

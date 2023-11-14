@@ -1,4 +1,4 @@
-function AFCp = ARCacuityAfterAccFuncBlock(imPattern,rgb,meanFocstmOptDst,focStmOptDstIncr, window1, window2, trlPerLvl)
+function AFCp = ARCacuityAfterAccFuncBlock(imPattern,rgb,meanFocstmOptDst,focStmOptDstIncr, window1, window2, trlPerLvl, stimSizePix)
 
 global cf rc00 name_map zaber opto log
 
@@ -6,6 +6,7 @@ rgbAll = [];
 meanFocstmOptDstAll = [];
 focStmOptDstIncrAll = [];
 indScramble = [];
+stimSizePixAll = [];
 
 % CAREFUL ATTEMPT TO BLOCK CONDITIONS SO EACH OPTICAL DISTANCE INCREMENT IS
 % PRESENTED ONCE PER BLOCK
@@ -15,6 +16,7 @@ for i = 1:size(rgb,1)
            rgbAll(end+1,:) = rgb(i,:);
            meanFocstmOptDstAll(end+1,:) = meanFocstmOptDst(j);
            focStmOptDstIncrAll(end+1,:) = focStmOptDstIncr(k);
+           stimSizePixAll(end+1,:) = stimSizePix(i);
        end
        for l = 1:trlPerLvl
           indScramble = [indScramble; randperm(length(focStmOptDstIncr))'];
@@ -26,9 +28,11 @@ indScramble = indScramble+imresize(length(focStmOptDstIncr).*[0:(trlPerLvl*size(
 rgbAll = repmat(rgbAll,[trlPerLvl 1]);
 meanFocstmOptDstAll = repmat(meanFocstmOptDstAll,[trlPerLvl 1]);
 focStmOptDstIncrAll = repmat(focStmOptDstIncrAll,[trlPerLvl 1]);
+stimSizePixAll = repmat(stimSizePixAll,[trlPerLvl 1]);
 rgbAll = rgbAll(indScramble,:);
 meanFocstmOptDstAll = meanFocstmOptDstAll(indScramble);
 focStmOptDstIncrAll = focStmOptDstIncrAll(indScramble);
+stimSizePixAll = stimSizePixAll(indScramble);
 
 % ADD DUMMY TRIAL RIGHT AT THE END (PECULIAR TO WAY CODE IS WRITTEN)
 rgbAll(end+1,:) = [0 0 0];
@@ -106,7 +110,7 @@ for k0=1:length(focStmOptDstIncrAll)
       acuStim = [];
       acuStimTmp = AFCwordStimImproved('E',[320 320],'white');
       acuStimTmp = squeeze(acuStimTmp(:,:,2));
-      acuStimTmp = imresize(acuStimTmp,stimSizePix.*[1 1]);
+      acuStimTmp = imresize(acuStimTmp,stimSizePixAll(k0).*[1 1]);
       acuStimTmpRGB = [];
       acuStimTmpRGB(:,:,1) = acuStimTmp.*rgbAll(k0,1);
       acuStimTmpRGB(:,:,2) = acuStimTmp.*rgbAll(k0,2);
@@ -115,6 +119,8 @@ for k0=1:length(focStmOptDstIncrAll)
       acuStim(:,:,:,2) = imrotate(acuStimTmpRGB,90);
       acuStim(:,:,:,3) = imrotate(acuStimTmpRGB,180);
       acuStim(:,:,:,4) = imrotate(acuStimTmpRGB,270);
+      noiseStim = 100.*rand([5 5 3]);
+      noiseStim = int16(round(imresize(noiseStim,[50 50])));      
       cwin3(im2R0, im2R0, cf, rc00, window1, window2);
       opto(name_map('l_disp')).control.setFocalPower(power_dispL-meanFocstmOptDstAll(k0));
       opto(name_map('r_disp')).control.setFocalPower(power_dispR-meanFocstmOptDstAll(k0));

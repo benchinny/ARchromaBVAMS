@@ -10,15 +10,19 @@ if vsIncrement>=1
    vs = vs+1;
 end
 
-meanFocstmOptDst = [2 4]*1.25;
-
+meanFocstmOptDst = [3 5]*1.25;
+meanFocstmOptDst = meanFocstmOptDst(randperm(length(meanFocstmOptDst)));
 rgb  = [0.56 0.00 1.00; ...
         0.56 0.00 0.00; ...
         0.00 0.00 1.00];
+indScrambleRgb = randperm(size(rgb,1));
+rgb = rgb(indScrambleRgb,:);
+stimSizePix = [100 100 120];
+stimSizePix = stimSizePix(indScrambleRgb);
 
-focStmOptDstIncr = [-1.5:0.5:1.5];
+focStmOptDstIncr = [-1:0.2:1];
 focStmOptDstIncr = focStmOptDstIncr.*1.25;
-trlPerLvl = 3;
+trlPerLvl = 2;
 
 % DEFAULT NO TCA CORRECTION
 LfarPower=opto(name_map('r_t_far')).control.getFocalPower.focal_power; 
@@ -64,7 +68,7 @@ im4 = flipud(im4);
 imPatternTmp = squeeze(im4(:,:,2));
 imPatternTmp = circshift(imPatternTmp,15,1);
 imPattern(:,:,4) = imresize(imPatternTmp,[480 480]);
-AFCp=ARCacuityAfterAccFuncBlock(imPattern,rgb,meanFocstmOptDst,focStmOptDstIncr, window1, window2, trlPerLvl);    
+AFCp=ARCacuityAfterAccFuncBlock(imPattern,rgb,meanFocstmOptDst,focStmOptDstIncr, window1, window2, trlPerLvl, stimSizePix);    
 
 if sv == 1
     save(AFCfls0, 'AFCp'); 
