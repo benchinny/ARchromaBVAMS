@@ -38,6 +38,7 @@ stimSizePixAll = stimSizePixAll(indScramble);
 rgbAll(end+1,:) = [0 0 0];
 focStmOptDstIncrAll(end+1,:) = 0;
 meanFocstmOptDstAll(end+1,:) = 3;
+stimSizePixAll(end+1,:) = 100;
 
 % 1 = 0°, 2 = 90°, 3 = 180°, 4 = 270° 
 stimOrientation = ceil(rand(size(focStmOptDstIncrAll))*4);
@@ -122,16 +123,14 @@ for k0=1:length(focStmOptDstIncrAll)
       noiseStim = 100.*rand([5 5 3]);
       noiseStim = int16(round(imresize(noiseStim,[50 50])));      
       cwin3(im2R0, im2R0, cf, rc00, window1, window2);
-      opto(name_map('l_disp')).control.setFocalPower(power_dispL-meanFocstmOptDstAll(k0));
-      opto(name_map('r_disp')).control.setFocalPower(power_dispR-meanFocstmOptDstAll(k0));
-
-      fprintf('TRL= %f, L = %f  , R = %f , DEG = %f, Demand = %f\n' ,k0, opto(name_map('l_disp')).control.getFocalPower.focal_power, opto(name_map('r_disp')).control.getFocalPower.focal_power, (zaber(name_map('rotation')).control.getposition)./2.1333E3, meanFocstmOptDstAll(k0) );
       if mod(k0,length(focStmOptDstIncr))==1
          snd(250, 0.25);
          snd(500, 0.25);
       else
          snd(250, 0.25); %pause(2.75);
-      end
+      end      
+
+      fprintf('TRL= %f, L = %f  , R = %f , DEG = %f, Demand = %f\n' ,k0, opto(name_map('l_disp')).control.getFocalPower.focal_power, opto(name_map('r_disp')).control.getFocalPower.focal_power, (zaber(name_map('rotation')).control.getposition)./2.1333E3, meanFocstmOptDstAll(k0) );
       KbName('UnifyKeyNames');
  %     KbWait([], 2); 
       exitLoop = 0;
@@ -194,6 +193,8 @@ for k0=1:length(focStmOptDstIncrAll)
       end      
       t0(k0,:)=clock;
       snd(1000, 0.2); 
+      opto(name_map('l_disp')).control.setFocalPower(power_dispL-meanFocstmOptDstAll(k0));
+      opto(name_map('r_disp')).control.setFocalPower(power_dispR-meanFocstmOptDstAll(k0));      
       % opto(name_map('l_disp')).control.setFocalPower(power_dispL-meanFocstmOptDstAll(k0));
       % opto(name_map('r_disp')).control.setFocalPower(power_dispR-meanFocstmOptDstAll(k0));
       cwin3(im2R0, im2R0, cf, rc00, window1, window2);
@@ -211,13 +212,13 @@ for k0=1:length(focStmOptDstIncrAll)
       cwin3(squeeze(acuStim(:,:,:,stimOrientation(k0))), squeeze(acuStim(:,:,:,stimOrientation(k0))), cf, rc00, window1, window2);
       tChange2(k0,:) = clock;
       pause(0.10);
+      opto(name_map('l_disp')).control.setFocalPower(power_dispL-meanFocstmOptDstAll(k0));
+      opto(name_map('r_disp')).control.setFocalPower(power_dispR-meanFocstmOptDstAll(k0));      
       cwin3(noiseStim, noiseStim, cf, rc00, window1, window2);
       pause(0.15);
       if scene.enable_tcp; send_tcp0(scene, 0); end %stage) 0stop 1record
       cwin3(blackStim, blackStim, cf, rc00, window1, window2);
       t2(k0,:)=clock;
-      % opto(name_map('l_disp')).control.setFocalPower(power_dispL);
-      % opto(name_map('r_disp')).control.setFocalPower(power_dispR);
 
       pause(0.2);
       scene.trial_num=k0;
@@ -234,4 +235,4 @@ AFCp.focStmOptDstIncr = focStmOptDstIncrAll(1:end-1);
 AFCp.rspAcu = rspAcu;
 AFCp.stimOrientation = stimOrientation(1:end-1);
 AFCp.im2R0 = im2R0;
-
+AFCp.stimSizePixAll = stimSizePixAll(1:end-1);
