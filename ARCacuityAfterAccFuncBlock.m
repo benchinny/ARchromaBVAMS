@@ -120,9 +120,12 @@ for k0=1:length(focStmOptDstIncrAll)
       opto(name_map('r_disp')).control.setFocalPower(power_dispR-meanFocstmOptDstAll(k0));
 
       fprintf('TRL= %f, L = %f  , R = %f , DEG = %f, Demand = %f\n' ,k0, opto(name_map('l_disp')).control.getFocalPower.focal_power, opto(name_map('r_disp')).control.getFocalPower.focal_power, (zaber(name_map('rotation')).control.getposition)./2.1333E3, meanFocstmOptDstAll(k0) );
-
-      snd(250, 0.25); %pause(2.75);
-      
+      if mod(k0,length(focStmOptDstIncr))==1
+         snd(250, 0.25);
+         snd(500, 0.25);
+      else
+         snd(250, 0.25); %pause(2.75);
+      end
       KbName('UnifyKeyNames');
  %     KbWait([], 2); 
       exitLoop = 0;
@@ -184,7 +187,7 @@ for k0=1:length(focStmOptDstIncrAll)
           break;
       end      
       t0(k0,:)=clock;
-      snd(1000, 0.2);
+      snd(1000, 0.2); 
       % opto(name_map('l_disp')).control.setFocalPower(power_dispL-meanFocstmOptDstAll(k0));
       % opto(name_map('r_disp')).control.setFocalPower(power_dispR-meanFocstmOptDstAll(k0));
       cwin3(im2R0, im2R0, cf, rc00, window1, window2);
