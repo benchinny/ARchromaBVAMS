@@ -81,12 +81,12 @@ if strcmp(minFuncType,'fmincon')
     opts             = optimset('fmincon');
     opts.Algorithm   = 'active-set';
     opts.LargeScale  = 'off';
-    opts.UseParallel = 'never';
+%    opts.UseParallel = 'never';
     opts.Display     = 'none';
     opts.MaxIter     = 500;
 elseif strcmp(minFuncType,'fminsearch')
     opts             = optimset('fminsearch');
-    opts.UseParallel = 'never';
+%    opts.UseParallel = 'never';
     opts.Display     = 'off';
     opts.MaxIter     = 500;
 end
