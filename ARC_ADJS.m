@@ -6,7 +6,7 @@ power_dispL_min = 7;
 power_dispL_max = 16;
 power_dispR_min = 7;
 power_dispR_max = 16.4;
-adjustIncrement = 0.5;
+adjustIncrement = 0.1;
 stimColor = 'blue';
 
 %%input a output b
@@ -31,9 +31,11 @@ opto(name_map('r_disp')).control.getFocalPower.focal_power
 opto(name_map('l_disp')).control.setFocalPower(14+sr(1));%-dmnd(k0));
 opto(name_map('l_disp')).control.getFocalPower.focal_power
 
-bTexture = false;
+bTexture = true;
 if bTexture
-    im2L='texture0_1080_newfill_malt.png';
+    im2L='texture0_nrm_rgb.png';
+    % im2L='texture0_1080_newfill_malt.png';
+    % im2L = 'TCA_r540_k120_b120_cw5.png';
     im2R=im2L;
     testim = imread(im2R);
 else
@@ -55,6 +57,8 @@ else
     imBmono = imresize(imBmono,[480 480]); % FOR 2/3 of [960 960] SCREEN--PIXELS FROM 90 TO 855 SPAN VIEWPORT
     imB = zeros([size(imBmono) 3]);
     imB(:,:,clrInd) = imBmono;
+%     imB(:,:,1) = imBmono;
+%     imB(:,:,3) = imBmono;
     testim = flipud(imB);   
     display(['Word is ' wordList(wordInd,:)]);
 end

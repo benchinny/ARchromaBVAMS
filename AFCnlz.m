@@ -38,8 +38,8 @@ end
            end
              
            %i0=find(AFCv==3);
-           i0=find(AFCp.v00==-3.125);
-
+           i0=find(AFCp.v00==-2.5);
+           i0 = 1;
            
            x1=[]; y1=[];
            for k0=1:length(i0)

@@ -38,7 +38,7 @@ scaleFactor = 0.8;
            end
              
            %i0=find(AFCv==3);
-           i0=find(AFCp.meanv00==3.125);
+           i0=find(AFCp.meanv00==2.5);
 
            
            x1=[]; y1=[];

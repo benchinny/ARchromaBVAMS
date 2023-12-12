@@ -22,9 +22,9 @@ fontSize = 100;
 % focStmOptDst = [1.75];
 % meanFocstmOptDst = [2.25]';
 % AFCv = [1 1 1]';
-focStmOptDst = [-1];
-meanFocstmOptDst = [3.5]';
-AFCv = [1 1 1 1]';
+focStmOptDst = [1.5];
+meanFocstmOptDst = [2]';
+AFCv = [1]';
 
 focStmOptDst = focStmOptDst.*1.25;
 meanFocstmOptDst = meanFocstmOptDst.*1.25;

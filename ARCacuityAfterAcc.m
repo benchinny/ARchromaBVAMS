@@ -20,7 +20,7 @@ rgb = rgb(indScrambleRgb,:);
 stimSizePix = [100 100 120];
 stimSizePix = stimSizePix(indScrambleRgb);
 
-focStmOptDstIncr = [-1:0.2:1];
+focStmOptDstIncr = [-1.25:0.25:1.25];
 focStmOptDstIncr = focStmOptDstIncr.*1.25;
 trlPerLvl = 2;
 
