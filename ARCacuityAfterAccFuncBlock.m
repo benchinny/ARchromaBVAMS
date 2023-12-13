@@ -7,6 +7,8 @@ meanFocstmOptDstAll = [];
 focStmOptDstIncrAll = [];
 indScramble = [];
 stimSizePixAll = [];
+maskBrightness = 100;
+maskSize = [100 100];
 
 % CAREFUL ATTEMPT TO BLOCK CONDITIONS SO EACH OPTICAL DISTANCE INCREMENT IS
 % PRESENTED ONCE PER BLOCK
@@ -72,7 +74,7 @@ log.WARNING = 3;
 log.INFO = 2;
 log.DEBUG = 1;
 log.LEVEL = log.DEBUG;
-scene.enable_tcp=0;
+scene.enable_tcp=1;
 scene.trial_num=1;
 
 if scene.enable_tcp
@@ -108,8 +110,8 @@ for k0=1:length(focStmOptDstIncrAll)
       acuStim(:,:,:,2) = acuStimTmpRGB;
       acuStim(:,:,:,3) = imrotate(acuStimTmpRGB,90);
       acuStim(:,:,:,4) = imrotate(acuStimTmpRGB,180);      
-      noiseStim = 200.*repmat(rand([5 5 1]),[1 1 3]);
-      noiseStim = imresize(noiseStim,[100 100],'nearest');
+      noiseStim = maskBrightness.*repmat(rand([5 5 1]),[1 1 3]);
+      noiseStim = imresize(noiseStim,maskSize,'nearest');
       cwin3(im2R0, im2R0, cf, rc00, window1, window2);
       if mod(k0,length(focStmOptDstIncr))==1
          snd(250, 0.25);
@@ -141,7 +143,7 @@ for k0=1:length(focStmOptDstIncrAll)
                   elseif keyCode(KbName('DownArrow')) | keyCode(KbName('2'))
                       opt_chk = 1;
                       if k0>1 rspAcu(k0-1) = 2; end                   
-                  elseif keyCode(KbName('Return')) %| keyCode(KbName('Return'))
+                  elseif keyCode(KbName('Escape')) %| keyCode(KbName('Return'))
                       exitLoop = 1;
                       opt_chk = 1;
                   else
@@ -184,6 +186,8 @@ for k0=1:length(focStmOptDstIncrAll)
          snd(1000, 0.2);
       elseif k0>1 && rspAcu(k0-1)~=stimOrientation(k0-1)
          snd(200, 0.2);
+      elseif k0==1
+         snd(1000,0.2);
       end
       opto(name_map('l_disp')).control.setFocalPower(power_dispL-meanFocstmOptDstAll(k0));
       opto(name_map('r_disp')).control.setFocalPower(power_dispR-meanFocstmOptDstAll(k0));      

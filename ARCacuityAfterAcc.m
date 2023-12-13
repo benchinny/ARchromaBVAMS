@@ -10,17 +10,17 @@ if vsIncrement>=1
    vs = vs+1;
 end
 
-meanFocstmOptDst = [3 5]*1.25;
+meanFocstmOptDst = [3]*1.25;
 meanFocstmOptDst = meanFocstmOptDst(randperm(length(meanFocstmOptDst)));
 rgb  = [0.56 0.00 1.00; ...
         0.56 0.00 0.00; ...
         0.00 0.00 1.00];
 indScrambleRgb = randperm(size(rgb,1));
 rgb = rgb(indScrambleRgb,:);
-stimSizePix = [220 220 400];
+stimSizePix = [278 190 440];
 stimSizePix = stimSizePix(indScrambleRgb);
 
-focStmOptDstIncr = [-1.25:0.25:1.25];
+focStmOptDstIncr = [-1.2:0.2:1.2];
 focStmOptDstIncr = focStmOptDstIncr.*1.25;
 trlPerLvl = 2;
 

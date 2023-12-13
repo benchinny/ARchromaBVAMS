@@ -5,6 +5,7 @@ global cf rc00 name_map zaber opto log
 rgbAll = [];
 meanFocstmOptDstAll = [];
 stimSizePixAll = [];
+maskBrightness = 100;
 
 for i = 1:size(rgb,1)
    for j = 1:size(stimSizePix,2)
@@ -17,6 +18,10 @@ for i = 1:size(rgb,1)
        end
    end
 end
+indScramble = randperm(length(stimSizePixAll))';
+rgbAll = rgbAll(indScramble,:);
+stimSizePixAll = stimSizePixAll(indScramble);
+meanFocstmOptDstAll = meanFocstmOptDstAll(indScramble);
 rgbAll(end+1,:) = [0 0 0];
 stimSizePixAll(end+1,:) = 420;
 meanFocstmOptDstAll(end+1,:) = 3;
@@ -51,7 +56,7 @@ acuStim(:,:,:,1) = imrotate(acuStimTmpRGB,270);
 acuStim(:,:,:,2) = acuStimTmpRGB;
 acuStim(:,:,:,3) = imrotate(acuStimTmpRGB,90);
 acuStim(:,:,:,4) = imrotate(acuStimTmpRGB,180);    
-noiseStim = 200.*repmat(rand([5 5 1]),[1 1 3]);
+noiseStim = maskBrightness.*repmat(rand([5 5 1]),[1 1 3]);
 noiseStim = imresize(noiseStim,[100 100],'nearest');      
 
 cwin3(im2R0, im2R0, cf, rc00, window1, window2);
@@ -101,7 +106,7 @@ for k0=1:length(stimSizePixAll)
       acuStim(:,:,:,2) = acuStimTmpRGB;
       acuStim(:,:,:,3) = imrotate(acuStimTmpRGB,90);
       acuStim(:,:,:,4) = imrotate(acuStimTmpRGB,180);      
-      noiseStim = 200.*repmat(rand([5 5 1]),[1 1 3]);
+      noiseStim = maskBrightness.*repmat(rand([5 5 1]),[1 1 3]);
       noiseStim = imresize(noiseStim,[100 100],'nearest');      
       cwin3(im2R0, im2R0, cf, rc00, window1, window2);
       opto(name_map('l_disp')).control.setFocalPower(power_dispL-meanFocstmOptDstAll(k0));
@@ -133,7 +138,7 @@ for k0=1:length(stimSizePixAll)
                   elseif keyCode(KbName('DownArrow')) | keyCode(KbName('2'))
                       opt_chk = 1;
                       if k0>1 rspAcu(k0-1) = 2; end                   
-                  elseif keyCode(KbName('Return')) %| keyCode(KbName('Return'))
+                  elseif keyCode(KbName('Escape')) %| keyCode(KbName('Return'))
                       exitLoop = 1;
                       opt_chk = 1;
                   else
@@ -176,6 +181,8 @@ for k0=1:length(stimSizePixAll)
          snd(1000, 0.2);
       elseif k0>1 && rspAcu(k0-1)~=stimOrientation(k0-1)
          snd(200, 0.2);
+      elseif k0==1
+         snd(1000,0.2);
       end
       % opto(name_map('l_disp')).control.setFocalPower(power_dispL-meanFocstmOptDstAll(k0));
       % opto(name_map('r_disp')).control.setFocalPower(power_dispR-meanFocstmOptDstAll(k0));
