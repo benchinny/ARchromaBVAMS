@@ -39,14 +39,20 @@ im2R0(:,:,2) = imPattern(:,:,indImPattern).*rgb(1,2);
 im2R0(:,:,3) = imPattern(:,:,indImPattern).*rgb(1,3);
 
 acuStim = [];
-acuStimTmp = AFCwordStimImproved('E',[320 320],'white');
-acuStimTmp = squeeze(acuStimTmp(:,:,2));
-acuStim(:,:,1) = acuStimTmp;
-acuStim(:,:,2) = imrotate(acuStimTmp,90);
-acuStim(:,:,3) = imrotate(acuStimTmp,180);
-acuStim(:,:,4) = imrotate(acuStimTmp,270);
-noiseStim = 100.*rand([5 5 3]);
-noiseStim = int16(round(imresize(noiseStim,[50 50])));
+acuStimOrig = imread('testEresized.png');
+indGdAcu = acuStimOrig>0;
+acuStimOrig(indGdAcu) = 0;
+acuStimOrig(~indGdAcu) = 255;
+acuStimTmpRGB = [];
+acuStimTmpRGB(:,:,1) = acuStimOrig.*rgbAll(1,1);
+acuStimTmpRGB(:,:,2) = acuStimOrig.*rgbAll(1,2);
+acuStimTmpRGB(:,:,3) = acuStimOrig.*rgbAll(1,3);
+acuStim(:,:,:,1) = imrotate(acuStimTmpRGB,270);
+acuStim(:,:,:,2) = acuStimTmpRGB;
+acuStim(:,:,:,3) = imrotate(acuStimTmpRGB,90);
+acuStim(:,:,:,4) = imrotate(acuStimTmpRGB,180);    
+noiseStim = 200.*repmat(rand([5 5 1]),[1 1 3]);
+noiseStim = imresize(noiseStim,[100 100],'nearest');      
 
 cwin3(im2R0, im2R0, cf, rc00, window1, window2);
 
@@ -86,19 +92,17 @@ for k0=1:length(stimSizePixAll)
       im2R0(:,:,3) = imPatternTmp.*rgbAll(k0,3);
       blackStim = zeros(size(im2R0));
       acuStim = [];
-      acuStimTmp = AFCwordStimImproved('E',[320 320],'white');
-      acuStimTmp = squeeze(acuStimTmp(:,:,2));
-      acuStimTmp = imresize(acuStimTmp,stimSizePixAll(k0).*[1 1]);
+      acuStimTmp = imresize(acuStimOrig,stimSizePixAll(k0).*[1 1]);
       acuStimTmpRGB = [];
       acuStimTmpRGB(:,:,1) = acuStimTmp.*rgbAll(k0,1);
       acuStimTmpRGB(:,:,2) = acuStimTmp.*rgbAll(k0,2);
       acuStimTmpRGB(:,:,3) = acuStimTmp.*rgbAll(k0,3);
-      acuStim(:,:,:,1) = acuStimTmpRGB;
-      acuStim(:,:,:,2) = imrotate(acuStimTmpRGB,90);
-      acuStim(:,:,:,3) = imrotate(acuStimTmpRGB,180);
-      acuStim(:,:,:,4) = imrotate(acuStimTmpRGB,270);      
-      noiseStim = 100.*rand([5 5 3]);
-      noiseStim = int16(round(imresize(noiseStim,[50 50])));      
+      acuStim(:,:,:,1) = imrotate(acuStimTmpRGB,270);
+      acuStim(:,:,:,2) = acuStimTmpRGB;
+      acuStim(:,:,:,3) = imrotate(acuStimTmpRGB,90);
+      acuStim(:,:,:,4) = imrotate(acuStimTmpRGB,180);      
+      noiseStim = 200.*repmat(rand([5 5 1]),[1 1 3]);
+      noiseStim = imresize(noiseStim,[100 100],'nearest');      
       cwin3(im2R0, im2R0, cf, rc00, window1, window2);
       opto(name_map('l_disp')).control.setFocalPower(power_dispL-meanFocstmOptDstAll(k0));
       opto(name_map('r_disp')).control.setFocalPower(power_dispR-meanFocstmOptDstAll(k0));
@@ -168,7 +172,11 @@ for k0=1:length(stimSizePixAll)
           break;
       end      
       t0(k0,:)=clock;
-      snd(1000, 0.2);
+      if k0>1 && rspAcu(k0-1)==stimOrientation(k0-1)
+         snd(1000, 0.2);
+      elseif k0>1 && rspAcu(k0-1)~=stimOrientation(k0-1)
+         snd(200, 0.2);
+      end
       % opto(name_map('l_disp')).control.setFocalPower(power_dispL-meanFocstmOptDstAll(k0));
       % opto(name_map('r_disp')).control.setFocalPower(power_dispR-meanFocstmOptDstAll(k0));
       cwin3(im2R0, im2R0, cf, rc00, window1, window2);
