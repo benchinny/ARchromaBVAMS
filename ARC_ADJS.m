@@ -36,8 +36,10 @@ if bTexture
     im2L='texture0_nrm_rgb.png';
     % im2L='texture0_1080_newfill_malt.png';
     % im2L = 'TCA_r540_k120_b120_cw5.png';
+    % im2L = 'testEresized.png';
     im2R=im2L;
     testim = imread(im2R);
+    % testim = repmat(testim,[1 1 3]);
 else
     wordList = ['car'; 'arc'; 'sea'; 'one'; 'uno'; 'sun'; 'new'; 'ace'; 'air'];
     wordInd = randsample(1:size(wordList,1),1);

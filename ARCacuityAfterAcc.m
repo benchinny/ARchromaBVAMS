@@ -17,7 +17,7 @@ rgb  = [0.56 0.00 1.00; ...
         0.00 0.00 1.00];
 indScrambleRgb = randperm(size(rgb,1));
 rgb = rgb(indScrambleRgb,:);
-stimSizePix = [100 100 120];
+stimSizePix = [220 220 400];
 stimSizePix = stimSizePix(indScrambleRgb);
 
 focStmOptDstIncr = [-1.25:0.25:1.25];
