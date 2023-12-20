@@ -6,7 +6,7 @@ focStmOptDstIncr = [];
 rspAcu = [];
 stimOrientation = [];
 filePath = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/ARChroma/Analysis/';
-subj = 'BC';
+subj = 'EC';
 if strcmp(subj,'IM')
     filenames = {[filePath 'S1005V16_AFC_RightACL0_2311141650.mat'] ...
                  [filePath 'S1005V15_AFC_RightACL0_2311141641.mat'] ...
@@ -20,20 +20,20 @@ if strcmp(subj,'IM')
                  [filePath 'S1005V22_AFC_RightACL0_2311151720.mat']};
 end
 if strcmp(subj,'BC')
-%     filenames = {[filePath 'S1003V16_AFC_RightACL0_2311171554.mat'] ...
-%                  [filePath 'S1003V16_AFC_RightACL0_2311171611.mat'] ...
-%                  [filePath 'S1003V16_AFC_RightACL0_2311171624.mat'] ...
-%                  [filePath 'S1003V16_AFC_RightACL0_2311171636.mat'] ...
-%                  [filePath 'S1003V16_AFC_RightACL0_2311171730.mat'] ...
-%                  [filePath 'S1003V16_AFC_RightACL0_2311171742.mat'] ...  
-%                  [filePath 'S1003V19_AFC_RightACL0_2311251543.mat'] ...  
-%                  [filePath 'S1003V19_AFC_RightACL0_2311251604.mat'] ...  
-%                  [filePath 'S1003V19_AFC_RightACL0_2311251615.mat'] ...  
-%                  [filePath 'S1003V19_AFC_RightACL0_2311251625.mat'] ...                   
-%                  };
-    filenames = {[filePath 'S1006V7_AFC_RightACL0_2312131147.mat'] ...
-                 [filePath 'S1006V7_AFC_RightACL0_2312131154.mat'] ...                  
+    filenames = {[filePath 'S1003V16_AFC_RightACL0_2311171554.mat'] ...
+                 [filePath 'S1003V16_AFC_RightACL0_2311171611.mat'] ...
+                 [filePath 'S1003V16_AFC_RightACL0_2311171624.mat'] ...
+                 [filePath 'S1003V16_AFC_RightACL0_2311171636.mat'] ...
+                 [filePath 'S1003V16_AFC_RightACL0_2311171730.mat'] ...
+                 [filePath 'S1003V16_AFC_RightACL0_2311171742.mat'] ...  
+                 [filePath 'S1003V19_AFC_RightACL0_2311251543.mat'] ...  
+                 [filePath 'S1003V19_AFC_RightACL0_2311251604.mat'] ...  
+                 [filePath 'S1003V19_AFC_RightACL0_2311251615.mat'] ...  
+                 [filePath 'S1003V19_AFC_RightACL0_2311251625.mat'] ...                   
                  };
+    % filenames = {[filePath 'S1006V7_AFC_RightACL0_2312131147.mat'] ...
+    %              [filePath 'S1006V7_AFC_RightACL0_2312131154.mat'] ...                  
+    %              };
 end
 
 if strcmp(subj,'EC')
@@ -44,7 +44,10 @@ if strcmp(subj,'EC')
                  [filePath 'S1006V9_AFC_RightACL0_2312151005.mat'] ...
                  [filePath 'S1006V9_AFC_RightACL0_2312151011.mat'] ...  
                  [filePath 'S1006V9_AFC_RightACL0_2312151016.mat'] ...  
-                 [filePath 'S1006V9_AFC_RightACL0_2312151021.mat'] ...                 
+                 [filePath 'S1006V9_AFC_RightACL0_2312151021.mat'] ...   
+                 [filePath 'S1006V9_AFC_RightACL0_2312181546.mat'] ...  
+                 [filePath 'S1006V9_AFC_RightACL0_2312181553.mat'] ...  
+                 [filePath 'S1006V9_AFC_RightACL0_2312181558.mat'] ...                    
                  };
 end
 
@@ -72,9 +75,11 @@ indMix = rgb(:,1)>0 & rgb(:,3)>0;
 indRed1 = rgb(:,1)>0 & rgb(:,3)==0 & meanFocstmOptDst==meanFocstmOptDstUnq(1);
 indBlue1 = rgb(:,1)==0 & rgb(:,3)>0 & meanFocstmOptDst==meanFocstmOptDstUnq(1);
 indMix1 = rgb(:,1)>0 & rgb(:,3)>0 & meanFocstmOptDst==meanFocstmOptDstUnq(1);
-indRed2 = rgb(:,1)>0 & rgb(:,3)==0 & meanFocstmOptDst==meanFocstmOptDstUnq(2);
-indBlue2 = rgb(:,1)==0 & rgb(:,3)>0 & meanFocstmOptDst==meanFocstmOptDstUnq(2);
-indMix2 = rgb(:,1)>0 & rgb(:,3)>0 & meanFocstmOptDst==meanFocstmOptDstUnq(2);
+if strcmp(subj,'BC') || strcmp(subj,'IM')
+   indRed2 = rgb(:,1)>0 & rgb(:,3)==0 & meanFocstmOptDst==meanFocstmOptDstUnq(2);
+   indBlue2 = rgb(:,1)==0 & rgb(:,3)>0 & meanFocstmOptDst==meanFocstmOptDstUnq(2);
+   indMix2 = rgb(:,1)>0 & rgb(:,3)>0 & meanFocstmOptDst==meanFocstmOptDstUnq(2);
+end
 scaleFactor = 0.8;
 focStmOptDstIncr = focStmOptDstIncr.*scaleFactor;
 
@@ -126,26 +131,28 @@ formatFigure('Relative distance (diopters)','Proportion Correct');
 axis square;
 ylim([0 1]);
 
-figure;
-set(gcf,'Position',[248 499 1264 420]);
-ind = indRed2;
-[~,~,~,~,PCdta,~,~] = psyfitgengauss(zeros(size(focStmOptDstIncr(ind))),focStmOptDstIncr(ind),rspAcu(ind)==stimOrientation(ind),[],[],[],1,4,0);
-subplot(1,3,1);
-plot(unique(focStmOptDstIncr(ind)),PCdta,'r-','LineWidth',1);
-formatFigure('Relative distance (diopters)','Proportion Correct');
-axis square;
-ylim([0 1]);
-ind = indBlue2;
-[~,~,~,~,PCdta,~,~] = psyfitgengauss(zeros(size(focStmOptDstIncr(ind))),focStmOptDstIncr(ind),rspAcu(ind)==stimOrientation(ind),[],[],[],1,4,0);
-subplot(1,3,2);
-plot(unique(focStmOptDstIncr(ind)),PCdta,'b-','LineWidth',1);
-formatFigure('Relative distance (diopters)','Proportion Correct',['Accommodative distance = ' num2str(scaleFactor.*meanFocstmOptDstUnq(2)) 'D']);
-axis square;
-ylim([0 1]);
-ind = indMix2;
-[~,~,~,~,PCdta,~,~] = psyfitgengauss(zeros(size(focStmOptDstIncr(ind))),focStmOptDstIncr(ind),rspAcu(ind)==stimOrientation(ind),[],[],[],1,4,0);
-subplot(1,3,3);
-plot(unique(focStmOptDstIncr(ind)),PCdta,'m-','LineWidth',1);
-formatFigure('Relative distance (diopters)','Proportion Correct');
-axis square;
-ylim([0 1]);
+if strcmp(subj,'BC') || strcmp(subj,'IM')
+    figure;
+    set(gcf,'Position',[248 499 1264 420]);
+    ind = indRed2;
+    [~,~,~,~,PCdta,~,~] = psyfitgengauss(zeros(size(focStmOptDstIncr(ind))),focStmOptDstIncr(ind),rspAcu(ind)==stimOrientation(ind),[],[],[],1,4,0);
+    subplot(1,3,1);
+    plot(unique(focStmOptDstIncr(ind)),PCdta,'r-','LineWidth',1);
+    formatFigure('Relative distance (diopters)','Proportion Correct');
+    axis square;
+    ylim([0 1]);
+    ind = indBlue2;
+    [~,~,~,~,PCdta,~,~] = psyfitgengauss(zeros(size(focStmOptDstIncr(ind))),focStmOptDstIncr(ind),rspAcu(ind)==stimOrientation(ind),[],[],[],1,4,0);
+    subplot(1,3,2);
+    plot(unique(focStmOptDstIncr(ind)),PCdta,'b-','LineWidth',1);
+    formatFigure('Relative distance (diopters)','Proportion Correct',['Accommodative distance = ' num2str(scaleFactor.*meanFocstmOptDstUnq(2)) 'D']);
+    axis square;
+    ylim([0 1]);
+    ind = indMix2;
+    [~,~,~,~,PCdta,~,~] = psyfitgengauss(zeros(size(focStmOptDstIncr(ind))),focStmOptDstIncr(ind),rspAcu(ind)==stimOrientation(ind),[],[],[],1,4,0);
+    subplot(1,3,3);
+    plot(unique(focStmOptDstIncr(ind)),PCdta,'m-','LineWidth',1);
+    formatFigure('Relative distance (diopters)','Proportion Correct');
+    axis square;
+    ylim([0 1]);
+end
