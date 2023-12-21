@@ -1,4 +1,4 @@
-function AFCp = ARCacuityAfterAccVrnFuncBlock(imPattern,rgb,meanFocstmOptDst,focStmOptDstIncr, window1, window2, trlPerLvl, stimSizePix)
+function AFCp = ARCacuityAfterAccVrnFuncBlock(imPattern,rgb,meanFocstmOptDst,focStmOptDstIncr, window1, window2, trlPerLvl)
 
 global cf rc00 name_map zaber opto log
 
@@ -6,7 +6,6 @@ rgbAll = [];
 meanFocstmOptDstAll = [];
 focStmOptDstIncrAll = [];
 indScramble = [];
-stimSizePixAll = [];
 maskBrightness = 0;
 maskSize = [100 100];
 
@@ -18,7 +17,6 @@ for i = 1:size(rgb,1)
            rgbAll(end+1,:) = rgb(i,:);
            meanFocstmOptDstAll(end+1,:) = meanFocstmOptDst(j);
            focStmOptDstIncrAll(end+1,:) = focStmOptDstIncr(k);
-           stimSizePixAll(end+1,:) = stimSizePix(i);
        end
        for l = 1:trlPerLvl
           indScramble = [indScramble; randperm(length(focStmOptDstIncr))'];
@@ -30,7 +28,7 @@ indScramble = indScramble+imresize(length(focStmOptDstIncr).*[0:(trlPerLvl*size(
 rgbAll = repmat(rgbAll,[trlPerLvl 1]);
 meanFocstmOptDstAll = repmat(meanFocstmOptDstAll,[trlPerLvl 1]);
 focStmOptDstIncrAll = repmat(focStmOptDstIncrAll,[trlPerLvl 1]);
-stimSizePixAll = repmat(stimSizePixAll,[trlPerLvl 1]);
+stimSizePixAll = 10.*ones(size(focStmOptDstIncrAll));
 rgbAll = rgbAll(indScramble,:);
 meanFocstmOptDstAll = meanFocstmOptDstAll(indScramble);
 focStmOptDstIncrAll = focStmOptDstIncrAll(indScramble);
@@ -40,17 +38,16 @@ stimSizePixAll = stimSizePixAll(indScramble);
 rgbAll(end+1,:) = [0 0 0];
 focStmOptDstIncrAll(end+1,:) = 0;
 meanFocstmOptDstAll(end+1,:) = 3;
-stimSizePixAll(end+1,:) = 100;
+stimSizePixAll(end+1,:) = 10;
 
 % 1 = 0°, 2 = 90°, 3 = 180°, 4 = 270° 
-stimOrientation = ceil(rand(size(focStmOptDstIncrAll))*4);
+stimOrientation = ceil(rand(size(focStmOptDstIncrAll))*2);
 
 power_dispR=14.4; %starting display power
 power_dispL=14; %starting display power
 opto(name_map('r_disp')).control.setFocalPower(power_dispR-meanFocstmOptDstAll(1));
 opto(name_map('l_disp')).control.setFocalPower(power_dispL-meanFocstmOptDstAll(1));
 
-stimSizePix = 100;
 if size(imPattern,3)>1
    indImPattern = randsample(1:size(imPattern,3),1);
 else
@@ -59,11 +56,6 @@ end
 im2R0(:,:,1) = imPattern(:,:,indImPattern).*rgb(1,1);
 im2R0(:,:,2) = imPattern(:,:,indImPattern).*rgb(1,2);
 im2R0(:,:,3) = imPattern(:,:,indImPattern).*rgb(1,3);
-
-acuStimOrig = imread('testEresized.png');
-indGdAcu = acuStimOrig>0;
-acuStimOrig(indGdAcu) = 0;
-acuStimOrig(~indGdAcu) = 255;
 
 cwin3(im2R0, im2R0, cf, rc00, window1, window2);
 
@@ -100,16 +92,13 @@ for k0=1:length(focStmOptDstIncrAll)
       im2R0(:,:,2) = imPattern(:,:,indImPattern).*rgbAll(k0,2);
       im2R0(:,:,3) = imPattern(:,:,indImPattern).*rgbAll(k0,3);
       blackStim = zeros(size(im2R0));
-      acuStim = [];
-      acuStimTmp = imresize(acuStimOrig,stimSizePixAll(k0).*[1 1]);
-      acuStimTmpRGB = [];
-      acuStimTmpRGB(:,:,1) = acuStimTmp.*rgbAll(k0,1);
-      acuStimTmpRGB(:,:,2) = acuStimTmp.*rgbAll(k0,2);
-      acuStimTmpRGB(:,:,3) = acuStimTmp.*rgbAll(k0,3);
-      acuStim(:,:,:,1) = imrotate(acuStimTmpRGB,270);
-      acuStim(:,:,:,2) = acuStimTmpRGB;
-      acuStim(:,:,:,3) = imrotate(acuStimTmpRGB,90);
-      acuStim(:,:,:,4) = imrotate(acuStimTmpRGB,180);      
+      acuStimOrig1 = insertShape(zeros([100 100 3]), 'FilledCircle', [50 40 stimSizePixAll(k0)], 'Color',rgbAll(k0,:));
+      acuStimOrig1 = insertShape(acuStimOrig1, 'FilledCircle', [60 60 stimSizePixAll(k0)], 'Color',rgbAll(k0,:));
+      acuStimOrig2 = insertShape(zeros([100 100 3]), 'FilledCircle', [50 40 stimSizePixAll(k0)], 'Color',rgbAll(k0,:));
+      acuStimOrig2 = insertShape(acuStimOrig2, 'FilledCircle', [40 60 stimSizePixAll(k0)], 'Color',rgbAll(k0,:));
+      acuStimOrig(:,:,:,1) = acuStimOrig1;
+      acuStimOrig(:,:,:,2) = acuStimOrig2;
+      acuStim = acuStimOrig.*255;
       noiseStim = maskBrightness.*repmat(rand([5 5 1]),[1 1 3]);
       noiseStim = imresize(noiseStim,maskSize,'nearest');
       cwin3(im2R0, im2R0, cf, rc00, window1, window2);
@@ -136,13 +125,7 @@ for k0=1:length(focStmOptDstIncrAll)
                       if k0>1 rspAcu(k0-1) = 1; end
                   elseif keyCode(KbName('LeftArrow')) | keyCode(KbName('4'))
                       opt_chk = 1;
-                      if k0>1 rspAcu(k0-1) = 3; end
-                  elseif keyCode(KbName('UpArrow')) | keyCode(KbName('8'))
-                      opt_chk = 1;
-                      if k0>1 rspAcu(k0-1) = 4; end
-                  elseif keyCode(KbName('DownArrow')) | keyCode(KbName('2'))
-                      opt_chk = 1;
-                      if k0>1 rspAcu(k0-1) = 2; end                   
+                      if k0>1 rspAcu(k0-1) = 2; end
                   elseif keyCode(KbName('Escape')) %| keyCode(KbName('Return'))
                       exitLoop = 1;
                       opt_chk = 1;

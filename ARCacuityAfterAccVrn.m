@@ -17,8 +17,6 @@ rgb  = [0.56 0.00 1.00; ...
         0.00 0.00 1.00];
 indScrambleRgb = randperm(size(rgb,1));
 rgb = rgb(indScrambleRgb,:);
-stimSizePix = [190 187 235];
-stimSizePix = stimSizePix(indScrambleRgb);
 
 focStmOptDstIncr = [-1.2:0.2:1.2];
 focStmOptDstIncr = focStmOptDstIncr.*1.25;
@@ -68,7 +66,7 @@ im4 = flipud(im4);
 imPatternTmp = squeeze(im4(:,:,2));
 imPatternTmp = circshift(imPatternTmp,15,1);
 imPattern(:,:,4) = imresize(imPatternTmp,[480 480]);
-AFCp=ARCacuityAfterAccFuncBlock(imPattern,rgb,meanFocstmOptDst,focStmOptDstIncr, window1, window2, trlPerLvl, stimSizePix);    
+AFCp=ARCacuityAfterAccVrnFuncBlock(imPattern,rgb,meanFocstmOptDst,focStmOptDstIncr, window1, window2, trlPerLvl);    
 
 if sv == 1
     save(AFCfls0, 'AFCp'); 
