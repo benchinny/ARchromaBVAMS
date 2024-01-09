@@ -1,8 +1,8 @@
-function [g,G] = ARC2Dgabor(x,y,x0,y0,frqCpd,A,ortDeg,phsDeg,BWoct,BWort,bFixSigmaX,bFixSigmaY,bNormalize,bPLOT)
+function [g,G] = ARC2Dgabor(x,y,x0,y0,frqCpd,A,ortDeg,phsDeg,sigmaX,sigmaY,bFixSigmaX,bFixSigmaY,bNormalize,bPLOT)
 
-% function [g,G] = ARC2Dgabor(x,y,x0,y0,frqCpd,A,ortDeg,phsDeg,BWoct,BWort,bFixSigmaX,bFixSigmaY,bNormalize,bPLOT)    
+% function [g,G] = ARC2Dgabor(x,y,x0,y0,frqCpd,A,ortDeg,phsDeg,sigmaX,sigmaY,bFixSigmaX,bFixSigmaY,bNormalize,bPLOT)    
 %
-%   example call: [g G] = ARC2Dgabor(smpPos(128,128),[],0,0,[3 9],[1 1/3],[0],[0],[1],[40]*pi/180,1,1,1,1);    
+%   example call: [g G] = ARC2Dgabor(smpPos(128,128),[],0,0,[3 9],[1 1/3],[0],[0],0.187,0.172,1,1,1,1);    
 %
 % implementation based on Geisler_GaborEquations.pdf in /VisionNotes
 %
@@ -23,10 +23,10 @@ function [g,G] = ARC2Dgabor(x,y,x0,y0,frqCpd,A,ortDeg,phsDeg,BWoct,BWort,bFixSig
 % phsDeg:     phase       in deg                                
 %             [scalar] -> assigns same phase to all components
 %             [1 x nComp] -> unique phase for each component
-% BWoct:      frequency   bandwidth in octaves                 
+% sigmaX:     horizontal width of Gaussian envelope         
 %             [scalar] -> assigns same bandwidth to all components
 %             [1 x nComp] -> unique bandwidth for each component
-% BWort:      orientation bandwidth in radians  
+% sigmaY:     vertical width of Gaussian envelope
 %             [scalar] -> assigns same bandwidth to all components
 %             [1 x nComp] -> unique bandwidth for each component
 % bFixSigmaX: 1 -> fix sigmaX according to fundamental freq oct bandwidth
@@ -86,36 +86,34 @@ if ~(length(frqCpd)==length(ortDeg) && length(ortDeg)==length(phsDeg) && length(
           ', phsDeg, and A!']); 
 end
 
-% THROWS ERROR BECAUSE IF FIXING sigmaX, CANNOT SPECIFY MORE THAN ONE BWoct
-if bFixSigmaX == 1 && length(BWoct)>1
-   error(['ARC2Dgabor: IF bFixSigmaX == 1, THEN BWoct SHOULD CONTAIN' ...
+% THROWS ERROR BECAUSE IF FIXING sigmaX, CANNOT SPECIFY MORE THAN ONE
+% sigmaX
+if bFixSigmaX == 1 && length(sigmaX)>1
+   error(['ARC2Dgabor: IF bFixSigmaX == 1, THEN sigmaX SHOULD CONTAIN' ...
           ' ONE ELEMENT ONLY--FOR THE FUNDAMENTAL FREQ!']); 
-elseif bFixSigmaX~=1 && length(BWoct)~=length(frqCpd)
-   error(['ARC2Dgabor: BWoct SHOULD CONTAIN THE SAME NUMBER OF ELEMENTS' ...
+elseif bFixSigmaX~=1 && length(sigmaX)~=length(frqCpd)
+   error(['ARC2Dgabor: sigmaX SHOULD CONTAIN THE SAME NUMBER OF ELEMENTS' ...
           ' AS THE OTHER STIMULUS PARAMETERS (E.G. FRQCPD) IF bFixSigmaX~=1']);
 end
 
-% % THROWS ERROR BECAUSE IF FIXING sigmaX, CANNOT SPECIFY MORE THAN ONE BWort
-if bFixSigmaY == 1 && length(BWort)>1
-      error(['ARC2Dgabor: IF bFixSigmaY == 1, THEN BWort SHOULD CONTAIN' ...
+% % THROWS ERROR BECAUSE IF FIXING sigmaX, CANNOT SPECIFY MORE THAN ONE
+% sigmaY
+if bFixSigmaY == 1 && length(sigmaY)>1
+      error(['ARC2Dgabor: IF bFixSigmaY == 1, THEN sigmaY SHOULD CONTAIN' ...
              ' ONE ELEMENT ONLY--FOR THE FUNDAMENTAL FREQ!']); 
-elseif bFixSigmaY~=1 && length(BWort)~=length(frqCpd)
-      error(['ARC2Dgabor: BWort SHOULD CONTAIN THE SAME NUMBER OF ELEMENTS' ...
+elseif bFixSigmaY~=1 && length(sigmaY)~=length(frqCpd)
+      error(['ARC2Dgabor: sigmaY SHOULD CONTAIN THE SAME NUMBER OF ELEMENTS' ...
              ' AS THE OTHER STIMULUS PARAMETERS (E.G. FRQCPD) IF bFixSigmaY~=1']);
 end
 
 if bFixSigmaX == 1 % IF FIXING sigmaX
-   % CONVERT BANDWIDTH OF FUNDAMENTAL FREQ TO sigmaX
-   sigmaXfix = bandwidthOct2sigma(frqCpd(1),BWoct); 
    % CONVERT COMMON sigmaX VALUE TO OCTAVE BANDWIDTH
-   BWoct = sigma2bandwidthOct(frqCpd,sigmaXfix); 
+   BWoct = sigma2bandwidthOct(frqCpd,sigmaX); 
 end
 
 if bFixSigmaY == 1 % IF FIXING sigmaY
-   % CONVERT BANDWIDTH OF FUNDAMENTAL FREQ TO sigmaY
-   sigmaYfix = bandwidthOct2sigma(frqCpd(1),BWort); 
    % CONVERT COMMON sigmaY VALUE TO ORIENTATION BANDWIDTH
-   BWort = sigma2bandwidthOct(frqCpd,sigmaYfix); 
+   BWort = sigma2bandwidthOct(frqCpd,sigmaY); 
 end
 
 for i = 1:length(frqCpd) % FOR EACH FREQUENCY
