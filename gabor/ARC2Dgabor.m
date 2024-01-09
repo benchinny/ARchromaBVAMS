@@ -1,8 +1,8 @@
-function [g,G] = ARC2Dgabor(x,y,x0,y0,frqCpd,A,ortDeg,phsDeg,sigmaX,sigmaY,bFixSigmaX,bFixSigmaY,bNormalize,bPLOT)
+function [gRGB,G] = ARC2Dgabor(x,y,x0,y0,frqCpd,A,ortDeg,phsDeg,sigmaX,sigmaY,rgb,bFixSigmaX,bFixSigmaY,bNormalize,bPLOT)
 
-% function [g,G] = ARC2Dgabor(x,y,x0,y0,frqCpd,A,ortDeg,phsDeg,sigmaX,sigmaY,bFixSigmaX,bFixSigmaY,bNormalize,bPLOT)    
+% function [gRGB,G] = ARC2Dgabor(x,y,x0,y0,frqCpd,A,ortDeg,phsDeg,sigmaX,sigmaY,rgb,bFixSigmaX,bFixSigmaY,bNormalize,bPLOT)    
 %
-%   example call: [g G] = ARC2Dgabor(smpPos(128,128),[],0,0,[3 9],[1 1/3],[0],[0],0.187,0.172,1,1,1,1);    
+%   example call: [gRGB G] = ARC2Dgabor(smpPos(128,128),[],0,0,[9],[1],[-15],[0],0.187,0.187,[0.56 0 1.00],1,1,0,1);
 %
 % implementation based on Geisler_GaborEquations.pdf in /VisionNotes
 %
@@ -29,6 +29,8 @@ function [g,G] = ARC2Dgabor(x,y,x0,y0,frqCpd,A,ortDeg,phsDeg,sigmaX,sigmaY,bFixS
 % sigmaY:     vertical width of Gaussian envelope
 %             [scalar] -> assigns same bandwidth to all components
 %             [1 x nComp] -> unique bandwidth for each component
+% rgb   :     color in rgb values
+%             [1 x 3]
 % bFixSigmaX: 1 -> fix sigmaX according to fundamental freq oct bandwidth
 %             0 -> don't
 % bFixSigmaY: 1 -> fix sigmaY according to fundamental freq ornt bandwidth
@@ -113,7 +115,7 @@ end
 
 if bFixSigmaY == 1 % IF FIXING sigmaY
    % CONVERT COMMON sigmaY VALUE TO ORIENTATION BANDWIDTH
-   BWort = sigma2bandwidthOct(frqCpd,sigmaY); 
+   BWort = sigma2bandwidthOrt(frqCpd,sigmaY); 
 end
 
 for i = 1:length(frqCpd) % FOR EACH FREQUENCY
@@ -133,13 +135,24 @@ if nargout > 1
     G = fftshift(fft2(ifftshift(g)))./sqrt(numel(g));
 end
 
+% MEAN LUMINANCE
+DC = 0.5;
+% TURN CONTRAST IMAGE INTO LUMINANCE IMAGE
+gLum = g.*DC + DC;
+
+% CONVERT INTO COLOR IMAGE
+gRGB = [];
+gRGB(:,:,1) = gLum.*rgb(1);
+gRGB(:,:,2) = gLum.*rgb(2);
+gRGB(:,:,3) = gLum.*rgb(3);
+
 if bPLOT
    %%%%%%%%%%%%%%%%%%%%%%%
    % PLOT GABOR IN SPACE %
    %%%%%%%%%%%%%%%%%%%%%%%
    figure('position',[411  523  1014  531]);
    s1=subplot(1,2,1); hold on
-   imagesc(x(1,:),y(:,1)',g);
+   imagesc(x(1,:),y(:,1)',gRGB);
    % surf(X,Y,g,'edgecolor','none','facealpha',.8);
    formatFigure('X (deg)','Y (deg)','Space',0,0,18,14);
    axis square;
@@ -185,7 +198,7 @@ if bPLOT
                  ', \Phi=' '[' num2str(phsDeg,3) ']'],22);
     set(cb,'position',[ 0.9159    0.1714    0.0247    0.6405]);
     subplot(s1);
-    colormap(cmapBWR(256));
+%    colormap(cmapBWR(256));
 end
 
 end
