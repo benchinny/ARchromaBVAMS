@@ -139,6 +139,12 @@ end
 DC = 0.5;
 % TURN CONTRAST IMAGE INTO LUMINANCE IMAGE
 gLum = g.*DC + DC;
+% CROP CIRCLE?
+bCircCrop = true;
+if bCircCrop
+    indCrop = sqrt(x.^2+y.^2) < 0.49;
+    gLum(~indCrop) = 0;
+end
 
 % CONVERT INTO COLOR IMAGE
 gRGB = [];
