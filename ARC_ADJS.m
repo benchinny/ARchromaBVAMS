@@ -6,7 +6,7 @@ power_dispL_min = 7;
 power_dispL_max = 16;
 power_dispR_min = 7;
 power_dispR_max = 16.4;
-adjustIncrement = 0.1;
+adjustIncrement = 0.5;
 stimColor = 'blue';
 
 %%input a output b
@@ -33,13 +33,33 @@ opto(name_map('l_disp')).control.getFocalPower.focal_power
 
 bTexture = true;
 if bTexture
-    im2L='texture0_nrm_rgb.png';
+    % ----LOADING IMAGE----------
+    % im2L='texture0_nrm_rgb.png';
     % im2L='texture0_1080_newfill_malt.png';
     % im2L = 'TCA_r540_k120_b120_cw5.png';
     % im2L = 'testEresized.png';
-    im2R=im2L;
-    testim = imread(im2R);
-    % testim = repmat(testim,[1 1 3]);
+    % im2R=im2L;
+    % testim = imread(im2R);
+    % ---------------------------
+    % ----MAKING GABOR-----------
+    % testim = ARC2Dgabor(smpPos(512,512),[],0,0,30,1,-45,0,0.16,0.5,[0.25 0 0],1,1,0,0);
+    % testim(:,:,1) = testim(:,:,1).^(1/2.4);
+    % testim(:,:,3) = testim(:,:,3).^(1/2.2);    
+    % testim = testim.*255;
+    % ---------------------------
+    % ----MAKING TUMBLING E------
+    acuStimOrig = imread('testEresized.png');
+    indGdAcu = acuStimOrig>0;
+    acuStimOrig(indGdAcu) = 255;
+    acuStimOrig(~indGdAcu) = 0;
+    acuStim = [];
+    acuStimTmp = imresize(acuStimOrig,200.*[1 1]);
+    acuStimTmpRGB = [];
+    acuStimTmpRGB(:,:,1) = acuStimTmp.*0.56;
+    acuStimTmpRGB(:,:,2) = acuStimTmp.*0;
+    acuStimTmpRGB(:,:,3) = acuStimTmp.*0;   
+    testim = acuStimTmpRGB;
+    % ---------------------------
 else
     wordList = ['car'; 'arc'; 'sea'; 'one'; 'uno'; 'sun'; 'new'; 'ace'; 'air'];
     wordInd = randsample(1:size(wordList,1),1);
