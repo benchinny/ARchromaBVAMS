@@ -10,11 +10,11 @@ if vsIncrement>=1
    vs = vs+1;
 end
 
-meanFocstmOptDst = [3]*1.25;
+meanFocstmOptDst = [5]*1.25;
 
 rgb  = [0.56 0.00 1.00];
 
-stimSizePix = 40+[320 280 240 200 160 120];
+stimSizePix = [280 240 200 160 120 80];
 trlPerLvl = 20;
 
 % DEFAULT NO TCA CORRECTION

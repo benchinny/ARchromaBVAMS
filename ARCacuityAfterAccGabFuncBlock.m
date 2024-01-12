@@ -1,4 +1,4 @@
-function AFCp = ARCacuityAfterAccVrnFuncBlock(imPattern,rgb,meanFocstmOptDst,focStmOptDstIncr, window1, window2, trlPerLvl)
+function AFCp = ARCacuityAfterAccGabFuncBlock(imPattern,rgb,meanFocstmOptDst,focStmOptDstIncr, window1, window2, trlPerLvl)
 
 global cf rc00 name_map zaber opto log
 
@@ -8,6 +8,9 @@ focStmOptDstIncrAll = [];
 indScramble = [];
 maskBrightness = 0;
 maskSize = [100 100];
+gammaR = 2.4;
+gammaG = 2.4;
+gammaB = 2.2;
 
 % CAREFUL ATTEMPT TO BLOCK CONDITIONS SO EACH OPTICAL DISTANCE INCREMENT IS
 % PRESENTED ONCE PER BLOCK
@@ -96,8 +99,12 @@ for k0=1:length(focStmOptDstIncrAll)
       im2R0(:,:,2) = imPattern(:,:,indImPattern).*rgbAll(k0,2);
       im2R0(:,:,3) = imPattern(:,:,indImPattern).*rgbAll(k0,3);
       blackStim = zeros(size(im2R0));
-      acuStimOrig1 = ARC2Dgabor(smpPos(256,256),[],0,0,32,1,10,0,0.5,0.5,rgbAll(k0,:),1,1,0,0);
-      acuStimOrig2 = ARC2Dgabor(smpPos(256,256),[],0,0,32,1,-10,0,0.5,0.5,rgbAll(k0,:),1,1,0,0);
+      acuStimOrig1 = ARC2Dgabor(smpPos(256,256),[],0,0,18,1,-15,0,0.2,0.2,[rgbAll(k0,1)^gammaR rgbAll(k0,2)^gammaG rgbAll(k0,3)^gammaB],1,1,0,0);
+      acuStimOrig1(:,:,1) = acuStimOrig1(:,:,1).^(1/gammaR);
+      acuStimOrig1(:,:,3) = acuStimOrig1(:,:,3).^(1/gammaB);
+      acuStimOrig2 = ARC2Dgabor(smpPos(256,256),[],0,0,18,1,15,0,0.2,0.2,[rgbAll(k0,1)^gammaR rgbAll(k0,2)^gammaG rgbAll(k0,3)^gammaB],1,1,0,0);
+      acuStimOrig2(:,:,1) = acuStimOrig2(:,:,1).^(1/gammaR);
+      acuStimOrig2(:,:,3) = acuStimOrig2(:,:,3).^(1/gammaB);      
       acuStimOrig(:,:,:,1) = acuStimOrig1;
       acuStimOrig(:,:,:,2) = acuStimOrig2;
       acuStim = acuStimOrig.*255;

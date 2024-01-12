@@ -7,7 +7,7 @@ meanFocstmOptDstAll = [];
 focStmOptDstIncrAll = [];
 indScramble = [];
 stimSizePixAll = [];
-maskBrightness = 100;
+maskBrightness = 0;
 maskSize = [100 100];
 
 % CAREFUL ATTEMPT TO BLOCK CONDITIONS SO EACH OPTICAL DISTANCE INCREMENT IS
@@ -62,8 +62,8 @@ im2R0(:,:,3) = imPattern(:,:,indImPattern).*rgb(1,3);
 
 acuStimOrig = imread('testEresized.png');
 indGdAcu = acuStimOrig>0;
-acuStimOrig(indGdAcu) = 0;
-acuStimOrig(~indGdAcu) = 255;
+acuStimOrig(indGdAcu) = 255;
+acuStimOrig(~indGdAcu) = 0;
 
 cwin3(im2R0, im2R0, cf, rc00, window1, window2);
 
@@ -74,7 +74,7 @@ log.WARNING = 3;
 log.INFO = 2;
 log.DEBUG = 1;
 log.LEVEL = log.DEBUG;
-scene.enable_tcp=1;
+scene.enable_tcp=0;
 scene.trial_num=1;
 
 if scene.enable_tcp
@@ -195,7 +195,7 @@ for k0=1:length(focStmOptDstIncrAll)
       % opto(name_map('r_disp')).control.setFocalPower(power_dispR-meanFocstmOptDstAll(k0));
       cwin3(im2R0, im2R0, cf, rc00, window1, window2);
       if mod(k0,length(focStmOptDstIncr))==1
-         pause(3);
+         pause(1.5);
       else
          pause(2);
       end

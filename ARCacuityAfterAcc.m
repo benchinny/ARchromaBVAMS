@@ -5,24 +5,24 @@ if ey==1; ey='Right'; elseif ey==2; ey='Binc'; end
 filePath = 'G:\My Drive\exp_bvams\code_repo\ARC\';
 vsIncrement = input(['Increment visit number? The current visit number is ' num2str(vs) ' (1 for yes, 0 for no)']);
 vsIncrement = input(['Asking again: increment visit number? The current visit number is ' num2str(vs) ' (1 for yes, 0 for no)']);
-
+% note: GIVE PEOPLE MORE TIME TO ACCOMMODATE TO THE NEW STIMULUS
 if vsIncrement>=1
    vs = vs+1;
 end
 
-meanFocstmOptDst = [3]*1.25;
+meanFocstmOptDst = [5]*1.25;
 meanFocstmOptDst = meanFocstmOptDst(randperm(length(meanFocstmOptDst)));
-rgb  = [0.56 0.00 1.00; ...
+rgb  = [
         0.56 0.00 0.00; ...
-        0.00 0.00 1.00];
+        ];
 indScrambleRgb = randperm(size(rgb,1));
 rgb = rgb(indScrambleRgb,:);
-stimSizePix = [278 190 440];
+stimSizePix = [300];
 stimSizePix = stimSizePix(indScrambleRgb);
 
-focStmOptDstIncr = [-1.2:0.2:1.2];
+focStmOptDstIncr = [-0.8 -0.4 0.0 0.4 0.8];
 focStmOptDstIncr = focStmOptDstIncr.*1.25;
-trlPerLvl = 2;
+trlPerLvl = 30;
 
 % DEFAULT NO TCA CORRECTION
 LfarPower=opto(name_map('r_t_far')).control.getFocalPower.focal_power; 

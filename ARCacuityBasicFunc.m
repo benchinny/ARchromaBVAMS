@@ -5,7 +5,7 @@ global cf rc00 name_map zaber opto log
 rgbAll = [];
 meanFocstmOptDstAll = [];
 stimSizePixAll = [];
-maskBrightness = 100;
+maskBrightness = 0;
 
 for i = 1:size(rgb,1)
    for j = 1:size(stimSizePix,2)
