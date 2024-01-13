@@ -6,6 +6,9 @@ rgbAll = [];
 meanFocstmOptDstAll = [];
 frqCpdAll = [];
 maskBrightness = 0;
+gammaR = 2.4;
+gammaG = 2.4;
+gammaB = 2.2;
 
 for i = 1:size(rgb,1)
    for j = 1:size(frqCpd,2)
@@ -23,11 +26,11 @@ rgbAll = rgbAll(indScramble,:);
 frqCpdAll = frqCpdAll(indScramble);
 meanFocstmOptDstAll = meanFocstmOptDstAll(indScramble);
 rgbAll(end+1,:) = [0 0 0];
-frqCpdAll(end+1,:) = 420;
+frqCpdAll(end+1,:) = 28;
 meanFocstmOptDstAll(end+1,:) = 3;
 
 % 1 = 0°, 2 = 90°, 3 = 180°, 4 = 270° 
-stimOrientation = ceil(rand(size(frqCpdAll))*4);
+stimOrientation = ceil(rand(size(frqCpdAll))*2);
 
 power_dispR=14.4; %starting display power
 power_dispL=14; %starting display power
@@ -42,22 +45,6 @@ end
 im2R0(:,:,1) = imPattern(:,:,indImPattern).*rgb(1,1);
 im2R0(:,:,2) = imPattern(:,:,indImPattern).*rgb(1,2);
 im2R0(:,:,3) = imPattern(:,:,indImPattern).*rgb(1,3);
-
-acuStim = [];
-acuStimOrig = imread('testEresized.png');
-indGdAcu = acuStimOrig>0;
-acuStimOrig(indGdAcu) = 0;
-acuStimOrig(~indGdAcu) = 255;
-acuStimTmpRGB = [];
-acuStimTmpRGB(:,:,1) = acuStimOrig.*rgbAll(1,1);
-acuStimTmpRGB(:,:,2) = acuStimOrig.*rgbAll(1,2);
-acuStimTmpRGB(:,:,3) = acuStimOrig.*rgbAll(1,3);
-acuStim(:,:,:,1) = imrotate(acuStimTmpRGB,270);
-acuStim(:,:,:,2) = acuStimTmpRGB;
-acuStim(:,:,:,3) = imrotate(acuStimTmpRGB,90);
-acuStim(:,:,:,4) = imrotate(acuStimTmpRGB,180);    
-noiseStim = maskBrightness.*repmat(rand([5 5 1]),[1 1 3]);
-noiseStim = imresize(noiseStim,[100 100],'nearest');      
 
 cwin3(im2R0, im2R0, cf, rc00, window1, window2);
 
@@ -96,16 +83,15 @@ for k0=1:length(frqCpdAll)
       im2R0(:,:,2) = imPatternTmp.*rgbAll(k0,2);
       im2R0(:,:,3) = imPatternTmp.*rgbAll(k0,3);
       blackStim = zeros(size(im2R0));
-      acuStim = [];
-      acuStimTmp = imresize(acuStimOrig,frqCpdAll(k0).*[1 1]);
-      acuStimTmpRGB = [];
-      acuStimTmpRGB(:,:,1) = acuStimTmp.*rgbAll(k0,1);
-      acuStimTmpRGB(:,:,2) = acuStimTmp.*rgbAll(k0,2);
-      acuStimTmpRGB(:,:,3) = acuStimTmp.*rgbAll(k0,3);
-      acuStim(:,:,:,1) = imrotate(acuStimTmpRGB,270);
-      acuStim(:,:,:,2) = acuStimTmpRGB;
-      acuStim(:,:,:,3) = imrotate(acuStimTmpRGB,90);
-      acuStim(:,:,:,4) = imrotate(acuStimTmpRGB,180);      
+      acuStimOrig1 = ARC2Dgabor(smpPos(256,256),[],0,0,frqCpdAll(k0),1,-15,0,0.2,0.2,[rgbAll(k0,1)^gammaR rgbAll(k0,2)^gammaG rgbAll(k0,3)^gammaB],1,1,0,0);
+      acuStimOrig1(:,:,1) = acuStimOrig1(:,:,1).^(1/gammaR);
+      acuStimOrig1(:,:,3) = acuStimOrig1(:,:,3).^(1/gammaB);
+      acuStimOrig2 = ARC2Dgabor(smpPos(256,256),[],0,0,frqCpdAll(k0),1,15,0,0.2,0.2,[rgbAll(k0,1)^gammaR rgbAll(k0,2)^gammaG rgbAll(k0,3)^gammaB],1,1,0,0);
+      acuStimOrig2(:,:,1) = acuStimOrig2(:,:,1).^(1/gammaR);
+      acuStimOrig2(:,:,3) = acuStimOrig2(:,:,3).^(1/gammaB);      
+      acuStimOrig(:,:,:,1) = acuStimOrig1;
+      acuStimOrig(:,:,:,2) = acuStimOrig2;
+      acuStim = acuStimOrig.*255;    
       noiseStim = maskBrightness.*repmat(rand([5 5 1]),[1 1 3]);
       noiseStim = imresize(noiseStim,[100 100],'nearest');      
       cwin3(im2R0, im2R0, cf, rc00, window1, window2);
@@ -131,13 +117,7 @@ for k0=1:length(frqCpdAll)
                       if k0>1 rspAcu(k0-1) = 1; end
                   elseif keyCode(KbName('LeftArrow')) | keyCode(KbName('4'))
                       opt_chk = 1;
-                      if k0>1 rspAcu(k0-1) = 3; end
-                  elseif keyCode(KbName('UpArrow')) | keyCode(KbName('8'))
-                      opt_chk = 1;
-                      if k0>1 rspAcu(k0-1) = 4; end
-                  elseif keyCode(KbName('DownArrow')) | keyCode(KbName('2'))
-                      opt_chk = 1;
-                      if k0>1 rspAcu(k0-1) = 2; end                   
+                      if k0>1 rspAcu(k0-1) = 2; end                 
                   elseif keyCode(KbName('Escape')) %| keyCode(KbName('Return'))
                       exitLoop = 1;
                       opt_chk = 1;
