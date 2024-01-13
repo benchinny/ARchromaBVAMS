@@ -1,33 +1,33 @@
-function AFCp = ARCacuityBasicVrnFunc(imPattern,rgb,meanFocstmOptDst,stimSizePix, window1, window2, trlPerLvl)
+function AFCp = ARCacuityBasicGabFunc(imPattern,rgb,meanFocstmOptDst,frqCpd, window1, window2, trlPerLvl)
 
 global cf rc00 name_map zaber opto log
 
 rgbAll = [];
 meanFocstmOptDstAll = [];
-stimSizePixAll = [];
+frqCpdAll = [];
 maskBrightness = 0;
 
 for i = 1:size(rgb,1)
-   for j = 1:size(stimSizePix,2)
+   for j = 1:size(frqCpd,2)
        for l = 1:length(meanFocstmOptDst)
            for k = 1:trlPerLvl
                rgbAll(end+1,:) = rgb(i,:);
-               stimSizePixAll(end+1,:) = stimSizePix(j);
+               frqCpdAll(end+1,:) = frqCpd(j);
                meanFocstmOptDstAll(end+1,:) = meanFocstmOptDst(l);
            end
        end
    end
 end
-indScramble = randperm(length(stimSizePixAll))';
+indScramble = randperm(length(frqCpdAll))';
 rgbAll = rgbAll(indScramble,:);
-stimSizePixAll = stimSizePixAll(indScramble);
+frqCpdAll = frqCpdAll(indScramble);
 meanFocstmOptDstAll = meanFocstmOptDstAll(indScramble);
 rgbAll(end+1,:) = [0 0 0];
-stimSizePixAll(end+1,:) = 420;
+frqCpdAll(end+1,:) = 420;
 meanFocstmOptDstAll(end+1,:) = 3;
 
 % 1 = 0°, 2 = 90°, 3 = 180°, 4 = 270° 
-stimOrientation = ceil(rand(size(stimSizePixAll))*4);
+stimOrientation = ceil(rand(size(frqCpdAll))*4);
 
 power_dispR=14.4; %starting display power
 power_dispL=14; %starting display power
@@ -79,12 +79,12 @@ if scene.enable_tcp
     cmsg('TCP connected!', log.INFO, log.LEVEL);
 end
 
-t0=zeros(length(stimSizePixAll), 6); t1=t0; t2=t0; tChange1 = t0; tChange2 = t0; tRealEnd = t0;
+t0=zeros(length(frqCpdAll), 6); t1=t0; t2=t0; tChange1 = t0; tChange2 = t0; tRealEnd = t0;
 % stage) 0stop 1record figure this out with Steve
 disp('ready to start');  KbWait([], 2); 
 
 rspAcu = [];
-for k0=1:length(stimSizePixAll)
+for k0=1:length(frqCpdAll)
       if size(imPattern,3)>1
         indImPattern = randsample(1:size(imPattern,3),1);
       else
@@ -97,7 +97,7 @@ for k0=1:length(stimSizePixAll)
       im2R0(:,:,3) = imPatternTmp.*rgbAll(k0,3);
       blackStim = zeros(size(im2R0));
       acuStim = [];
-      acuStimTmp = imresize(acuStimOrig,stimSizePixAll(k0).*[1 1]);
+      acuStimTmp = imresize(acuStimOrig,frqCpdAll(k0).*[1 1]);
       acuStimTmpRGB = [];
       acuStimTmpRGB(:,:,1) = acuStimTmp.*rgbAll(k0,1);
       acuStimTmpRGB(:,:,2) = acuStimTmp.*rgbAll(k0,2);
@@ -173,7 +173,7 @@ for k0=1:length(stimSizePixAll)
       if exitLoop
          break; 
       end
-      if k0==length(stimSizePixAll)
+      if k0==length(frqCpdAll)
           break;
       end      
       t0(k0,:)=clock;
@@ -217,7 +217,7 @@ t3=cat(3, t0, t1, t2,tChange1,tChange2,tRealEnd);
 AFCp.t3 = t3(1:end-1,:,:);
 AFCp.rgb = rgbAll(1:end-1,:);
 AFCp.meanFocstmOptDst = meanFocstmOptDstAll(1:end-1);
-AFCp.stimSizePix = stimSizePixAll(1:end-1);
+AFCp.frqCpd = frqCpdAll(1:end-1);
 AFCp.rspAcu = rspAcu;
 AFCp.stimOrientation = stimOrientation(1:end-1);
 AFCp.im2R0 = im2R0;
