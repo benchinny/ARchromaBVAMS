@@ -20,9 +20,9 @@ indScrambleRgb = randperm(size(rgb,1));
 rgb = rgb(indScrambleRgb,:);
 
 % focStmOptDstIncr = [-0.5:0.25:0.5];
-focStmOptDstIncr = [-0.0];
+focStmOptDstIncr = [-0.8 -0.4 0.0 0.4 0.8];
 focStmOptDstIncr = focStmOptDstIncr.*1.25;
-trlPerLvl = 30;
+trlPerLvl = 40;
 
 % DEFAULT NO TCA CORRECTION
 LfarPower=opto(name_map('r_t_far')).control.getFocalPower.focal_power; 

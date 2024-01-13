@@ -14,7 +14,7 @@ meanFocstmOptDst = [5]*1.25;
 
 rgb  = [0.56 0.00 0.00];
 
-frqCpd = [10];
+frqCpd = [18];
 trlPerLvl = 30;
 
 % DEFAULT NO TCA CORRECTION
