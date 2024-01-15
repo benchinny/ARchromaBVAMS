@@ -12,9 +12,9 @@ end
 
 meanFocstmOptDst = [5]*1.25;
 
-rgb  = [0.56 0.00 1.00];
+rgb  = [0.56 0.00 0.00];
 
-stimSizePix = [280 240 200 160 120 80];
+stimSizePix = [250 270 290 310 330];
 trlPerLvl = 20;
 
 % DEFAULT NO TCA CORRECTION

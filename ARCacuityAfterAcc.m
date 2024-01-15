@@ -17,12 +17,12 @@ rgb  = [
         ];
 indScrambleRgb = randperm(size(rgb,1));
 rgb = rgb(indScrambleRgb,:);
-stimSizePix = [300];
+stimSizePix = [270];
 stimSizePix = stimSizePix(indScrambleRgb);
 
-focStmOptDstIncr = [-0.8 -0.4 0.0 0.4 0.8];
+focStmOptDstIncr = [-1.2 -0.8 -0.4 0.0 0.4 0.8 1.2];
 focStmOptDstIncr = focStmOptDstIncr.*1.25;
-trlPerLvl = 30;
+trlPerLvl = 10;
 
 % DEFAULT NO TCA CORRECTION
 LfarPower=opto(name_map('r_t_far')).control.getFocalPower.focal_power; 

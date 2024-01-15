@@ -64,7 +64,13 @@ acuStimOrig = imread('testEresized.png');
 indGdAcu = acuStimOrig>0;
 acuStimOrig(indGdAcu) = 255;
 acuStimOrig(~indGdAcu) = 0;
-
+% x: 486-487, 522-523, 558-559, 594-595 y: 595-595, 450-451
+% acuStimOrig(451:594,481:486) = 255;
+% acuStimOrig(451:594,523:525) = 255;
+% acuStimOrig(451:594,556:558) = 255;
+% acuStimOrig(451:594,595:600) = 255;
+% acuStimOrig(595:600,481:525) = 255;
+% acuStimOrig(595:600,556:600) = 255;
 cwin3(im2R0, im2R0, cf, rc00, window1, window2);
 
 %tcpip
