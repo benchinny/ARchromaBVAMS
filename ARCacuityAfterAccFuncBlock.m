@@ -60,10 +60,20 @@ im2R0(:,:,1) = imPattern(:,:,indImPattern).*rgb(1,1);
 im2R0(:,:,2) = imPattern(:,:,indImPattern).*rgb(1,2);
 im2R0(:,:,3) = imPattern(:,:,indImPattern).*rgb(1,3);
 
-acuStimOrig = imread('testEresized.png');
-indGdAcu = acuStimOrig>0;
-acuStimOrig(indGdAcu) = 255;
-acuStimOrig(~indGdAcu) = 0;
+optoType = 'C';
+
+if strcmp(optoType,'E')
+   acuStimOrig = imread('testEresized.png');
+   indGdAcu = acuStimOrig>0;
+   acuStimOrig(indGdAcu) = 255;
+   acuStimOrig(~indGdAcu) = 0;
+elseif strcmp(optoType,'C')
+   acuStimOrig = imread('testLandoltC.png');
+   acuStimOrig = acuStimOrig(33:543,258:768,1);
+   indGdAcu = acuStimOrig>0;
+   acuStimOrig(indGdAcu) = 255;
+   acuStimOrig(~indGdAcu) = 0;   
+end
 % x: 486-487, 522-523, 558-559, 594-595 y: 595-595, 450-451
 % acuStimOrig(451:594,481:486) = 255;
 % acuStimOrig(451:594,523:525) = 255;
