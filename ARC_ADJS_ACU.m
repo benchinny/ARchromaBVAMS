@@ -12,13 +12,6 @@ stimColor = 'blue';
 %%input a output b
 cf=ones(3,2);
 
-%initial  power=13.5 AR    
-%LCAim='texture0_1080_newfill_malt.png';    
-%im2R='black.png';       
-% im2L='texture0_1080_newfill_malt.png';
-% im2L = 'G:\My Drive\exp_bvams\code_repo\imgs\TCA_r540_k120_b108_cw5_sbm7.png';  
-%im2L='vrn10_G_sd1.png';
-
 deg=-3;            
 zaber(name_map('rotation')).move_deg(deg); %%-6400            
 zaber(name_map('rotation')).control.getposition  
@@ -31,59 +24,20 @@ opto(name_map('r_disp')).control.getFocalPower.focal_power
 opto(name_map('l_disp')).control.setFocalPower(14+sr(1));%-dmnd(k0));
 opto(name_map('l_disp')).control.getFocalPower.focal_power
 
-bTexture = true;
-if bTexture
-    % ----LOADING IMAGE----------
-    % im2L='texture0_nrm_rgb.png';
-    % im2L='texture0_1080_newfill_malt.png';
-    % im2L = 'TCA_r540_k120_b120_cw5.png';
-    % im2L = 'testEresized.png';
-    % im2R=im2L;
-    % testim = imread(im2R);
-    % ---------------------------
-    % ----MAKING GABOR-----------
-    % testim = ARC2Dgabor(smpPos(512,512),[],0,0,30,1,-45,0,0.16,0.5,[0.25 0 0],1,1,0,0);
-    % testim(:,:,1) = testim(:,:,1).^(1/2.4);
-    % testim(:,:,3) = testim(:,:,3).^(1/2.2);    
-    % testim = testim.*255;
-    % ---------------------------
-    % ----MAKING TUMBLING E------
-    acuStimOrig = imread('testEresized.png');
-    indGdAcu = acuStimOrig>0;
-    acuStimOrig(indGdAcu) = 255;
-    acuStimOrig(~indGdAcu) = 0;
-    acuStim = [];
-    acuStimTmp = imresize(acuStimOrig,200.*[1 1]);
-    acuStimTmpRGB = [];
-    acuStimTmpRGB(:,:,1) = acuStimTmp.*0.56;
-    acuStimTmpRGB(:,:,2) = acuStimTmp.*0;
-    acuStimTmpRGB(:,:,3) = acuStimTmp.*0;   
-    testim = acuStimTmpRGB;
-    % ---------------------------
-else
-    wordList = ['car'; 'arc'; 'sea'; 'one'; 'uno'; 'sun'; 'new'; 'ace'; 'air'];
-    wordInd = randsample(1:size(wordList,1),1);
-    imB = AFCwordStimImproved(wordList(wordInd,:),[320 320],stimColor);
-    imB(imB>0) = 255;
-    if strcmp(stimColor,'blue')
-       clrInd = 3;
-    end
-    if strcmp(stimColor,'green')
-       clrInd = 2;
-    end
-    if strcmp(stimColor,'red')
-       clrInd = 1;    
-    end
-    imB(:,:,clrInd) = circshift(squeeze(imB(:,:,clrInd)),-15,1);
-    imBmono = squeeze(imB(:,:,clrInd));
-    imBmono = imresize(imBmono,[480 480]); % FOR 2/3 of [960 960] SCREEN--PIXELS FROM 90 TO 855 SPAN VIEWPORT
-    imB = zeros([size(imBmono) 3]);
-    imB(:,:,clrInd) = imBmono;
-%     imB(:,:,1) = imBmono;
-%     imB(:,:,3) = imBmono;
-    testim = flipud(imB);   
-    display(['Word is ' wordList(wordInd,:)]);
-end
+frqCpd = 30;
+sizePixXY = [256 256];
+orntDeg = -45;
+ampl = 1;
+phsDeg = 0;
+sigmaX = 0.2;
+sigmaY = 0.2;
+rgb = [0.25 0 0];
+
+testim = ARC2Dgabor(smpPos(sizePixXY(1),sizePixXY(2)),[],0,0,frqCpd,ampl,orntDeg,phsDeg,sigmaX,sigmaY,rgb,1,1,0,0);
+testim(:,:,1) = testim(:,:,1).^(1/2.4);
+testim(:,:,3) = testim(:,:,3).^(1/2.2);    
+testim = testim.*255;
+
 [iLf iRf]=cwin3(imread("black.png"), testim , cf, rc00, window2, window1);
 
 power_dispL = 14;
