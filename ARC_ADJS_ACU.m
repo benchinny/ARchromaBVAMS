@@ -8,7 +8,7 @@ power_dispR_min = 7;
 power_dispR_max = 16.4;
 adjustIncrement = 0.5;
 frqCpdMin = 5;
-frqCpdMax = 30;
+frqCpdMax = 40;
 stimColor = 'red';
 
 %%input a output b
@@ -33,7 +33,7 @@ ampl = 1;
 phsDeg = 0;
 sigmaX = 0.2;
 sigmaY = 0.2;
-rgb = [0.25 0 0];
+rgb = [0.25 0 1.00];
 
 testim = ARC2Dgabor(smpPos(sizePixXY(1),sizePixXY(2)),[],0,0,frqCpd,ampl,orntDeg,phsDeg,sigmaX,sigmaY,rgb,1,1,0,0);
 testim(:,:,1) = testim(:,:,1).^(1/2.4);
@@ -104,7 +104,7 @@ try
                 testim(:,:,3) = testim(:,:,3).^(1/2.2);    
                 testim = testim.*255;
                 [iLf iRf]=cwin3(blackStim, testim , cf, rc00, window2, window1);                
-                pause(0.25);
+                pause(0.15);
                 cwin3(blackStim, blackStim, cf, rc00, window1, window2);        
                 [iLf iRf]=cwin3(blackStim, fixStm , cf, rc00, window2, window1);
             elseif (keyCode(KbName('UpArrow')) || keyCode(KbName('8')))
@@ -117,12 +117,12 @@ try
                 testim(:,:,3) = testim(:,:,3).^(1/2.2);    
                 testim = testim.*255;
                 [iLf iRf]=cwin3(blackStim, testim , cf, rc00, window2, window1);                
-                pause(0.25);
+                pause(0.15);
                 cwin3(blackStim, blackStim, cf, rc00, window1, window2);
                 [iLf iRf]=cwin3(blackStim, fixStm , cf, rc00, window2, window1);
             elseif keyCode(KbName('5'))
                 [iLf iRf]=cwin3(blackStim, testim , cf, rc00, window2, window1);                
-                pause(0.25);
+                pause(0.15);
                 cwin3(blackStim, blackStim, cf, rc00, window1, window2);              
                 [iLf iRf]=cwin3(blackStim, fixStm , cf, rc00, window2, window1);
             elseif keyCode(KbName('Return')) %| keyCode(KbName('Return'))
