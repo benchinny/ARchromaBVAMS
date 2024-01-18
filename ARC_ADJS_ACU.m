@@ -7,6 +7,8 @@ power_dispL_max = 16;
 power_dispR_min = 7;
 power_dispR_max = 16.4;
 adjustIncrement = 0.5;
+frqCpdMin = 5;
+frqCpdMax = 30;
 stimColor = 'blue';
 
 %%input a output b
@@ -37,8 +39,9 @@ testim = ARC2Dgabor(smpPos(sizePixXY(1),sizePixXY(2)),[],0,0,frqCpd,ampl,orntDeg
 testim(:,:,1) = testim(:,:,1).^(1/2.4);
 testim(:,:,3) = testim(:,:,3).^(1/2.2);    
 testim = testim.*255;
+blackStim = imread("black.png");
 
-[iLf iRf]=cwin3(imread("black.png"), testim , cf, rc00, window2, window1);
+[iLf iRf]=cwin3(blackStim, testim , cf, rc00, window2, window1);
 
 power_dispL = 14;
 power_dispR = 14.4;
@@ -62,7 +65,7 @@ try
     while opt_chk==0
         [ keyIsDown, keyTime, keyCode ] = KbCheck;
         if keyIsDown
-            if keyCode(KbName('RightArrow')) | keyCode(KbName('6'))
+            if keyCode(KbName('RightArrow')) || keyCode(KbName('6'))
                 if ey(1)=='R'
                     power_dispR=power_dispR+adjustIncrement;
                 elseif ey(1)=='L'
@@ -72,7 +75,7 @@ try
                     power_dispL=power_dispL+adjustIncrement;
                 end
                 %end
-            elseif keyCode(KbName('LeftArrow')) | keyCode(KbName('4'))
+            elseif keyCode(KbName('LeftArrow')) || keyCode(KbName('4'))
                 if ey(1)=='R'
                     power_dispR=power_dispR-adjustIncrement;
                 elseif ey(1)=='L'
@@ -81,18 +84,34 @@ try
                     power_dispR=power_dispR-adjustIncrement;
                     power_dispL=power_dispL-adjustIncrement;
                 end
-            elseif ~bTexture & (keyCode(KbName('DownArrow')) | keyCode(KbName('5')))
-                wordInd = randsample(1:size(wordList,1),1);
-                imB = AFCwordStimImproved(wordList(wordInd,:),[320 320],stimColor);
-                imB(imB>0) = 255;
-                imB(:,:,clrInd) = circshift(squeeze(imB(:,:,clrInd)),-15,1);           
-                imBmono = squeeze(imB(:,:,clrInd));
-                imBmono = imresize(imBmono,[480 480]);
-                imB = zeros([size(imBmono) 3]);
-                imB(:,:,clrInd) = imBmono;
-                testim = flipud(imB);   
-                display(['Word is ' wordList(wordInd,:)]);
-                [iLf iRf]=cwin3(imread("black.png"), testim , cf, rc00, window2, window1);
+            elseif (keyCode(KbName('DownArrow')) || keyCode(KbName('2')))
+                frqCpd = frqCpd-1;
+                if frqCpd<=frqCpdMin
+                    frqCpd = frqCpdMin;
+                end
+                testim = ARC2Dgabor(smpPos(sizePixXY(1),sizePixXY(2)),[],0,0,frqCpd,ampl,orntDeg,phsDeg,sigmaX,sigmaY,rgb,1,1,0,0);
+                testim(:,:,1) = testim(:,:,1).^(1/2.4);
+                testim(:,:,3) = testim(:,:,3).^(1/2.2);    
+                testim = testim.*255;
+                [iLf iRf]=cwin3(blackStim, testim , cf, rc00, window2, window1);                
+                pause(0.25);
+                cwin3(blackStim, blackStim, cf, rc00, window1, window2);                
+            elseif (keyCode(KbName('UpArrow')) || keyCode(KbName('8')))
+                frqCpd = frqCpd+1;
+                if frqCpd>=frqCpdMax
+                    frqCpd = frqCpdMax;
+                end
+                testim = ARC2Dgabor(smpPos(sizePixXY(1),sizePixXY(2)),[],0,0,frqCpd,ampl,orntDeg,phsDeg,sigmaX,sigmaY,rgb,1,1,0,0);
+                testim(:,:,1) = testim(:,:,1).^(1/2.4);
+                testim(:,:,3) = testim(:,:,3).^(1/2.2);    
+                testim = testim.*255;
+                [iLf iRf]=cwin3(blackStim, testim , cf, rc00, window2, window1);                
+                pause(0.25);
+                cwin3(blackStim, blackStim, cf, rc00, window1, window2);
+            elseif keyCode(KbName('5'))
+                [iLf iRf]=cwin3(blackStim, testim , cf, rc00, window2, window1);                
+                pause(0.25);
+                cwin3(blackStim, blackStim, cf, rc00, window1, window2);                
             elseif keyCode(KbName('Return')) %| keyCode(KbName('Return'))
                 opt_chk=1;    
             else
@@ -149,6 +168,6 @@ end
 ListenChar(0);
 
 KbWait([], 2);
-[iLf iRf]=cwin3(imread("black.png"), imread("black.png") , cf, rc00, window2, window1);
+[iLf iRf]=cwin3(blackStim, blackStim , cf, rc00, window2, window1);
 
 sca   
