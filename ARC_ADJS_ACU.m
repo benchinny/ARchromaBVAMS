@@ -9,7 +9,7 @@ power_dispR_max = 16.4;
 adjustIncrement = 0.5;
 frqCpdMin = 5;
 frqCpdMax = 30;
-stimColor = 'blue';
+stimColor = 'red';
 
 %%input a output b
 cf=ones(3,2);
@@ -41,7 +41,17 @@ testim(:,:,3) = testim(:,:,3).^(1/2.2);
 testim = testim.*255;
 blackStim = imread("black.png");
 
-[iLf iRf]=cwin3(blackStim, testim , cf, rc00, window2, window1);
+imB = AFCwordStimImproved('car',[320 320],stimColor);
+imB(imB>0) = 255;
+imB(:,:,1) = circshift(squeeze(imB(:,:,1)),-15,1);           
+imBmono = squeeze(imB(:,:,1));
+imBmono = imresize(imBmono,[480 480]);
+imB = zeros([size(imBmono) 3]);
+imB(:,:,1) = imBmono.*(rgb(1).^(1/2.4));
+imB(:,:,3) = imBmono.*(rgb(3).^(1/2.2));
+fixStm = flipud(imB);   
+
+[iLf iRf]=cwin3(blackStim, fixStm , cf, rc00, window2, window1);
 
 power_dispL = 14;
 power_dispR = 14.4;
@@ -95,7 +105,8 @@ try
                 testim = testim.*255;
                 [iLf iRf]=cwin3(blackStim, testim , cf, rc00, window2, window1);                
                 pause(0.25);
-                cwin3(blackStim, blackStim, cf, rc00, window1, window2);                
+                cwin3(blackStim, blackStim, cf, rc00, window1, window2);        
+                [iLf iRf]=cwin3(blackStim, fixStm , cf, rc00, window2, window1);
             elseif (keyCode(KbName('UpArrow')) || keyCode(KbName('8')))
                 frqCpd = frqCpd+1;
                 if frqCpd>=frqCpdMax
@@ -108,10 +119,12 @@ try
                 [iLf iRf]=cwin3(blackStim, testim , cf, rc00, window2, window1);                
                 pause(0.25);
                 cwin3(blackStim, blackStim, cf, rc00, window1, window2);
+                [iLf iRf]=cwin3(blackStim, fixStm , cf, rc00, window2, window1);
             elseif keyCode(KbName('5'))
                 [iLf iRf]=cwin3(blackStim, testim , cf, rc00, window2, window1);                
                 pause(0.25);
-                cwin3(blackStim, blackStim, cf, rc00, window1, window2);                
+                cwin3(blackStim, blackStim, cf, rc00, window1, window2);              
+                [iLf iRf]=cwin3(blackStim, fixStm , cf, rc00, window2, window1);
             elseif keyCode(KbName('Return')) %| keyCode(KbName('Return'))
                 opt_chk=1;    
             else
@@ -133,7 +146,7 @@ try
             opto(name_map('l_disp')).control.setFocalPower(power_dispL);
             opto(name_map('r_disp')).control.setFocalPower(power_dispR);
             
-            fprintf('Display power: L = %f  , R = %f , Optical Distance R = %f D \n',power_dispL, power_dispR, 0.8.*(14.4-power_dispR));
+            fprintf('Display power: L = %f  , R = %f , Optical Distance R = %f D, Spatial freq = %f \n',power_dispL, power_dispR, 0.8.*(14.4-power_dispR),frqCpd);
 
             fprintf('\n');
         end
