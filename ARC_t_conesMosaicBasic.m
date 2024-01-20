@@ -53,17 +53,28 @@ cMosaic.setSizeToFOV(5 * sceneGet(s, 'fov'));
 %% Generate a sequence of 100 eye posistions.
 % This function creates an eye movement object (see t_fixationalEM.m) and
 % automatically generates a path for this given cone mosaic.
-cMosaic.emGenSequence(100);
+% cMosaic.emGenSequence(50);
 
 %% Compute isomerizations for each eye position.
-cMosaic.compute(oi);
+% cMosaic.compute(oi);
+emPath = cMosaic.emPositions;
+if (numel(emPath) == 2)
+    emPath = reshape(emPath, [1 2]);
+end
+padRows = max(abs(emPath(:, 2)));
+padCols = max(abs(emPath(:, 1)));
+theExpandedMosaic = cMosaic.copy();
+theExpandedMosaic.pattern = zeros(cMosaic.rows + 2 * padRows, ...
+    cMosaic.cols + 2 * padCols);
+absorptions = theExpandedMosaic.computeSingleFrame(oi, ...
+        'fullLMS', true);
 
 %% Bring up a window so that we can look at things.
 %
 % Using the pull down in the window, you can look at
 % the mosaic, the isomerizations for one fixation, or
 % the movie of fixations.
-cMosaic.window;
+% cMosaic.window;
 
 %% Plot things individually
 % Instead of using the cone mosaic window, you can call the plot function

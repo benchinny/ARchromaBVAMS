@@ -13,8 +13,8 @@ elseif strcmp(getenv("USER"),'emily')
 end
 filenames = {
                [dataDirectory 'S1007V9_AFC_RightACL0_2401181411.mat'] ...
-%                [dataDirectory 'S1007V9_AFC_RightACL0_2401181417.mat'] ...
-%                [dataDirectory 'S1007V9_AFC_RightACL0_2401181420.mat'] ...  
+%               [dataDirectory 'S1007V9_AFC_RightACL0_2401181417.mat'] ...
+%               [dataDirectory 'S1007V9_AFC_RightACL0_2401181420.mat'] ...  
              };
 
 rgb = [];
@@ -25,7 +25,7 @@ stimOrientation = [];
 
 for i = 1:length(filenames)
     load(filenames{i});
-    rgb = [rgb; AFCp.rgb];
+    rgb = [rgb; AFCp.rgb(1:length(AFCp.rspAcu),:)];
     meanFocstmOptDst = [meanFocstmOptDst; AFCp.meanFocstmOptDst];
     frqCpd = [frqCpd; AFCp.frqCpd((1:length(AFCp.rspAcu)))];
     rspAcu = [rspAcu; AFCp.rspAcu'];
