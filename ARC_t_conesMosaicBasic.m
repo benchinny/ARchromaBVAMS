@@ -37,6 +37,18 @@ vcAddObject(s);
 oi = oiCreate;
 oi = oiCompute(oi, s);
 
+% Visualize image at each wavelength
+oi = oiCrop(oi, [50 50 300 300]);
+oiWindow(oi);
+
+roi = [];
+wList = [460 524 588 620];  % nm
+gSpacing = 40;            % microns
+for ww = 1:length(wList)
+    thisWave = wList(ww); 
+    oiPlot(oi, 'irradiance image wave grid', roi, thisWave);
+end
+
 %% Build a default cone mosaic and compute isomerizatoins
 
 % Create the coneMosaic object
