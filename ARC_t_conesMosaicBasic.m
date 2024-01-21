@@ -42,12 +42,15 @@ oi = oiCrop(oi, [50 50 300 300]);
 oiWindow(oi);
 
 roi = [];
-wList = [460 524 588 620];  % nm
+wList = [460 524 580 620];  % nm
 gSpacing = 40;            % microns
 for ww = 1:length(wList)
     thisWave = wList(ww); 
     oiPlot(oi, 'irradiance image wave grid', roi, thisWave);
 end
+
+% figure; plot(s.spectrum.wave,squeeze(s.data.photons(160,160,:)))
+% figure; imagesc(ifftshift(ifft2(oi.optics.OTF.OTF(:,:,11)))); colormap gray
 
 %% Build a default cone mosaic and compute isomerizatoins
 
