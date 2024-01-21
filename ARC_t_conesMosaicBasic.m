@@ -17,18 +17,19 @@ ieInit;
 % First the scene
 % s = sceneCreate('rings rays');
 % s = sceneSet(s, 'fov', 1);
+nDotsI = 200;
 im2 = AFCwordStimImproved('sea',[320 320],'green');
-im2(im2>0) = 255;
+% im2(im2>0) = 255;
 % im2 = flipud(im2); 
 imPatternTmp = squeeze(im2(:,:,2));
 imPatternTmp = circshift(imPatternTmp,-15,1);
-imPattern(:,:,3) = imresize(imPatternTmp,100.*[1 1],'nearest');
-imPattern(:,:,1) = 0.56.*imresize(imPatternTmp,100.*[1 1],'nearest');
+imPattern(:,:,3) = imresize(imPatternTmp,nDotsI.*[1 1],'nearest');
+imPattern(:,:,1) = 0.56.*imresize(imPatternTmp,nDotsI.*[1 1],'nearest');
 imPattern = imPattern./255;
 
 d = displayCreate('OLED-Samsung');
 d = displaySet(d, 'name', 'my display');
-d = displaySet(d, 'dpi', 150);
+d = displaySet(d, 'dpi', 450);
 I = imPattern;
 scene = sceneFromFile(I, 'rgb', [], d);  % The display is included here
 vcAddObject(scene);
@@ -44,7 +45,7 @@ oi = oiCompute(oi, s);
 cMosaic = coneMosaic;
 
 % Set size to show about half the scene. Speeds things up.
-cMosaic.setSizeToFOV(5 * sceneGet(s, 'fov'));
+cMosaic.setSizeToFOV(2 * sceneGet(s, 'fov'));
 
 % You can see the field of view for this cone mosaic object, along with
 % other parameters, within the coneMosaic object:
@@ -68,6 +69,34 @@ theExpandedMosaic.pattern = zeros(cMosaic.rows + 2 * padRows, ...
     cMosaic.cols + 2 * padCols);
 absorptions = theExpandedMosaic.computeSingleFrame(oi, ...
         'fullLMS', true);
+
+nDbuffer = [(size(absorptions,1)-size(I,1))/2 (size(absorptions,2)-size(I,2))/2];
+figure;
+set(gcf,'Position',[325 449 1012 420]);
+subplot(1,3,1);
+imagesc(absorptions((nDbuffer(1)+1):(size(absorptions,1)-nDbuffer(1)),(nDbuffer(2)+1):(size(absorptions,2)-nDbuffer(2)),1));
+axis square;
+colormap gray;
+set(gca,'XTick',[]);
+set(gca,'YTick',[]);
+set(gca,'FontSize',15);
+title('L cones');
+subplot(1,3,2);
+imagesc(absorptions((nDbuffer(1)+1):(size(absorptions,1)-nDbuffer(1)),(nDbuffer(2)+1):(size(absorptions,2)-nDbuffer(2)),2));
+axis square;
+colormap gray;
+set(gca,'XTick',[]);
+set(gca,'YTick',[]);
+set(gca,'FontSize',15);
+title('M cones');
+subplot(1,3,3);
+imagesc(absorptions((nDbuffer(1)+1):(size(absorptions,1)-nDbuffer(1)),(nDbuffer(2)+1):(size(absorptions,2)-nDbuffer(2)),3));
+axis square;
+colormap gray;
+set(gca,'XTick',[]);
+set(gca,'YTick',[]);
+set(gca,'FontSize',15);
+title('S cones');
 
 %% Bring up a window so that we can look at things.
 %
