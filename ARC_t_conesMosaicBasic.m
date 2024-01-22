@@ -12,7 +12,13 @@
 %% Initialize and clear
 ieInit;
 
-%% Build a simple scene and oi (retinal image) for computing
+%% Build a simple scene
+
+% Setting up display properties
+d = displayCreate('OLED-Samsung');
+d = displaySet(d, 'name', 'my display');
+d = displaySet(d, 'dpi', 150);
+d.dist = 2.04;
 
 % Ben's stimulus
 nDotsI = 320;
@@ -23,34 +29,65 @@ I(:,:,3) = imresize(imPatternTmp,nDotsI.*[1 1],'nearest');
 I(:,:,1) = 0.56.*imresize(imPatternTmp,nDotsI.*[1 1],'nearest');
 I = I./255;
 
-% Setting up display properties
-d = displayCreate('OLED-Samsung');
-d = displaySet(d, 'name', 'my display');
-d = displaySet(d, 'dpi', 150);
-d.dist = 2.04;
-
 % Turn image into 'scene'
 s = sceneFromFile(I, 'rgb', [], d);  % The display is included here
 vcAddObject(s);
+
+figure; 
+set(gcf,'Position',[289 428 1056 420]);
+subplot(1,3,1);
+plot(d.wave,d.spd(:,1),'r','LineWidth',1.5); hold on;
+plot(d.wave,d.spd(:,2),'g','LineWidth',1.5);
+plot(d.wave,d.spd(:,3),'b','LineWidth',1.5);
+axis square;
+formatFigure('Wavelength (\lambda)','Radiance');
+subplot(1,3,2);
+imagesc(I);
+set(gca,'XTick',[]);
+set(gca,'YTick',[]);
+axis square;
+set(gca,'FontSize',15);
+title('Original');
+subplot(1,3,3);
+plot(s.spectrum.wave,squeeze(s.data.photons(160,160,:)),'-k','LineWidth',1);
+formatFigure('Wavelength (\lambda)','Photons');
+axis square;
+
+%% oi (retinal image) for computing
 
 % Make optical image
 oi = oiCreate;
 oi = oiCompute(oi, s);
 
-% Visualize image at each wavelength
-oi = oiCrop(oi, [50 50 300 300]);
-oiWindow(oi);
+wavelengthInds = [6 21 36 51 66 81];
 
-roi = [];
-wList = [460 524 580 620];  % nm
-gSpacing = 40;            % microns
-for ww = 1:length(wList)
-    thisWave = wList(ww); 
-    oiPlot(oi, 'irradiance image wave grid', roi, thisWave);
+figure;
+set(gcf,'Position',[193 192 1012 657]);
+for i = 1:length(wavelengthInds)
+    subplot(2,3,i);
+    imagesc(ifftshift(ifft2(oi.optics.OTF.OTF(:,:,wavelengthInds(i))))); 
+    colormap gray;
+    set(gca,'XTick',[]);
+    set(gca,'XTick',[]);
+    set(gca,'FontSize',15);
+    title([num2str(oi.spectrum.wave(wavelengthInds(i))) 'nm']);
 end
 
-% figure; plot(s.spectrum.wave,squeeze(s.data.photons(160,160,:)))
-% figure; imagesc(ifftshift(ifft2(oi.optics.OTF.OTF(:,:,11)))); colormap gray
+%% crop retinal image for visualization
+
+% Visualize image at each wavelength
+oi = oiCrop(oi, [50 50 300 300]);
+
+%% visualize retinal image
+
+oiWindow(oi);
+roi = [];
+wList = [460 524 580 620];  % nm
+gSpacing = 43;            % microns
+for ww = 1:length(wList)
+    thisWave = wList(ww); 
+    oiPlot(oi, 'irradiance image wave grid', roi, thisWave, gSpacing);
+end
 
 %% Build a default cone mosaic and compute isomerizatoins
 
