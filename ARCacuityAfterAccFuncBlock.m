@@ -211,7 +211,7 @@ for k0=1:length(focStmOptDstIncrAll)
       % opto(name_map('r_disp')).control.setFocalPower(power_dispR-meanFocstmOptDstAll(k0));
       cwin3(im2R0, im2R0, cf, rc00, window1, window2);
       if mod(k0,length(focStmOptDstIncr))==1
-         pause(1.5);
+         pause(3);
       else
          pause(2);
       end
