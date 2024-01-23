@@ -17,8 +17,19 @@ ieInit;
 % Setting up display properties
 d = displayCreate('OLED-Samsung');
 d = displaySet(d, 'name', 'my display');
-d = displaySet(d, 'dpi', 150);
-d.dist = 2.04;
+d.dist = 1;
+
+bUseBVAMScal = 0;
+
+if bUseBVAMScal
+    drivePath = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/ARChroma/BVAMS_calibration_files/display calibration on August3/';
+    load([drivePath 'Right_disp_Red.mat']);
+    d.spd(:,1) = CurrentSpectrum.Spectral.emission_data;
+    load([drivePath 'Right_disp_Green.mat']);
+    d.spd(:,2) = CurrentSpectrum.Spectral.emission_data;
+    load([drivePath 'Right_disp_Blue.mat']);
+    d.spd(:,3) = CurrentSpectrum.Spectral.emission_data;
+end
 
 % Ben's stimulus
 nDotsI = 320;
