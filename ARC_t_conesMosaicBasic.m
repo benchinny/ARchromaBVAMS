@@ -12,14 +12,14 @@
 %% Initialize and clear
 ieInit;
 
-%% Build a simple scene
+%% Set up display struct
 
 % Setting up display properties
 d = displayCreate('OLED-Samsung');
 d = displaySet(d, 'name', 'my display');
-d.dist = 1;
+d.dist = 1; % simulated screen distance
 
-bUseBVAMScal = 0;
+bUseBVAMScal = 0; % if using BVAMS calibration data
 
 if bUseBVAMScal
     drivePath = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/ARChroma/BVAMS_calibration_files/display calibration on August3/';
@@ -30,6 +30,8 @@ if bUseBVAMScal
     load([drivePath 'Right_disp_Blue.mat']);
     d.spd(:,3) = CurrentSpectrum.Spectral.emission_data;
 end
+
+%% Build stimulus
 
 % Ben's stimulus
 nDotsI = 320;
@@ -42,7 +44,8 @@ I = I./255;
 
 % Turn image into 'scene'
 s = sceneFromFile(I, 'rgb', [], d);  % The display is included here
-vcAddObject(s);
+% I think this copies the struct into an object
+vcAddObject(s); 
 
 figure; 
 set(gcf,'Position',[289 428 1056 420]);
@@ -93,11 +96,23 @@ oi = oiCrop(oi, [50 50 300 300]);
 
 oiWindow(oi);
 roi = [];
-wList = [460 524 580 620];  % nm
-gSpacing = 43;            % microns
+wList = [460 524 580 620];  % list of wavelengths to examine
+% gSpacing = 43;            % microns
+
+figure;
+set(gcf,'Position',[437 359 762 566]);
+hold on;
 for ww = 1:length(wList)
-    thisWave = wList(ww); 
-    oiPlot(oi, 'irradiance image wave grid', roi, thisWave, gSpacing);
+    subplot(2,2,ww)
+    thisWave = wList(ww);
+    indThisWave = oi.spectrum.wave == thisWave;
+    % oiPlot(oi, 'irradiance image wave grid', roi, thisWave, gSpacing);
+    imagesc(oi.data.photons(:,:,indThisWave)); colormap gray;
+    axis square;
+    set(gca,'XTick',[]);
+    set(gca,'YTick',[]);
+    set(gca,'FontSize',15);
+    title([num2str(wList(ww)) 'nm']);
 end
 
 %% Build a default cone mosaic and compute isomerizatoins
