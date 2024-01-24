@@ -72,5 +72,5 @@ end
 figure;
 plot(unqFocDst.*scaleFac,PC,'ro-','MarkerFaceColor','w','LineWidth',1.5,'MarkerSize',10);
 axis square;
-ylim([0 1]);
+ylim([0.4 1]);
 formatFigure('Relative optical distance (D)','Proportion Correct');

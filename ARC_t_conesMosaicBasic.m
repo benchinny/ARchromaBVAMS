@@ -17,7 +17,7 @@ ieInit;
 % Setting up display properties
 d = displayCreate('OLED-Samsung');
 d = displaySet(d, 'name', 'my display');
-d.dist = 1; % simulated screen distance
+d = displaySet(d,'ViewingDistance',1); % simulated screen distance
 
 bUseBVAMScal = 0; % if using BVAMS calibration data
 
