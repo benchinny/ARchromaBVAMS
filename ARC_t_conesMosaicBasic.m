@@ -82,7 +82,7 @@ for i = 1:length(wavelengthInds)
     imagesc(ifftshift(ifft2(oi.optics.OTF.OTF(:,:,wavelengthInds(i))))); 
     colormap gray;
     set(gca,'XTick',[]);
-    set(gca,'XTick',[]);
+    set(gca,'YTick',[]);
     set(gca,'FontSize',15);
     title([num2str(oi.spectrum.wave(wavelengthInds(i))) 'nm']);
 end
@@ -126,11 +126,6 @@ cMosaic.setSizeToFOV(2 * sceneGet(s, 'fov'));
 % You can see the field of view for this cone mosaic object, along with
 % other parameters, within the coneMosaic object:
 % cMosaic.fov;
-
-%% Generate a sequence of 100 eye posistions.
-% This function creates an eye movement object (see t_fixationalEM.m) and
-% automatically generates a path for this given cone mosaic.
-% cMosaic.emGenSequence(50);
 
 %% Compute isomerizations for each eye position.
 
