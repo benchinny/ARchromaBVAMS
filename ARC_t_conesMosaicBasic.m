@@ -12,13 +12,26 @@
 %% Initialize and clear
 ieInit;
 
-%% Build a simple scene
+%% Set up display struct
 
 % Setting up display properties
 d = displayCreate('OLED-Samsung');
 d = displaySet(d, 'name', 'my display');
-d = displaySet(d, 'dpi', 150);
-d.dist = 2.04;
+d = displaySet(d,'ViewingDistance',1); % simulated screen distance
+
+bUseBVAMScal = 0; % if using BVAMS calibration data
+
+if bUseBVAMScal
+    drivePath = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/ARChroma/BVAMS_calibration_files/display calibration on August3/';
+    load([drivePath 'Right_disp_Red.mat']);
+    d.spd(:,1) = CurrentSpectrum.Spectral.emission_data;
+    load([drivePath 'Right_disp_Green.mat']);
+    d.spd(:,2) = CurrentSpectrum.Spectral.emission_data;
+    load([drivePath 'Right_disp_Blue.mat']);
+    d.spd(:,3) = CurrentSpectrum.Spectral.emission_data;
+end
+
+%% Build stimulus
 
 % Ben's stimulus
 nDotsI = 320;
@@ -31,7 +44,8 @@ I = I./255;
 
 % Turn image into 'scene'
 s = sceneFromFile(I, 'rgb', [], d);  % The display is included here
-vcAddObject(s);
+% I think this copies the struct into an object
+vcAddObject(s); 
 
 figure; 
 set(gcf,'Position',[289 428 1056 420]);
@@ -68,7 +82,7 @@ for i = 1:length(wavelengthInds)
     imagesc(ifftshift(ifft2(oi.optics.OTF.OTF(:,:,wavelengthInds(i))))); 
     colormap gray;
     set(gca,'XTick',[]);
-    set(gca,'XTick',[]);
+    set(gca,'YTick',[]);
     set(gca,'FontSize',15);
     title([num2str(oi.spectrum.wave(wavelengthInds(i))) 'nm']);
 end
@@ -82,11 +96,23 @@ oi = oiCrop(oi, [50 50 300 300]);
 
 oiWindow(oi);
 roi = [];
-wList = [460 524 580 620];  % nm
-gSpacing = 43;            % microns
+wList = [460 524 580 620];  % list of wavelengths to examine
+% gSpacing = 43;            % microns
+
+figure;
+set(gcf,'Position',[437 359 762 566]);
+hold on;
 for ww = 1:length(wList)
-    thisWave = wList(ww); 
-    oiPlot(oi, 'irradiance image wave grid', roi, thisWave, gSpacing);
+    subplot(2,2,ww)
+    thisWave = wList(ww);
+    indThisWave = oi.spectrum.wave == thisWave;
+    % oiPlot(oi, 'irradiance image wave grid', roi, thisWave, gSpacing);
+    imagesc(oi.data.photons(:,:,indThisWave)); colormap gray;
+    axis square;
+    set(gca,'XTick',[]);
+    set(gca,'YTick',[]);
+    set(gca,'FontSize',15);
+    title([num2str(wList(ww)) 'nm']);
 end
 
 %% Build a default cone mosaic and compute isomerizatoins
@@ -100,11 +126,6 @@ cMosaic.setSizeToFOV(2 * sceneGet(s, 'fov'));
 % You can see the field of view for this cone mosaic object, along with
 % other parameters, within the coneMosaic object:
 % cMosaic.fov;
-
-%% Generate a sequence of 100 eye posistions.
-% This function creates an eye movement object (see t_fixationalEM.m) and
-% automatically generates a path for this given cone mosaic.
-% cMosaic.emGenSequence(50);
 
 %% Compute isomerizations for each eye position.
 
