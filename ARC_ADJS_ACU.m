@@ -26,14 +26,14 @@ opto(name_map('r_disp')).control.getFocalPower.focal_power
 opto(name_map('l_disp')).control.setFocalPower(14+sr(1));%-dmnd(k0));
 opto(name_map('l_disp')).control.getFocalPower.focal_power
 
-frqCpd = 30;
+frqCpd = 5;
 sizePixXY = [256 256];
 orntDeg = -45;
 ampl = 1;
 phsDeg = 0;
 sigmaX = 0.2;
 sigmaY = 0.2;
-rgb = [0.25 0 1.00];
+rgb = [0.00 0 1.00];
 
 testim = ARC2Dgabor(smpPos(sizePixXY(1),sizePixXY(2)),[],0,0,frqCpd,ampl,orntDeg,phsDeg,sigmaX,sigmaY,rgb,1,1,0,0);
 testim(:,:,1) = testim(:,:,1).^(1/2.4);

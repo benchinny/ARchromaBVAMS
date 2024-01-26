@@ -10,19 +10,19 @@ if vsIncrement>=1
    vs = vs+1;
 end
 
-meanFocstmOptDst = [5]*1.25;
+meanFocstmOptDst = [3]*1.25;
 meanFocstmOptDst = meanFocstmOptDst(randperm(length(meanFocstmOptDst)));
 % rgb  = [0.56 0.00 1.00; ...
 %         0.56 0.00 0.00; ...
 %         0.00 0.00 1.00];
-rgb = [0.56 0 0.00];
+rgb = [0.00 0 1.00];
 indScrambleRgb = randperm(size(rgb,1));
 rgb = rgb(indScrambleRgb,:);
 
 % focStmOptDstIncr = [-0.5:0.25:0.5];
 focStmOptDstIncr = [-1.2 -0.8 -0.4 0.0 0.4 0.8 1.2];
 focStmOptDstIncr = focStmOptDstIncr.*1.25;
-trlPerLvl = 20;
+trlPerLvl = 8;
 
 % DEFAULT NO TCA CORRECTION
 LfarPower=opto(name_map('r_t_far')).control.getFocalPower.focal_power; 

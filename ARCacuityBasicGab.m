@@ -10,11 +10,11 @@ if vsIncrement>=1
    vs = vs+1;
 end
 
-meanFocstmOptDst = [2]*1.25;
+meanFocstmOptDst = [3]*1.25;
 
 rgb  = [0.00 0.00 1.00];
 
-frqCpd = [13 14 15 16 17 18];
+frqCpd = [21 19 17 15 13 11 9];
 trlPerLvl = 20;
 
 % DEFAULT NO TCA CORRECTION
