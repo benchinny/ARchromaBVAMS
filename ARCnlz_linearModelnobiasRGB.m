@@ -1,4 +1,4 @@
-function [weightsRBS1_x, weightsRBS1_y, rhoFull, rhoNoColor, rhoColor, aic, aicNoColor, weightsRBSci, trialMeans] = ARCnlz_linearModelnobias(sn,bPLOT,nBoot,bLOWLUM)
+function [weightsRBS1_x, weightsRBS1_y, rhoFull, rhoNoColor, rhoColor, aic, aicNoColor, weightsRBSci, trialMeans] = ARCnlz_linearModelnobiasRGB(sn,bPLOT,nBoot,bLOWLUM)
 
 bEXCLUDE = true;
 gammaFactorR = 2.4;
@@ -79,7 +79,7 @@ elseif sn==7
    vs = 10:14;
    excludeTrials = [];
 else
-   error('ARCnlz_linearModelnobias: unhandled subject number!');
+   error('ARCnlz_linearModelnobiasRGB: unhandled subject number!');
 end
 ey = 1; % 1 for Right eye, 2 for Binocular ');
 filePath = 'G:\My Drive\exp_bvams\code_repo\';
@@ -242,7 +242,7 @@ for i = 1:size(uniqueConditions,1)
 %       diffVec = imresize([-2/length(accContinuous) 2/length(accContinuous)],size(accContinuous),'nearest');
        diffVec = imresize([0 -4/length(accContinuous) 0 4/length(accContinuous)],size(accContinuous),'nearest');
 %        if abs(corr(accContinuous',diffVec'))<0.95
-%            error('ARCnlz_linearModelnobias: you may want to check whether the step change occurs halfway through the trial, or not!');
+%            error('ARCnlz_linearModelnobiasRGB: you may want to check whether the step change occurs halfway through the trial, or not!');
 %        end
 %        meanChangeX{i} = sum(diffVec.*x3tmp.*xScale)./xScale;
 %        meanChangeY{i} = sum(diffVec.*y3tmp.*yScale)./yScale;
