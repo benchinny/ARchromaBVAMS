@@ -2,9 +2,9 @@ function [weightsRBS1_x, weightsRBS1_y, rhoFull, rhoNoColor, rhoColor, aic, aicN
 
 bEXCLUDE = true;
 gammaFactorR = 2.4;
+gammaFactorG = 2.6;
 gammaFactorB = 2.2;
 scaleFactor = 0.8;
-bRELATIVE_LUM = 0;
 maxLumCdm2 = 0.87;
 
 if sn==11 % 'VISIT' NUMBERS
@@ -263,30 +263,27 @@ for i = 1:size(uniqueConditions,1)
 end
 
 scaleEquateRB = 4;
+scaleEquateRG = 9.6415;
 
-if bRELATIVE_LUM
-   deltaR = scaleEquateRB.*(AFCp.rgb200(:,1).^gammaFactorR)./(scaleEquateRB.*(AFCp.rgb200(:,1).^gammaFactorR) + (AFCp.rgb200(:,3).^gammaFactorB)) ...
-             - scaleEquateRB.*(AFCp.rgb100(:,1).^gammaFactorR)./(scaleEquateRB.*(AFCp.rgb100(:,1).^gammaFactorR) + (AFCp.rgb100(:,3).^gammaFactorB));
-   deltaB = (AFCp.rgb200(:,3).^gammaFactorB)./((AFCp.rgb200(:,3).^gammaFactorB) + scaleEquateRB.*(AFCp.rgb200(:,1).^gammaFactorR)) ...
-             - (AFCp.rgb100(:,3).^gammaFactorB)./((AFCp.rgb100(:,3).^gammaFactorB) + scaleEquateRB.*(AFCp.rgb100(:,1).^gammaFactorR));
-   deltaB = [];
-else
-   deltaR = scaleEquateRB.*AFCp.rgb200(:,1).^gammaFactorR - scaleEquateRB.*AFCp.rgb100(:,1).^gammaFactorR;
-   deltaB = AFCp.rgb200(:,3).^gammaFactorB - AFCp.rgb100(:,3).^gammaFactorB;
-end
+deltaR = scaleEquateRB.*AFCp.rgb200(:,1).^gammaFactorR - scaleEquateRB.*AFCp.rgb100(:,1).^gammaFactorR;
+deltaG = scaleEquateRG.*AFCp.rgb200(:,2).^gammaFactorG - scaleEquateRG.*AFCp.rgb100(:,2).^gammaFactorG;
+deltaB = AFCp.rgb200(:,3).^gammaFactorB - AFCp.rgb100(:,3).^gammaFactorB;
+
 % COMPONENTS OF LINEAR REGRESSION
 deltaS = AFCp.v00*scaleFactor;
 delta1 = ones(size(deltaR));
 deltaR = deltaR.*maxLumCdm2;
+deltaG = deltaG.*maxLumCdm2;
 deltaB = deltaB.*maxLumCdm2;
 
 % IF EXCLUDING HIGH LUMINANCE TRIALS
 lumCutoff = 2;
 if bLOWLUM
-    indLowLum = 0.4.*(scaleEquateRB.*AFCp.rgb100(:,1).^gammaFactorR + AFCp.rgb100(:,3).^gammaFactorB)<lumCutoff | ...
-                0.4.*(scaleEquateRB.*AFCp.rgb200(:,1).^gammaFactorR + AFCp.rgb200(:,3).^gammaFactorB)<lumCutoff;
+    indLowLum = 0.4.*(scaleEquateRB.*AFCp.rgb100(:,1).^gammaFactorR + scaleEquateRG.*AFCp.rgb100(:,2).^gammaFactorG + AFCp.rgb100(:,3).^gammaFactorB)<lumCutoff | ...
+                0.4.*(scaleEquateRB.*AFCp.rgb200(:,1).^gammaFactorR + scaleEquateRG.*AFCp.rgb200(:,2).^gammaFactorG + AFCp.rgb200(:,3).^gammaFactorB)<lumCutoff;
     % indLowLum = ~indLowLum;
     deltaR = deltaR(indLowLum);
+    deltaG = deltaG(indLowLum);
     deltaB = deltaB(indLowLum);
     deltaS = deltaS(indLowLum);
     meanChangeXvec = meanChangeXvec(indLowLum);
@@ -294,36 +291,27 @@ if bLOWLUM
 end
 
 % DOING THE LINEAR REGRESSION
-weightsRBS1_x = [deltaR deltaB deltaS]\(meanChangeXvec');
-weightsRBS1_y = [deltaR deltaB deltaS]\(meanChangeYvec');
+weightsRGBS1_x = [deltaR deltaG deltaB deltaS]\(meanChangeXvec');
+weightsRGBS1_y = [deltaR deltaG deltaB deltaS]\(meanChangeYvec');
 weightsS1_x = [deltaS]\(meanChangeXvec');
 weightsS1_y = [deltaS]\(meanChangeYvec');
-weightsRB_x = [deltaR deltaB]\(meanChangeXvec');
-weightsRB_y = [deltaR deltaB]\(meanChangeYvec');
+weightsRGB_x = [deltaR deltaG deltaB]\(meanChangeXvec');
+weightsRGB_y = [deltaR deltaG deltaB]\(meanChangeYvec');
 
 % BOOTSTRAPPING
 for i = 1:nBoot
    indBoot = randsample(1:length(meanChangeXvec),length(meanChangeXvec),true);
-   if bRELATIVE_LUM
-       weightsRBSboot(i,:) = [deltaR(indBoot) deltaS(indBoot)]\(meanChangeXvec(indBoot)');
-   else
-       weightsRBSboot(i,:) = [deltaR(indBoot) deltaB(indBoot) deltaS(indBoot)]\(meanChangeXvec(indBoot)');
-   end
+   weightsRGBSboot(i,:) = [deltaR(indBoot) deltaG(indBoot) deltaB(indBoot) deltaS(indBoot)]\(meanChangeXvec(indBoot)');
 end
-weightsRBSci = quantile(weightsRBSboot,[0.16 0.84]);
+weightsRGBSci = quantile(weightsRGBSboot,[0.16 0.84]);
 
 % COMPUTING CORRELATIONS BETWEEN DIFFERENT MODEL PREDICTIONS AND DATA
-rhoFull = corr([deltaR deltaB deltaS]*weightsRBS1_x,meanChangeXvec');
+rhoFull = corr([deltaR deltaG deltaB deltaS]*weightsRGBS1_x,meanChangeXvec');
 rhoNoColor = corr([deltaS]*weightsS1_x,meanChangeXvec');
-rhoColor = corr([deltaR deltaB]*weightsRB_x,meanChangeXvec');
+rhoColor = corr([deltaR deltaG deltaB]*weightsRGB_x,meanChangeXvec');
 
-if bRELATIVE_LUM
-    nParams = 3;
-    nParamsNoColor = 2;
-else
-    nParams = 4;
-    nParamsNoColor = 2;
-end
+nParams = 5;
+nParamsNoColor = 2;
 
 % COMPUTING COMPONENETS FOR AIC
 trialMeans = [deltaR deltaB deltaS]*weightsRBS1_x;
