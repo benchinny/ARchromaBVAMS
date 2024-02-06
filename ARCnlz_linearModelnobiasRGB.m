@@ -1,10 +1,10 @@
-function [weightsRBS1_x, weightsRBS1_y, rhoFull, rhoNoColor, rhoColor, aic, aicNoColor, weightsRBSci, trialMeans] = ARCnlz_linearModelnobias(sn,bPLOT,nBoot,bLOWLUM)
+function [weightsRGBS1_x, weightsRGBS1_y, rhoFull, rhoNoColor, rhoColor, aic, aicNoColor, weightsRGBSci, trialMeans] = ARCnlz_linearModelnobiasRGB(sn,bPLOT,nBoot,bLOWLUM)
 
 bEXCLUDE = true;
 gammaFactorR = 2.4;
+gammaFactorG = 2.6;
 gammaFactorB = 2.2;
 scaleFactor = 0.8;
-bRELATIVE_LUM = 0;
 maxLumCdm2 = 0.87;
 
 if sn==11 % 'VISIT' NUMBERS
@@ -79,7 +79,7 @@ elseif sn==7
    vs = 10:14;
    excludeTrials = [];
 else
-   error('ARCnlz_linearModelnobias: unhandled subject number!');
+   error('ARCnlz_linearModelnobiasRGB: unhandled subject number!');
 end
 ey = 1; % 1 for Right eye, 2 for Binocular ');
 filePath = 'G:\My Drive\exp_bvams\code_repo\';
@@ -242,7 +242,7 @@ for i = 1:size(uniqueConditions,1)
 %       diffVec = imresize([-2/length(accContinuous) 2/length(accContinuous)],size(accContinuous),'nearest');
        diffVec = imresize([0 -4/length(accContinuous) 0 4/length(accContinuous)],size(accContinuous),'nearest');
 %        if abs(corr(accContinuous',diffVec'))<0.95
-%            error('ARCnlz_linearModelnobias: you may want to check whether the step change occurs halfway through the trial, or not!');
+%            error('ARCnlz_linearModelnobiasRGB: you may want to check whether the step change occurs halfway through the trial, or not!');
 %        end
 %        meanChangeX{i} = sum(diffVec.*x3tmp.*xScale)./xScale;
 %        meanChangeY{i} = sum(diffVec.*y3tmp.*yScale)./yScale;
@@ -263,30 +263,27 @@ for i = 1:size(uniqueConditions,1)
 end
 
 scaleEquateRB = 4;
+scaleEquateRG = 9.6415;
 
-if bRELATIVE_LUM
-   deltaR = scaleEquateRB.*(AFCp.rgb200(:,1).^gammaFactorR)./(scaleEquateRB.*(AFCp.rgb200(:,1).^gammaFactorR) + (AFCp.rgb200(:,3).^gammaFactorB)) ...
-             - scaleEquateRB.*(AFCp.rgb100(:,1).^gammaFactorR)./(scaleEquateRB.*(AFCp.rgb100(:,1).^gammaFactorR) + (AFCp.rgb100(:,3).^gammaFactorB));
-   deltaB = (AFCp.rgb200(:,3).^gammaFactorB)./((AFCp.rgb200(:,3).^gammaFactorB) + scaleEquateRB.*(AFCp.rgb200(:,1).^gammaFactorR)) ...
-             - (AFCp.rgb100(:,3).^gammaFactorB)./((AFCp.rgb100(:,3).^gammaFactorB) + scaleEquateRB.*(AFCp.rgb100(:,1).^gammaFactorR));
-   deltaB = [];
-else
-   deltaR = scaleEquateRB.*AFCp.rgb200(:,1).^gammaFactorR - scaleEquateRB.*AFCp.rgb100(:,1).^gammaFactorR;
-   deltaB = AFCp.rgb200(:,3).^gammaFactorB - AFCp.rgb100(:,3).^gammaFactorB;
-end
+deltaR = scaleEquateRB.*AFCp.rgb200(:,1).^gammaFactorR - scaleEquateRB.*AFCp.rgb100(:,1).^gammaFactorR;
+deltaG = scaleEquateRG.*AFCp.rgb200(:,2).^gammaFactorG - scaleEquateRG.*AFCp.rgb100(:,2).^gammaFactorG;
+deltaB = AFCp.rgb200(:,3).^gammaFactorB - AFCp.rgb100(:,3).^gammaFactorB;
+
 % COMPONENTS OF LINEAR REGRESSION
 deltaS = AFCp.v00*scaleFactor;
 delta1 = ones(size(deltaR));
 deltaR = deltaR.*maxLumCdm2;
+deltaG = deltaG.*maxLumCdm2;
 deltaB = deltaB.*maxLumCdm2;
 
 % IF EXCLUDING HIGH LUMINANCE TRIALS
 lumCutoff = 2;
 if bLOWLUM
-    indLowLum = 0.4.*(scaleEquateRB.*AFCp.rgb100(:,1).^gammaFactorR + AFCp.rgb100(:,3).^gammaFactorB)<lumCutoff | ...
-                0.4.*(scaleEquateRB.*AFCp.rgb200(:,1).^gammaFactorR + AFCp.rgb200(:,3).^gammaFactorB)<lumCutoff;
+    indLowLum = 0.4.*(scaleEquateRB.*AFCp.rgb100(:,1).^gammaFactorR + scaleEquateRG.*AFCp.rgb100(:,2).^gammaFactorG + AFCp.rgb100(:,3).^gammaFactorB)<lumCutoff | ...
+                0.4.*(scaleEquateRB.*AFCp.rgb200(:,1).^gammaFactorR + scaleEquateRG.*AFCp.rgb200(:,2).^gammaFactorG + AFCp.rgb200(:,3).^gammaFactorB)<lumCutoff;
     % indLowLum = ~indLowLum;
     deltaR = deltaR(indLowLum);
+    deltaG = deltaG(indLowLum);
     deltaB = deltaB(indLowLum);
     deltaS = deltaS(indLowLum);
     meanChangeXvec = meanChangeXvec(indLowLum);
@@ -294,39 +291,30 @@ if bLOWLUM
 end
 
 % DOING THE LINEAR REGRESSION
-weightsRBS1_x = [deltaR deltaB deltaS]\(meanChangeXvec');
-weightsRBS1_y = [deltaR deltaB deltaS]\(meanChangeYvec');
+weightsRGBS1_x = [deltaR deltaG deltaB deltaS]\(meanChangeXvec');
+weightsRGBS1_y = [deltaR deltaG deltaB deltaS]\(meanChangeYvec');
 weightsS1_x = [deltaS]\(meanChangeXvec');
 weightsS1_y = [deltaS]\(meanChangeYvec');
-weightsRB_x = [deltaR deltaB]\(meanChangeXvec');
-weightsRB_y = [deltaR deltaB]\(meanChangeYvec');
+weightsRGB_x = [deltaR deltaG deltaB]\(meanChangeXvec');
+weightsRGB_y = [deltaR deltaG deltaB]\(meanChangeYvec');
 
 % BOOTSTRAPPING
 for i = 1:nBoot
    indBoot = randsample(1:length(meanChangeXvec),length(meanChangeXvec),true);
-   if bRELATIVE_LUM
-       weightsRBSboot(i,:) = [deltaR(indBoot) deltaS(indBoot)]\(meanChangeXvec(indBoot)');
-   else
-       weightsRBSboot(i,:) = [deltaR(indBoot) deltaB(indBoot) deltaS(indBoot)]\(meanChangeXvec(indBoot)');
-   end
+   weightsRGBSboot(i,:) = [deltaR(indBoot) deltaG(indBoot) deltaB(indBoot) deltaS(indBoot)]\(meanChangeXvec(indBoot)');
 end
-weightsRBSci = quantile(weightsRBSboot,[0.16 0.84]);
+weightsRGBSci = quantile(weightsRGBSboot,[0.16 0.84]);
 
 % COMPUTING CORRELATIONS BETWEEN DIFFERENT MODEL PREDICTIONS AND DATA
-rhoFull = corr([deltaR deltaB deltaS]*weightsRBS1_x,meanChangeXvec');
+rhoFull = corr([deltaR deltaG deltaB deltaS]*weightsRGBS1_x,meanChangeXvec');
 rhoNoColor = corr([deltaS]*weightsS1_x,meanChangeXvec');
-rhoColor = corr([deltaR deltaB]*weightsRB_x,meanChangeXvec');
+rhoColor = corr([deltaR deltaG deltaB]*weightsRGB_x,meanChangeXvec');
 
-if bRELATIVE_LUM
-    nParams = 3;
-    nParamsNoColor = 2;
-else
-    nParams = 4;
-    nParamsNoColor = 2;
-end
+nParams = 5;
+nParamsNoColor = 2;
 
-% COMPUTING COMPONENETS FOR AIC
-trialMeans = [deltaR deltaB deltaS]*weightsRBS1_x;
+% COMPUTING COMPONENTS FOR AIC
+trialMeans = [deltaR deltaG deltaB deltaS]*weightsRGBS1_x;
 errorIndividual = meanChangeXvec' - trialMeans;
 for i = 1:100
    [stdTmp(i),LLtmp(i)] = ARCfitStdGauss(errorIndividual);
@@ -348,44 +336,30 @@ LLnoColor = sum(log(normpdf(meanChangeXvec',trialMeansNoColor,estResidualStdNoCo
 aicNoColor = 2*nParamsNoColor-2*LLnoColor;
 
 % FOR COMPARING MANUAL AIC COMPUTATION WITH BUILT-IN MATLAB FUNCTION
-if bRELATIVE_LUM
-    % put data into table in prep for running built in matlab models
-    tbl = table(deltaR,deltaS,meanChangeXvec','VariableNames',{'deltaR','deltaS','resp'});
-    
-    % fit two linear mixture models to data, one with color and one
-    % without, run model comparison
-    lme_nocolor = fitlme(tbl,'resp~-1+deltaS');
-    lme = fitlme(tbl,'resp~-1+deltaS+deltaR');
-    compare(lme,lme_nocolor);
-    
+% put data into table in prep for running built in matlab models
+tbl = table(deltaR,deltaB,deltaS,meanChangeXvec','VariableNames',{'deltaR','deltaB','deltaS','resp'});
+
+% fit two linear mixture models to data, one with color and one
+% without, run model comparison
+lme_nocolor = fitlme(tbl,'resp~-1+deltaS');
+lme = fitlme(tbl,'resp~-1+deltaS+deltaB+deltaR');
+compare(lme,lme_nocolor);
+
 %    aic = 2*lme.NumPredictors - 2*lme.LogLikelihood;
 %    aicNoColor = 2*lme_nocolor.NumPredictors - 2*lme_nocolor.LogLikelihood;
-else
-    % put data into table in prep for running built in matlab models
-    tbl = table(deltaR,deltaB,deltaS,meanChangeXvec','VariableNames',{'deltaR','deltaB','deltaS','resp'});
-    
-    % fit two linear mixture models to data, one with color and one
-    % without, run model comparison
-    lme_nocolor = fitlme(tbl,'resp~-1+deltaS');
-    lme = fitlme(tbl,'resp~-1+deltaS+deltaB+deltaR');
-    compare(lme,lme_nocolor);
-    
-%    aic = 2*lme.NumPredictors - 2*lme.LogLikelihood;
-%    aicNoColor = 2*lme_nocolor.NumPredictors - 2*lme_nocolor.LogLikelihood;
-end
 
 if bPLOT
     figure;
     set(gcf,'Position',[189 395 1280 420]);
-    subplot(1,3,1);
+    subplot(1,2,1);
 %    plot([deltaR deltaB deltaS]*weightsRBS1_x,meanChangeXvec,'ko','LineWidth',1);
-    predictionTmp = [deltaR deltaB deltaS]*weightsRBS1_x;
+    predictionTmp = [deltaR deltaG deltaB deltaS]*weightsRGBS1_x;
     hold on;
     for i = 1:length(predictionTmp)
         deltaRtmp = (1/maxLumCdm2)*deltaR(i);
+        deltaGtmp = (1/maxLumCdm2)*deltaG(i);
         deltaBtmp = (1/maxLumCdm2)*deltaB(i);
         RBratio = 0.25.*(deltaRtmp-deltaBtmp+2);
-        RBratio
         plot(predictionTmp(i),meanChangeXvec(i),'o','LineWidth',1,'Color',[RBratio 0 1-RBratio],'MarkerFaceColor',[RBratio 0 1-RBratio]);
         % plot(predictionTmp(i),meanChangeXvec(i),'o','LineWidth',1,'Color','k','MarkerFaceColor','w');
     end    
@@ -398,36 +372,31 @@ if bPLOT
     title(['Correlation = ' num2str(rhoFull,3)]);
     axis square;
     
-    subplot(1,3,2);
-    plot([deltaR deltaB deltaS]*weightsRBS1_y,meanChangeYvec,'ko','LineWidth',1);
-    xlim([-2 2]);
-    ylim([-2 2]);
-    set(gca,'FontSize',15);
-    xlabel('Prediction \DeltaD');
-    ylabel('Measured \DeltaD');
-    axis square;
+    % subplot(1,3,2);
+    % plot([deltaR deltaG deltaB deltaS]*weightsRGBS1_y,meanChangeYvec,'ko','LineWidth',1);
+    % xlim([-2 2]);
+    % ylim([-2 2]);
+    % set(gca,'FontSize',15);
+    % xlabel('Prediction \DeltaD');
+    % ylabel('Measured \DeltaD');
+    % axis square;
     
-    subplot(1,3,3);
+    subplot(1,2,2);
     hold on;
-    bar(1,weightsRBS1_x(1),'FaceColor','r');
-    if ~bRELATIVE_LUM
-       bar(2,weightsRBS1_x(2),'FaceColor','b');
-       bar(3,weightsRBS1_x(3),'FaceColor','k');
-       set(gca,'XTick',[1 2 3]);
-       set(gca,'XTickLabel',{'Red' 'Blue' 'D_{opt}'});
-    else
-       bar(2,weightsRBS1_x(2),'FaceColor','k');
-       set(gca,'XTick',[1 2]);
-       set(gca,'XTickLabel',{'R-B ratio' 'D_{opt}'}); 
-    end
+    bar(1,weightsRGBS1_x(1),'FaceColor','r');
+    bar(2,weightsRGBS1_x(2),'FaceColor','g');
+    bar(3,weightsRGBS1_x(3),'FaceColor','b');
+    bar(4,weightsRGBS1_x(4),'FaceColor','k');
+    set(gca,'XTick',[1 2 3 4]);
+    set(gca,'XTickLabel',{'Red' 'Green' 'Blue' 'D_{opt}'});
     title('Weights');
     set(gca,'FontSize',20);
-    ylim(max(weightsRBS1_x).*[-1.2 1.2]);
+    ylim(max(weightsRGBS1_x).*[-1.2 1.2]);
     axis square;
     
     figure;
     set(gcf,'Position',[189 395 1280 420]);
-    subplot(1,3,1);
+    subplot(1,2,1);
     % plot([deltaS]*weightsS1_x,meanChangeXvec,'ko','LineWidth',1);
     predictionTmp = [deltaS]*weightsS1_x;
     hold on;
@@ -448,16 +417,16 @@ if bPLOT
     title(['Correlation = ' num2str(rhoNoColor,3)]);
     axis square;
     
-    subplot(1,3,2);
-    plot([deltaS]*weightsS1_y,meanChangeYvec,'ko','LineWidth',1);
-    xlim([-2 2]);
-    ylim([-2 2]);
-    set(gca,'FontSize',15);
-    xlabel('Prediction \DeltaD');
-    ylabel('Measured \DeltaD');
-    axis square;
+    % subplot(1,3,2);
+    % plot([deltaS]*weightsS1_y,meanChangeYvec,'ko','LineWidth',1);
+    % xlim([-2 2]);
+    % ylim([-2 2]);
+    % set(gca,'FontSize',15);
+    % xlabel('Prediction \DeltaD');
+    % ylabel('Measured \DeltaD');
+    % axis square;
     
-    subplot(1,3,3);
+    subplot(1,2,2);
     hold on;
     bar(1,weightsS1_x(1),'FaceColor','k');
     set(gca,'XTick',[1 2]);
@@ -469,38 +438,32 @@ if bPLOT
     
     figure;
     set(gcf,'Position',[189 395 1280 420]);
-    subplot(1,3,1);
-    plot([deltaR deltaB]*weightsRB_x,meanChangeXvec,'ko','LineWidth',1);
+    subplot(1,2,1);
+    plot([deltaR deltaG deltaB]*weightsRGB_x,meanChangeXvec,'ko','LineWidth',1);
     xlim([-2 2]);
     ylim([-2 2]);
     set(gca,'FontSize',15);
     xlabel('Prediction \DeltaD');
     ylabel('Measured \DeltaD');
-    title(['Correlation = ' num2str(corr([deltaR deltaB]*weightsRB_x,meanChangeXvec'),3)]);
+    title(['Correlation = ' num2str(corr([deltaR deltaG deltaB]*weightsRGB_x,meanChangeXvec'),3)]);
     axis square;
     
-    subplot(1,3,2);
-    plot([deltaR deltaB]*weightsRB_y,meanChangeYvec,'ko','LineWidth',1);
-    xlim([-2 2]);
-    ylim([-2 2]);
-    set(gca,'FontSize',15);
-    xlabel('Prediction \DeltaD');
-    ylabel('Measured \DeltaD');
-    axis square;
+    % subplot(1,3,2);
+    % plot([deltaR deltaG deltaB]*weightsRGB_y,meanChangeYvec,'ko','LineWidth',1);
+    % xlim([-2 2]);
+    % ylim([-2 2]);
+    % set(gca,'FontSize',15);
+    % xlabel('Prediction \DeltaD');
+    % ylabel('Measured \DeltaD');
+    % axis square;
     
-    subplot(1,3,3);
+    subplot(1,2,2);
     hold on;
-    if ~bRELATIVE_LUM    
-        bar(1,weightsRB_x(1),'FaceColor','r');
-        bar(2,weightsRB_x(2),'FaceColor','b');
-        set(gca,'XTick',[1 2]);
-        set(gca,'XTickLabel',{'R' 'B'});
-    else
-        bar(1,weightsRB_x(1),'FaceColor','r');
-        set(gca,'XTick',[1]);
-        set(gca,'XTickLabel',{'R'});
-    end
-    
+    bar(1,weightsRGB_x(1),'FaceColor','r');
+    bar(2,weightsRGB_x(2),'FaceColor','g');
+    bar(3,weightsRGB_x(3),'FaceColor','b');
+    set(gca,'XTick',[1 2 3]);
+    set(gca,'XTickLabel',{'R' 'G' 'B'});
     title('Weights');
     set(gca,'FontSize',20);
 %    ylim(max(weightsRB_x).*[-1.2 1.2]);
