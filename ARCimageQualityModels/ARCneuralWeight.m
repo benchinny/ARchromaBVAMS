@@ -8,7 +8,7 @@ d = displayCreate('OLED-Samsung');
 d = displaySet(d, 'name', 'my display');
 d = displaySet(d,'ViewingDistance',1); % simulated screen distance
 
-bUseBVAMScal = 0; % if using BVAMS calibration data
+bUseBVAMScal = 1; % if using BVAMS calibration data
 
 if bUseBVAMScal
     drivePath = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/ARChroma/BVAMS_calibration_files/display calibration on August3/';
@@ -75,7 +75,7 @@ CSF2d = 0.04992*(1+5.9375*df).*exp(-0.114*df.^1.1);
 % inverse Fourier transform of 2D CSF
 N = ifftshift(ifft2(fftshift(CSF2d)));
 
-Dall = -1:0.1:1;
+Dall = -0.4:0.1:1.4;
 
 for i = 1:length(Dall)
 
@@ -90,6 +90,13 @@ for i = 1:length(Dall)
     polyPSF = sum(polyPSF,3);
     vsx(i) = sum(sum(real(N).*polyPSF));
 end
+
+figure; 
+plot(humanWaveDefocusInvert(-Dall),vsx./max(vsx),'k-','LineWidth',1);
+axis square;
+set(gca,'FontSize',15);
+xlabel('Wavelength in focus');
+ylabel('Visual Strehl ratio');
 % ind = 21; % examine at particular wavelength index
 % testWave = oi.optics.OTF.wave(ind);
 % testOTF = fftshift(oi.optics.OTF.OTF(:,:,ind));
