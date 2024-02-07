@@ -1,7 +1,7 @@
 %% Initialize and clear
 ieInit;
 
-%% Set up display struct
+%% Set up display struct and build Ben's stimulus
 
 % Setting up display properties
 d = displayCreate('OLED-Samsung');
@@ -19,8 +19,6 @@ if bUseBVAMScal
     load([drivePath 'Right_disp_Blue.mat']);
     d.spd(:,3) = CurrentSpectrum.Spectral.emission_data;
 end
-
-%% Build stimulus
 
 % Ben's stimulus
 nDotsI = 320;
@@ -56,7 +54,7 @@ plot(s.spectrum.wave,squeeze(s.data.photons(160,160,:)),'-k','LineWidth',1);
 formatFigure('Wavelength (\lambda)','Photons');
 axis square;
 
-%% MAKING EXAMPLE OPTICS
+%% Computing visual Strehl ratio
 
 S = [380 4 101]; % weird convention used by Brainard lab for defining wavelengths
 load T_xyz1931; % load color matching functions
@@ -75,7 +73,7 @@ CSF2d = 0.04992*(1+5.9375*df).*exp(-0.114*df.^1.1);
 % inverse Fourier transform of 2D CSF
 N = ifftshift(ifft2(fftshift(CSF2d)));
 
-Dall = -0.4:0.1:1.4;
+Dall = -0.4:0.1:1.4; % defocus values to look at
 
 for i = 1:length(Dall)
 
@@ -84,7 +82,9 @@ for i = 1:length(Dall)
     polyPSF = [];
     
     for ind = 1:length(wave)
-        polyPSF(:,:,ind) = ifftshift(ifft2(oi.optics.OTF.OTF(:,:,ind))).*(s.data.photons(160,160,ind)./max(s.data.photons(:))).*T_sensorXYZ(2,ind);
+        polyPSF(:,:,ind) = ifftshift(ifft2(oi.optics.OTF.OTF(:,:,ind))).* ...
+                          (s.data.photons(160,160,ind)./max(s.data.photons(:))).* ...
+                          T_sensorXYZ(2,ind);
     end
     
     polyPSF = sum(polyPSF,3);
@@ -101,6 +101,36 @@ ylabel('Visual Strehl ratio');
 % testWave = oi.optics.OTF.wave(ind);
 % testOTF = fftshift(oi.optics.OTF.OTF(:,:,ind));
 % testPSF = ifftshift(ifft2(oi.optics.OTF.OTF(:,:,ind)));
+
+%% Turning original stimulus into luminance image
+
+lumImgOrig = zeros(size(s.data.photons,1),size(s.data.photons,2));
+for j = 1:length(wave)
+    lumImgOrig = lumImgOrig+s.data.photons(:,:,j).*T_sensorXYZ(2,j);
+end
+
+%% Computing peak correlation for different wavelengths in focus
+
+peakCorr = [];
+
+for i = 1:length(Dall)
+    oi = oiCreateARC('human',wave,Dall(i)); % create optics
+    oi = oiCompute(oi, s);
+    lumImg = zeros(size(oi.data.photons,1),size(oi.data.photons,2));
+    for j = 1:length(wave)
+       lumImg = lumImg+oi.data.photons(:,:,j).*T_sensorXYZ(2,j);
+    end
+    peakCorr(i) = max(max(xcorr2(lumImgOrig,lumImg)));
+end
+
+%% Plotting peak correlation with wavelength in focus
+
+figure; 
+plot(humanWaveDefocusInvert(-Dall),peakCorr./max(peakCorr),'k-','LineWidth',1);
+axis square;
+set(gca,'FontSize',15);
+xlabel('Wavelength in focus');
+ylabel('Peak correlation');
 
 %% MAKING 1D CSF EQUATION
 
