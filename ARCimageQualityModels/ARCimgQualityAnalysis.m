@@ -74,6 +74,7 @@ CSF2d = 0.04992*(1+5.9375*df).*exp(-0.114*df.^1.1);
 N = ifftshift(ifft2(fftshift(CSF2d)));
 
 Dall = -0.4:0.1:1.4; % defocus values to look at
+peakPSF = [];
 
 for i = 1:length(Dall)
 
@@ -88,15 +89,18 @@ for i = 1:length(Dall)
     end
     
     polyPSF = sum(polyPSF,3);
-    vsx(i) = sum(sum(real(N).*polyPSF));
+    peakPSF(i) = max(max(polyPSF));
+    vsx(i) = sum(sum(N.*polyPSF));
 end
 
 figure; 
-plot(humanWaveDefocusInvert(-Dall),vsx./max(vsx),'k-','LineWidth',1);
+plot(humanWaveDefocusInvert(-Dall),vsx./max(vsx),'k-','LineWidth',1); hold on;
+plot(humanWaveDefocusInvert(-Dall),peakPSF./max(peakPSF),'k--','LineWidth',1);
+legend('Visual Strehl','Strehl');
 axis square;
 set(gca,'FontSize',15);
 xlabel('Wavelength in focus');
-ylabel('Visual Strehl ratio');
+ylabel('Ratio');
 % ind = 21; % examine at particular wavelength index
 % testWave = oi.optics.OTF.wave(ind);
 % testOTF = fftshift(oi.optics.OTF.OTF(:,:,ind));
@@ -115,11 +119,12 @@ peakCorr = [];
 
 for i = 1:length(Dall)
     oi = oiCreateARC('human',wave,Dall(i)); % create optics
-    oi = oiCompute(oi, s);
+    oi = oiCompute(oi, s); % compute optical image of stimulus
     lumImg = zeros(size(oi.data.photons,1),size(oi.data.photons,2));
     for j = 1:length(wave)
        lumImg = lumImg+oi.data.photons(:,:,j).*T_sensorXYZ(2,j);
     end
+    lumImg = lumImg(41:360,41:360);
     peakCorr(i) = max(max(xcorr2(lumImgOrig,lumImg)));
 end
 
