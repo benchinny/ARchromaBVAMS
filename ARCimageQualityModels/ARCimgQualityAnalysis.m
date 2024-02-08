@@ -29,6 +29,11 @@ I(:,:,3) = imresize(imPatternTmp,nDotsI.*[1 1],'nearest');
 I(:,:,1) = 0.56.*imresize(imPatternTmp,nDotsI.*[1 1],'nearest');
 I = I./255;
 
+% acuStimOrig1 = ARC2Dgabor(smpPos(256,256),[],0,0,24,1,-15,0,0.2,0.2,[0.25 0 0],1,1,0,1);
+% acuStimOrig1(:,:,1) = acuStimOrig1(:,:,1).^(1/2.4);
+% acuStimOrig1(:,:,3) = acuStimOrig1(:,:,3).^(1/2.6);
+% I = acuStimOrig1;
+
 % Turn image into 'scene'
 s = sceneFromFile(I, 'rgb', [], d);  % The display is included here
 % I think this copies the struct into an object
@@ -127,6 +132,7 @@ for i = 1:length(Dall2)
        lumImg = lumImg+oi.data.photons(:,:,j).*T_sensorXYZ(2,j);
     end
     lumImg = lumImg(41:360,41:360);
+    % lumImg = lumImg(33:288,33:288);
     peakCorr(i) = max(max(xcorr2(lumImgOrig,lumImg)));
     subplot(1,1,1);
     imagesc(lumImg); axis square; colormap gray;
