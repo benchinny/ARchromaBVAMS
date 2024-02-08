@@ -116,9 +116,11 @@ end
 %% Computing peak correlation for different wavelengths in focus
 
 peakCorr = [];
+Dall2 = fliplr(Dall);
 
-for i = 1:length(Dall)
-    oi = oiCreateARC('human',wave,Dall(i)); % create optics
+figure;
+for i = 1:length(Dall2)
+    oi = oiCreateARC('human',wave,Dall2(i)); % create optics
     oi = oiCompute(oi, s); % compute optical image of stimulus
     lumImg = zeros(size(oi.data.photons,1),size(oi.data.photons,2));
     for j = 1:length(wave)
@@ -126,12 +128,16 @@ for i = 1:length(Dall)
     end
     lumImg = lumImg(41:360,41:360);
     peakCorr(i) = max(max(xcorr2(lumImgOrig,lumImg)));
+    subplot(1,1,1);
+    imagesc(lumImg); axis square; colormap gray;
+    title(['wavelength in focus: ' num2str(round(humanWaveDefocusInvert(-Dall2(i)))) 'nm']);
+    pause;
 end
 
 %% Plotting peak correlation with wavelength in focus
 
 figure; 
-plot(humanWaveDefocusInvert(-Dall),peakCorr./max(peakCorr),'k-','LineWidth',1);
+plot(humanWaveDefocusInvert(-Dall2),peakCorr./max(peakCorr),'k-','LineWidth',1);
 axis square;
 set(gca,'FontSize',15);
 xlabel('Wavelength in focus');
