@@ -10,12 +10,12 @@ if vsIncrement>=1
    vs = vs+1;
 end
 
-meanFocstmOptDst = [3]*1.25;
+meanFocstmOptDst = [4]*1.25;
 meanFocstmOptDst = meanFocstmOptDst(randperm(length(meanFocstmOptDst)));
 % rgb  = [0.56 0.00 1.00; ...
 %         0.56 0.00 0.00; ...
 %         0.00 0.00 1.00];
-rgb = [0.00 0 1.00];
+rgb = [0.56 0 1.00];
 indScrambleRgb = randperm(size(rgb,1));
 rgb = rgb(indScrambleRgb,:);
 
@@ -68,7 +68,7 @@ im4 = flipud(im4);
 imPatternTmp = squeeze(im4(:,:,2));
 imPatternTmp = circshift(imPatternTmp,15,1);
 imPattern(:,:,4) = imresize(imPatternTmp,[480 480]);
-AFCp=ARCacuityAfterAccGabFuncBlock(imPattern,rgb,meanFocstmOptDst,focStmOptDstIncr, window1, window2, trlPerLvl);    
+AFCp=ARCacuityAfterAccLCAFuncBlock(imPattern,rgb,meanFocstmOptDst,focStmOptDstIncr, window1, window2, trlPerLvl);    
 
 if sv == 1
     save(AFCfls0, 'AFCp'); 

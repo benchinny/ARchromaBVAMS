@@ -11,6 +11,8 @@ maskSize = [100 100];
 gammaR = 2.4;
 gammaG = 2.4;
 gammaB = 2.2;
+frqCpdRB = [22; 18];
+rgbAcuRB = [0.56 0 0; 0 0 1];
 
 % CAREFUL ATTEMPT TO BLOCK CONDITIONS SO EACH OPTICAL DISTANCE INCREMENT IS
 % PRESENTED ONCE PER BLOCK
@@ -40,6 +42,7 @@ rgbAll = rgbAll(indScramble,:);
 meanFocstmOptDstAll = meanFocstmOptDstAll(indScramble);
 focStmOptDstIncrAll = focStmOptDstIncrAll(indScramble);
 stimSizePixAll = stimSizePixAll(indScramble);
+indAcuRBall = [];
 
 % ADD DUMMY TRIAL RIGHT AT THE END (PECULIAR TO WAY CODE IS WRITTEN)
 rgbAll(end+1,:) = [0 0 0];
@@ -95,14 +98,16 @@ for k0=1:length(focStmOptDstIncrAll)
       else
         indImPattern = 1;
       end
+      indAcuRB = round(rand)+1;
+      indAcuRBall(k0) = indAcuRB;
       im2R0(:,:,1) = imPattern(:,:,indImPattern).*rgbAll(k0,1);
       im2R0(:,:,2) = imPattern(:,:,indImPattern).*rgbAll(k0,2);
       im2R0(:,:,3) = imPattern(:,:,indImPattern).*rgbAll(k0,3);
       blackStim = zeros(size(im2R0));
-      acuStimOrig1 = ARC2Dgabor(smpPos(256,256),[],0,0,18,1,-15,0,0.2,0.2,[rgbAll(k0,1)^gammaR rgbAll(k0,2)^gammaG rgbAll(k0,3)^gammaB],1,1,0,0);
+      acuStimOrig1 = ARC2Dgabor(smpPos(256,256),[],0,0,frqCpdRB(indAcuRB),1,-15,0,0.2,0.2,[rgbAcuRB(indAcuRB,1)^gammaR rgbAcuRB(indAcuRB,2)^gammaG rgbAcuRB(indAcuRB,3)^gammaB],1,1,0,0);
       acuStimOrig1(:,:,1) = acuStimOrig1(:,:,1).^(1/gammaR);
       acuStimOrig1(:,:,3) = acuStimOrig1(:,:,3).^(1/gammaB);
-      acuStimOrig2 = ARC2Dgabor(smpPos(256,256),[],0,0,18,1,15,0,0.2,0.2,[rgbAll(k0,1)^gammaR rgbAll(k0,2)^gammaG rgbAll(k0,3)^gammaB],1,1,0,0);
+      acuStimOrig2 = ARC2Dgabor(smpPos(256,256),[],0,0,frqCpdRB(indAcuRB),1,15,0,0.2,0.2,[rgbAcuRB(indAcuRB,1)^gammaR rgbAcuRB(indAcuRB,2)^gammaG rgbAcuRB(indAcuRB,3)^gammaB],1,1,0,0);
       acuStimOrig2(:,:,1) = acuStimOrig2(:,:,1).^(1/gammaR);
       acuStimOrig2(:,:,3) = acuStimOrig2(:,:,3).^(1/gammaB);      
       acuStimOrig(:,:,:,1) = acuStimOrig1;
@@ -224,3 +229,4 @@ AFCp.rspAcu = rspAcu;
 AFCp.stimOrientation = stimOrientation(1:end-1);
 AFCp.im2R0 = im2R0;
 AFCp.stimSizePixAll = stimSizePixAll(1:end-1);
+AFCp.indAcuRBall = indAcuRBall;
