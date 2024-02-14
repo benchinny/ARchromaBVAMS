@@ -48,9 +48,18 @@ elseif sn==25
 elseif sn==27
    vs = 5:8;
    excludeTrials = [];
+elseif sn==28
+   vs = 13:16;
+   excludeTrials = [];   
 elseif sn==29
    vs = 7:10;
-   excludeTrials = [];   
+   excludeTrials = [];
+elseif sn==30
+   vs = 9:12;
+   excludeTrials = [];         
+elseif sn==31
+   vs = 7:10;
+   excludeTrials = [];      
 elseif sn==32
    vs = 11:14;
    excludeTrials = []; 
@@ -72,6 +81,8 @@ elseif strcmp(getenv("USER"),'emily')
    dataDirectory = '/Users/emily/Library/CloudStorage/GoogleDrive-emilyacooper@gmail.com/Shared drives/ARChroma/Analysis/';
 elseif strcmp(getenv("USER"),'ben')
    dataDirectory = '/home/ben/Documents/ARchroma/Analysis/';
+elseif strcmp(getenv("USER"),'benjaminchin')
+   dataDirectory = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/ARChroma/Analysis/';   
 end
 
 % THIS JUST LOADS A FILE CONTAINING FILE NAMES OF .mat FILES CONTAINING
