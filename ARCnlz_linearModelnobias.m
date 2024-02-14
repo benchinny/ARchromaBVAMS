@@ -52,8 +52,8 @@ elseif sn==24
    vs = 13:16;
    excludeTrials = [];     
 elseif sn==25
-   vs = 6:13;
-   % vs = 10:13;
+   % vs = 6:13;
+   vs = 10:13;
    excludeTrials = [];        
 elseif sn==26
    % vs = 4:11;
@@ -63,10 +63,22 @@ elseif sn==27
    % vs = 4:11;
    vs = 9:12;
    excludeTrials = [];     
+elseif sn==28
+   % vs = 4:11;
+   vs = 17:20;
+   excludeTrials = [];              
 elseif sn==29
    % vs = 4:11;
    vs = 11:14;
    excludeTrials = [];        
+elseif sn==30
+   % vs = 4:11;
+   vs = 13:16;
+   excludeTrials = [];       
+elseif sn==31
+   % vs = 4:11;
+   vs = 11:14;
+   excludeTrials = [];          
 elseif sn==32
    % vs = 4:11;
    vs = 15:18;
@@ -316,6 +328,11 @@ weightsRBSci = quantile(weightsRBSboot,[0.16 0.84]);
 rhoFull = corr([deltaR deltaB deltaS]*weightsRBS1_x,meanChangeXvec');
 rhoNoColor = corr([deltaS]*weightsS1_x,meanChangeXvec');
 rhoColor = corr([deltaR deltaB]*weightsRB_x,meanChangeXvec');
+
+% COMPUTING CORRELATIONS BETWEEN DIFFERENT MODEL PREDICTIONS AND DATA
+% rhoFull = corr([deltaR deltaB deltaS]*weightsRBS1_y,meanChangeYvec');
+% rhoNoColor = corr([deltaS]*weightsS1_y,meanChangeYvec');
+% rhoColor = corr([deltaR deltaB]*weightsRB_y,meanChangeYvec');
 
 if bRELATIVE_LUM
     nParams = 3;
