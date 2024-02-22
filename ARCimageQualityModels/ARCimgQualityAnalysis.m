@@ -153,3 +153,12 @@ ylabel('Peak correlation');
 
 f = oi.optics.OTF.fx(31:60)./3.37; % defining frequency space
 CSF1d = 0.04992*(1+5.9375*f).*exp(-0.114*f.^1.1); % 1D CSF equation
+
+%% MAKING 1D CSF EQUATION
+
+[fx, fy] = meshgrid(smpFrq(60,202),smpFrq(60,202)); % defining frequency space
+df = sqrt(fx.^2 + fy.^2); % compute distance from origin
+CSF2d = 0.04992*(1+5.9375*df).*exp(-0.114*df.^1.1);
+% inverse Fourier transform of 2D CSF
+N = ifftshift(ifft2(fftshift(CSF2d)));
+

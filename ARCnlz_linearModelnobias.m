@@ -36,8 +36,8 @@ elseif sn==18
    % vs = [5 6];
    excludeTrials = [];     
 elseif sn==19
-   vs = 5:10;
-   % vs = [9 10];
+   % vs = 5:10;
+   vs = [9 10];
    excludeTrials = [];     
 elseif sn==21
    % vs = 1:6;

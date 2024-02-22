@@ -1,6 +1,6 @@
 %% COMPARING MEAN TRACES
 
-sn = [18 23 24 26 27 29 32 33];
+sn = [18 23 24 26 27 28 29 30 32 33];
 frmDuration = 0.033;
 % lumCutoff = [0.2 0.65; 0.65 1.1; 1.1 1.75];
 lumCutoff = [0 5];
@@ -28,7 +28,7 @@ for j = 1:size(lumCutoff,1)
         axis square;
         xlim([0 3]);
         ylim([-3 3]);
-        xlabel('Time (s)'); ylabel('Relative Power (Diopters)');     
+        xlabel('Time (s)'); ylabel('Relative Power (Diopters)'); title(['Subject ' num2str(sn(i))]);
     end
 end
 

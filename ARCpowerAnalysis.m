@@ -133,7 +133,7 @@ for i = 1:size(weightsRBSall,1)
     plot((3*(i-1)+2).*[1 1],[weightsRBSciTmp(1,2) weightsRBSciTmp(2,2)],'k-');
 %     bar(3,weightsRBSall(i,3),'FaceColor','k');
 %     plot([3 3],[weightsRBSciTmp(1,3) weightsRBSciTmp(2,3)],'k-');
-    labelsCell{i} = ['S' num2str(i)];
+    labelsCell{i} = ['S' num2str(sn(i))];
     set(gca,'FontSize',20);
     ylim(1.*[-1 1]);
     xlabel('Subject #');
