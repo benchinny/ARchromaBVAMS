@@ -84,7 +84,7 @@ legend({'Accommodative demand' 'Color'});
 % set(gca,'XTickLabel',{'1' '2' '3' '4' '5' '6' '7'});
 % legend({'Weighting' 'Switching'});
 
-sn = [18 23 24 25 26 27 28 29 30 31 32 33];
+sn = [18 23 24 26 27 28 29 30 32 33];
 rhoSwitchAll = [];
 rhoFullAll = [];
 rhoNoColorAll = [];
@@ -135,12 +135,12 @@ for i = 1:size(weightsRBSall,1)
 %     plot([3 3],[weightsRBSciTmp(1,3) weightsRBSciTmp(2,3)],'k-');
     labelsCell{i} = ['S' num2str(sn(i))];
     set(gca,'FontSize',20);
-    ylim(1.*[-1 1]);
+    ylim(1.*[-2 2]);
     xlabel('Subject #');
     ylabel('Weight');
 end
 set(gca,'XTickLabel',labelsCell);
-set(gca,'XTick',1.5:3:34.5);
+set(gca,'XTick',1.5:3:28.5);
 
 figure;
 % set(gcf,'Position',[262 314 1239 594]);
@@ -149,7 +149,7 @@ for i = 1:size(weightsRBSall,1)
     hold on;
     bar(i,weightsRBSall(i,3),'FaceColor','w','LineWidth',1);
     plot(i.*[1 1],[weightsRBSciTmp(1,3) weightsRBSciTmp(2,3)],'k-');
-    set(gca,'XTick',[1:12]);
+    set(gca,'XTick',[1:10]);
     set(gca,'XTickLabel',labelsCell);
     set(gca,'FontSize',20);
     ylim(1.*[0 1.15]);
@@ -185,12 +185,12 @@ end
 
 figure;
 hold on;
-bar(1:3:34,aicLinAll,0.3,'FaceColor','w');
+bar(1:3:28,aicLinAll,0.3,'FaceColor','w');
 % bar([2 5 8 11 14],aicSwitchAll,0.3,'FaceColor',[0.5 0.5 0.5]);
-bar(2:3:35,aicNoColorAll,0.3,'FaceColor','k');
+bar(2:3:29,aicNoColorAll,0.3,'FaceColor','k');
 set(gca,'FontSize',15);
 xlabel('Subject'); ylabel('AIC');
-set(gca,'XTick',1.5:3:34.5);
+set(gca,'XTick',1.5:3:28.5);
 set(gca,'XTickLabel',labelsCell);
 legend({'Weighting' 'No color'});
 

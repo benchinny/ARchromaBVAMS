@@ -5,7 +5,7 @@ gammaFactorR = 2.4;
 gammaFactorB = 2.2;
 scaleFactor = 0.8;
 bRELATIVE_LUM = 0;
-maxLumCdm2 = 0.87;
+maxLumCdm2 = 0.40;
 
 if sn==11 % 'VISIT' NUMBERS
    % vs = [2 3 4 5 6 7];

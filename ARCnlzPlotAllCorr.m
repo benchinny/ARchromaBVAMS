@@ -41,7 +41,8 @@ end
 
 %%
 
-maxLumCdm2 = 0.87;
+maxLumCdm2 = 0.40;
+RBratioAll = [];
 figure;
 set(gcf,'Position',[119 203 1437 718]);
 for i = 1:length(sn)
@@ -57,14 +58,14 @@ for i = 1:length(sn)
     for j = 1:length(predictionTmp)
         deltaRtmp = (1/maxLumCdm2)*deltaR(j);
         deltaBtmp = (1/maxLumCdm2)*deltaB(j);
-        RBratio = 0.25.*(deltaRtmp-deltaBtmp+2);
+        RBratio = 0.3.*(deltaRtmp-deltaBtmp+2);
         if RBratio<0
             RBratio = 0;
         end
         if RBratio>1
             RBratio = 1;
         end
-        RBratio;
+        RBratioAll(j)=RBratio;
         plot(predictionTmp(j),meanChange(j),'o','LineWidth',1,'Color',[RBratio 0 1-RBratio],'MarkerFaceColor',[RBratio 0 1-RBratio]);
         % plot(predictionTmp(j),meanChangeXvec(j),'o','LineWidth',1,'Color','k','MarkerFaceColor','w');
     end    
@@ -75,5 +76,45 @@ for i = 1:length(sn)
     xlabel('Prediction \DeltaD');
     ylabel('Measured \DeltaD');
     title(['Correlation = ' num2str(rhoFullAll(i),3)]);
+    axis square;
+end
+
+%%
+
+maxLumCdm2 = 0.40;
+RBratioAll = [];
+figure;
+set(gcf,'Position',[119 203 1437 718]);
+for i = 1:length(sn)
+    subplot(2,5,i);
+%    plot([deltaR deltaB deltaS]*weightsRBS1_x,meanChangeXvec,'ko','LineWidth',1);
+    deltaR = deltaRall(:,i);
+    deltaB = deltaBall(:,i);
+    deltaS = deltaSall(:,i);
+    meanChange = meanChangeAll(:,i);
+    weightsRBS1_x = weightsRBSall(i,:);
+    predictionTmp = [deltaS]*weightsRBS1_x(3)';
+    hold on;
+    for j = 1:length(predictionTmp)
+        deltaRtmp = (1/maxLumCdm2)*deltaR(j);
+        deltaBtmp = (1/maxLumCdm2)*deltaB(j);
+        RBratio = 0.3.*(deltaRtmp-deltaBtmp+2);
+        if RBratio<0
+            RBratio = 0;
+        end
+        if RBratio>1
+            RBratio = 1;
+        end
+        RBratioAll(j)=RBratio;
+        plot(predictionTmp(j),meanChange(j),'o','LineWidth',1,'Color',[RBratio 0 1-RBratio],'MarkerFaceColor',[RBratio 0 1-RBratio]);
+        % plot(predictionTmp(j),meanChangeXvec(j),'o','LineWidth',1,'Color','k','MarkerFaceColor','w');
+    end    
+    plot([-2 2],[-2 2],'k--');
+    xlim([-2 2]);
+    ylim([-2 2]);
+    set(gca,'FontSize',15);
+    xlabel('Prediction \DeltaD');
+    ylabel('Measured \DeltaD');
+    title(['Correlation = ' num2str(rhoNoColorAll(i),3)]);
     axis square;
 end
