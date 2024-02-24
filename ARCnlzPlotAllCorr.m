@@ -73,8 +73,8 @@ for i = 1:length(sn)
     xlim([-2 2]);
     ylim([-2 2]);
     set(gca,'FontSize',15);
-    xlabel('Prediction \DeltaD');
-    ylabel('Measured \DeltaD');
+    xlabel('Prediction \DeltaA');
+    ylabel('Measured \DeltaA');
     title(['Correlation = ' num2str(rhoFullAll(i),3)]);
     axis square;
 end
@@ -113,8 +113,8 @@ for i = 1:length(sn)
     xlim([-2 2]);
     ylim([-2 2]);
     set(gca,'FontSize',15);
-    xlabel('Prediction \DeltaD');
-    ylabel('Measured \DeltaD');
+    xlabel('Prediction \DeltaA');
+    ylabel('Measured \DeltaA');
     title(['Correlation = ' num2str(rhoNoColorAll(i),3)]);
     axis square;
 end
