@@ -1,11 +1,11 @@
-function [weightsRBS1_x, weightsRBS1_y, rhoFull, rhoNoColor, rhoColor, aic, aicNoColor, weightsRBSci, trialMeans] = ARCnlz_linearModelnobias(sn,bPLOT,nBoot,bLOWLUM)
+function [weightsRBS1_x, weightsRBS1_y, rhoFull, rhoNoColor, rhoColor, aic, aicNoColor, weightsRBSci, trialMeans, meanChanges, deltaR, deltaB, deltaS] = ARCnlz_linearModelnobias(sn,bPLOT,nBoot,bLOWLUM)
 
 bEXCLUDE = true;
 gammaFactorR = 2.4;
 gammaFactorB = 2.2;
 scaleFactor = 0.8;
 bRELATIVE_LUM = 0;
-maxLumCdm2 = 0.87;
+maxLumCdm2 = 0.40;
 
 if sn==11 % 'VISIT' NUMBERS
    % vs = [2 3 4 5 6 7];
@@ -36,8 +36,8 @@ elseif sn==18
    % vs = [5 6];
    excludeTrials = [];     
 elseif sn==19
-   vs = 5:10;
-   % vs = [9 10];
+   % vs = 5:10;
+   vs = [9 10];
    excludeTrials = [];     
 elseif sn==21
    % vs = 1:6;
@@ -52,8 +52,8 @@ elseif sn==24
    vs = 13:16;
    excludeTrials = [];     
 elseif sn==25
-   vs = 6:13;
-   % vs = 10:13;
+   % vs = 6:13;
+   vs = 10:13;
    excludeTrials = [];        
 elseif sn==26
    % vs = 4:11;
@@ -63,10 +63,22 @@ elseif sn==27
    % vs = 4:11;
    vs = 9:12;
    excludeTrials = [];     
+elseif sn==28
+   % vs = 4:11;
+   vs = 17:20;
+   excludeTrials = [];              
 elseif sn==29
    % vs = 4:11;
    vs = 11:14;
    excludeTrials = [];        
+elseif sn==30
+   % vs = 4:11;
+   vs = 13:16;
+   excludeTrials = [];       
+elseif sn==31
+   % vs = 4:11;
+   vs = 11:14;
+   excludeTrials = [];          
 elseif sn==32
    % vs = 4:11;
    vs = 15:18;
@@ -292,6 +304,7 @@ if bLOWLUM
     meanChangeXvec = meanChangeXvec(indLowLum);
     meanChangeYvec = meanChangeYvec(indLowLum);
 end
+meanChanges = meanChangeXvec;
 
 % DOING THE LINEAR REGRESSION
 weightsRBS1_x = [deltaR deltaB deltaS]\(meanChangeXvec');
@@ -316,6 +329,11 @@ weightsRBSci = quantile(weightsRBSboot,[0.16 0.84]);
 rhoFull = corr([deltaR deltaB deltaS]*weightsRBS1_x,meanChangeXvec');
 rhoNoColor = corr([deltaS]*weightsS1_x,meanChangeXvec');
 rhoColor = corr([deltaR deltaB]*weightsRB_x,meanChangeXvec');
+
+% COMPUTING CORRELATIONS BETWEEN DIFFERENT MODEL PREDICTIONS AND DATA
+% rhoFull = corr([deltaR deltaB deltaS]*weightsRBS1_y,meanChangeYvec');
+% rhoNoColor = corr([deltaS]*weightsS1_y,meanChangeYvec');
+% rhoColor = corr([deltaR deltaB]*weightsRB_y,meanChangeYvec');
 
 if bRELATIVE_LUM
     nParams = 3;

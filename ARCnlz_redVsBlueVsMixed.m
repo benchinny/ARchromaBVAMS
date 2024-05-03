@@ -4,7 +4,7 @@ bEXCLUDE = true; % EXCLUDE BLINKS AND BAD TRIALS?
 bLeaveOutTransitions = true; % LEAVE OUT FIRST 50 FRAMES AND TRANSITION PERIOD OF ACCOMMODATION?
 
 if sn==11 % 'VISIT' NUMBERS
-   vs = [2 3 4 7];
+   vs = [2 3 4 5 6 7];
    excludeTrials = [];
 elseif sn==12
    vs = [3:7];
@@ -19,7 +19,7 @@ elseif sn==15
    vs = [7:10];
    excludeTrials = [49];  
 elseif sn==16
-   vs = 7:10;
+   vs = 7:12;
    excludeTrials = [];     
 elseif sn==17
    vs = 1:4;
@@ -249,7 +249,8 @@ indRedOnly = abs(rgb00(:,1)-max(unqRedValues))<0.001 & rgb00(:,2)==0 & rgb00(:,3
 indBlueOnly = rgb00(:,1)==0 & rgb00(:,2)==0 & rgb00(:,3)>0;
 indMixed = rgb00(:,1)>0 & rgb00(:,2)==0 & rgb00(:,3)>0 & ...
            maxLumCdm2.*(scaleEquateRB.*rgb00(:,1).^gammaFactorR + rgb00(:,3).^gammaFactorB)>lumCutoff(1) & ...
-           maxLumCdm2.*(scaleEquateRB.*rgb00(:,1).^gammaFactorR + rgb00(:,3).^gammaFactorB)<lumCutoff(2);
+           maxLumCdm2.*(scaleEquateRB.*rgb00(:,1).^gammaFactorR + rgb00(:,3).^gammaFactorB)<lumCutoff(2) & ...
+           rgb00(:,1)<0.62 & rgb00(:,3)>0.57;
 indMixedMoreRed = rgb00(:,1)>0 & rgb00(:,2)==0 & rgb00(:,3)>0 & ...
                   scaleEquateRB.*rgb00(:,1).^gammaFactorR > rgb00(:,3).^gammaFactorB;
 indMixedMoreBlue = rgb00(:,1)>0 & rgb00(:,2)==0 & rgb00(:,3)>0 & ...

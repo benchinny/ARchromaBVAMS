@@ -19,15 +19,30 @@ if bUseBVAMScal
     load([drivePath 'Right_disp_Blue.mat']);
     d.spd(:,3) = CurrentSpectrum.Spectral.emission_data;
 end
+d.gamma(:,1) = (d.gamma(:,1).^(1/2.2)).^2.4;
+d.gamma(:,2) = (d.gamma(:,2).^(1/2.2)).^2.6;
+d.gamma(:,3) = (d.gamma(:,3).^(1/2.2)).^2.2;
+% d.spd = ones(size(d.spd)).*0.000100;
+% d.spd(:,1) = [normpdf(380:4:780,624,10).*0.005]';
+% d.spd(:,2) = [normpdf(380:4:780,532,10).*0.005]';
+% d.spd(:,3) = [normpdf(380:4:780,488,10).*0.005]';
 
 % Ben's stimulus
 nDotsI = 320;
+rVal = 0.56;
 im = AFCwordStimImproved('sea',nDotsI.*[1 1],'green');
 imPatternTmp = squeeze(im(:,:,2));
 imPatternTmp = circshift(imPatternTmp,-15,1);
 I(:,:,3) = imresize(imPatternTmp,nDotsI.*[1 1],'nearest');
-I(:,:,1) = 0.56.*imresize(imPatternTmp,nDotsI.*[1 1],'nearest');
+I(:,:,1) = rVal.*imresize(imPatternTmp,nDotsI.*[1 1],'nearest');
 I = I./255;
+I = zeros(size(I));
+% I(159:161,159:161,1) = rVal;
+% I(159:161,159:161,2) = 0.00;
+% I(159:161,159:161,3) = 1.00;
+I(160,160,1) = rVal;
+I(160,160,2) = 0.00;
+I(160,160,3) = 1.00;
 
 % acuStimOrig1 = ARC2Dgabor(smpPos(256,256),[],0,0,24,1,-15,0,0.2,0.2,[0.25 0 0],1,1,0,1);
 % acuStimOrig1(:,:,1) = acuStimOrig1(:,:,1).^(1/2.4);
@@ -38,6 +53,7 @@ I = I./255;
 s = sceneFromFile(I, 'rgb', [], d);  % The display is included here
 % I think this copies the struct into an object
 vcAddObject(s); 
+% s.data.photons(160,160,:) = ones(size(s.data.photons(160,160,:))).*4e14;
 
 figure; 
 set(gcf,'Position',[289 428 1056 420]);
@@ -65,12 +81,13 @@ S = [380 4 101]; % weird convention used by Brainard lab for defining wavelength
 load T_xyz1931; % load color matching functions
 T_sensorXYZ = 683*SplineCmf(S_xyz1931,T_xyz1931,S); % interpolate and scale
 wave = S(1):S(2):S(1)+S(2)*(S(3)-1); % define wavelength vector
+% T_sensorXYZ(2,:) = normpdf(wave,556,40).*70000;
 
 oi = oiCreateARC('human',wave,0); % create optics
 
-% making 2D CSF function
+% % making 2D CSF function
 [fx, fy] = meshgrid(oi.optics.OTF.fx,oi.optics.OTF.fy);
-% scale so frequencies are in units of cyc/deg
+% % scale so frequencies are in units of cyc/deg
 fx = fx./3.37;
 fy = fy./3.37;
 df = sqrt(fx.^2 + fy.^2); % compute distance from origin
@@ -78,24 +95,32 @@ CSF2d = 0.04992*(1+5.9375*df).*exp(-0.114*df.^1.1);
 % inverse Fourier transform of 2D CSF
 N = ifftshift(ifft2(fftshift(CSF2d)));
 
-Dall = -0.4:0.1:1.4; % defocus values to look at
+Dall = -humanWaveDefocus(wave); % defocus values to look at
 peakPSF = [];
+polyPSFall = [];
+maxRawPSFcheck = [];
 
 for i = 1:length(Dall)
 
     oi = oiCreateARC('human',wave,Dall(i)); % create optics
-    
+    maxRawPSFcheck(i) = max(max(ifftshift(ifft2(oi.optics.OTF.OTF(:,:,i)))));
+
     polyPSF = [];
     
+    photonsTmp = squeeze(s.data.photons(160,160,:));
+    energyTmp = Quanta2Energy(wave,photonsTmp);
+
     for ind = 1:length(wave)
         polyPSF(:,:,ind) = ifftshift(ifft2(oi.optics.OTF.OTF(:,:,ind))).* ...
-                          (s.data.photons(160,160,ind)./max(s.data.photons(:))).* ...
+                          energyTmp(ind).* ...
                           T_sensorXYZ(2,ind);
     end
     
     polyPSF = sum(polyPSF,3);
     peakPSF(i) = max(max(polyPSF));
     vsx(i) = sum(sum(N.*polyPSF));
+
+    polyPSFall(:,:,i) = polyPSF;
 end
 
 figure; 
@@ -113,37 +138,60 @@ ylabel('Ratio');
 
 %% Turning original stimulus into luminance image
 
+downScale = 1;
+photonsImgXWorig = RGB2XWFormat(s.data.photons);
+energyImgXWorig = Quanta2Energy(wave',photonsImgXWorig);
+energyImgOrig = XW2RGBFormat(energyImgXWorig,320,320);
+
 lumImgOrig = zeros(size(s.data.photons,1),size(s.data.photons,2));
 for j = 1:length(wave)
-    lumImgOrig = lumImgOrig+s.data.photons(:,:,j).*T_sensorXYZ(2,j);
+    lumImgOrig = lumImgOrig+energyImgOrig(:,:,j).*T_sensorXYZ(2,j).*downScale;
 end
 
 %% Computing peak correlation for different wavelengths in focus
 
 peakCorr = [];
-Dall2 = fliplr(Dall);
+% Dall2 = fliplr(Dall);
+Dall2 = -humanWaveDefocus(wave);
+peakPSF = [];
+peakImg = [];
 
-figure;
 for i = 1:length(Dall2)
+
     oi = oiCreateARC('human',wave,Dall2(i)); % create optics
     oi = oiCompute(oi, s); % compute optical image of stimulus
+
+    photonsImgXW = RGB2XWFormat(oi.data.photons);
+    energyImgXW = Quanta2Energy(wave,photonsImgXW);
+    energyImg = XW2RGBFormat(energyImgXW,400,400);
+    
     lumImg = zeros(size(oi.data.photons,1),size(oi.data.photons,2));
     for j = 1:length(wave)
-       lumImg = lumImg+oi.data.photons(:,:,j).*T_sensorXYZ(2,j);
+       lumImg = lumImg+downScale*energyImg(:,:,j).*T_sensorXYZ(2,j);
     end
     lumImg = lumImg(41:360,41:360);
+%    lumImg = oi.data.illuminance(41:360,41:360);
     % lumImg = lumImg(33:288,33:288);
     peakCorr(i) = max(max(xcorr2(lumImgOrig,lumImg)));
-    subplot(1,1,1);
-    imagesc(lumImg); axis square; colormap gray;
-    title(['wavelength in focus: ' num2str(round(humanWaveDefocusInvert(-Dall2(i)))) 'nm']);
-    pause;
+    if ismember(round(humanWaveDefocusInvert(-Dall2(i))),[483 530 621])
+        figure;
+        set(gcf,'Position',[326 418 924 420]);      
+        subplot(1,2,1);
+        imagesc(lumImg); axis square; colormap gray;
+        subplot(1,2,2);
+        imagesc(lumImgOrig); axis square; colormap gray;    
+        title(['wavelength in focus: ' num2str(round(humanWaveDefocusInvert(-Dall2(i)))) 'nm, ' ...
+               'max(xcorr) = ' num2str(peakCorr(i))]);
+    end
 end
 
 %% Plotting peak correlation with wavelength in focus
 
 figure; 
+hold on;
 plot(humanWaveDefocusInvert(-Dall2),peakCorr./max(peakCorr),'k-','LineWidth',1);
+% plot(humanWaveDefocusInvert(-Dall2),peakPSF./max(peakPSF),'k-','LineWidth',1);
+% plot(humanWaveDefocusInvert(-Dall2),peakImg./max(peakImg),'k-','LineWidth',1);
 axis square;
 set(gca,'FontSize',15);
 xlabel('Wavelength in focus');
@@ -153,3 +201,12 @@ ylabel('Peak correlation');
 
 f = oi.optics.OTF.fx(31:60)./3.37; % defining frequency space
 CSF1d = 0.04992*(1+5.9375*f).*exp(-0.114*f.^1.1); % 1D CSF equation
+
+%% MAKING 1D CSF EQUATION
+
+[fx, fy] = meshgrid(smpFrq(60,202),smpFrq(60,202)); % defining frequency space
+df = sqrt(fx.^2 + fy.^2); % compute distance from origin
+CSF2d = 0.04992*(1+5.9375*df).*exp(-0.114*df.^1.1);
+% inverse Fourier transform of 2D CSF
+N = ifftshift(ifft2(fftshift(CSF2d)));
+

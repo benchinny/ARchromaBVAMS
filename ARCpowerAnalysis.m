@@ -84,7 +84,7 @@ legend({'Accommodative demand' 'Color'});
 % set(gca,'XTickLabel',{'1' '2' '3' '4' '5' '6' '7'});
 % legend({'Weighting' 'Switching'});
 
-sn = [18 23 24 26 27 29 32 33];
+sn = [18 23 24 26 27 28 29 30 32 33];
 rhoSwitchAll = [];
 rhoFullAll = [];
 rhoNoColorAll = [];
@@ -120,6 +120,8 @@ end
 
 %% PLOT WEIGHTS
 
+labelsCell = {};
+
 figure;
 % set(gcf,'Position',[262 314 1239 594]);
 for i = 1:size(weightsRBSall,1)
@@ -131,13 +133,14 @@ for i = 1:size(weightsRBSall,1)
     plot((3*(i-1)+2).*[1 1],[weightsRBSciTmp(1,2) weightsRBSciTmp(2,2)],'k-');
 %     bar(3,weightsRBSall(i,3),'FaceColor','k');
 %     plot([3 3],[weightsRBSciTmp(1,3) weightsRBSciTmp(2,3)],'k-');
-    set(gca,'XTick',[1.5 4.5 7.5 10.5 13.5 16.5 19.5 22.5]);
-    set(gca,'XTickLabel',{'S1' 'S2' 'S3' 'S4' 'S5' 'S6' 'S7' 'S8'});
+    labelsCell{i} = ['S' num2str(sn(i))];
     set(gca,'FontSize',20);
-    ylim(1.*[-1 1]);
+    ylim(1.*[-2 2]);
     xlabel('Subject #');
     ylabel('Weight');
 end
+set(gca,'XTickLabel',labelsCell);
+set(gca,'XTick',1.5:3:28.5);
 
 figure;
 % set(gcf,'Position',[262 314 1239 594]);
@@ -146,8 +149,8 @@ for i = 1:size(weightsRBSall,1)
     hold on;
     bar(i,weightsRBSall(i,3),'FaceColor','w','LineWidth',1);
     plot(i.*[1 1],[weightsRBSciTmp(1,3) weightsRBSciTmp(2,3)],'k-');
-    set(gca,'XTick',[1:8]);
-    set(gca,'XTickLabel',{'S1' 'S2' 'S3' 'S4' 'S5' 'S6' 'S7' 'S8'});
+    set(gca,'XTick',[1:10]);
+    set(gca,'XTickLabel',labelsCell);
     set(gca,'FontSize',20);
     ylim(1.*[0 1.15]);
     xlabel('Subject #');
@@ -169,26 +172,26 @@ end
 
 %% PLOT VARIANCE EXPLAINED COMPARISONS
 
-figure;
-hold on;
-bar([1 4 7 10 13 16 19 22],rhoFullAll.^2,0.3,'FaceColor','w');
-% bar([2 5 8 11 14],rhoSwitchAll.^2,0.3,'FaceColor',[0.5 0.5 0.5]);
-bar([2 5 8 11 14 17 20 23],rhoNoColorAll.^2,0.3,'FaceColor','k');
-set(gca,'FontSize',15);
-xlabel('Subject'); ylabel('Proportion Variance Explained');
-set(gca,'XTick',[1.5 4.5 7.5 10.5 13.5 16.5 19.5 22.5]);
-set(gca,'XTickLabel',{'1' '2' '3' '4' '5' '6' '7' '8'});
-legend({'Weighting' 'No color'});
+% figure;
+% hold on;
+% bar([1 4 7 10 13 16 19 22],rhoFullAll.^2,0.3,'FaceColor','w');
+% % bar([2 5 8 11 14],rhoSwitchAll.^2,0.3,'FaceColor',[0.5 0.5 0.5]);
+% bar([2 5 8 11 14 17 20 23],rhoNoColorAll.^2,0.3,'FaceColor','k');
+% set(gca,'FontSize',15);
+% xlabel('Subject'); ylabel('Proportion Variance Explained');
+% set(gca,'XTick',[1.5 4.5 7.5 10.5 13.5 16.5 19.5 22.5]);
+% set(gca,'XTickLabel',{'1' '2' '3' '4' '5' '6' '7' '8'});
+% legend({'Weighting' 'No color'});
 
 figure;
 hold on;
-bar([1 4 7 10 13 16 19 22],aicLinAll,0.3,'FaceColor','w');
+bar(1:3:28,aicLinAll,0.3,'FaceColor','w');
 % bar([2 5 8 11 14],aicSwitchAll,0.3,'FaceColor',[0.5 0.5 0.5]);
-bar([2 5 8 11 14 17 20 23],aicNoColorAll,0.3,'FaceColor','k');
+bar(2:3:29,aicNoColorAll,0.3,'FaceColor','k');
 set(gca,'FontSize',15);
 xlabel('Subject'); ylabel('AIC');
-set(gca,'XTick',[1.5 4.5 7.5 10.5 13.5 16.5 19.5 22.5]);
-set(gca,'XTickLabel',{'1' '2' '3' '4' '5' '6' '7' '8'});
+set(gca,'XTick',1.5:3:28.5);
+set(gca,'XTickLabel',labelsCell);
 legend({'Weighting' 'No color'});
 
 %% PLOT VARIANCE EXPLAINED BY COLOR COMPARISONS
