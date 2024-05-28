@@ -1,4 +1,4 @@
-function AFCp = ARCacuityAfterAccGabFuncBlock(imPattern,rgb,meanFocstmOptDst,focStmOptDstIncr, window1, window2, trlPerLvl)
+function AFCp = ARCacuityAfterAccGabFuncBlock(imPattern,rgb,meanFocstmOptDst,focStmOptDstIncr, window1, window2, trlPerLvl,vs)
 
 global cf rc00 name_map zaber opto log
 
@@ -99,10 +99,10 @@ for k0=1:length(focStmOptDstIncrAll)
       im2R0(:,:,2) = imPattern(:,:,indImPattern).*rgbAll(k0,2);
       im2R0(:,:,3) = imPattern(:,:,indImPattern).*rgbAll(k0,3);
       blackStim = zeros(size(im2R0));
-      acuStimOrig1 = ARC2Dgabor(smpPos(256,256),[],0,0,16,1,-15,0,0.2,0.2,[rgbAll(k0,1)^gammaR rgbAll(k0,2)^gammaG rgbAll(k0,3)^gammaB],1,1,0,0);
+      acuStimOrig1 = ARC2Dgabor(smpPos(256,256),[],0,0,18,1,-15,0,0.2,0.2,[rgbAll(k0,1)^gammaR rgbAll(k0,2)^gammaG rgbAll(k0,3)^gammaB],1,1,0,0);
       acuStimOrig1(:,:,1) = acuStimOrig1(:,:,1).^(1/gammaR);
       acuStimOrig1(:,:,3) = acuStimOrig1(:,:,3).^(1/gammaB);
-      acuStimOrig2 = ARC2Dgabor(smpPos(256,256),[],0,0,16,1,15,0,0.2,0.2,[rgbAll(k0,1)^gammaR rgbAll(k0,2)^gammaG rgbAll(k0,3)^gammaB],1,1,0,0);
+      acuStimOrig2 = ARC2Dgabor(smpPos(256,256),[],0,0,18,1,15,0,0.2,0.2,[rgbAll(k0,1)^gammaR rgbAll(k0,2)^gammaG rgbAll(k0,3)^gammaB],1,1,0,0);
       acuStimOrig2(:,:,1) = acuStimOrig2(:,:,1).^(1/gammaR);
       acuStimOrig2(:,:,3) = acuStimOrig2(:,:,3).^(1/gammaB);      
       acuStimOrig(:,:,:,1) = acuStimOrig1;
@@ -192,7 +192,7 @@ for k0=1:length(focStmOptDstIncrAll)
          pause(2);
       end
       cwin3(blackStim, blackStim, cf, rc00, window1, window2);
-      if scene.enable_tcp; send_tcp0(scene, 1); end; t1(k0,:)=clock;
+      if scene.enable_tcp; send_tcp0(scene, 1, k0, vs); end; t1(k0,:)=clock;
       tChange1(k0,:) = clock;
       opto(name_map('l_disp')).control.setFocalPower(power_dispL-meanFocstmOptDstAll(k0)-focStmOptDstIncrAll(k0));
       opto(name_map('r_disp')).control.setFocalPower(power_dispR-meanFocstmOptDstAll(k0)-focStmOptDstIncrAll(k0));      
@@ -200,11 +200,11 @@ for k0=1:length(focStmOptDstIncrAll)
       cwin3(squeeze(acuStim(:,:,:,stimOrientation(k0))), squeeze(acuStim(:,:,:,stimOrientation(k0))), cf, rc00, window1, window2);
       tChange2(k0,:) = clock;
       pause(0.10);
+      cwin3(noiseStim, noiseStim, cf, rc00, window1, window2);
       opto(name_map('l_disp')).control.setFocalPower(power_dispL-meanFocstmOptDstAll(k0));
       opto(name_map('r_disp')).control.setFocalPower(power_dispR-meanFocstmOptDstAll(k0));      
-      cwin3(noiseStim, noiseStim, cf, rc00, window1, window2);
       pause(0.15);
-      if scene.enable_tcp; send_tcp0(scene, 0); end %stage) 0stop 1record
+      if scene.enable_tcp; send_tcp0(scene, 0, k0, vs); end %stage) 0stop 1record
       cwin3(blackStim, blackStim, cf, rc00, window1, window2);
       t2(k0,:)=clock;
 
