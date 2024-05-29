@@ -80,11 +80,19 @@ scene.enable_tcp=0;
 scene.trial_num=1;
 
 if scene.enable_tcp
-    cmsg('TCP enabled', log.INFO, log.LEVEL);
-    scene.tcp_socket = tcpip('169.229.228.75', 31000, 'NetworkRole', 'server');
-    cmsg('Waiting for TCP socket connection...', log.INFO, log.LEVEL);
-    fopen(scene.tcp_socket);
-    cmsg('TCP connected!', log.INFO, log.LEVEL);
+    cmsg('TCP enabled');
+    tcp_socket = tcpserver('169.229.228.57',31000);
+    cmsg('Waiting for TCP socket connection...');
+    bConnected = false;
+    while ~bConnected
+        tcpStatus = tcp_socket.Connected;
+        pause(0.1);
+        if tcpStatus
+            bConnected=true;
+        end
+    end
+    % fopen(tcp_socket);
+    cmsg('TCP connected!');    
 end
 
 t0=zeros(length(focStmOptDstIncrAll), 6); t1=t0; t2=t0; tChange1 = t0; tChange2 = t0; tRealEnd = t0;
@@ -197,7 +205,7 @@ for k0=1:length(focStmOptDstIncrAll)
          pause(2);
       end
       cwin3(blackStim, blackStim, cf, rc00, window1, window2);
-      if scene.enable_tcp; send_tcp0(scene, 1, k0, vs); end; t1(k0,:)=clock;
+      if scene.enable_tcp; send_tcp0fiatAcu(tcp_socket, 1, k0, vs); end; t1(k0,:)=clock;
       tChange1(k0,:) = clock;
       opto(name_map('l_disp')).control.setFocalPower(power_dispL-meanFocstmOptDstAll(k0)-focStmOptDstIncrAll(k0));
       opto(name_map('r_disp')).control.setFocalPower(power_dispR-meanFocstmOptDstAll(k0)-focStmOptDstIncrAll(k0));      
@@ -209,7 +217,7 @@ for k0=1:length(focStmOptDstIncrAll)
       opto(name_map('l_disp')).control.setFocalPower(power_dispL-meanFocstmOptDstAll(k0));
       opto(name_map('r_disp')).control.setFocalPower(power_dispR-meanFocstmOptDstAll(k0));      
       pause(0.15);
-      if scene.enable_tcp; send_tcp0(scene, 0, k0, vs); end %stage) 0stop 1record
+      if scene.enable_tcp; send_tcp0fiatAcu(tcp_socket, 0, k0, vs); end %stage) 0stop 1record
       cwin3(blackStim, blackStim, cf, rc00, window1, window2);
       t2(k0,:)=clock;
 
@@ -218,7 +226,9 @@ for k0=1:length(focStmOptDstIncrAll)
       tRealEnd(k0,:) = clock;
 end
 
-if scene.enable_tcp; fclose(scene.tcp_socket); end
+if scene.enable_tcp
+    clear tcp_socket;
+end
 AFCp.v1=power_dispR;
 t3=cat(3, t0, t1, t2,tChange1,tChange2,tRealEnd);
 AFCp.t3 = t3(1:end-1,:,:);

@@ -12,8 +12,8 @@
         %}
         % tcp_socket = tcpserver("169.229.228.24",31000);
         scene.enable_tcp = 1;
-        scene.trial_num = trial;
-        scene.block_num = block;
+        scene.trial_num = uint8(trial);
+        scene.block_num = uint8(block);
         if scene.enable_tcp
             if stage > 0
                 trial_ = scene.trial_num;
