@@ -15,12 +15,12 @@ end
 % expSubType = 'SIN';
 % expSubType = 'STEP';
 expSubType = 'RGB';
-blockType = 'fixed';
+blockType = 'random';
 focStmOptDst = 1;
-meanFocstmOptDst = 3;
+meanFocstmOptDstUnq = [1.5 2.0 2.5 3.0 3.5];
 
 focStmOptDst = focStmOptDst*1.25;
-meanFocstmOptDst = meanFocstmOptDst*1.25;
+meanFocstmOptDstUnq = meanFocstmOptDstUnq*1.25;
 
 if strcmp(blockType,'fixed')
     rgb1 = [0.32 0.00 0.00; ...
@@ -63,8 +63,15 @@ if strcmp(blockType,'random')
     indCnd = reshape(randsample(1:length(rVals),nCnd*7,1),[nCnd 7]);
     rgb1 = [rVals(indCnd(:,1)) gVals(indCnd(:,2)) bVals(indCnd(:,3))];
     rgb2 = [rVals(indCnd(:,4)) gVals(indCnd(:,5)) bVals(indCnd(:,6))];
-    meanFocstmOptDst = meanFocstmOptDst.*ones([nCnd 1]);
-    focStmOptDst = stepVals(indCnd(:,7)).*ones([nCnd 1]);
+    indCndDist = reshape(randsample(1:length(meanFocstmOptDstUnq),nCnd*1,1),[nCnd 1]);
+    meanFocstmOptDst = meanFocstmOptDstUnq(indCndDist);
+    meanFocstmOptDst2 = [];
+    for i = 1:length(meanFocstmOptDst)
+        meanFocstmOptDstTmp = meanFocstmOptDstUnq(meanFocstmOptDstUnq~=meanFocstmOptDst(i));
+        meanFocstmOptDst2(i) = randsample(meanFocstmOptDstTmp,1);
+    end
+    % focStmOptDst = stepVals(indCnd(:,7)).*ones([nCnd 1]);
+    focStmOptDst = meanFocstmOptDst2'-meanFocstmOptDst';
     AFCv = 1:length(focStmOptDst);    
 end
 
