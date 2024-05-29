@@ -195,12 +195,13 @@ for k0=1:length(focStmOptDstIncrAll)
       % opto(name_map('r_disp')).control.setFocalPower(power_dispR-meanFocstmOptDstAll(k0));
       cwin3(im2R0, im2R0, cf, rc00, window1, window2);
       if mod(k0,length(focStmOptDstIncr))==1
-         pause(3);
+         pause(2.75);
       else
-         pause(2);
+         pause(1.75);
       end
-      cwin3(blackStim, blackStim, cf, rc00, window1, window2);
       if scene.enable_tcp; send_tcp0fiatAcu(tcp_socket, 1, k0, vs); end; t1(k0,:)=clock;
+      pause(0.25);
+      cwin3(blackStim, blackStim, cf, rc00, window1, window2);
       tChange1(k0,:) = clock;
       opto(name_map('l_disp')).control.setFocalPower(power_dispL-meanFocstmOptDstAll(k0)-focStmOptDstIncrAll(k0));
       opto(name_map('r_disp')).control.setFocalPower(power_dispR-meanFocstmOptDstAll(k0)-focStmOptDstIncrAll(k0));      
