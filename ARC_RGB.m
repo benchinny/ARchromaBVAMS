@@ -56,10 +56,10 @@ if strcmp(blockType,'random')
     % focStmOptDst = stepVals(indCnd(:,5)).*ones([nCnd 1]);
     % AFCv = 1:length(focStmOptDst);
     nCnd = 20; % NUMBER OF CONDITIONS
-    rVals = [0.56 0.42 0.32 0.24]'; % POSSIBLE RED PRIMARY VALUES
-    gVals = [0.42 0.32 0.25 0.19]'; % POSSIBLE GREEN PRIMARY VALUES
-    bVals = [1.00 0.73 0.53 0.39]'; % POSSIBLE BLUE PRIMARY VALUES
-    stepVals = 1.25.*[1.25 0.75 -0.75 -1.25]'; % POSSIBLE STEP VALUES
+    rVals = [0.555 0.492 0.416 0.312]'; % POSSIBLE RED PRIMARY VALUES
+    gVals = [0.418 0.375 0.320 0.245]'; % POSSIBLE GREEN PRIMARY VALUES
+    bVals = [1.00 0.877 0.730 0.533]'; % POSSIBLE BLUE PRIMARY VALUES
+    % stepVals = 1.25.*[1.25 0.75 -0.75 -1.25]'; % POSSIBLE STEP VALUES
     indCnd = reshape(randsample(1:length(rVals),nCnd*7,1),[nCnd 7]);
     rgb1 = [rVals(indCnd(:,1)) gVals(indCnd(:,2)) bVals(indCnd(:,3))];
     rgb2 = [rVals(indCnd(:,4)) gVals(indCnd(:,5)) bVals(indCnd(:,6))];

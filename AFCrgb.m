@@ -51,11 +51,19 @@ scene.enable_tcp=1;
 scene.trial_num=1;
 
 if scene.enable_tcp
-    cmsg('TCP enabled', log.INFO, log.LEVEL);
-    scene.tcp_socket = tcpip('169.229.228.75', 31000, 'NetworkRole', 'server');
-    cmsg('Waiting for TCP socket connection...', log.INFO, log.LEVEL);
-    fopen(scene.tcp_socket);
-    cmsg('TCP connected!', log.INFO, log.LEVEL);
+    cmsg('TCP enabled');
+    tcp_socket = tcpserver('169.229.228.57',31000);
+    cmsg('Waiting for TCP socket connection...');
+    bConnected = false;
+    while ~bConnected
+        tcpStatus = tcp_socket.Connected;
+        pause(0.1);
+        if tcpStatus
+            bConnected=true;
+        end
+    end
+    % fopen(tcp_socket);
+    cmsg('TCP connected!');    
 end
 
 %[power_dispL power_dispR]=fcs_afc(window1, window2);
@@ -150,7 +158,7 @@ for k0=1:size(v0,1)
          break; 
       end
       
-      if scene.enable_tcp; send_tcp0(scene, 1); end; t0(k0,:)=clock;
+      if scene.enable_tcp; send_tcp0fiatAcu(tcp_socket, 1, k0, vs); end; t0(k0,:)=clock;
       
       snd(1000, 0.2); pause(0.5);
       for i = 1:floor(length(sinValues)/2)
@@ -169,7 +177,7 @@ for k0=1:size(v0,1)
       snd(1000, 0.1); pause(0.2);
       snd(1000, 0.1); pause(0.1);
      
-      if scene.enable_tcp; send_tcp0(scene, 0); end %stage) 0stop 1record
+      if scene.enable_tcp; send_tcp0fiatAcu(tcp_socket, 1, k0, vs); end; %stage) 0stop 1record
       tRealEnd(k0,:) = clock;
       %pause(3);
       %wn=cwin0(img0, 'Stereo', cf, rc00, window1, window2);
@@ -190,7 +198,9 @@ for k0=1:size(v0,1)
     scene.trial_num=k0;
 end
 
-if scene.enable_tcp; fclose(scene.tcp_socket); end
+if scene.enable_tcp
+    clear tcp_socket;
+end
 AFCp.v1=power_dispR
 AFCp.t3=cat(3, t0, t1, t2,tChange1,tChange2,tRealEnd);
 AFCp.dgs=dgs;
