@@ -60,19 +60,24 @@ if strcmp(blockType,'random')
     gVals = [0.418 0.375 0.320 0.245]'; % POSSIBLE GREEN PRIMARY VALUES
     bVals = [1.00 0.877 0.730 0.533]'; % POSSIBLE BLUE PRIMARY VALUES
     % stepVals = 1.25.*[1.25 0.75 -0.75 -1.25]'; % POSSIBLE STEP VALUES
+    % RANDOMLY PICKING COLORS
     indCnd = reshape(randsample(1:length(rVals),nCnd*7,1),[nCnd 7]);
     rgb1 = [rVals(indCnd(:,1)) gVals(indCnd(:,2)) bVals(indCnd(:,3))];
     rgb2 = [rVals(indCnd(:,4)) gVals(indCnd(:,5)) bVals(indCnd(:,6))];
+    % RANDOMLY PICKING OPTICAL DISTANCES
     indCndDist = reshape(randsample(1:length(meanFocstmOptDstUnq),nCnd*1,1),[nCnd 1]);
+    % OPTICAL DISTANCE DURING 1ST HALF OF TRIALS
     meanFocstmOptDst = meanFocstmOptDstUnq(indCndDist);
+    % OPTICAL DISTANCE DURING 2ND HALF OF TRIALS
     meanFocstmOptDst2 = [];
     for i = 1:length(meanFocstmOptDst)
         meanFocstmOptDstTmp = meanFocstmOptDstUnq(meanFocstmOptDstUnq~=meanFocstmOptDst(i));
         meanFocstmOptDst2(i) = randsample(meanFocstmOptDstTmp,1);
     end
     % focStmOptDst = stepVals(indCnd(:,7)).*ones([nCnd 1]);
+    % CURRENTLY CODE WANTS TO KNOW STEP CHANGE
     focStmOptDst = meanFocstmOptDst2'-meanFocstmOptDst';
-    AFCv = 1:length(focStmOptDst);    
+    AFCv = 1:length(focStmOptDst); % TRIAL ORDER (ALREADY RANDOMIZED)
 end
 
 if ~exist('sr')
