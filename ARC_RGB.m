@@ -17,7 +17,7 @@ end
 expSubType = 'RGB';
 blockType = 'random';
 focStmOptDst = 1;
-meanFocstmOptDstUnq = [1.5 2.0 2.5 3.0 3.5];
+meanFocstmOptDstUnq = [1.5 2.0 2.5 3.0 3.5]';
 
 focStmOptDst = focStmOptDst*1.25;
 meanFocstmOptDstUnq = meanFocstmOptDstUnq*1.25;
@@ -72,11 +72,11 @@ if strcmp(blockType,'random')
     meanFocstmOptDst2 = [];
     for i = 1:length(meanFocstmOptDst)
         meanFocstmOptDstTmp = meanFocstmOptDstUnq(meanFocstmOptDstUnq~=meanFocstmOptDst(i));
-        meanFocstmOptDst2(i) = randsample(meanFocstmOptDstTmp,1);
+        meanFocstmOptDst2(i,:) = randsample(meanFocstmOptDstTmp,1);
     end
     % focStmOptDst = stepVals(indCnd(:,7)).*ones([nCnd 1]);
     % CURRENTLY CODE WANTS TO KNOW STEP CHANGE
-    focStmOptDst = meanFocstmOptDst2'-meanFocstmOptDst';
+    focStmOptDst = meanFocstmOptDst2-meanFocstmOptDst;
     AFCv = 1:length(focStmOptDst); % TRIAL ORDER (ALREADY RANDOMIZED)
 end
 
@@ -170,7 +170,7 @@ elseif strcmp(expSubType,'RGB')
    imPatternTmp = squeeze(imE(:,:,2));
    imPatternTmp = circshift(imPatternTmp,15,1);
    imPattern(:,:,4) = imresize(imPatternTmp,[480 480]);
-   AFCp=AFCrgb(imPattern,rgb100,rgb200,v00, meanv00, sr, window1, window2);    
+   AFCp=AFCrgb(imPattern,rgb100,rgb200,v00, meanv00, sr, window1, window2, vs);    
 end
 
 AFCp.v0=v0;

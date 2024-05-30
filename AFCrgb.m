@@ -1,6 +1,6 @@
 %%220508 AFC9f include TCA correction 
 % function [v1 t3 dgs]=AFC8f(im_path, v0, sr, window1, window2)
-function AFCp=AFCrgb(imPattern, rgb0, rgb1, v0, meanv0, sr, window1, window2)
+function AFCp=AFCrgb(imPattern, rgb0, rgb1, v0, meanv0, sr, window1, window2, vs)
 
 %v0 vector of accomodations
 %        control: [1×1 Zaber.AsciiDevice]
@@ -84,7 +84,7 @@ for k0=1:size(v0,1)
       for i = 1:size(v0,2)
          sinValuesTmp = (sin(2*pi*tSin-pi*1/2)+1).*0.5; % the modulation itself
          sinValuesTmp = meanv0(k0)+v0(k0,i).*[zeros([1 nFrmStmPlat]) sinValuesTmp(1:length(sinValuesTmp)/2) ones([1 nFrmStmPlat])];
-         sinValues = [sinValues imresize([meanv0 meanv0+v0(k0,i)],[1 length(sinValuesTmp)],'nearest')];
+         sinValues = [sinValues imresize([meanv0(k0) meanv0(k0)+v0(k0,i)],[1 length(sinValuesTmp)],'nearest')];
       end
       sinValuesAll(k0,:) = sinValues;
       if size(imPattern,3)>1
@@ -177,11 +177,11 @@ for k0=1:size(v0,1)
       snd(1000, 0.1); pause(0.2);
       snd(1000, 0.1); pause(0.1);
      
-      if scene.enable_tcp; send_tcp0fiatAcu(tcp_socket, 1, k0, vs); end; %stage) 0stop 1record
+      if scene.enable_tcp; send_tcp0fiatAcu(tcp_socket, 0, k0, vs); end; %stage) 0stop 1record
       tRealEnd(k0,:) = clock;
       %pause(3);
       %wn=cwin0(img0, 'Stereo', cf, rc00, window1, window2);
-      [iLf0 iRf0]=cwin3(im2R0, im2R0, cf, rc00, window1, window2);
+      [iLf0 iRf0]=cwin3(zeros(size(im2R0)), zeros(size(im2R0)), cf, rc00, window1, window2);
       opto(name_map('l_disp')).control.setFocalPower(power_dispL-meanv0(k0));
       opto(name_map('r_disp')).control.setFocalPower(power_dispR-meanv0(k0));
     %           zaber(name_map('rotation')).move_deg(-3); %%-6400
@@ -190,7 +190,7 @@ for k0=1:size(v0,1)
       t1(k0,:)=clock;
 
       %snd(2000, 0.25);  pause(2.75);
-      pause(2);
+      pause(1);
 
       %if scene.enable_tcp; send_tcp0(scene, 0); end %stage) 0stop 1record
       t2(k0,:)=clock;
