@@ -2,7 +2,7 @@
 ex='RGB'; %ey=input('which eye? Right/Binc');
 ey=input('which eye are we testing (type 1 for Right or 2 for Binocular)? ');
 if ey==1; ey='Right'; elseif ey==2; ey='Binc'; end
-filePath = 'G:\My Drive\exp_bvams\code_repo\ARC\';
+filePath = 'H:\Shared drives\CIVO_BVAMS\data\ARC\';
 vsIncrement = input(['Increment visit number? The current visit number is ' num2str(vs) ' (1 for yes, 0 for no)']);
 vsIncrement = input(['Asking again: increment visit number? The current visit number is ' num2str(vs) ' (1 for yes, 0 for no)']);
 
@@ -110,7 +110,7 @@ elseif tcaCorrect==1;
     zR=TCAp.sbjTCA; 
 end %zR=[0 0; 10 10; 20 20]; end; %TCAfnmR=TCAfnm; 
           
-if exist('AFCim0')==0 | isempty(AFCim0)==1; AFCfnm0='G:\My Drive\exp_bvams\code_repo\AFCim220510.mat'; load(AFCfnm0);  end %E optotype base 3 17secs to load
+% if exist('AFCim0')==0 | isempty(AFCim0)==1; AFCfnm0='G:\My Drive\exp_bvams\code_repo\AFCim220510.mat'; load(AFCfnm0);  end %E optotype base 3 17secs to load
 
 
 fprintf('Best shpere refraction: L = %f  , R = %f\n', sr(1), sr(2));
@@ -177,7 +177,7 @@ AFCp.v0=v0;
 AFCp.v00=v00;
 AFCp.AFCv=AFCv;
 AFCp.meanv00 = meanv00;
-AFCp.imfnm=AFCfnm0;
+% AFCp.imfnm=AFCfnm0;
 AFCp.rgb100 = rgb100;
 AFCp.rgb200 = rgb200;
 

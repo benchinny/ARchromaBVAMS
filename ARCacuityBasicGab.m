@@ -2,7 +2,7 @@
 ex='ACU'; %ey=input('which eye? Right/Binc');
 ey=1;
 if ey==1; ey='Right'; elseif ey==2; ey='Binc'; end
-filePath = 'G:\My Drive\exp_bvams\code_repo\ARC\';
+filePath = 'H:\Shared drives\CIVO_BVAMS\data\ARC\';
 vsIncrement = input(['Increment visit number? The current visit number is ' num2str(vs) ' (1 for yes, 0 for no)']);
 vsIncrement = input(['Asking again: increment visit number? The current visit number is ' num2str(vs) ' (1 for yes, 0 for no)']);
 
@@ -10,11 +10,11 @@ if vsIncrement>=1
    vs = vs+1;
 end
 
-meanFocstmOptDst = [3]*1.25;
+meanFocstmOptDst = [4]*1.25;
 
-rgb  = [0.00 0.00 1.00];
+rgb  = [0.56 0.00 1.00];
 
-frqCpd = [21 19 17 15 13 11 9];
+frqCpd = [24 22 20 18 16 14];
 trlPerLvl = 20;
 
 % DEFAULT NO TCA CORRECTION

@@ -2,7 +2,7 @@
 ex='ACU'; %ey=input('which eye? Right/Binc');
 ey=1;
 if ey==1; ey='Right'; elseif ey==2; ey='Binc'; end
-filePath = 'G:\My Drive\exp_bvams\code_repo\ARC\';
+filePath = 'H:\Shared drives\CIVO_BVAMS\data\ARC\';
 vsIncrement = input(['Increment visit number? The current visit number is ' num2str(vs) ' (1 for yes, 0 for no)']);
 vsIncrement = input(['Asking again: increment visit number? The current visit number is ' num2str(vs) ' (1 for yes, 0 for no)']);
 % note: GIVE PEOPLE MORE TIME TO ACCOMMODATE TO THE NEW STIMULUS

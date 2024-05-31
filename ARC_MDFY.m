@@ -1,7 +1,7 @@
 % BASIC INPUTS--SUBJECT AND VISIT NUMBERS
 sn=input('Enter subject number?'); sn=sn+1000;
 
-load('G:\My Drive\exp_bvams\code_repo\ARC\AFCflsR.mat');
+load('H:\Shared drives\CIVO_BVAMS\data\ARC\AFCflsR.mat');
 vsEmpty = [];
 if sn-1000 <= size(AFCfls,1)
     for i = 1:size(AFCfls,2)
@@ -17,7 +17,7 @@ end
 
 clear AFCfls;
 
-filePath = 'G:\My Drive\exp_bvams\code_repo\ARC\';
+filePath = 'H:\Shared drives\CIVO_BVAMS\data\ARC\';
 
 tcaCorrect=0; % correct for TCA?
 ACL=0; % is there an ACL lens in the system?
