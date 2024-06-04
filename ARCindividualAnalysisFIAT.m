@@ -23,5 +23,7 @@ plot(timestamps-timestamps(1),defocus,'-k');
 plot(timestamps-timestamps(1),strehl,'--k');
 ylim([1 4]);
 formatFigure('Time (s)','Defocus (D)');
+plot(1.5,1.25,'s','MarkerFaceColor',AFCp.rgb100(trialNum,:),'MarkerSize',25,'Color',AFCp.rgb100(trialNum,:));
+plot(4.5,1.25,'s','MarkerFaceColor',AFCp.rgb200(trialNum,:),'MarkerSize',25,'Color',AFCp.rgb200(trialNum,:));
 
 end
