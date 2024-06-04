@@ -23,7 +23,20 @@ for i = 1:length(blockNums)
         chng2BVAMS(end+1,:) = tTmpSecs(5);
         endBVAMS(end+1,:) = tTmpSecs(6);
         [~, ~, TimeStamp] = ARCloadFileFIAT(subjName,blockNums(i),j,1);
+        strtFIAT(end+1,:) = double(seconds(TimeStamp(1)));
+        endFIAT(end+1,:) = double(seconds(TimeStamp(end)));
     end
 end
+
+figure;
+hold on;
+plot(chng1BVAMS-strtBVAMS);
+plot(chng2BVAMS-strtBVAMS);
+plot(endBVAMS-strtBVAMS);
+plot(strtFIAT-strtBVAMS);
+% plot(endFIAT-strtBVAMS);
+plot(endFIAT-strtFIAT);
+axis square;
+formatFigure('Trial#','Time (s)');
 
 end
