@@ -1,9 +1,13 @@
-function [defocus, strehl, TimeStamp] = ARCloadFile(subjName,blockNum,trialNum,bExtended)
+function [defocus, strehl, TimeStamp] = ARCloadFileFIAT(subjName,blockNum,trialNum,bExtended)
 
 defocus = [];
 strehl = [];
 
-dataFolder = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/csvFiles/';
+if strcmp(getenv("USER"),'ben')
+   dataFolder= '/home/ben/Documents/ARchroma/FIAT/csvFiles/';
+else
+   dataFolder = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/csvFiles/';
+end
 
 dirAll = dir(dataFolder);
 
