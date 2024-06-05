@@ -29,14 +29,16 @@ for i = 1:length(blockNums)
 end
 
 figure;
+set(gcf,'Position',[385 479 875 420]);
 hold on;
 plot(chng1BVAMS-strtBVAMS);
 plot(chng2BVAMS-strtBVAMS);
 plot(endBVAMS-strtBVAMS);
+plot(endFIAT-strtFIAT);
 plot(strtFIAT-strtBVAMS);
 % plot(endFIAT-strtBVAMS);
-plot(endFIAT-strtFIAT);
 axis square;
 formatFigure('Trial#','Time (s)');
+legend({'Stim change - start' 'Stim change - start' 'end - start BVAMS' 'end FIAT - start FIAT' 'start FIAT - start BVAMS'},'Location','EastOutside');
 
 end
