@@ -22,7 +22,7 @@ end
 d.gamma(:,1) = (d.gamma(:,1).^(1/2.2)).^2.4;
 d.gamma(:,2) = (d.gamma(:,2).^(1/2.2)).^2.6;
 d.gamma(:,3) = (d.gamma(:,3).^(1/2.2)).^2.2;
-% d.spd = ones(size(d.spd)).*0.000100;
+% d.spd = ones(size(d.spd)).*0.000200 + 0.03.*(repmat([1:length(d.wave)]',[1 3])./1000);
 % d.spd(:,1) = [normpdf(380:4:780,624,10).*0.005]';
 % d.spd(:,2) = [normpdf(380:4:780,532,10).*0.005]';
 % d.spd(:,3) = [normpdf(380:4:780,488,10).*0.005]';
@@ -30,19 +30,26 @@ d.gamma(:,3) = (d.gamma(:,3).^(1/2.2)).^2.2;
 % Ben's stimulus
 nDotsI = 320;
 rVal = 0.56;
+bVal = 1.00;
 im = AFCwordStimImproved('sea',nDotsI.*[1 1],'green');
 imPatternTmp = squeeze(im(:,:,2));
 imPatternTmp = circshift(imPatternTmp,-15,1);
-I(:,:,3) = imresize(imPatternTmp,nDotsI.*[1 1],'nearest');
+I(:,:,3) = bVal.*imresize(imPatternTmp,nDotsI.*[1 1],'nearest');
 I(:,:,1) = rVal.*imresize(imPatternTmp,nDotsI.*[1 1],'nearest');
 I = I./255;
 I = zeros(size(I));
 % I(159:161,159:161,1) = rVal;
 % I(159:161,159:161,2) = 0.00;
-% I(159:161,159:161,3) = 1.00;
+% I(159:161,159:161,3) = bVal;
 I(160,160,1) = rVal;
 I(160,160,2) = 0.00;
-I(160,160,3) = 1.00;
+I(160,160,3) = bVal;
+% I(156:164,156:164,1) = rVal;
+% I(156:164,156:164,2) = 0.00;
+% I(156:164,156:164,3) = bVal;
+% I(147:173,147:173,1) = rVal;
+% I(147:173,147:173,2) = 0.00;
+% I(147:173,147:173,3) = bVal;
 
 % acuStimOrig1 = ARC2Dgabor(smpPos(256,256),[],0,0,24,1,-15,0,0.2,0.2,[0.25 0 0],1,1,0,1);
 % acuStimOrig1(:,:,1) = acuStimOrig1(:,:,1).^(1/2.4);
@@ -95,7 +102,7 @@ CSF2d = 0.04992*(1+5.9375*df).*exp(-0.114*df.^1.1);
 % inverse Fourier transform of 2D CSF
 N = ifftshift(ifft2(fftshift(CSF2d)));
 
-Dall = -humanWaveDefocus(wave); % defocus values to look at
+Dall = -humanWaveDefocus(380:5:780); % defocus values to look at
 peakPSF = [];
 polyPSFall = [];
 maxRawPSFcheck = [];
@@ -124,9 +131,9 @@ for i = 1:length(Dall)
 end
 
 figure; 
-plot(humanWaveDefocusInvert(-Dall),vsx./max(vsx),'k-','LineWidth',1); hold on;
-plot(humanWaveDefocusInvert(-Dall),peakPSF./max(peakPSF),'k--','LineWidth',1);
-legend('Visual Strehl','Strehl');
+% plot(humanWaveDefocusInvert(-Dall),vsx./max(vsx),'k-','LineWidth',1); hold on;
+plot(humanWaveDefocusInvert(-Dall),0.29.*peakPSF./max(peakPSF),'k-','LineWidth',1);
+% legend('Visual Strehl','Strehl');
 axis square;
 set(gca,'FontSize',15);
 xlabel('Wavelength in focus');
@@ -152,7 +159,7 @@ end
 
 peakCorr = [];
 % Dall2 = fliplr(Dall);
-Dall2 = -humanWaveDefocus(wave);
+Dall2 = -humanWaveDefocus(380:5:780);
 peakPSF = [];
 peakImg = [];
 
@@ -173,7 +180,7 @@ for i = 1:length(Dall2)
 %    lumImg = oi.data.illuminance(41:360,41:360);
     % lumImg = lumImg(33:288,33:288);
     peakCorr(i) = max(max(xcorr2(lumImgOrig,lumImg)));
-    if ismember(round(humanWaveDefocusInvert(-Dall2(i))),[483 530 621])
+    if ismember(round(humanWaveDefocusInvert(-Dall2(i))),[460 520 620])
         figure;
         set(gcf,'Position',[326 418 924 420]);      
         subplot(1,2,1);
@@ -189,6 +196,7 @@ end
 
 figure; 
 hold on;
+% plot(humanWaveDefocusInvert(-Dall2),peakCorr./max(peakCorr),'k-','LineWidth',1);
 plot(humanWaveDefocusInvert(-Dall2),peakCorr./max(peakCorr),'k-','LineWidth',1);
 % plot(humanWaveDefocusInvert(-Dall2),peakPSF./max(peakPSF),'k-','LineWidth',1);
 % plot(humanWaveDefocusInvert(-Dall2),peakImg./max(peakImg),'k-','LineWidth',1);
@@ -209,4 +217,62 @@ df = sqrt(fx.^2 + fy.^2); % compute distance from origin
 CSF2d = 0.04992*(1+5.9375*df).*exp(-0.114*df.^1.1);
 % inverse Fourier transform of 2D CSF
 N = ifftshift(ifft2(fftshift(CSF2d)));
+
+%% GET DIFFRACTION-LIMITED PSF
+
+oi = oiCreate('diffraction limited'); 
+oi = oiSet(oi,'fnumber',5.6); 
+% oiPlot(oi,'psf 550');
+
+if notDefined('oi'), oi = vcGetObject('oi'); end
+if notDefined('pType'), pType = 'otf550'; end
+
+wavelength = oiGet(oi, 'wavelength');
+optics = oiGet(oi, 'optics');
+
+% This catches the case in which the oi has not yet been defined, but the
+% optics have.
+if isempty(wavelength)
+    oi = initDefaultSpectrum(oi, 'hyperspectral');
+    optics = initDefaultSpectrum(optics, 'hyperspectral');
+    wavelength = opticsGet(optics, 'wavelength');
+end
+
+nWave = oiGet(oi, 'nwave');
+pType = ieParamFormat(pType);
+
+% Spatial scale is microns.
+units = 'um';
+nSamp = 100;
+freqOverSample = 4;
+if strfind(pType, '550')
+    thisWave = 550;
+elseif length(varargin) >= 1
+    thisWave = varargin{1};
+else
+    thisWave = ieReadNumber('Select PSF wavelength (nm)', 550, ...
+        '%.0f');
+end
+
+opticsModel = opticsGet(optics, 'model');
+
+thisWave = 400;
+psf = opticsGet(optics, 'psf data', ...
+                    thisWave, units, nSamp, freqOverSample);
+
+%%
+
+lumRed = [0.25 0.5 0.75 1];
+lumBlue = [0.25 0.5 0.75 1];
+bestFocusLambdaFullRedCorr = [600 600 580 570];
+bestFocusLambdaFullBlueCorr = [500 520 545 570];
+
+figure;
+hold on;
+plot(lumRed,bestFocusLambdaFullBlueCorr,'-ro','LineWidth',1.5,'MarkerSize',12);
+plot(lumBlue,bestFocusLambdaFullRedCorr,'-bo','LineWidth',1.5,'MarkerSize',12);
+axis square;
+formatFigure('Relative Luminance','Wavelength in focus','Correlation metric');
+ylim([400 700]);
+
 
