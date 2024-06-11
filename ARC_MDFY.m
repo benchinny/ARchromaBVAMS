@@ -46,7 +46,7 @@ else
 end
 
 %Initialize power of right display optotune
-power_dispR=14.4+sr(2); %aFull.p9(2,2) ;
+power_dispR=14.4-0.464+sr(2); %aFull.p9(2,2) ;
 if ACL==0; powerR=opR(1); elseif ACL==1; powerR=aFull.p9(5,2); elseif ACL==2; powerR=aHalf.p9(5,2); end
 trombone_power_right=powerR; % power both right trombone optotunes are set to
      

@@ -44,7 +44,7 @@ zaber(name_map('rotation')).control.getposition
 
 if exist('sr') ~=  1; sr=[0 0]; end
 %         dmnd=[-0.5:0.5:3]
-opto(name_map('r_disp')).control.setFocalPower(14.4+sr(2));% -dmnd(k0));
+opto(name_map('r_disp')).control.setFocalPower(13.936+sr(2));% -dmnd(k0));
 opto(name_map('r_disp')).control.getFocalPower.focal_power
 
 opto(name_map('l_disp')).control.setFocalPower(14+sr(1));%-dmnd(k0));
@@ -107,7 +107,7 @@ end
 [iLf iRf]=cwin3(imread("black.png"), testim , cf, rc00, window2, window1);
 
 power_dispL = 14;
-power_dispR = 14.4;
+power_dispR = 13.936;
 
 rightTrombonePowerNear = opto(name_map('r_t_near')).control.getFocalPower.focal_power;
 rightTrombonePowerFar = opto(name_map('r_t_far')).control.getFocalPower.focal_power;
@@ -163,7 +163,7 @@ try
                 opt_chk=1;    
             elseif keyCode(KbName('+')) && bRecord
                 send_tcp0fiat(tcp_socket,1);
-                pause(1.5);
+                pause(0.5);
                 send_tcp0fiat(tcp_socket,0);
             else
                 disp('WRONG KEY'); snd(100, 0.25);
@@ -184,7 +184,7 @@ try
             opto(name_map('l_disp')).control.setFocalPower(power_dispL);
             opto(name_map('r_disp')).control.setFocalPower(power_dispR);
             
-            fprintf('Display power: L = %f  , R = %f , Optical Distance R = %f D \n',power_dispL, power_dispR, 0.8.*(14.4-power_dispR));
+            fprintf('Display power: L = %f  , R = %f , Optical Distance R = %f D \n',power_dispL, power_dispR, 0.87.*(13.936-power_dispR));
 
             fprintf('\n');
         end
