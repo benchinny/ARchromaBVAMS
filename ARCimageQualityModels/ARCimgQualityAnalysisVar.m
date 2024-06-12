@@ -106,7 +106,12 @@ for i = 1:length(Dall)
     vsx(i) = sum(sum(N.*polyPSF));
 
     polyPSFall(:,:,i) = polyPSF;
+    display(['Strehl loop ' num2str(i)]);
 end
+
+[~,indPeak] = max(peakPSF);
+wvAll = humanWaveDefocusInvert(-Dall);
+wvInFocus = wvAll(indPeak);
 
 figure; 
 plot(humanWaveDefocusInvert(-Dall),0.29.*peakPSF./max(peakPSF),'k-','LineWidth',1);
@@ -152,19 +157,24 @@ for i = 1:length(Dall2)
 %    lumImg = oi.data.illuminance(41:360,41:360);
     % lumImg = lumImg(33:288,33:288);
     peakCorr(i) = max(max(xcorr2(lumImgOrig,lumImg)));
-    if ismember(round(humanWaveDefocusInvert(-Dall2(i))),[460 520 620])
-        figure;
-        set(gcf,'Position',[326 418 924 420]);      
-        subplot(1,2,1);
-        imagesc(lumImg); axis square; colormap gray;
-        subplot(1,2,2);
-        imagesc(lumImgOrig); axis square; colormap gray;    
-        title(['wavelength in focus: ' num2str(round(humanWaveDefocusInvert(-Dall2(i)))) 'nm, ' ...
-               'max(xcorr) = ' num2str(peakCorr(i))]);
-    end
+    % if ismember(round(humanWaveDefocusInvert(-Dall2(i))),[460 520 620])
+    %     figure;
+    %     set(gcf,'Position',[326 418 924 420]);      
+    %     subplot(1,2,1);
+    %     imagesc(lumImg); axis square; colormap gray;
+    %     subplot(1,2,2);
+    %     imagesc(lumImgOrig); axis square; colormap gray;    
+    %     title(['wavelength in focus: ' num2str(round(humanWaveDefocusInvert(-Dall2(i)))) 'nm, ' ...
+    %            'max(xcorr) = ' num2str(peakCorr(i))]);
+    % end
+    display(['Peak correlation loop ' num2str(i)]);
 end
 
 %% Plotting peak correlation with wavelength in focus
+
+[~,indPeak2] = max(peakCorr);
+wvAll2 = humanWaveDefocusInvert(-Dall2);
+wvInFocus2 = wvAll(indPeak2);
 
 figure; 
 hold on;
