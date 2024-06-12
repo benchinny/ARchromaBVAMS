@@ -147,13 +147,11 @@ for i = 1:length(Dall2)
 
     photonsImgXW = RGB2XWFormat(oi.data.photons);
     energyImgXW = Quanta2Energy(wave,photonsImgXW);
-    energyImg = XW2RGBFormat(energyImgXW,400,400);
+    % energyImg = XW2RGBFormat(energyImgXW,400,400);
     
-    lumImg = zeros(size(oi.data.photons,1),size(oi.data.photons,2));
-    for j = 1:length(wave)
-       lumImg = lumImg+downScale*energyImg(:,:,j).*T_sensorXYZ(2,j);
-    end
-    lumImg = lumImg(41:360,41:360);
+    lumImgXW = sum(downScale*bsxfun(@times,energyImgXW,T_sensorXYZ(2,:)),2);
+    lumImgXYW = XW2RGBFormat(lumImgXW,400,400);
+    lumImg = lumImgXYW(41:360,41:360);
 %    lumImg = oi.data.illuminance(41:360,41:360);
     % lumImg = lumImg(33:288,33:288);
     peakCorr(i) = max(max(xcorr2(lumImgOrig,lumImg)));
