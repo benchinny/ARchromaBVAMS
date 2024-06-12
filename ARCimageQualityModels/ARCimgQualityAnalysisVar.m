@@ -56,6 +56,19 @@ I = I./255;
 s = sceneFromFile(I, 'rgb', [], d);  % The display is included here
 % I think this copies the struct into an object
 vcAddObject(s); 
+
+% Turning original stimulus into luminance image
+
+downScale = 1;
+photonsImgXWorig = RGB2XWFormat(s.data.photons);
+energyImgXWorig = Quanta2Energy(wave',photonsImgXWorig);
+energyImgOrig = XW2RGBFormat(energyImgXWorig,320,320);
+
+lumImgOrig = zeros(size(s.data.photons,1),size(s.data.photons,2));
+for j = 1:length(wave)
+    lumImgOrig = lumImgOrig+energyImgOrig(:,:,j).*T_sensorXYZ(2,j).*downScale;
+end
+
 % s.data.photons(160,160,:) = ones(size(s.data.photons(160,160,:))).*4e14;
 
 % figure; 
@@ -119,18 +132,6 @@ axis square;
 set(gca,'FontSize',15);
 xlabel('Wavelength in focus');
 ylabel('Ratio');
-
-%% Turning original stimulus into luminance image
-
-downScale = 1;
-photonsImgXWorig = RGB2XWFormat(s.data.photons);
-energyImgXWorig = Quanta2Energy(wave',photonsImgXWorig);
-energyImgOrig = XW2RGBFormat(energyImgXWorig,320,320);
-
-lumImgOrig = zeros(size(s.data.photons,1),size(s.data.photons,2));
-for j = 1:length(wave)
-    lumImgOrig = lumImgOrig+energyImgOrig(:,:,j).*T_sensorXYZ(2,j).*downScale;
-end
 
 %% Computing peak correlation for different wavelengths in focus
 
