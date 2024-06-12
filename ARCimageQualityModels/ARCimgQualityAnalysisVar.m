@@ -22,10 +22,12 @@ end
 d.gamma(:,1) = (d.gamma(:,1).^(1/2.2)).^2.4;
 d.gamma(:,2) = (d.gamma(:,2).^(1/2.2)).^2.6;
 d.gamma(:,3) = (d.gamma(:,3).^(1/2.2)).^2.2;
-% d.spd = ones(size(d.spd)).*0.000200 + 0.03.*(repmat([1:length(d.wave)]',[1 3])./1000);
-% d.spd(:,1) = [normpdf(380:4:780,624,10).*0.005]';
-% d.spd(:,2) = [normpdf(380:4:780,532,10).*0.005]';
-% d.spd(:,3) = [normpdf(380:4:780,488,10).*0.005]';
+
+% COLOR MATCHING FUNCTIONS
+S = [380 4 101]; % weird convention used by Brainard lab for defining wavelengths
+load T_xyz1931; % load color matching functions
+T_sensorXYZ = 683*SplineCmf(S_xyz1931,T_xyz1931,S); % interpolate and scale
+wave = S(1):S(2):S(1)+S(2)*(S(3)-1); % define wavelength vector
 
 % Ben's stimulus
 nDotsI = 320;
@@ -37,24 +39,6 @@ imPatternTmp = circshift(imPatternTmp,-15,1);
 I(:,:,3) = bVal.*imresize(imPatternTmp,nDotsI.*[1 1],'nearest');
 I(:,:,1) = rVal.*imresize(imPatternTmp,nDotsI.*[1 1],'nearest');
 I = I./255;
-I = zeros(size(I));
-% I(159:161,159:161,1) = rVal;
-% I(159:161,159:161,2) = 0.00;
-% I(159:161,159:161,3) = bVal;
-I(160,160,1) = rVal;
-I(160,160,2) = 0.00;
-I(160,160,3) = bVal;
-% I(156:164,156:164,1) = rVal;
-% I(156:164,156:164,2) = 0.00;
-% I(156:164,156:164,3) = bVal;
-% I(147:173,147:173,1) = rVal;
-% I(147:173,147:173,2) = 0.00;
-% I(147:173,147:173,3) = bVal;
-
-% acuStimOrig1 = ARC2Dgabor(smpPos(256,256),[],0,0,24,1,-15,0,0.2,0.2,[0.25 0 0],1,1,0,1);
-% acuStimOrig1(:,:,1) = acuStimOrig1(:,:,1).^(1/2.4);
-% acuStimOrig1(:,:,3) = acuStimOrig1(:,:,3).^(1/2.6);
-% I = acuStimOrig1;
 
 % Turn image into 'scene'
 s = sceneFromFile(I, 'rgb', [], d);  % The display is included here
@@ -62,33 +46,27 @@ s = sceneFromFile(I, 'rgb', [], d);  % The display is included here
 vcAddObject(s); 
 % s.data.photons(160,160,:) = ones(size(s.data.photons(160,160,:))).*4e14;
 
-figure; 
-set(gcf,'Position',[289 428 1056 420]);
-subplot(1,3,1);
-plot(d.wave,d.spd(:,1),'r','LineWidth',1.5); hold on;
-plot(d.wave,d.spd(:,2),'g','LineWidth',1.5);
-plot(d.wave,d.spd(:,3),'b','LineWidth',1.5);
-axis square;
-formatFigure('Wavelength (\lambda)','Radiance');
-subplot(1,3,2);
-imagesc(I);
-set(gca,'XTick',[]);
-set(gca,'YTick',[]);
-axis square;
-set(gca,'FontSize',15);
-title('Original');
-subplot(1,3,3);
-plot(s.spectrum.wave,squeeze(s.data.photons(160,160,:)),'-k','LineWidth',1);
-formatFigure('Wavelength (\lambda)','Photons');
-axis square;
+% figure; 
+% set(gcf,'Position',[289 428 1056 420]);
+% subplot(1,3,1);
+% plot(d.wave,d.spd(:,1),'r','LineWidth',1.5); hold on;
+% plot(d.wave,d.spd(:,2),'g','LineWidth',1.5);
+% plot(d.wave,d.spd(:,3),'b','LineWidth',1.5);
+% axis square;
+% formatFigure('Wavelength (\lambda)','Radiance');
+% subplot(1,3,2);
+% imagesc(I);
+% set(gca,'XTick',[]);
+% set(gca,'YTick',[]);
+% axis square;
+% set(gca,'FontSize',15);
+% title('Original');
+% subplot(1,3,3);
+% plot(s.spectrum.wave,squeeze(s.data.photons(160,160,:)),'-k','LineWidth',1);
+% formatFigure('Wavelength (\lambda)','Photons');
+% axis square;
 
 %% Computing visual Strehl ratio
-
-S = [380 4 101]; % weird convention used by Brainard lab for defining wavelengths
-load T_xyz1931; % load color matching functions
-T_sensorXYZ = 683*SplineCmf(S_xyz1931,T_xyz1931,S); % interpolate and scale
-wave = S(1):S(2):S(1)+S(2)*(S(3)-1); % define wavelength vector
-% T_sensorXYZ(2,:) = normpdf(wave,556,40).*70000;
 
 oi = oiCreateARC('human',wave,0); % create optics
 
@@ -204,61 +182,6 @@ axis square;
 set(gca,'FontSize',15);
 xlabel('Wavelength in focus');
 ylabel('Peak correlation');
-
-%% MAKING 1D CSF EQUATION
-
-f = oi.optics.OTF.fx(31:60)./3.37; % defining frequency space
-CSF1d = 0.04992*(1+5.9375*f).*exp(-0.114*f.^1.1); % 1D CSF equation
-
-%% MAKING 1D CSF EQUATION
-
-[fx, fy] = meshgrid(smpFrq(60,202),smpFrq(60,202)); % defining frequency space
-df = sqrt(fx.^2 + fy.^2); % compute distance from origin
-CSF2d = 0.04992*(1+5.9375*df).*exp(-0.114*df.^1.1);
-% inverse Fourier transform of 2D CSF
-N = ifftshift(ifft2(fftshift(CSF2d)));
-
-%% GET DIFFRACTION-LIMITED PSF
-
-oi = oiCreate('diffraction limited'); 
-oi = oiSet(oi,'fnumber',5.6); 
-% oiPlot(oi,'psf 550');
-
-if notDefined('oi'), oi = vcGetObject('oi'); end
-if notDefined('pType'), pType = 'otf550'; end
-
-wavelength = oiGet(oi, 'wavelength');
-optics = oiGet(oi, 'optics');
-
-% This catches the case in which the oi has not yet been defined, but the
-% optics have.
-if isempty(wavelength)
-    oi = initDefaultSpectrum(oi, 'hyperspectral');
-    optics = initDefaultSpectrum(optics, 'hyperspectral');
-    wavelength = opticsGet(optics, 'wavelength');
-end
-
-nWave = oiGet(oi, 'nwave');
-pType = ieParamFormat(pType);
-
-% Spatial scale is microns.
-units = 'um';
-nSamp = 100;
-freqOverSample = 4;
-if strfind(pType, '550')
-    thisWave = 550;
-elseif length(varargin) >= 1
-    thisWave = varargin{1};
-else
-    thisWave = ieReadNumber('Select PSF wavelength (nm)', 550, ...
-        '%.0f');
-end
-
-opticsModel = opticsGet(optics, 'model');
-
-thisWave = 400;
-psf = opticsGet(optics, 'psf data', ...
-                    thisWave, units, nSamp, freqOverSample);
 
 %%
 
