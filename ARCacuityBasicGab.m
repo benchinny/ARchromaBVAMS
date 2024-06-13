@@ -10,7 +10,7 @@ if vsIncrement>=1
    vs = vs+1;
 end
 
-meanFocstmOptDst = [4]*1.25;
+meanFocstmOptDst = [4]*1.149;
 
 rgb  = [0.56 0.00 1.00];
 
@@ -70,7 +70,7 @@ if sv == 1
 end
 
 opto(name_map('l_disp')).control.setFocalPower(14);
-opto(name_map('r_disp')).control.setFocalPower(14.4);
+opto(name_map('r_disp')).control.setFocalPower(13.936);
 % zaber(name_map('rotation')).move_deg(-3); %%-6400
 [iLf iRf]=cwin3(imread('black.png'), imread('black.png') , cf, rc00, window2, window1);
 clear LCAim;
