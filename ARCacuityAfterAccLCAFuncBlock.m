@@ -11,7 +11,7 @@ maskSize = [100 100];
 gammaR = 2.4;
 gammaG = 2.6;
 gammaB = 2.2;
-frqCpdRB = [22; 18];
+frqCpdRB = [22; 14];
 rgbAcuRB = [0.555 0 0; 0 0 1];
 
 % CAREFUL ATTEMPT TO BLOCK CONDITIONS SO EACH OPTICAL DISTANCE INCREMENT IS
@@ -53,7 +53,7 @@ stimSizePixAll(end+1,:) = 10;
 % 1 = 0°, 2 = 90°, 3 = 180°, 4 = 270° 
 stimOrientation = ceil(rand(size(focStmOptDstIncrAll))*2);
 
-power_dispR=14.4; %starting display power
+power_dispR=13.936; %starting display power
 power_dispL=14; %starting display power
 opto(name_map('r_disp')).control.setFocalPower(power_dispR-meanFocstmOptDstAll(1));
 opto(name_map('l_disp')).control.setFocalPower(power_dispL-meanFocstmOptDstAll(1));
@@ -76,7 +76,7 @@ log.WARNING = 3;
 log.INFO = 2;
 log.DEBUG = 1;
 log.LEVEL = log.DEBUG;
-scene.enable_tcp=0;
+scene.enable_tcp=1;
 scene.trial_num=1;
 
 if scene.enable_tcp

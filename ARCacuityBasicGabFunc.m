@@ -32,7 +32,7 @@ meanFocstmOptDstAll(end+1,:) = 3;
 % 1 = 0°, 2 = 90°, 3 = 180°, 4 = 270° 
 stimOrientation = ceil(rand(size(frqCpdAll))*2);
 
-power_dispR=14.4; %starting display power
+power_dispR=13.936; %starting display power
 power_dispL=14; %starting display power
 opto(name_map('r_disp')).control.setFocalPower(power_dispR-meanFocstmOptDstAll(1));
 opto(name_map('l_disp')).control.setFocalPower(power_dispL-meanFocstmOptDstAll(1));
