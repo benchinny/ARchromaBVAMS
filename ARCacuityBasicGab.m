@@ -75,3 +75,5 @@ opto(name_map('r_disp')).control.setFocalPower(14.4);
 [iLf iRf]=cwin3(imread('black.png'), imread('black.png') , cf, rc00, window2, window1);
 clear LCAim;
 sca;
+
+psyfitgengauss(zeros(size(AFCp.frqCpd)),-AFCp.frqCpd,AFCp.rspAcu'==AFCp.stimOrientation,[],[],[],1,2,1);
