@@ -7,7 +7,7 @@
 desiredHeight = 100;
 
 % desired stroke width in pixels
-desiredStroke = 10;
+desiredStroke = 5;
 
 % text color (0-1 float)
 color = [1 0 1];
@@ -110,7 +110,8 @@ for x = 1:numWords
     croppedImg = imresize(croppedImg,desiredHeight/size(croppedImg,1));
 
     % Save the image
-    filename = sprintf('word_image_%02d.png', x);
+    folderName = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/stimuli/';
+    filename = sprintf([folderName 'word_image_%02d.png'], x);
     imwrite(croppedImg, filename);
 end
 
