@@ -1,4 +1,4 @@
-function AFCp = ARCacuitySquareFunc(imPattern,rgb,meanFocstmOptDst,focStmOptDstIncr, window1, window2, trlPerLvl,vs,frqCpd)
+function AFCp = ARCacuitySquareFunc(imPattern,rgb,meanFocstmOptDst,focStmOptDstIncr, window1, window2, trlPerLvl,vs,frqCpd, contrast)
 
 global cf rc00 name_map zaber opto log
 
@@ -107,10 +107,10 @@ for k0=1:length(focStmOptDstIncrAll)
       im2R0(:,:,2) = imPattern(:,:,indImPattern).*rgbAll(k0,2);
       im2R0(:,:,3) = imPattern(:,:,indImPattern).*rgbAll(k0,3);
       blackStim = zeros(size(im2R0));
-      acuStimOrig1 = ARC2Dgabor(smpPos(256,256),[],0,0,frqCpd,1,-15,0,0.2,0.2,[rgbAll(k0,1)^gammaR rgbAll(k0,2)^gammaG rgbAll(k0,3)^gammaB],1,1,0,0);
+      acuStimOrig1 = ARC2Dgabor(smpPos(256,256),[],0,0,[frqCpd 3*frqCpd 5*frqCpd 7*frqCpd],[contrast contrast/3 contrast/5 contrast/7],-15,0,0.2,0.2,[rgbAll(k0,1)^gammaR rgbAll(k0,2)^gammaG rgbAll(k0,3)^gammaB],1,1,0,0);
       acuStimOrig1(:,:,1) = acuStimOrig1(:,:,1).^(1/gammaR);
       acuStimOrig1(:,:,3) = acuStimOrig1(:,:,3).^(1/gammaB);
-      acuStimOrig2 = ARC2Dgabor(smpPos(256,256),[],0,0,frqCpd,1,15,0,0.2,0.2,[rgbAll(k0,1)^gammaR rgbAll(k0,2)^gammaG rgbAll(k0,3)^gammaB],1,1,0,0);
+      acuStimOrig2 = ARC2Dgabor(smpPos(256,256),[],0,0,[frqCpd 3*frqCpd 5*frqCpd 7*frqCpd],[contrast contrast/3 contrast/5 contrast/7],15,0,0.2,0.2,[rgbAll(k0,1)^gammaR rgbAll(k0,2)^gammaG rgbAll(k0,3)^gammaB],1,1,0,0);
       acuStimOrig2(:,:,1) = acuStimOrig2(:,:,1).^(1/gammaR);
       acuStimOrig2(:,:,3) = acuStimOrig2(:,:,3).^(1/gammaB);      
       acuStimOrig(:,:,:,1) = acuStimOrig1;
@@ -235,3 +235,5 @@ AFCp.rspAcu = rspAcu;
 AFCp.stimOrientation = stimOrientation(1:end-1);
 AFCp.im2R0 = im2R0;
 AFCp.stimSizePixAll = stimSizePixAll(1:end-1);
+AFCp.contrast = contrast;
+AFCp.frqCpd = frqCpd;
