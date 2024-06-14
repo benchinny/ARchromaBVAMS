@@ -10,18 +10,18 @@ if vsIncrement>=1
    vs = vs+1;
 end
 
-meanFocstmOptDst = [4]*1.25;
+meanFocstmOptDst = [2]*1.149;
 meanFocstmOptDst = meanFocstmOptDst(randperm(length(meanFocstmOptDst)));
 % rgb  = [0.56 0.00 1.00; ...
 %         0.56 0.00 0.00; ...
 %         0.00 0.00 1.00];
-rgb = [0.56 0 1.00];
+rgb = [0.555 0 1.00];
 indScrambleRgb = randperm(size(rgb,1));
 rgb = rgb(indScrambleRgb,:);
 
 % focStmOptDstIncr = [-0.5:0.25:0.5];
 focStmOptDstIncr = [-1.2 -0.9 -0.6 -0.3 0.0 0.3 0.6 0.9 1.2];
-focStmOptDstIncr = focStmOptDstIncr.*1.25;
+focStmOptDstIncr = focStmOptDstIncr.*1.149;
 trlPerLvl = 6;
 
 % DEFAULT NO TCA CORRECTION
@@ -68,7 +68,7 @@ im4 = flipud(im4);
 imPatternTmp = squeeze(im4(:,:,2));
 imPatternTmp = circshift(imPatternTmp,15,1);
 imPattern(:,:,4) = imresize(imPatternTmp,[480 480]);
-AFCp=ARCacuityAfterAccLCAFuncBlock(imPattern,rgb,meanFocstmOptDst,focStmOptDstIncr, window1, window2, trlPerLvl, vs);    
+AFCp=ARCacuityLCAsquareFunc(imPattern,rgb,meanFocstmOptDst,focStmOptDstIncr, window1, window2, trlPerLvl, vs);    
 
 if sv == 1
     save(AFCfls0, 'AFCp'); 
@@ -77,7 +77,7 @@ if sv == 1
 end
          
 opto(name_map('l_disp')).control.setFocalPower(14);
-opto(name_map('r_disp')).control.setFocalPower(14.4);
+opto(name_map('r_disp')).control.setFocalPower(13.936);
 % zaber(name_map('rotation')).move_deg(-3); %%-6400
 [iLf iRf]=cwin3(imread('black.png'), imread('black.png') , cf, rc00, window2, window1);
 clear LCAim;
