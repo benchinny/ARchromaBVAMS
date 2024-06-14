@@ -1,38 +1,38 @@
-function AFCp = ARCacuitySquareBasicFunc(imPattern,rgb,meanFocstmOptDst,frqCpd, window1, window2, trlPerLvl)
+function AFCp = ARCacuitySquareBasicFunc(imPattern,rgb,meanFocstmOptDst,frqCpd, contrast, window1, window2, trlPerLvl)
 
 global cf rc00 name_map zaber opto log
 
 rgbAll = [];
 meanFocstmOptDstAll = [];
-frqCpdAll = [];
+contrastAll = [];
 maskBrightness = 0;
 gammaR = 2.4;
-gammaG = 2.4;
+gammaG = 2.6;
 gammaB = 2.2;
 
 for i = 1:size(rgb,1)
-   for j = 1:size(frqCpd,2)
+   for j = 1:size(contrast,2)
        for l = 1:length(meanFocstmOptDst)
            for k = 1:trlPerLvl
                rgbAll(end+1,:) = rgb(i,:);
-               frqCpdAll(end+1,:) = frqCpd(j);
+               contrastAll(end+1,:) = contrast(j);
                meanFocstmOptDstAll(end+1,:) = meanFocstmOptDst(l);
            end
        end
    end
 end
-indScramble = randperm(length(frqCpdAll))';
+indScramble = randperm(length(contrastAll))';
 rgbAll = rgbAll(indScramble,:);
-frqCpdAll = frqCpdAll(indScramble);
+contrastAll = contrastAll(indScramble);
 meanFocstmOptDstAll = meanFocstmOptDstAll(indScramble);
 rgbAll(end+1,:) = [0 0 0];
-frqCpdAll(end+1,:) = 28;
+contrastAll(end+1,:) = 1;
 meanFocstmOptDstAll(end+1,:) = 3;
 
 % 1 = 0°, 2 = 90°, 3 = 180°, 4 = 270° 
-stimOrientation = ceil(rand(size(frqCpdAll))*2);
+stimOrientation = ceil(rand(size(contrastAll))*2);
 
-power_dispR=14.4; %starting display power
+power_dispR=13.936; %starting display power
 power_dispL=14; %starting display power
 opto(name_map('r_disp')).control.setFocalPower(power_dispR-meanFocstmOptDstAll(1));
 opto(name_map('l_disp')).control.setFocalPower(power_dispL-meanFocstmOptDstAll(1));
@@ -66,12 +66,12 @@ if scene.enable_tcp
     cmsg('TCP connected!', log.INFO, log.LEVEL);
 end
 
-t0=zeros(length(frqCpdAll), 6); t1=t0; t2=t0; tChange1 = t0; tChange2 = t0; tRealEnd = t0;
+t0=zeros(length(contrastAll), 6); t1=t0; t2=t0; tChange1 = t0; tChange2 = t0; tRealEnd = t0;
 % stage) 0stop 1record figure this out with Steve
 disp('ready to start');  KbWait([], 2); 
 
 rspAcu = [];
-for k0=1:length(frqCpdAll)
+for k0=1:length(contrastAll)
       if size(imPattern,3)>1
         indImPattern = randsample(1:size(imPattern,3),1);
       else
@@ -83,11 +83,13 @@ for k0=1:length(frqCpdAll)
       im2R0(:,:,2) = imPatternTmp.*rgbAll(k0,2);
       im2R0(:,:,3) = imPatternTmp.*rgbAll(k0,3);
       blackStim = zeros(size(im2R0));
-      acuStimOrig1 = ARC2Dgabor(smpPos(256,256),[],0,0,frqCpdAll(k0),1,-15,0,0.2,0.2,[rgbAll(k0,1)^gammaR rgbAll(k0,2)^gammaG rgbAll(k0,3)^gammaB],1,1,0,0);
+      acuStimOrig1 = ARC2Dgabor(smpPos(256,256),[],0,0,[frqCpd 3*frqCpd 5*frqCpd 7*frqCpd],[contrastAll(k0) contrastAll(k0)/3 contrastAll(k0)/5 contrastAll(k0)/7],-15,90,0.2,0.2,[rgbAll(k0,1)^gammaR rgbAll(k0,2)^gammaG rgbAll(k0,3)^gammaB],1,1,0,0);
       acuStimOrig1(:,:,1) = acuStimOrig1(:,:,1).^(1/gammaR);
+      acuStimOrig1(:,:,2) = acuStimOrig1(:,:,2).^(1/gammaG);
       acuStimOrig1(:,:,3) = acuStimOrig1(:,:,3).^(1/gammaB);
-      acuStimOrig2 = ARC2Dgabor(smpPos(256,256),[],0,0,frqCpdAll(k0),1,15,0,0.2,0.2,[rgbAll(k0,1)^gammaR rgbAll(k0,2)^gammaG rgbAll(k0,3)^gammaB],1,1,0,0);
+      acuStimOrig2 = ARC2Dgabor(smpPos(256,256),[],0,0,[frqCpd 3*frqCpd 5*frqCpd 7*frqCpd],[contrastAll(k0) contrastAll(k0)/3 contrastAll(k0)/5 contrastAll(k0)/7],15,90,0.2,0.2,[rgbAll(k0,1)^gammaR rgbAll(k0,2)^gammaG rgbAll(k0,3)^gammaB],1,1,0,0);
       acuStimOrig2(:,:,1) = acuStimOrig2(:,:,1).^(1/gammaR);
+      acuStimOrig2(:,:,2) = acuStimOrig2(:,:,2).^(1/gammaG);
       acuStimOrig2(:,:,3) = acuStimOrig2(:,:,3).^(1/gammaB);      
       acuStimOrig(:,:,:,1) = acuStimOrig1;
       acuStimOrig(:,:,:,2) = acuStimOrig2;
@@ -153,7 +155,7 @@ for k0=1:length(frqCpdAll)
       if exitLoop
          break; 
       end
-      if k0==length(frqCpdAll)
+      if k0==length(contrastAll)
           break;
       end      
       t0(k0,:)=clock;
@@ -197,7 +199,8 @@ t3=cat(3, t0, t1, t2,tChange1,tChange2,tRealEnd);
 AFCp.t3 = t3(1:end-1,:,:);
 AFCp.rgb = rgbAll(1:end-1,:);
 AFCp.meanFocstmOptDst = meanFocstmOptDstAll(1:end-1);
-AFCp.frqCpd = frqCpdAll(1:end-1);
+AFCp.frqCpd = frqCpd;
+AFCp.contrast = contrastAll;
 AFCp.rspAcu = rspAcu;
 AFCp.stimOrientation = stimOrientation(1:end-1);
 AFCp.im2R0 = im2R0;

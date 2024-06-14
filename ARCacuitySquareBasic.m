@@ -10,11 +10,12 @@ if vsIncrement>=1
    vs = vs+1;
 end
 
-meanFocstmOptDst = [4]*1.25;
+meanFocstmOptDst = [4]*1.149;
 
 rgb  = [0.56 0.00 1.00];
 
-frqCpd = [24 22 20 18 16 14];
+frqCpd = 15;
+contrast = [1.0 0.9 0.8 0.7 0.6 0.5];
 trlPerLvl = 20;
 
 % DEFAULT NO TCA CORRECTION
@@ -61,7 +62,7 @@ im4 = flipud(im4);
 imPatternTmp = squeeze(im4(:,:,2));
 imPatternTmp = circshift(imPatternTmp,15,1);
 imPattern(:,:,4) = imresize(imPatternTmp,[480 480]);
-AFCp=ARCacuityBasicGabFunc(imPattern,rgb,meanFocstmOptDst,frqCpd, window1, window2, trlPerLvl);    
+AFCp=ARCacuitySquareBasicFunc(imPattern,rgb,meanFocstmOptDst,frqCpd, contrast, window1, window2, trlPerLvl);    
 
 if sv == 1
     save(AFCfls0, 'AFCp'); 
@@ -70,8 +71,10 @@ if sv == 1
 end
 
 opto(name_map('l_disp')).control.setFocalPower(14);
-opto(name_map('r_disp')).control.setFocalPower(14.4);
+opto(name_map('r_disp')).control.setFocalPower(13.936);
 % zaber(name_map('rotation')).move_deg(-3); %%-6400
 [iLf iRf]=cwin3(imread('black.png'), imread('black.png') , cf, rc00, window2, window1);
 clear LCAim;
 sca;
+
+psyfitgengauss(zeros(size(AFCp.frqCpd)),AFCp.contrast,AFCp.rspAcu'==AFCp.stimOrientation,[],[],[],1,2,1);
