@@ -1,7 +1,7 @@
 %%
 
-rgb = [0.56 0 1];
-meanFocstmOptDst = [2];
+rgb = [0.555 0 1];
+meanFocstmOptDst = [2]*1.149;
 focStmOptDstIncr = -1.2:0.3:1.2;
 trlPerLvl = 4;
 
@@ -15,7 +15,7 @@ maskSize = [100 100];
 gammaR = 2.4;
 gammaG = 2.6;
 gammaB = 2.2;
-frqCpdRB = [22; 18];
+frqCpdRB = 15;
 rgbAcuRB = [0.555 0 0; 0 0 1];
 
 % CAREFUL ATTEMPT TO BLOCK CONDITIONS SO EACH OPTICAL DISTANCE INCREMENT IS
@@ -35,8 +35,6 @@ for i = 1:size(rgb,1)
        end
    end
 end
-
-%%
 
 % RANDOMIZING TRIALS
 indScramble = indScramble+imresize(length(focStmOptDstIncr).*size(rgbAcuRB,1).*[0:(trlPerLvl*size(rgb,1)*length(meanFocstmOptDst)-1)]',size(indScramble),'nearest');
@@ -60,3 +58,4 @@ rgbAll(end+1,:) = [0 0 0];
 focStmOptDstIncrAll(end+1,:) = 0;
 meanFocstmOptDstAll(end+1,:) = 3;
 stimSizePixAll(end+1,:) = 10;
+indAcuRBall(end+1,:) = 1;
