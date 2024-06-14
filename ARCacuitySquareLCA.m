@@ -68,14 +68,14 @@ im4 = flipud(im4);
 imPatternTmp = squeeze(im4(:,:,2));
 imPatternTmp = circshift(imPatternTmp,15,1);
 imPattern(:,:,4) = imresize(imPatternTmp,[480 480]);
-AFCp=ARCacuityLCAsquareFunc(imPattern,rgb,meanFocstmOptDst,focStmOptDstIncr, window1, window2, trlPerLvl, vs);    
+AFCp=ARCacuitySquareLCAFunc(imPattern,rgb,meanFocstmOptDst,focStmOptDstIncr, cAcuRB, window1, window2, trlPerLvl, vs);    
 
 if sv == 1
     save(AFCfls0, 'AFCp'); 
     load([filePath 'AFCfls' ey(1) '.mat'], 'AFCfls'); AFCfls{sn-1000,vs}=AFCfls0; 
     save([filePath 'AFCfls' ey(1) '.mat'], 'AFCfls'); 
 end
-         
+
 opto(name_map('l_disp')).control.setFocalPower(14);
 opto(name_map('r_disp')).control.setFocalPower(13.936);
 % zaber(name_map('rotation')).move_deg(-3); %%-6400

@@ -1,4 +1,4 @@
-function AFCp = ARCacuityLCAsquareFunc(imPattern,rgb,meanFocstmOptDst,focStmOptDstIncr, window1, window2, trlPerLvl, vs)
+function AFCp = ARCacuitySquareLCAFunc(imPattern,rgb,meanFocstmOptDst,focStmOptDstIncr, cAcuRB, window1, window2, trlPerLvl, vs)
 
 global cf rc00 name_map zaber opto log
 
@@ -11,7 +11,7 @@ maskSize = [100 100];
 gammaR = 2.4;
 gammaG = 2.6;
 gammaB = 2.2;
-frqCpdRB = [22; 18];
+frqCpdRB = 15;
 rgbAcuRB = [0.555 0 0; 0 0 1];
 
 % CAREFUL ATTEMPT TO BLOCK CONDITIONS SO EACH OPTICAL DISTANCE INCREMENT IS
@@ -53,7 +53,7 @@ stimSizePixAll(end+1,:) = 10;
 % 1 = 0°, 2 = 90°, 3 = 180°, 4 = 270° 
 stimOrientation = ceil(rand(size(focStmOptDstIncrAll))*2);
 
-power_dispR=14.4; %starting display power
+power_dispR=13.936; %starting display power
 power_dispL=14; %starting display power
 opto(name_map('r_disp')).control.setFocalPower(power_dispR-meanFocstmOptDstAll(1));
 opto(name_map('l_disp')).control.setFocalPower(power_dispL-meanFocstmOptDstAll(1));
@@ -112,10 +112,10 @@ for k0=1:length(focStmOptDstIncrAll)
       im2R0(:,:,2) = imPattern(:,:,indImPattern).*rgbAll(k0,2);
       im2R0(:,:,3) = imPattern(:,:,indImPattern).*rgbAll(k0,3);
       blackStim = zeros(size(im2R0));
-      acuStimOrig1 = ARC2Dgabor(smpPos(256,256),[],0,0,frqCpdRB(indAcuRB),1,-15,0,0.2,0.2,[rgbAcuRB(indAcuRB,1)^gammaR rgbAcuRB(indAcuRB,2)^gammaG rgbAcuRB(indAcuRB,3)^gammaB],1,1,0,0);
+      acuStimOrig1 = ARC2Dgabor(smpPos(256,256),[],0,0,[frqCpdRB frqCpdRB*3 frqCpdRB*5 frqCpdRB*7],[cAcuRB(indAcuRBall) cAcuRB(indAcuRBall)/3 cAcuRB(indAcuRBall)/5 cAcuRB(indAcuRBall)/7],-15,0,0.2,0.2,[rgbAcuRB(indAcuRB,1)^gammaR rgbAcuRB(indAcuRB,2)^gammaG rgbAcuRB(indAcuRB,3)^gammaB],1,1,0,0);
       acuStimOrig1(:,:,1) = acuStimOrig1(:,:,1).^(1/gammaR);
       acuStimOrig1(:,:,3) = acuStimOrig1(:,:,3).^(1/gammaB);
-      acuStimOrig2 = ARC2Dgabor(smpPos(256,256),[],0,0,frqCpdRB(indAcuRB),1,15,0,0.2,0.2,[rgbAcuRB(indAcuRB,1)^gammaR rgbAcuRB(indAcuRB,2)^gammaG rgbAcuRB(indAcuRB,3)^gammaB],1,1,0,0);
+      acuStimOrig2 = ARC2Dgabor(smpPos(256,256),[],0,0,[frqCpdRB frqCpdRB*3 frqCpdRB*5 frqCpdRB*7],[cAcuRB(indAcuRBall) cAcuRB(indAcuRBall)/3 cAcuRB(indAcuRBall)/5 cAcuRB(indAcuRBall)/7],15,0,0.2,0.2,[rgbAcuRB(indAcuRB,1)^gammaR rgbAcuRB(indAcuRB,2)^gammaG rgbAcuRB(indAcuRB,3)^gammaB],1,1,0,0);
       acuStimOrig2(:,:,1) = acuStimOrig2(:,:,1).^(1/gammaR);
       acuStimOrig2(:,:,3) = acuStimOrig2(:,:,3).^(1/gammaB);      
       acuStimOrig(:,:,:,1) = acuStimOrig1;
@@ -237,3 +237,5 @@ AFCp.stimOrientation = stimOrientation(1:end-1);
 AFCp.im2R0 = im2R0;
 AFCp.stimSizePixAll = stimSizePixAll(1:end-1);
 AFCp.indAcuRBall = indAcuRBall;
+AFCp.cAcuRB = cAcuRB;
+AFCp.frqCpdRB = frqCpdRB;
