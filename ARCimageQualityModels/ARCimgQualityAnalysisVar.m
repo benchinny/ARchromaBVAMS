@@ -3,6 +3,8 @@ ieInit;
 
 %% Set up display struct and build Ben's stimulus
 
+subjNum = 2;
+
 % Setting up display properties
 d = displayCreate('OLED-Samsung');
 d = displaySet(d, 'name', 'my display');
@@ -29,26 +31,35 @@ load T_xyz1931; % load color matching functions
 T_sensorXYZ = 683*SplineCmf(S_xyz1931,T_xyz1931,S); % interpolate and scale
 wave = S(1):S(2):S(1)+S(2)*(S(3)-1); % define wavelength vector
 
-% NEURAL SENSITIVITY FUNCTION FOR VISUAL STREHL RATIO CALCULATION
-oi = oiCreateARC('human',wave,0); % create optics
-% % making 2D CSF function
-[fx, fy] = meshgrid(oi.optics.OTF.fx,oi.optics.OTF.fy);
-% % scale so frequencies are in units of cyc/deg
-fx = fx./3.37;
-fy = fy./3.37;
-df = sqrt(fx.^2 + fy.^2); % compute distance from origin
-CSF2d = 0.04992*(1+5.9375*df).*exp(-0.114*df.^1.1);
-% inverse Fourier transform of 2D CSF
-N = ifftshift(ifft2(fftshift(CSF2d)));
+%%
+
+if subjNum==1 || subjNum==2
+    subjName = 'BenChin-OS';
+    blockNums = [2 3 4 5 6];
+    trialNums = [[1:20]' [1:20]' [1:20]' [1:20]' [1:20]'];
+    % blockNums = [2 3];
+    % trialNums = [[1:20]' [1:20]']; 
+end
+
+% LOADING DATA
+blockNumInd = randsample(length(blockNums),1);
+blockNumTmp = blockNums(blockNumInd);
+trialNumTmp = randsample(trialNums(:,blockNumInd),1);
+AFCp = ARCloadFileBVAMS(subjNum,blockNumTmp);
+rgb00 = [];
+rgb00(1,:) = AFCp.rgb100(trialNumTmp,:);
+rgb00(2,:) = AFCp.rgb200(trialNumTmp,:);
 
 % Ben's stimulus
 nDotsI = 320;
-rVal = 0.56;
-bVal = 1.00;
+rVal = rgb00(1,1);
+gVal = rgb00(1,2);
+bVal = rgb00(1,3);
 im = AFCwordStimImproved('sea',nDotsI.*[1 1],'green');
 imPatternTmp = squeeze(im(:,:,2));
 imPatternTmp = circshift(imPatternTmp,-15,1);
 I(:,:,3) = bVal.*imresize(imPatternTmp,nDotsI.*[1 1],'nearest');
+I(:,:,2) = gVal.*imresize(imPatternTmp,nDotsI.*[1 1],'nearest');
 I(:,:,1) = rVal.*imresize(imPatternTmp,nDotsI.*[1 1],'nearest');
 I = I./255;
 
@@ -69,69 +80,25 @@ for j = 1:length(wave)
     lumImgOrig = lumImgOrig+energyImgOrig(:,:,j).*T_sensorXYZ(2,j).*downScale;
 end
 
-% s.data.photons(160,160,:) = ones(size(s.data.photons(160,160,:))).*4e14;
-
-% figure; 
-% set(gcf,'Position',[289 428 1056 420]);
-% subplot(1,3,1);
-% plot(d.wave,d.spd(:,1),'r','LineWidth',1.5); hold on;
-% plot(d.wave,d.spd(:,2),'g','LineWidth',1.5);
-% plot(d.wave,d.spd(:,3),'b','LineWidth',1.5);
-% axis square;
-% formatFigure('Wavelength (\lambda)','Radiance');
-% subplot(1,3,2);
-% imagesc(I);
-% set(gca,'XTick',[]);
-% set(gca,'YTick',[]);
-% axis square;
-% set(gca,'FontSize',15);
-% title('Original');
-% subplot(1,3,3);
-% plot(s.spectrum.wave,squeeze(s.data.photons(160,160,:)),'-k','LineWidth',1);
-% formatFigure('Wavelength (\lambda)','Photons');
-% axis square;
-
-%% Computing visual Strehl ratio
-
-Dall = -humanWaveDefocus(380:5:780); % defocus values to look at
-peakPSF = [];
-polyPSFall = [];
-maxRawPSFcheck = [];
-
-for i = 1:length(Dall)
-
-    oi = oiCreateARC('human',wave,Dall(i)); % create optics
-    maxRawPSFcheck(i) = max(max(ifftshift(ifft2(oi.optics.OTF.OTF(:,:,i)))));
-
-    polyPSF = [];
-    
-    photonsTmp = squeeze(s.data.photons(160,160,:));
-    energyTmp = Quanta2Energy(wave,photonsTmp);
-
-    for ind = 1:length(wave)
-        polyPSF(:,:,ind) = ifftshift(ifft2(oi.optics.OTF.OTF(:,:,ind))).* ...
-                          energyTmp(ind).* ...
-                          T_sensorXYZ(2,ind);
-    end
-    
-    polyPSF = sum(polyPSF,3);
-    peakPSF(i) = max(max(polyPSF));
-    vsx(i) = sum(sum(N.*polyPSF));
-
-    polyPSFall(:,:,i) = polyPSF;
-    display(['Strehl loop ' num2str(i)]);
-end
-
-[~,indPeak] = max(peakPSF);
-wvAll = humanWaveDefocusInvert(-Dall);
-wvInFocus = wvAll(indPeak);
-
 figure; 
-plot(humanWaveDefocusInvert(-Dall),0.29.*peakPSF./max(peakPSF),'k-','LineWidth',1);
+set(gcf,'Position',[289 428 1056 420]);
+subplot(1,3,1);
+plot(d.wave,d.spd(:,1),'r','LineWidth',1.5); hold on;
+plot(d.wave,d.spd(:,2),'g','LineWidth',1.5);
+plot(d.wave,d.spd(:,3),'b','LineWidth',1.5);
+axis square;
+formatFigure('Wavelength (\lambda)','Radiance');
+subplot(1,3,2);
+imagesc(I);
+set(gca,'XTick',[]);
+set(gca,'YTick',[]);
 axis square;
 set(gca,'FontSize',15);
-xlabel('Wavelength in focus');
-ylabel('Ratio');
+title('Original');
+subplot(1,3,3);
+plot(s.spectrum.wave,squeeze(s.data.photons(160,160,:)),'-k','LineWidth',1);
+formatFigure('Wavelength (\lambda)','Photons');
+axis square;
 
 %% Computing peak correlation for different wavelengths in focus
 
@@ -173,7 +140,7 @@ end
 
 [~,indPeak2] = max(peakCorr);
 wvAll2 = humanWaveDefocusInvert(-Dall2);
-wvInFocus2 = wvAll(indPeak2);
+wvInFocus2 = wvAll2(indPeak2);
 
 figure; 
 hold on;
