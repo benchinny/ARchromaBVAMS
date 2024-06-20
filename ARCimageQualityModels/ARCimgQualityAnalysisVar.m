@@ -59,6 +59,11 @@ elseif subjNum==2
     % trialNums = [[1:20]' [1:20]'];     
 end
 
+wvInFocus2all = [];
+meanv00all = [];
+rgb1all = [];
+defocusBasic = [];
+
 for l = 1
     for k = 1
         % LOADING DATA
@@ -154,8 +159,9 @@ for l = 1
             
             % Convert to siData format and save.  201 is the number of default 
             % samples in the wvfP object, and we need to match that here.
-            [siPSFData, wvfP] = wvf2SiPsf(wvfP,'showBar',true,'nPSFSamples',320,'umPerSample',1.5212);             
-            oi = oiCreateARC('human',wave,Dall2(i)); % create optics
+            [siPSFData, wvfP] = wvf2SiPsf(wvfP,'showBar',false,'nPSFSamples',320,'umPerSample',1.5212); 
+            oi = wvf2oi(wvfP);
+            % oi = oiCreateARC('human',wave,Dall2(i)); % create optics
             oi = oiCompute(oi, s); % compute optical image of stimulus
         
             photonsImgXW = RGB2XWFormat(oi.data.photons);
@@ -185,6 +191,10 @@ for l = 1
         
         [~,indPeak2] = max(peakCorr);
         wvInFocus2 = wvAll2(indPeak2);
+        wvInFocus2all(end+1,:) = wvInFocus2;
+        rgb1all(end+1,:) = rgb00(1,:);
+        meanv00all(end+1,:) = AFCp.meanv00(trialNumTmp);
+        defocusBasic(end+1,:) = meanC(4);
         
         figure; 
         hold on;
@@ -198,3 +208,5 @@ for l = 1
         ylabel('Peak correlation');
     end
 end
+
+save('/Users/benjaminchin/Documents/ARchromaScraps/ARCmodelOutput.mat','meanv00all','wvInFocus2all','rgb1all','defocusBasic');
