@@ -30,6 +30,10 @@ S = [380 4 101]; % weird convention used by Brainard lab for defining wavelength
 load T_xyz1931; % load color matching functions
 T_sensorXYZ = 683*SplineCmf(S_xyz1931,T_xyz1931,S); % interpolate and scale
 wave = S(1):S(2):S(1)+S(2)*(S(3)-1); % define wavelength vector
+% DEFOCUSES TO LOOK AT
+Dall2 = -humanWaveDefocus(400:4:700);
+% WAVELENGTHS TO LOOK AY
+wvAll2 = humanWaveDefocusInvert(-Dall2);
 
 % PARAMETERS OF WAVEFRONT ANALYSIS
 PARAMS.PixelDimension = 512;% size of pupil aperture field in pixels (this defines the resolution of the calculation)
@@ -56,7 +60,7 @@ elseif subjNum==2
 end
 
 for l = 1
-    for k = 1:5
+    for k = 1
         % LOADING DATA
         blockNumInd = l;
         blockNumTmp = blockNums(blockNumInd);
@@ -72,10 +76,11 @@ for l = 1
         FrameStart = (indMinT-29):indMinT; %first frame for analysis
         NumCoeffs = width(ZernikeTable)-8; % determine how many coefficients are in the cvs file. 
         c=zeros(30,65); %this is the vector that contains the Zernike polynomial coefficients. We can work with up to 65. 
-        PARAMS.PupilSize=table2array(ZernikeTable(FrameStart,5)); %default setting is the pupil size that the Zernike coeffs define, PARAMS(3)
-        PARAMS.PupilFitSize=table2array(ZernikeTable(FrameStart,5)); 
+        PARAMS.PupilSize=mean(table2array(ZernikeTable(FrameStart,5))); %default setting is the pupil size that the Zernike coeffs define, PARAMS(3)
+        PARAMS.PupilFitSize=mean(table2array(ZernikeTable(FrameStart,5))); 
         PARAMS.PupilFieldSize=PARAMS.PupilSize*2; %automatically compute the field size
         c(:,3:NumCoeffs)=table2array(ZernikeTable(FrameStart,11:width(ZernikeTable)));
+        meanC = mean(c,1);   
 
         rgb00 = [];
         rgb00(1,:) = AFCp.rgb100(trialNumTmp,:);
@@ -100,7 +105,6 @@ for l = 1
         vcAddObject(s); 
         
         % Turning original stimulus into luminance image
-        
         downScale = 1;
         photonsImgXWorig = RGB2XWFormat(s.data.photons);
         energyImgXWorig = Quanta2Energy(wave',photonsImgXWorig);
@@ -135,12 +139,22 @@ for l = 1
         
         peakCorr = [];
         % Dall2 = fliplr(Dall);
-        Dall2 = -humanWaveDefocus(380:4:780);
         peakPSF = [];
         peakImg = [];
         
         for i = 1:length(Dall2)
-        
+            zCoeffs = [0 meanC(1:end-1)];
+            wvfP = wvfCreate('calc wavelengths', wvAll2, ...
+                'measured wavelength', humanWaveDefocusInvert(-Dall2(i)), ...
+                'zcoeffs', zCoeffs, 'measured pupil', PARAMS.PupilSize, ...
+                'name', sprintf('human-%d', PARAMS.PupilSize),'spatial samples',320);
+            wvfP.calcpupilMM = PARAMS.PupilSize;
+            wvfP.refSizeOfFieldMM = 42;
+            wvfP = wvfSet(wvfP, 'zcoeff', 0, 'defocus');
+            
+            % Convert to siData format and save.  201 is the number of default 
+            % samples in the wvfP object, and we need to match that here.
+            [siPSFData, wvfP] = wvf2SiPsf(wvfP,'showBar',true,'nPSFSamples',320,'umPerSample',1.5212);             
             oi = oiCreateARC('human',wave,Dall2(i)); % create optics
             oi = oiCompute(oi, s); % compute optical image of stimulus
         
@@ -170,7 +184,6 @@ for l = 1
         %% Plotting peak correlation with wavelength in focus
         
         [~,indPeak2] = max(peakCorr);
-        wvAll2 = humanWaveDefocusInvert(-Dall2);
         wvInFocus2 = wvAll2(indPeak2);
         
         figure; 
