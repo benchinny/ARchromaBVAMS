@@ -64,14 +64,18 @@ for l = 1
 
         AFCp = ARCloadFileBVAMS(subjNum,blockNumTmp);
 
-        [ZernikeTable, ~, ~, TimeStamp] = ARCloadFileFIAT(subjName,blockNum,trialNum,0);
-        FrameStart = 1; %first frame for analysis
+        [ZernikeTable, ~, ~, TimeStamp] = ARCloadFileFIAT(subjName,blockNumTmp,trialNumTmp,0);
+        t = seconds(TimeStamp)-min(seconds(TimeStamp));
+        tHalfway = max(t)/2;
+        tDiffFromHalfway = abs(t-tHalfway);
+        [~,indMinT] = min(tDiffFromHalfway);
+        FrameStart = (indMinT-29):indMinT; %first frame for analysis
         NumCoeffs = width(ZernikeTable)-8; % determine how many coefficients are in the cvs file. 
-        c=zeros(1,65); %this is the vector that contains the Zernike polynomial coefficients. We can work with up to 65. 
+        c=zeros(30,65); %this is the vector that contains the Zernike polynomial coefficients. We can work with up to 65. 
         PARAMS.PupilSize=table2array(ZernikeTable(FrameStart,5)); %default setting is the pupil size that the Zernike coeffs define, PARAMS(3)
         PARAMS.PupilFitSize=table2array(ZernikeTable(FrameStart,5)); 
         PARAMS.PupilFieldSize=PARAMS.PupilSize*2; %automatically compute the field size
-        c(3:NumCoeffs)=table2array(ZernikeTable(FrameStart,11:width(ZernikeTable)));
+        c(:,3:NumCoeffs)=table2array(ZernikeTable(FrameStart,11:width(ZernikeTable)));
 
         rgb00 = [];
         rgb00(1,:) = AFCp.rgb100(trialNumTmp,:);

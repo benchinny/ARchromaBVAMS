@@ -1,6 +1,5 @@
-function [defocus, strehl, TimeStamp] = ARCloadFileFIAT(subjName,blockNum,trialNum,bExtended)
+function [trialData, defocus, strehl, TimeStamp] = ARCloadFileFIAT(subjName,blockNum,trialNum,bExtended)
 
-defocus = [];
 strehl = [];
 
 if strcmp(getenv("USER"),'ben')
