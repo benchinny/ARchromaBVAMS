@@ -31,6 +31,14 @@ load T_xyz1931; % load color matching functions
 T_sensorXYZ = 683*SplineCmf(S_xyz1931,T_xyz1931,S); % interpolate and scale
 wave = S(1):S(2):S(1)+S(2)*(S(3)-1); % define wavelength vector
 
+% PARAMETERS OF WAVEFRONT ANALYSIS
+PARAMS.PixelDimension = 512;% size of pupil aperture field in pixels (this defines the resolution of the calculation)
+PARAMS.PupilSize = 7; %default values - will be replaced depending on choices below
+PARAMS.PupilFieldSize =42; %default values - will be replaced depending on choices below
+PARAMS.PupilFitSize = 7; %default values - will be replaced depending on choices below
+PARAMS.ImagingWavelength = 0.55;% imaging wavelength in microns
+PARAMS.WavefrontResolution = 53;% increase to enhance the display of the wavefront (doesn't affect calculation)
+
 %%
 
 if subjNum==1
@@ -53,7 +61,18 @@ for l = 1
         blockNumInd = l;
         blockNumTmp = blockNums(blockNumInd);
         trialNumTmp = trialNums(k,blockNumInd);
+
         AFCp = ARCloadFileBVAMS(subjNum,blockNumTmp);
+
+        [ZernikeTable, ~, ~, TimeStamp] = ARCloadFileFIAT(subjName,blockNum,trialNum,0);
+        FrameStart = 1; %first frame for analysis
+        NumCoeffs = width(ZernikeTable)-8; % determine how many coefficients are in the cvs file. 
+        c=zeros(1,65); %this is the vector that contains the Zernike polynomial coefficients. We can work with up to 65. 
+        PARAMS.PupilSize=table2array(ZernikeTable(FrameStart,5)); %default setting is the pupil size that the Zernike coeffs define, PARAMS(3)
+        PARAMS.PupilFitSize=table2array(ZernikeTable(FrameStart,5)); 
+        PARAMS.PupilFieldSize=PARAMS.PupilSize*2; %automatically compute the field size
+        c(3:NumCoeffs)=table2array(ZernikeTable(FrameStart,11:width(ZernikeTable)));
+
         rgb00 = [];
         rgb00(1,:) = AFCp.rgb100(trialNumTmp,:);
         rgb00(2,:) = AFCp.rgb200(trialNumTmp,:);
