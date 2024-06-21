@@ -31,7 +31,7 @@ load T_xyz1931; % load color matching functions
 T_sensorXYZ = 683*SplineCmf(S_xyz1931,T_xyz1931,S); % interpolate and scale
 wave = S(1):S(2):S(1)+S(2)*(S(3)-1); % define wavelength vector
 % DEFOCUSES TO LOOK AT
-Dall2 = -humanWaveDefocus(400:4:700);
+Dall2 = -humanWaveDefocus(380:4:780);
 % WAVELENGTHS TO LOOK AY
 wvAll2 = humanWaveDefocusInvert(-Dall2);
 
@@ -64,8 +64,8 @@ meanv00all = [];
 rgb1all = [];
 defocusBasic = [];
 
-for l = 1
-    for k = 1
+for l = 2
+    for k = 1:20
         % LOADING DATA
         blockNumInd = l;
         blockNumTmp = blockNums(blockNumInd);
@@ -209,4 +209,4 @@ for l = 1
     end
 end
 
-save('/Users/benjaminchin/Documents/ARchromaScraps/ARCmodelOutput.mat','meanv00all','wvInFocus2all','rgb1all','defocusBasic');
+save('/Users/benjaminchin/Documents/ARchromaScraps/ARCmodelOutput2_2.mat','meanv00all','wvInFocus2all','rgb1all','defocusBasic');
