@@ -31,9 +31,9 @@ load T_xyz1931; % load color matching functions
 T_sensorXYZ = 683*SplineCmf(S_xyz1931,T_xyz1931,S); % interpolate and scale
 wave = S(1):S(2):S(1)+S(2)*(S(3)-1); % define wavelength vector
 % DEFOCUSES TO LOOK AT
-Dall2 = -humanWaveDefocus(380:4:780);
-% WAVELENGTHS TO LOOK AY
-wvAll2 = humanWaveDefocusInvert(-Dall2);
+Dall = -humanWaveDefocus(wave);
+% WAVELENGTHS TO LOOK AT
+wvAll = humanWaveDefocusInvert(-Dall);
 
 % PARAMETERS OF WAVEFRONT ANALYSIS
 PARAMS.PixelDimension = 512;% size of pupil aperture field in pixels (this defines the resolution of the calculation)
@@ -59,39 +59,42 @@ elseif subjNum==2
     % trialNums = [[1:20]' [1:20]'];     
 end
 
-wvInFocus2all = [];
+wvInFocus1all = [];
 meanv00all = [];
 rgb1all = [];
 defocusBasic = [];
 
-for l = 2
-    for k = 1:20
+for l = 3 % LOOP OVER BLOCK
+    for k = 1:20 % LOOP OVER TRIAL
         % LOADING DATA
         blockNumInd = l;
         blockNumTmp = blockNums(blockNumInd);
         trialNumTmp = trialNums(k,blockNumInd);
-
-        AFCp = ARCloadFileBVAMS(subjNum,blockNumTmp);
-
+        
+        AFCp = ARCloadFileBVAMS(subjNum,blockNumTmp); % LOAD BVAMS DATA
+        % LOAD ZERNIKE TABLE AND TIMESTAMPS
         [ZernikeTable, ~, ~, TimeStamp] = ARCloadFileFIAT(subjName,blockNumTmp,trialNumTmp,0);
+        % GET THE TIMESTAMP CORRESPONDING TO THE HALFWAY POINT
         t = seconds(TimeStamp)-min(seconds(TimeStamp));
         tHalfway = max(t)/2;
         tDiffFromHalfway = abs(t-tHalfway);
         [~,indMinT] = min(tDiffFromHalfway);
-        FrameStart = (indMinT-29):indMinT; %first frame for analysis
+        FrameStart = (indMinT-29):indMinT; % analyze 30 frames
+
         NumCoeffs = width(ZernikeTable)-8; % determine how many coefficients are in the cvs file. 
         c=zeros(30,65); %this is the vector that contains the Zernike polynomial coefficients. We can work with up to 65. 
         PARAMS.PupilSize=mean(table2array(ZernikeTable(FrameStart,5))); %default setting is the pupil size that the Zernike coeffs define, PARAMS(3)
         PARAMS.PupilFitSize=mean(table2array(ZernikeTable(FrameStart,5))); 
         PARAMS.PupilFieldSize=PARAMS.PupilSize*2; %automatically compute the field size
         c(:,3:NumCoeffs)=table2array(ZernikeTable(FrameStart,11:width(ZernikeTable)));
-        meanC = mean(c,1);   
-
+        meanC = mean(c,1); % TAKE MEAN OF COEFFICIENTS
+        
+        % STORE COLORS FOR FIRST AND SECOND STIMULI
         rgb00 = [];
         rgb00(1,:) = AFCp.rgb100(trialNumTmp,:);
         rgb00(2,:) = AFCp.rgb200(trialNumTmp,:);
         
-        % Ben's stimulus
+        % recreate stimulus
         nDotsI = 320;
         rVal = rgb00(1,1);
         gVal = rgb00(1,2);
@@ -143,45 +146,42 @@ for l = 2
         %% Computing peak correlation for different wavelengths in focus
         
         peakCorr = [];
-        % Dall2 = fliplr(Dall);
         peakPSF = [];
         peakImg = [];
         
-        for i = 1:length(Dall2)
+        for i = 1:length(Dall)
             zCoeffs = [0 meanC(1:end-1)];
-            wvfP = wvfCreate('calc wavelengths', wvAll2, ...
-                'measured wavelength', humanWaveDefocusInvert(-Dall2(i)), ...
+            wvfP = wvfCreate('calc wavelengths', wvAll, ...
+                'measured wavelength', humanWaveDefocusInvert(-Dall(i)), ...
                 'zcoeffs', zCoeffs, 'measured pupil', PARAMS.PupilSize, ...
                 'name', sprintf('human-%d', PARAMS.PupilSize),'spatial samples',320);
             wvfP.calcpupilMM = PARAMS.PupilSize;
             wvfP.refSizeOfFieldMM = 42;
             wvfP = wvfSet(wvfP, 'zcoeff', 0, 'defocus');
             
-            % Convert to siData format and save.  201 is the number of default 
-            % samples in the wvfP object, and we need to match that here.
+            % Convert to siData format as well as wavefront object
             [siPSFData, wvfP] = wvf2SiPsf(wvfP,'showBar',false,'nPSFSamples',320,'umPerSample',1.5212); 
-            oi = wvf2oi(wvfP);
-            % oi = oiCreateARC('human',wave,Dall2(i)); % create optics
+            oi = wvf2oi(wvfP); % CONVERT TO OPTICS OBJECT
+            % oi = oiCreateARC('human',wave,Dall(i)); % create optics
             oi = oiCompute(oi, s); % compute optical image of stimulus
         
-            photonsImgXW = RGB2XWFormat(oi.data.photons);
+            photonsImgXW = RGB2XWFormat(oi.data.photons); % FORMATTING
             energyImgXW = Quanta2Energy(wave,photonsImgXW);
-            % energyImg = XW2RGBFormat(energyImgXW,400,400);
             
             lumImgXW = sum(downScale*bsxfun(@times,energyImgXW,T_sensorXYZ(2,:)),2);
             lumImgXYW = XW2RGBFormat(lumImgXW,400,400);
             lumImg = lumImgXYW(41:360,41:360);
-        %    lumImg = oi.data.illuminance(41:360,41:360);
-            % lumImg = lumImg(33:288,33:288);
+
+            % COMPUTE MAX CORRELATION
             peakCorr(i) = max(max(xcorr2(lumImgOrig,lumImg)));
-            % if ismember(round(humanWaveDefocusInvert(-Dall2(i))),[460 520 620])
+            % if ismember(round(humanWaveDefocusInvert(-Dall(i))),[460 520 620])
             %     figure;
             %     set(gcf,'Position',[326 418 924 420]);      
             %     subplot(1,2,1);
             %     imagesc(lumImg); axis square; colormap gray;
             %     subplot(1,2,2);
             %     imagesc(lumImgOrig); axis square; colormap gray;    
-            %     title(['wavelength in focus: ' num2str(round(humanWaveDefocusInvert(-Dall2(i)))) 'nm, ' ...
+            %     title(['wavelength in focus: ' num2str(round(humanWaveDefocusInvert(-Dall(i)))) 'nm, ' ...
             %            'max(xcorr) = ' num2str(peakCorr(i))]);
             % end
             display(['Peak correlation loop ' num2str(i)]);
@@ -190,18 +190,18 @@ for l = 2
         %% Plotting peak correlation with wavelength in focus
         
         [~,indPeak2] = max(peakCorr);
-        wvInFocus2 = wvAll2(indPeak2);
-        wvInFocus2all(end+1,:) = wvInFocus2;
+        wvInFocus1 = wvAll(indPeak2);
+        wvInFocus1all(end+1,:) = wvInFocus1;
         rgb1all(end+1,:) = rgb00(1,:);
         meanv00all(end+1,:) = AFCp.meanv00(trialNumTmp);
         defocusBasic(end+1,:) = meanC(4);
         
         figure; 
         hold on;
-        % plot(humanWaveDefocusInvert(-Dall2),peakCorr./max(peakCorr),'k-','LineWidth',1);
-        plot(humanWaveDefocusInvert(-Dall2),peakCorr./max(peakCorr),'k-','LineWidth',1);
-        % plot(humanWaveDefocusInvert(-Dall2),peakPSF./max(peakPSF),'k-','LineWidth',1);
-        % plot(humanWaveDefocusInvert(-Dall2),peakImg./max(peakImg),'k-','LineWidth',1);
+        % plot(humanWaveDefocusInvert(-Dall),peakCorr./max(peakCorr),'k-','LineWidth',1);
+        plot(humanWaveDefocusInvert(-Dall),peakCorr./max(peakCorr),'k-','LineWidth',1);
+        % plot(humanWaveDefocusInvert(-Dall),peakPSF./max(peakPSF),'k-','LineWidth',1);
+        % plot(humanWaveDefocusInvert(-Dall),peakImg./max(peakImg),'k-','LineWidth',1);
         axis square;
         set(gca,'FontSize',15);
         xlabel('Wavelength in focus');
@@ -209,4 +209,4 @@ for l = 2
     end
 end
 
-save('/Users/benjaminchin/Documents/ARchromaScraps/ARCmodelOutput2_2.mat','meanv00all','wvInFocus2all','rgb1all','defocusBasic');
+save('/Users/benjaminchin/Documents/ARchromaScraps/ARCmodelOutput2_2.mat','meanv00all','wvInFocus1all','rgb1all','defocusBasic');
