@@ -63,13 +63,14 @@ wvInFocus1all = [];
 meanv00all = [];
 rgb1all = [];
 defocusBasic = [];
+kInd = [3 8 16];
 
-for l = 3 % LOOP OVER BLOCK
-    for k = 1:20 % LOOP OVER TRIAL
+for l = 2 % LOOP OVER BLOCK
+    for k = 1:length(kInd) % LOOP OVER TRIAL
         % LOADING DATA
         blockNumInd = l;
         blockNumTmp = blockNums(blockNumInd);
-        trialNumTmp = trialNums(k,blockNumInd);
+        trialNumTmp = trialNums(kInd(k),blockNumInd);
         
         AFCp = ARCloadFileBVAMS(subjNum,blockNumTmp); % LOAD BVAMS DATA
         % LOAD ZERNIKE TABLE AND TIMESTAMPS
@@ -123,7 +124,7 @@ for l = 3 % LOOP OVER BLOCK
             lumImgOrig = lumImgOrig+energyImgOrig(:,:,j).*T_sensorXYZ(2,j).*downScale;
         end
         
-        figure; 
+        figure((k-1)*3+1); 
         set(gcf,'Position',[289 428 1056 420]);
         subplot(1,3,1);
         plot(d.wave,d.spd(:,1),'r','LineWidth',1.5); hold on;
@@ -139,8 +140,8 @@ for l = 3 % LOOP OVER BLOCK
         set(gca,'FontSize',15);
         title('Original');
         subplot(1,3,3);
-        plot(s.spectrum.wave,squeeze(s.data.photons(160,160,:)),'-k','LineWidth',1);
-        formatFigure('Wavelength (\lambda)','Photons');
+        plot(s.spectrum.wave,Quanta2Energy(wave,squeeze(s.data.photons(160,160,:))),'-k','LineWidth',1);
+        formatFigure('Wavelength (\lambda)','Energy');
         axis square;
         
         %% Computing peak correlation for different wavelengths in focus
@@ -149,10 +150,12 @@ for l = 3 % LOOP OVER BLOCK
         peakPSF = [];
         peakImg = [];
         
-        for i = 1:length(Dall)
+        wvInd2focus = [21 31 45 61];
+        wvInd2focus = [30 38 42 46 55 58];
+        for i = 1:length(wvInd2focus)
             zCoeffs = [0 meanC(1:end-1)];
             wvfP = wvfCreate('calc wavelengths', wvAll, ...
-                'measured wavelength', humanWaveDefocusInvert(-Dall(i)), ...
+                'measured wavelength', humanWaveDefocusInvert(-Dall(wvInd2focus(i))), ...
                 'zcoeffs', zCoeffs, 'measured pupil', PARAMS.PupilSize, ...
                 'name', sprintf('human-%d', PARAMS.PupilSize),'spatial samples',320);
             wvfP.calcpupilMM = PARAMS.PupilSize;
@@ -174,17 +177,15 @@ for l = 3 % LOOP OVER BLOCK
 
             % COMPUTE MAX CORRELATION
             peakCorr(i) = max(max(xcorr2(lumImgOrig,lumImg)));
-            % if ismember(round(humanWaveDefocusInvert(-Dall(i))),[460 520 620])
-            %     figure;
-            %     set(gcf,'Position',[326 418 924 420]);      
-            %     subplot(1,2,1);
-            %     imagesc(lumImg); axis square; colormap gray;
-            %     subplot(1,2,2);
-            %     imagesc(lumImgOrig); axis square; colormap gray;    
-            %     title(['wavelength in focus: ' num2str(round(humanWaveDefocusInvert(-Dall(i)))) 'nm, ' ...
-            %            'max(xcorr) = ' num2str(peakCorr(i))]);
-            % end
+            figure((k-1)*3+2);
+            set(gcf,'Position',[205 252 1067 597]);      
+            subplot(2,3,i);
+            imagesc(lumImg); axis square; colormap gray;
+            title(['wavelength in focus: ' num2str(round(humanWaveDefocusInvert(-Dall(wvInd2focus(i))))) 'nm, ' ...
+                   'max(xcorr) = ' num2str(peakCorr(i))]);
             display(['Peak correlation loop ' num2str(i)]);
+            set(gca,'XTick',[]);
+            set(gca,'YTick',[]);
         end
         
         %% Plotting peak correlation with wavelength in focus
@@ -196,15 +197,16 @@ for l = 3 % LOOP OVER BLOCK
         meanv00all(end+1,:) = AFCp.meanv00(trialNumTmp);
         defocusBasic(end+1,:) = meanC(4);
         
-        figure; 
+        figure((k-1)*3+3); 
         hold on;
         % plot(humanWaveDefocusInvert(-Dall),peakCorr./max(peakCorr),'k-','LineWidth',1);
-        plot(humanWaveDefocusInvert(-Dall),peakCorr./max(peakCorr),'k-','LineWidth',1);
+        plot(humanWaveDefocusInvert(-Dall(wvInd2focus)),peakCorr,'k-','LineWidth',1);
         % plot(humanWaveDefocusInvert(-Dall),peakPSF./max(peakPSF),'k-','LineWidth',1);
         % plot(humanWaveDefocusInvert(-Dall),peakImg./max(peakImg),'k-','LineWidth',1);
         axis square;
         set(gca,'FontSize',15);
         xlabel('Wavelength in focus');
         ylabel('Peak correlation');
+        ylim([min(peakCorr) max(peakCorr)]);
     end
 end
