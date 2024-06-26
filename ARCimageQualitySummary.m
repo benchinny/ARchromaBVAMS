@@ -169,3 +169,21 @@ for l = 1:5 % LOOP OVER BLOCK
         rgb1stack(end+1,:) = AFCp.rgb100(trialNumTmp,:);
     end
 end
+
+%%
+
+scaleEquateRB = 4.1086;
+gammaFactorR = 2.4;
+gammaFactorB = 2.2;
+maxLumCdm2 = 0.40;
+
+deltaR = scaleEquateRB.*rgb2all(:,1).^gammaFactorR - scaleEquateRB.*rgb1all(:,1).^gammaFactorR;
+deltaB = rgb2all(:,3).^gammaFactorB - rgb1all(:,3).^gammaFactorB;
+% COMPONENTS OF LINEAR REGRESSION
+deltaS = v00all*0.87;
+delta1 = ones(size(deltaR));
+deltaR = deltaR.*maxLumCdm2;
+deltaB = deltaB.*maxLumCdm2;
+defocusChange = defocusBasic2./defocusCorrectionFactor - defocusBasic./defocusCorrectionFactor;
+weightsRBS1 = [deltaR deltaB deltaS]\(defocusChange);
+
