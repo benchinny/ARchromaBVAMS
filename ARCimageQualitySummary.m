@@ -187,3 +187,100 @@ deltaB = deltaB.*maxLumCdm2;
 defocusChange = defocusBasic2./defocusCorrectionFactor - defocusBasic./defocusCorrectionFactor;
 weightsRBS1 = [deltaR deltaB deltaS]\(defocusChange);
 
+% COMPUTING CORRELATIONS BETWEEN DIFFERENT MODEL PREDICTIONS AND DATA
+rhoFull = corr([deltaR deltaB deltaS]*weightsRBS1,defocusChange);
+rhoNoColor = corr([deltaS]*weightsRBS1(3),defocusChange);
+rhoColor = corr([deltaR deltaB]*weightsRBS1(1:2),defocusChange);
+
+nParams = 4;
+nParamsNoColor = 2;
+
+% COMPUTING COMPONENETS FOR AIC
+trialMeans = [deltaR deltaB deltaS]*weightsRBS1;
+errorIndividual = defocusChange - trialMeans;
+for i = 1:100
+   [stdTmp(i),LLtmp(i)] = ARCfitStdGauss(errorIndividual);
+end
+[~,bestInd] = min(LLtmp);
+estResidualStd = stdTmp(bestInd);
+LL = sum(log(normpdf(defocusChange,trialMeans,estResidualStd)));
+aic = 2*nParams-2*LL;
+
+% COMPUTING COMPONENTS FOR AIC FOR NO-COLOR MODEL
+trialMeansNoColor = [deltaS]*weightsRBS1(3);
+errorIndividualNoColor = defocusChange - trialMeansNoColor;
+for i = 1:100
+   [stdTmp(i),LLtmp(i)] = ARCfitStdGauss(errorIndividualNoColor);
+end
+[~,bestInd] = min(LLtmp);
+estResidualStdNoColor = stdTmp(bestInd);
+LLnoColor = sum(log(normpdf(defocusChange,trialMeansNoColor,estResidualStdNoColor)));
+aicNoColor = 2*nParamsNoColor-2*LLnoColor;
+
+figure;
+set(gcf,'Position',[189 395 1280 420]);
+subplot(1,2,1);
+%    plot([deltaR deltaB deltaS]*weightsRBS1_x,defocusChange,'ko','LineWidth',1);
+predictionTmp = [deltaR deltaB deltaS]*weightsRBS1;
+hold on;
+for i = 1:length(predictionTmp)
+    deltaRtmp = (1/maxLumCdm2)*deltaR(i);
+    deltaBtmp = (1/maxLumCdm2)*deltaB(i);
+    RBratio = 0.25.*(deltaRtmp-deltaBtmp+2);
+    RBratio
+    plot(predictionTmp(i),defocusChange(i),'o','LineWidth',1,'Color',[RBratio 0 1-RBratio],'MarkerFaceColor',[RBratio 0 1-RBratio]);
+    % plot(predictionTmp(i),defocusChange(i),'o','LineWidth',1,'Color','k','MarkerFaceColor','w');
+end    
+plot([-2 2],[-2 2],'k--');
+xlim([-2 2]);
+ylim([-2 2]);
+set(gca,'FontSize',15);
+xlabel('Prediction \DeltaD');
+ylabel('Measured \DeltaD');
+title(['Correlation = ' num2str(rhoFull,3)]);
+axis square;
+
+subplot(1,2,2);
+hold on;
+bar(1,weightsRBS1(1),'FaceColor','r');
+bar(2,weightsRBS1(2),'FaceColor','b');
+bar(3,weightsRBS1(3),'FaceColor','k');
+set(gca,'XTick',[1 2 3]);
+set(gca,'XTickLabel',{'Red' 'Blue' 'D_{opt}'});
+title('Weights');
+set(gca,'FontSize',20);
+ylim(max(weightsRBS1).*[-1.2 1.2]);
+axis square;
+
+figure;
+set(gcf,'Position',[189 395 1280 420]);
+subplot(1,2,1);
+% plot([deltaS]*weightsS1_x,defocusChange,'ko','LineWidth',1);
+predictionTmp = [deltaS]*weightsRBS1(3);
+hold on;
+for i = 1:length(predictionTmp)
+    deltaRtmp = (1/maxLumCdm2)*deltaR(i);
+    deltaBtmp = (1/maxLumCdm2)*deltaB(i);
+    RBratio = 0.25.*(deltaRtmp-deltaBtmp+2);
+    RBratio
+    plot(predictionTmp(i),defocusChange(i),'o','LineWidth',1,'Color',[RBratio 0 1-RBratio],'MarkerFaceColor',[RBratio 0 1-RBratio]);
+    % plot(predictionTmp(i),defocusChange(i),'o','LineWidth',1,'Color','k','MarkerFaceColor','w');
+end
+plot([-2 2],[-2 2],'k--');
+xlim([-2 2]);
+ylim([-2 2]);
+set(gca,'FontSize',15);
+xlabel('Prediction \DeltaA');
+ylabel('Measured \DeltaA');
+title(['Correlation = ' num2str(rhoNoColor,3)]);
+axis square;
+
+subplot(1,2,2);
+hold on;
+bar(1,weightsRBS1(3),'FaceColor','k');
+set(gca,'XTick',[1 2]);
+set(gca,'XTickLabel',{'D_{opt}'});
+title('Weights');
+set(gca,'FontSize',20);
+ylim(max(weightsRBS1(3)).*[-1.2 1.2]);
+axis square;
