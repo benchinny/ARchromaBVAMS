@@ -107,8 +107,18 @@ end
 
 wvInFocus1all = [];
 meanv00all = [];
+v00all = [];
 rgb1all = [];
+rgb2all = [];
 defocusBasic = [];
+defocusBasic2 = [];
+defocus875stack = [];
+% STIMULUS DISTANCE
+meanv00stack = [];
+% STIMULUS COLOR
+rgb1stack = [];
+% CORRECTION FACTOR THAT IS ALSO IN AUSTIN'S CODE
+defocusCorrectionFactor = 0.57735;
 
 for l = 1:5 % LOOP OVER BLOCK
     for k = 1:20 % LOOP OVER TRIAL
@@ -126,6 +136,7 @@ for l = 1:5 % LOOP OVER BLOCK
         tDiffFromHalfway = abs(t-tHalfway);
         [~,indMinT] = min(tDiffFromHalfway);
         FrameStart = (indMinT-29):indMinT; % analyze 30 frames
+        FrameEnd = (length(t)-29):length(t);
 
         NumCoeffs = width(ZernikeTable)-8; % determine how many coefficients are in the cvs file. 
         c=zeros(30,65); %this is the vector that contains the Zernike polynomial coefficients. We can work with up to 65. 
@@ -135,9 +146,26 @@ for l = 1:5 % LOOP OVER BLOCK
         c(:,3:NumCoeffs)=table2array(ZernikeTable(FrameStart,11:width(ZernikeTable)));
         meanC = mean(c,1); % TAKE MEAN OF COEFFICIENTS
         
+        c2=zeros(30,65); %this is the vector that contains the Zernike polynomial coefficients. We can work with up to 65. 
+        PARAMS2.PupilSize=mean(table2array(ZernikeTable(FrameEnd,5))); %default setting is the pupil size that the Zernike coeffs define, PARAMS(3)
+        PARAMS2.PupilFitSize=mean(table2array(ZernikeTable(FrameEnd,5))); 
+        PARAMS2.PupilFieldSize=PARAMS2.PupilSize*2; %automatically compute the field size
+        c2(:,3:NumCoeffs)=table2array(ZernikeTable(FrameEnd,11:width(ZernikeTable)));
+        meanC2 = mean(c2,1); % TAKE MEAN OF COEFFICIENTS   
+
         % STORE COLORS FOR FIRST AND SECOND STIMULI
         rgb00 = [];
         rgb00(1,:) = AFCp.rgb100(trialNumTmp,:);
         rgb00(2,:) = AFCp.rgb200(trialNumTmp,:);
+        defocusBasic(end+1,:) = meanC(4);
+        defocusBasic2(end+1,:) = meanC2(4);
+        rgb1all(end+1,:) = AFCp.rgb100(trialNumTmp,:);
+        rgb2all(end+1,:) = AFCp.rgb200(trialNumTmp,:);
+        meanv00all(end+1,:) = AFCp.meanv00(trialNumTmp);
+        v00all(end+1,:) = AFCp.v00(trialNumTmp);
+
+        defocus875stack(end+1,:) = meanC(4);
+        meanv00stack(end+1,:) = AFCp.meanv00(trialNumTmp);
+        rgb1stack(end+1,:) = AFCp.rgb100(trialNumTmp,:);
     end
 end
