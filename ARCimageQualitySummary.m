@@ -49,7 +49,7 @@ for i = 1:length(stimOptDist)
     blueStore = blueGam/(lumScaleR*redGam+lumScaleG*greenGam+blueGam);
     colorRB(i,:) = [redPlot 0 bluePlot];
     colorRGB(i,:) = [redStore greenStore blueStore];
-    plot(stimOptDist(i),defocus550(i),'o','Color',[redPlot 0 bluePlot],'MarkerSize',10,'MarkerFaceColor',[redPlot 0 bluePlot]);
+    plot(stimOptDist(i),defocus550(i),'o','Color',rgb1stack(i,:),'MarkerSize',10,'MarkerFaceColor',rgb1stack(i,:));
 end
 axis square;
 set(gca,'FontSize',15);
@@ -93,16 +93,18 @@ subjNum = 2;
 
 if subjNum==1
     subjName = 'BenChin-OS';
-    blockNums = [2 3 4 5 6];
-    trialNums = [[1:20]' [1:20]' [1:20]' [1:20]' [1:20]'];
+    blockNums = [3 4 5];
+    trialNums = [[1:20]' [1:20]' [1:20]'];
     % blockNums = [2 3];
     % trialNums = [[1:20]' [1:20]']; 
+    limVals = [-4 4];
 elseif subjNum==2
     subjName = 'S2-OS';
     blockNums = [2 3 4 5 6];
     trialNums = [[1:20]' [1:20]' [1:20]' [1:20]' [1:20]'];
     % blockNums = [2 3];
     % trialNums = [[1:20]' [1:20]'];     
+    limVals = [-2 2];
 end
 
 wvInFocus1all = [];
@@ -120,7 +122,7 @@ rgb1stack = [];
 % CORRECTION FACTOR THAT IS ALSO IN AUSTIN'S CODE
 defocusCorrectionFactor = 0.57735;
 
-for l = 1:5 % LOOP OVER BLOCK
+for l = 1:length(blockNums) % LOOP OVER BLOCK
     for k = 1:20 % LOOP OVER TRIAL
         % LOADING DATA
         blockNumInd = l;
@@ -173,17 +175,21 @@ end
 %%
 
 scaleEquateRB = 4.1086;
+scaleEquateRG = 9.6592;
 gammaFactorR = 2.4;
+gammaFactorG = 2.6;
 gammaFactorB = 2.2;
 maxLumCdm2 = 0.40;
 
 deltaR = scaleEquateRB.*rgb2all(:,1).^gammaFactorR - scaleEquateRB.*rgb1all(:,1).^gammaFactorR;
+deltaG = scaleEquateRG.*rgb2all(:,2).^gammaFactorG - scaleEquateRG.*rgb1all(:,2).^gammaFactorG;
 deltaB = rgb2all(:,3).^gammaFactorB - rgb1all(:,3).^gammaFactorB;
 % COMPONENTS OF LINEAR REGRESSION
 deltaS = v00all*0.87;
 delta1 = ones(size(deltaR));
 deltaR = deltaR.*maxLumCdm2;
 deltaB = deltaB.*maxLumCdm2;
+deltaG = deltaG.*maxLumCdm2;
 defocusChange = defocusBasic2./defocusCorrectionFactor - defocusBasic./defocusCorrectionFactor;
 weightsRBS1 = [deltaR deltaB deltaS]\(defocusChange);
 
@@ -231,9 +237,9 @@ for i = 1:length(predictionTmp)
     plot(predictionTmp(i),defocusChange(i),'o','LineWidth',1,'Color',[RBratio 0 1-RBratio],'MarkerFaceColor',[RBratio 0 1-RBratio]);
     % plot(predictionTmp(i),defocusChange(i),'o','LineWidth',1,'Color','k','MarkerFaceColor','w');
 end    
-plot([-2 2],[-2 2],'k--');
-xlim([-2 2]);
-ylim([-2 2]);
+plot(limVals,limVals,'k--');
+xlim(limVals);
+ylim(limVals);
 set(gca,'FontSize',15);
 xlabel('Prediction \DeltaD');
 ylabel('Measured \DeltaD');
@@ -266,9 +272,9 @@ for i = 1:length(predictionTmp)
     plot(predictionTmp(i),defocusChange(i),'o','LineWidth',1,'Color',[RBratio 0 1-RBratio],'MarkerFaceColor',[RBratio 0 1-RBratio]);
     % plot(predictionTmp(i),defocusChange(i),'o','LineWidth',1,'Color','k','MarkerFaceColor','w');
 end
-plot([-2 2],[-2 2],'k--');
-xlim([-2 2]);
-ylim([-2 2]);
+plot(limVals,limVals,'k--');
+xlim(limVals);
+ylim(limVals);
 set(gca,'FontSize',15);
 xlabel('Prediction \DeltaA');
 ylabel('Measured \DeltaA');
