@@ -89,19 +89,19 @@ ylim([0 4]);
 
 %%
 
-subjNum = 2;
+subjNum = 1;
 
 if subjNum==1
     subjName = 'BenChin-OS';
-    blockNums = [3 4 5];
-    trialNums = [[1:20]' [1:20]' [1:20]'];
+    blockNums = [2 3 4 5 6];
+    trialNums = {[1:20]' [1:20]' [1:20]' [1:20]' [ 1:20]'};
     % blockNums = [2 3];
     % trialNums = [[1:20]' [1:20]']; 
-    limVals = [-4 4];
+    limVals = [-2 2];
 elseif subjNum==2
     subjName = 'S2-OS';
     blockNums = [2 3 4 5 6];
-    trialNums = [[1:20]' [1:20]' [1:20]' [1:20]' [1:20]'];
+    trialNums = {[1:20]' [1:20]' [1:20]' [1:20]' [1:20]'};
     % blockNums = [2 3];
     % trialNums = [[1:20]' [1:20]'];     
     limVals = [-2 2];
@@ -123,11 +123,12 @@ rgb1stack = [];
 defocusCorrectionFactor = 0.57735;
 
 for l = 1:length(blockNums) % LOOP OVER BLOCK
-    for k = 1:20 % LOOP OVER TRIAL
+    trialsTmp = trialNums{l};
+    for k = 1:length(trialsTmp) % LOOP OVER TRIAL
         % LOADING DATA
         blockNumInd = l;
         blockNumTmp = blockNums(blockNumInd);
-        trialNumTmp = trialNums(k,blockNumInd);
+        trialNumTmp = trialsTmp(k);
         
         AFCp = ARCloadFileBVAMS(subjNum,blockNumTmp); % LOAD BVAMS DATA
         % LOAD ZERNIKE TABLE AND TIMESTAMPS
@@ -241,8 +242,8 @@ plot(limVals,limVals,'k--');
 xlim(limVals);
 ylim(limVals);
 set(gca,'FontSize',15);
-xlabel('Prediction \DeltaD');
-ylabel('Measured \DeltaD');
+xlabel('Prediction \DeltaA');
+ylabel('Measured \DeltaA');
 title(['Correlation = ' num2str(rhoFull,3)]);
 axis square;
 
