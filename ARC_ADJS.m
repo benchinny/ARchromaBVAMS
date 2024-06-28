@@ -31,7 +31,7 @@ opto(name_map('r_disp')).control.getFocalPower.focal_power
 opto(name_map('l_disp')).control.setFocalPower(14+sr(1));%-dmnd(k0));
 opto(name_map('l_disp')).control.getFocalPower.focal_power
 
-bTexture = true;
+bTexture = false;
 if bTexture
     % ----LOADING IMAGE----------
     % im2L='texture0_nrm_rgb.png';
@@ -62,9 +62,8 @@ if bTexture
 %     testim = acuStimTmpRGB;
     % ---------------------------
 else
-    wordList = ['car'; 'arc'; 'sea'; 'one'; 'uno'; 'sun'; 'new'; 'ace'; 'air'];
-    wordInd = randsample(1:size(wordList,1),1);
-    imB = AFCwordStimImproved(wordList(wordInd,:),[320 320],stimColor);
+    wordInd = randsample(1:4,1);
+    imB = imread(['H:\Shared drives\CIVO_BVAMS\stimuli\word_image_0' num2str(wordInd) '.png']);
     imB(imB>0) = 255;
     if strcmp(stimColor,'blue')
        clrInd = 3;
@@ -75,11 +74,10 @@ else
     if strcmp(stimColor,'red')
        clrInd = 1;    
     end
-    imB(:,:,clrInd) = circshift(squeeze(imB(:,:,clrInd)),-15,1);
-    imBmono = squeeze(imB(:,:,clrInd));
-    imBmono = imresize(imBmono,[480 480]); % FOR 2/3 of [960 960] SCREEN--PIXELS FROM 90 TO 855 SPAN VIEWPORT
-    imB = zeros([size(imBmono) 3]);
-    imB(:,:,clrInd) = imBmono;
+    imBpad = [zeros([30 size(imB,2)]); imB(:,:,clrInd); zeros([30 size(imB,2)])];
+    imBpad = [zeros([size(imBpad,1) 30]) imBpad zeros([size(imBpad,1) 30])];
+    imB = zeros([size(imBpad,1) size(imBpad,2) 3]);
+    imB(:,:,clrInd) = imBpad;
 %     imB(:,:,1) = imBmono;
 %     imB(:,:,3) = imBmono;
     testim = flipud(imB);   
@@ -132,14 +130,13 @@ try
                 [iLf iRf]=cwin3(imread("black.png"), testim , cf, rc00, window2, window1);  
                 display('Refresh texture');
             elseif ~bTexture & (keyCode(KbName('DownArrow')) | keyCode(KbName('5')))
-                wordInd = randsample(1:size(wordList,1),1);
-                imB = AFCwordStimImproved(wordList(wordInd,:),[320 320],stimColor);
+                wordInd = randsample(1:4,1);
+                imB = imread(['H:\Shared drives\CIVO_BVAMS\stimuli\word_image_0' num2str(wordInd) '.png']);
                 imB(imB>0) = 255;
-                imB(:,:,clrInd) = circshift(squeeze(imB(:,:,clrInd)),-15,1);           
-                imBmono = squeeze(imB(:,:,clrInd));
-                imBmono = imresize(imBmono,[480 480]);
-                imB = zeros([size(imBmono) 3]);
-                imB(:,:,clrInd) = imBmono;
+                imBpad = [zeros([30 size(imB,2)]); imB(:,:,clrInd); zeros([30 size(imB,2)])];
+                imBpad = [zeros([size(imBpad,1) 30]) imBpad zeros([size(imBpad,1) 30])];
+                imB = zeros([size(imBpad,1) size(imBpad,2) 3]);
+                imB(:,:,clrInd) = imBpad; 
                 testim = flipud(imB);   
                 display(['Word is ' wordList(wordInd,:)]);
                 [iLf iRf]=cwin3(imread("black.png"), testim , cf, rc00, window2, window1);
