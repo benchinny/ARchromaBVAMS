@@ -37,14 +37,14 @@ power_dispL=14; %starting display power
 opto(name_map('r_disp')).control.setFocalPower(power_dispR-meanFocstmOptDstAll(1));
 opto(name_map('l_disp')).control.setFocalPower(power_dispL-meanFocstmOptDstAll(1));
 
-if size(imPattern,3)>1
-   indImPattern = randsample(1:size(imPattern,3),1);
+if length(imPattern)>1
+   indImPattern = randsample(1:length(imPattern),1);
 else
    indImPattern = 1;
 end
-im2R0(:,:,1) = imPattern(:,:,indImPattern).*rgb(1,1);
-im2R0(:,:,2) = imPattern(:,:,indImPattern).*rgb(1,2);
-im2R0(:,:,3) = imPattern(:,:,indImPattern).*rgb(1,3);
+im2R0(:,:,1) = imPattern{indImPattern}.*rgb(1,1);
+im2R0(:,:,2) = imPattern{indImPattern}.*rgb(1,2);
+im2R0(:,:,3) = imPattern{indImPattern}.*rgb(1,3);
 
 cwin3(im2R0, im2R0, cf, rc00, window1, window2);
 
@@ -72,12 +72,12 @@ disp('ready to start');  KbWait([], 2);
 
 rspAcu = [];
 for k0=1:length(contrastAll)
-      if size(imPattern,3)>1
-        indImPattern = randsample(1:size(imPattern,3),1);
+      if length(imPattern)>1
+        indImPattern = randsample(1:length(imPattern),1);
       else
         indImPattern = 1;
       end
-      imPatternTmp = squeeze(imPattern(:,:,indImPattern));
+      imPatternTmp = imPattern{indImPattern};
       im2R0 = [];
       im2R0(:,:,1) = imPatternTmp.*rgbAll(k0,1);
       im2R0(:,:,2) = imPatternTmp.*rgbAll(k0,2);
