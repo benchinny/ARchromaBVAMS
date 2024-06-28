@@ -107,22 +107,24 @@ t0=zeros(length(focStmOptDstIncrAll), 6); t1=t0; t2=t0; tChange1 = t0; tChange2 
 disp('ready to start');  KbWait([], 2); 
 
 rspAcu = [];
+indImPatternAll = [];
 for k0=1:length(focStmOptDstIncrAll)
       if size(imPattern,3)>1
         indImPattern = randsample(1:size(imPattern,3),1);
       else
         indImPattern = 1;
       end
+      indImPatternAll(end+1,:) = indImPattern;
       indAcuRB = round(rand)+1;
       indAcuRBall(k0) = indAcuRB;
       im2R0(:,:,1) = imPattern(:,:,indImPattern).*rgbAll(k0,1);
       im2R0(:,:,2) = imPattern(:,:,indImPattern).*rgbAll(k0,2);
       im2R0(:,:,3) = imPattern(:,:,indImPattern).*rgbAll(k0,3);
       blackStim = zeros(size(im2R0));
-      acuStimOrig1 = ARC2Dgabor(smpPos(256,256),[],0,0,[frqCpdRB frqCpdRB*3 frqCpdRB*5 frqCpdRB*7],[cAcuRB(indAcuRBall) cAcuRB(indAcuRBall)/3 cAcuRB(indAcuRBall)/5 cAcuRB(indAcuRBall)/7],-15,0,0.2,0.2,[rgbAcuRB(indAcuRB,1)^gammaR rgbAcuRB(indAcuRB,2)^gammaG rgbAcuRB(indAcuRB,3)^gammaB],1,1,0,0);
+      acuStimOrig1 = ARC2Dgabor(smpPos(256,256),[],0,0,[frqCpdRB frqCpdRB*3 frqCpdRB*5 frqCpdRB*7],[cAcuRB(indAcuRBall) cAcuRB(indAcuRBall)/3 cAcuRB(indAcuRBall)/5 cAcuRB(indAcuRBall)/7],-15,90,0.2,0.2,[rgbAcuRB(indAcuRB,1)^gammaR rgbAcuRB(indAcuRB,2)^gammaG rgbAcuRB(indAcuRB,3)^gammaB],1,1,0,0);
       acuStimOrig1(:,:,1) = acuStimOrig1(:,:,1).^(1/gammaR);
       acuStimOrig1(:,:,3) = acuStimOrig1(:,:,3).^(1/gammaB);
-      acuStimOrig2 = ARC2Dgabor(smpPos(256,256),[],0,0,[frqCpdRB frqCpdRB*3 frqCpdRB*5 frqCpdRB*7],[cAcuRB(indAcuRBall) cAcuRB(indAcuRBall)/3 cAcuRB(indAcuRBall)/5 cAcuRB(indAcuRBall)/7],15,0,0.2,0.2,[rgbAcuRB(indAcuRB,1)^gammaR rgbAcuRB(indAcuRB,2)^gammaG rgbAcuRB(indAcuRB,3)^gammaB],1,1,0,0);
+      acuStimOrig2 = ARC2Dgabor(smpPos(256,256),[],0,0,[frqCpdRB frqCpdRB*3 frqCpdRB*5 frqCpdRB*7],[cAcuRB(indAcuRBall) cAcuRB(indAcuRBall)/3 cAcuRB(indAcuRBall)/5 cAcuRB(indAcuRBall)/7],15,90,0.2,0.2,[rgbAcuRB(indAcuRB,1)^gammaR rgbAcuRB(indAcuRB,2)^gammaG rgbAcuRB(indAcuRB,3)^gammaB],1,1,0,0);
       acuStimOrig2(:,:,1) = acuStimOrig2(:,:,1).^(1/gammaR);
       acuStimOrig2(:,:,3) = acuStimOrig2(:,:,3).^(1/gammaB);      
       acuStimOrig(:,:,:,1) = acuStimOrig1;
@@ -246,3 +248,4 @@ AFCp.stimSizePixAll = stimSizePixAll(1:end-1);
 AFCp.indAcuRBall = indAcuRBall;
 AFCp.cAcuRB = cAcuRB;
 AFCp.frqCpdRB = frqCpdRB;
+AFCp.indImPatternAll = indImPatternAll;
