@@ -10,12 +10,12 @@ if vsIncrement>=1
    vs = vs+1;
 end
 
-meanFocstmOptDst = [4]*1.149;
+meanFocstmOptDst = [2.5]*1.149;
 
 rgb  = [0.56 0.00 1.00];
 
 frqCpd = 15;
-contrast = [1.0 0.9 0.8 0.7 0.6 0.5];
+contrast = [0.2 0.15 0.1 0.05];
 trlPerLvl = 20;
 
 % DEFAULT NO TCA CORRECTION
@@ -38,30 +38,34 @@ if ey(1)=='R'; cf(:,2)=0; elseif ey(1)=='L'; cf(:,1)=0; end
 
 AFCfls0=[filePath 'S' num2str(sn) 'V' num2str(vs) '_AFC_' ey 'ACL' n2s(ACL) '_' tme];
 
-im1 = AFCwordStimImproved('sun',[320 320],'green');
+im1 = imread('H:\Shared drives\CIVO_BVAMS\stimuli\word_image_01.png');
 im1(im1>0) = 255;
 im1 = flipud(im1);   
-imPatternTmp = squeeze(im1(:,:,2));
-imPatternTmp = circshift(imPatternTmp,15,1);
-imPattern(:,:,1) = imresize(imPatternTmp,[480 480]);
-im2 = AFCwordStimImproved('sea',[320 320],'green');
+imPatternTmp = squeeze(im1(:,:,3));
+imPatternTmp = [zeros([30 size(imPatternTmp,2)]); imPatternTmp zeros([30 size(imPatternTmp,2)])];
+imPatternTmp = [zeros([size(imPatternTmp,1) 30]) imBpad zeros([size(imPatternTmp,1) 30])];
+imPattern(:,:,1) = imPatternTmp;
+im2 = imread('H:\Shared drives\CIVO_BVAMS\stimuli\word_image_02.png');
 im2(im2>0) = 255;
 im2 = flipud(im2); 
-imPatternTmp = squeeze(im2(:,:,2));
-imPatternTmp = circshift(imPatternTmp,15,1);
-imPattern(:,:,2) = imresize(imPatternTmp,[480 480]);
-im3 = AFCwordStimImproved('ace',[320 320],'green');
+imPatternTmp = squeeze(im2(:,:,3));
+imPatternTmp = [zeros([30 size(imPatternTmp,2)]); imPatternTmp zeros([30 size(imPatternTmp,2)])];
+imPatternTmp = [zeros([size(imPatternTmp,1) 30]) imBpad zeros([size(imPatternTmp,1) 30])];
+imPattern(:,:,2) = imPatternTmp;
+im3 = imread('H:\Shared drives\CIVO_BVAMS\stimuli\word_image_03.png');
 im3(im3>0) = 255;
 im3 = flipud(im3); 
-imPatternTmp = squeeze(im3(:,:,2));
-imPatternTmp = circshift(imPatternTmp,15,1);
-imPattern(:,:,3) = imresize(imPatternTmp,[480 480]);
-im4 = AFCwordStimImproved('one',[320 320],'green');
+imPatternTmp = squeeze(im3(:,:,3));
+imPatternTmp = [zeros([30 size(imPatternTmp,2)]); imPatternTmp zeros([30 size(imPatternTmp,2)])];
+imPatternTmp = [zeros([size(imPatternTmp,1) 30]) imBpad zeros([size(imPatternTmp,1) 30])];
+imPattern(:,:,3) = imPatternTmp;
+im4 = imread('H:\Shared drives\CIVO_BVAMS\stimuli\word_image_04.png');
 im4(im4>0) = 255;
 im4 = flipud(im4); 
-imPatternTmp = squeeze(im4(:,:,2));
-imPatternTmp = circshift(imPatternTmp,15,1);
-imPattern(:,:,4) = imresize(imPatternTmp,[480 480]);
+imPatternTmp = squeeze(im4(:,:,3));
+imPatternTmp = [zeros([30 size(imPatternTmp,2)]); imPatternTmp zeros([30 size(imPatternTmp,2)])];
+imPatternTmp = [zeros([size(imPatternTmp,1) 30]) imBpad zeros([size(imPatternTmp,1) 30])];
+imPattern(:,:,4) = imPatternTmp;
 AFCp=ARCacuitySquareBasicFunc(imPattern,rgb,meanFocstmOptDst,frqCpd, contrast, window1, window2, trlPerLvl);    
 
 if sv == 1

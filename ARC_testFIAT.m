@@ -163,7 +163,7 @@ try
                 opt_chk=1;    
             elseif keyCode(KbName('+')) && bRecord
                 send_tcp0fiat(tcp_socket,1);
-                pause(0.5);
+                pause(0.25);
                 send_tcp0fiat(tcp_socket,0);
             else
                 disp('WRONG KEY'); snd(100, 0.25);
