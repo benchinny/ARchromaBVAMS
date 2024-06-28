@@ -10,8 +10,9 @@ adjustIncrement = 0.5;
 stimColor = 'blue';
 bRecord = 1;
 
-if bRecord
+if bRecord && ~ismember('tcp_socket', who('global'))
     cmsg('TCP enabled');
+    global tcp_socket;
     tcp_socket = tcpserver('169.229.228.57',31000);
     cmsg('Waiting for TCP socket connection...');
     bConnected = false;
@@ -222,6 +223,6 @@ KbWait([], 2);
 [iLf iRf]=cwin3(imread("black.png"), imread("black.png") , cf, rc00, window2, window1);
 
 sca   
-if bRecord
-    clear tcp_socket;
-end
+% if bRecord
+%     clear tcp_socket;
+% end

@@ -76,8 +76,9 @@ log.LEVEL = log.DEBUG;
 scene.enable_tcp=1;
 scene.trial_num=1;
 
-if scene.enable_tcp
+if scene.enable_tcp && ~ismember('tcp_socket', who('global'))
     cmsg('TCP enabled');
+    global tcp_socket;
     tcp_socket = tcpserver('169.229.228.57',31000);
     cmsg('Waiting for TCP socket connection...');
     bConnected = false;
@@ -224,9 +225,9 @@ for k0=1:length(focStmOptDstIncrAll)
       tRealEnd(k0,:) = clock;
 end
 
-if scene.enable_tcp
-    clear tcp_socket;
-end
+% if scene.enable_tcp
+%     clear tcp_socket;
+% end
 AFCp.v1=power_dispR;
 t3=cat(3, t0, t1, t2,tChange1,tChange2,tRealEnd);
 AFCp.t3 = t3(1:end-1,:,:);
