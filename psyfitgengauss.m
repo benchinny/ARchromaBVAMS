@@ -146,9 +146,9 @@ if bPLOT
     formatFigure([xLbl],[yLbl],['T=' num2str(T,'%.2f') ': \mu=' num2str(mFit,'%1.2f') ',\sigma=' num2str(sFit,'%1.2f') ',\beta=' num2str(bFit,'%1.2f')]);
     xlim(minmax(Xcmp)+[-.1 .1]); ylim([0 1])
     % WRITE STUFF TO SCREEN
-    if isempty(figh)
-    writeText(1-.1,.1,{['n=' num2str(numel(RcmpChs))]},'ratio',18,'right')
-    end
+    % if isempty(figh)
+    % writeText(1-.1,.1,{['n=' num2str(numel(RcmpChs))]},'ratio',18,'right')
+    % end
 
     axis square
 end

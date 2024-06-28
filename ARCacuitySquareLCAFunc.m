@@ -65,14 +65,14 @@ power_dispL=14; %starting display power
 opto(name_map('r_disp')).control.setFocalPower(power_dispR-meanFocstmOptDstAll(1));
 opto(name_map('l_disp')).control.setFocalPower(power_dispL-meanFocstmOptDstAll(1));
 
-if size(imPattern,3)>1
-   indImPattern = randsample(1:size(imPattern,3),1);
+if length(imPattern)>1
+   indImPattern = randsample(1:length(imPattern),1);
 else
    indImPattern = 1;
 end
-im2R0(:,:,1) = imPattern(:,:,indImPattern).*rgb(1,1);
-im2R0(:,:,2) = imPattern(:,:,indImPattern).*rgb(1,2);
-im2R0(:,:,3) = imPattern(:,:,indImPattern).*rgb(1,3);
+im2R0(:,:,1) = imPattern{indImPattern}.*rgb(1,1);
+im2R0(:,:,2) = imPattern{indImPattern}.*rgb(1,2);
+im2R0(:,:,3) = imPattern{indImPattern}.*rgb(1,3);
 
 cwin3(im2R0, im2R0, cf, rc00, window1, window2);
 
@@ -110,17 +110,17 @@ disp('ready to start');  KbWait([], 2);
 rspAcu = [];
 indImPatternAll = [];
 for k0=1:length(focStmOptDstIncrAll)
-      if size(imPattern,3)>1
-        indImPattern = randsample(1:size(imPattern,3),1);
+      if length(imPattern)>1
+        indImPattern = randsample(1:length(imPattern),1);
       else
         indImPattern = 1;
       end
       indImPatternAll(end+1,:) = indImPattern;
       indAcuRB = round(rand)+1;
       indAcuRBall(k0) = indAcuRB;
-      im2R0(:,:,1) = imPattern(:,:,indImPattern).*rgbAll(k0,1);
-      im2R0(:,:,2) = imPattern(:,:,indImPattern).*rgbAll(k0,2);
-      im2R0(:,:,3) = imPattern(:,:,indImPattern).*rgbAll(k0,3);
+      im2R0(:,:,1) = imPattern{indImPattern}.*rgbAll(k0,1);
+      im2R0(:,:,2) = imPattern{indImPattern}.*rgbAll(k0,2);
+      im2R0(:,:,3) = imPattern{indImPattern}.*rgbAll(k0,3);
       blackStim = zeros(size(im2R0));
       acuStimOrig1 = ARC2Dgabor(smpPos(256,256),[],0,0,[frqCpdRB frqCpdRB*3 frqCpdRB*5 frqCpdRB*7],[cAcuRB(indAcuRBall) cAcuRB(indAcuRBall)/3 cAcuRB(indAcuRBall)/5 cAcuRB(indAcuRBall)/7],-15,90,0.2,0.2,[rgbAcuRB(indAcuRB,1)^gammaR rgbAcuRB(indAcuRB,2)^gammaG rgbAcuRB(indAcuRB,3)^gammaB],1,1,0,0);
       acuStimOrig1(:,:,1) = acuStimOrig1(:,:,1).^(1/gammaR);
