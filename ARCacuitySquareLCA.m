@@ -16,13 +16,14 @@ meanFocstmOptDst = meanFocstmOptDst(randperm(length(meanFocstmOptDst)));
 %         0.56 0.00 0.00; ...
 %         0.00 0.00 1.00];
 rgb = [0.555 0 1.00];
+cAcuRB = [0.4 0.5];
 indScrambleRgb = randperm(size(rgb,1));
 rgb = rgb(indScrambleRgb,:);
 
 % focStmOptDstIncr = [-0.5:0.25:0.5];
 focStmOptDstIncr = [-1.2 -0.9 -0.6 -0.3 0.0 0.3 0.6 0.9 1.2];
 focStmOptDstIncr = focStmOptDstIncr.*1.149;
-trlPerLvl = 6;
+trlPerLvl = 4;
 
 % DEFAULT NO TCA CORRECTION
 LfarPower=opto(name_map('r_t_far')).control.getFocalPower.focal_power; 
