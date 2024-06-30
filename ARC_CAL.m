@@ -7,7 +7,8 @@ power_dispL_max = 16;
 power_dispR_min = 7;
 power_dispR_max = 16.4;
 adjustIncrement = 0.1;
-stimColor = 'red';
+rgbTest = [1 1 1];
+rgbTest = round(rgbTest.*255);
 
 %%input a output b
 cf=ones(3,2);
@@ -32,60 +33,15 @@ opto(name_map('l_disp')).control.setFocalPower(14+sr(1));%-dmnd(k0));
 opto(name_map('l_disp')).control.getFocalPower.focal_power
 
 bTexture = false;
-if bTexture
-    % ----LOADING IMAGE----------
-    % im2L='texture0_nrm_rgb.png';
-    im2L='texture0_1080_newfill_malt.png';
-    % im2L = 'TCA_r540_k120_b120_cw5.png';
-    % im2L = 'testEresized.png';
-    im2R=im2L;
-    testim = imread(im2R);
-%    testim = 255.*ones(size(testim));
-    % ---------------------------
-    % ----MAKING GABOR-----------
-    % testim = ARC2Dgabor(smpPos(512,512),[],0,0,30,1,-45,0,0.16,0.5,[0.25 0 0],1,1,0,0);
-    % testim(:,:,1) = testim(:,:,1).^(1/2.4);
-    % testim(:,:,3) = testim(:,:,3).^(1/2.2);    
-    % testim = testim.*255;
-    % ---------------------------
-    % ----MAKING TUMBLING E------
-%     acuStimOrig = imread('testEresized.png');
-%     indGdAcu = acuStimOrig>0;
-%     acuStimOrig(indGdAcu) = 255;
-%     acuStimOrig(~indGdAcu) = 0;
-%     acuStim = [];
-%     acuStimTmp = imresize(acuStimOrig,200.*[1 1]);
-%     acuStimTmpRGB = [];
-%     acuStimTmpRGB(:,:,1) = acuStimTmp.*0.56;
-%     acuStimTmpRGB(:,:,2) = acuStimTmp.*0;
-%     acuStimTmpRGB(:,:,3) = acuStimTmp.*0;   
-%     testim = acuStimTmpRGB;
-    % ---------------------------
-else
-    wordInd = randsample(1:4,1);
-    imB = imread(['H:\Shared drives\CIVO_BVAMS\stimuli\word_image_0' num2str(wordInd) '.png']);
-    imB(imB>0) = 255;
-    if strcmp(stimColor,'blue')
-       clrInd = 3;
-    end
-    if strcmp(stimColor,'green')
-       clrInd = 2;
-    end
-    if strcmp(stimColor,'red')
-       clrInd = 1;    
-    end
-    imBpad = [zeros([30 size(imB,2)]); imB(:,:,clrInd); zeros([30 size(imB,2)])];
-    imBpad = [zeros([size(imBpad,1) 30]) imBpad zeros([size(imBpad,1) 30])];
-    imB = zeros([size(imBpad,1) size(imBpad,2) 3]);
-    imB(:,:,clrInd) = imBpad;
-%     imB(:,:,1) = imBmono;
-%     imB(:,:,3) = imBmono;
-    testim = flipud(imB);   
-end
+testim = [];
+testim(:,:,1) = ones([900 900]).*rgbTest(1);
+testim(:,:,2) = ones([900 900]).*rgbTest(2);
+testim(:,:,3) = ones([900 900]).*rgbTest(3);
+
 [iLf iRf]=cwin3(imread("black.png"), testim , cf, rc00, window2, window1);
 
 power_dispL = 14;
-power_dispR = 14.4;
+power_dispR = 13.9;
 
 rightTrombonePowerNear = opto(name_map('r_t_near')).control.getFocalPower.focal_power;
 rightTrombonePowerFar = opto(name_map('r_t_far')).control.getFocalPower.focal_power;
@@ -125,19 +81,9 @@ try
                     power_dispR=power_dispR-adjustIncrement;
                     power_dispL=power_dispL-adjustIncrement;
                 end
-            elseif bTexture & (keyCode(KbName('DownArrow')) | keyCode(KbName('5')))
+            elseif (keyCode(KbName('DownArrow')) | keyCode(KbName('5')))
                 [iLf iRf]=cwin3(imread("black.png"), testim , cf, rc00, window2, window1);  
                 display('Refresh texture');
-            elseif ~bTexture & (keyCode(KbName('DownArrow')) | keyCode(KbName('5')))
-                wordInd = randsample(1:4,1);
-                imB = imread(['H:\Shared drives\CIVO_BVAMS\stimuli\word_image_0' num2str(wordInd) '.png']);
-                imB(imB>0) = 255;
-                imBpad = [zeros([30 size(imB,2)]); imB(:,:,clrInd); zeros([30 size(imB,2)])];
-                imBpad = [zeros([size(imBpad,1) 30]) imBpad zeros([size(imBpad,1) 30])];
-                imB = zeros([size(imBpad,1) size(imBpad,2) 3]);
-                imB(:,:,clrInd) = imBpad; 
-                testim = flipud(imB);   
-                [iLf iRf]=cwin3(imread("black.png"), testim , cf, rc00, window2, window1);
             elseif keyCode(KbName('Return')) %| keyCode(KbName('Return'))
                 opt_chk=1;    
             else
@@ -159,7 +105,7 @@ try
             opto(name_map('l_disp')).control.setFocalPower(power_dispL);
             opto(name_map('r_disp')).control.setFocalPower(power_dispR);
             
-            fprintf('Display power: L = %f  , R = %f , Optical Distance R = %f D \n',power_dispL, power_dispR, 1.*(14.4-power_dispR));
+            fprintf('Display power: L = %f  , R = %f , Optical Distance R = %f D \n',power_dispL, power_dispR, 0.87.*(13.935-power_dispR));
 
             fprintf('\n');
         end
