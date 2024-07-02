@@ -65,6 +65,8 @@ if scene.enable_tcp && ~ismember('tcp_socket', who('global'))
     end
     % fopen(tcp_socket);
     cmsg('TCP connected!');    
+else
+    global tcp_socket;
 end
 
 %[power_dispL power_dispR]=fcs_afc(window1, window2);
@@ -79,6 +81,7 @@ t0=zeros(length(v0), 6); t1=t0; t2=t0; tChange1 = t0; tChange2 = t0; tRealEnd = 
 sinValuesAll = [];
 % stage) 0stop 1record figure this out with Steve
 disp('ready to start');  KbWait([], 2); 
+indImPatternAll = [];
 for k0=1:size(v0,1)
       tSin = 0:(1/(nRmpSteps-1)):1; % support for sinusoidal modulation
       sinValues = [];
@@ -93,6 +96,7 @@ for k0=1:size(v0,1)
       else
         indImPattern = 1;
       end
+      indImPatternAll(end+1,:) = indImPattern;
       im2R0(:,:,1) = imPattern(:,:,indImPattern).*rgb0(k0,1);
       im2R0(:,:,2) = imPattern(:,:,indImPattern).*rgb0(k0,2);
       im2R0(:,:,3) = imPattern(:,:,indImPattern).*rgb0(k0,3);
@@ -206,3 +210,4 @@ AFCp.v1=power_dispR
 AFCp.t3=cat(3, t0, t1, t2,tChange1,tChange2,tRealEnd);
 AFCp.dgs=dgs;
 AFCp.sinValues = sinValuesAll;
+AFCp.indImPatternAll = indImPatternAll;
