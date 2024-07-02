@@ -91,6 +91,8 @@ if scene.enable_tcp && ~ismember('tcp_socket', who('global'))
     end
     % fopen(tcp_socket);
     cmsg('TCP connected!');    
+else
+    global tcp_socket;    
 end
 
 t0=zeros(length(focStmOptDstIncrAll), 6); t1=t0; t2=t0; tChange1 = t0; tChange2 = t0; tRealEnd = t0;
