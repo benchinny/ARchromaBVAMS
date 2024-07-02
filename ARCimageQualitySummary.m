@@ -9,16 +9,20 @@ filenames = {'/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkel
              '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/imageQualityAnalysis/ARCmodelOutput2_2.mat' ...
              '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/imageQualityAnalysis/ARCmodelOutput2_3.mat'};
 
-for i = 1:4
-    load(['/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/imageQualityAnalysis/ARCmodelOutput2_' num2str(i) '.mat']);
+for i = 1:5
+    load(['/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/imageQualityAnalysis/ARCmodelOutput2_' num2str(i) 'nogreen.mat']);
     % DEFOCUS AT 875nm (RAW FIAT MEASUREMENT)
     defocus875stack = [defocus875stack; defocusBasic];
     % STIMULUS DISTANCE
     meanv00stack = [meanv00stack; meanv00all];
     % STIMULUS COLOR
     rgb1stack = [rgb1stack; rgb1all];
-    % WAVELENGTH IN FOCUS
-    wvInFocusStack = [wvInFocusStack; wvInFocus2all];
+    if exist('wvInFocus2all','var')
+        wvInFocusStack = [wvInFocusStack; wvInFocus2all];
+    else
+        % WAVELENGTH IN FOCUS
+        wvInFocusStack = [wvInFocusStack; wvInFocus1all];
+    end
 end
 
 %% STIMULUS DISTANCE VS ESTIMATED DEFOCUS AT 550nm
@@ -291,3 +295,43 @@ title('Weights');
 set(gca,'FontSize',20);
 ylim(max(weightsRBS1(3)).*[-1.2 1.2]);
 axis square;
+
+%% LINEAR MODEL WITHOUT COLOR
+
+% MEASURED ACCOMMODATIVE STATE AT 875nm
+A = defocus875stack./defocusCorrectionFactor;
+% STIMULUS OPTICAL DISTANCE--ASSOCIATE IT WITH IR? WHY? NOT SURE. 
+d_ir = meanv00stack.*0.87-0.46;
+
+regWeights = [d_ir ones(size(d_ir))]\A;
+
+figure;
+plot([d_ir ones(size(d_ir))]*regWeights,A,'ko');
+axis square;
+set(gca,'FontSize',15);
+xlabel('Prediction');
+ylabel('Actual');
+
+%% LINEAR MODEL WITH COLOR
+
+% MEASURED ACCOMMODATIVE STATE AT 875nm
+A = defocus875stack./defocusCorrectionFactor;
+% STIMULUS OPTICAL DISTANCE--ASSOCIATE IT WITH IR? WHY? NOT SURE. 
+d_ir = meanv00stack.*0.87-0.46;
+% LUMINANCES
+lumR1 = 0.4.*(rgb1stack(:,1).^(2.4)).*scaleEquateRB;
+lumG1 = 0.4.*(rgb1stack(:,2).^(2.6)).*scaleEquateRG;
+lumB1 = 0.4.*(rgb1stack(:,3).^(2.2)).*1;
+% 'OPTICAL DISTANCES' FOR EACH COLOR--DUNNO WHAT IT MEANS
+d_r = humanWaveDefocus(875)-humanWaveDefocus(620);
+d_g = humanWaveDefocus(875)-humanWaveDefocus(532);
+d_b = humanWaveDefocus(875)-humanWaveDefocus(460);
+
+regWeights = [d_ir ones(size(d_ir)) lumR1*d_r lumG1*d_g lumB1*d_b]\A;
+
+figure;
+plot([d_ir ones(size(d_ir)) lumR1*d_r lumG1*d_g lumB1*d_b]*regWeights,A,'ko');
+axis square;
+set(gca,'FontSize',15);
+xlabel('Prediction');
+ylabel('Actual');
