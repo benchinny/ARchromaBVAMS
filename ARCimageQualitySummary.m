@@ -301,12 +301,17 @@ axis square;
 % MEASURED ACCOMMODATIVE STATE AT 875nm
 A = defocus875stack./defocusCorrectionFactor;
 % STIMULUS OPTICAL DISTANCE--ASSOCIATE IT WITH IR? WHY? NOT SURE. 
-d_ir = meanv00stack.*0.87-0.46;
+S = meanv00stack.*0.87-0.46;
 
-regWeights = [d_ir ones(size(d_ir))]\A;
+regWeights = [S ones(size(S))]\A;
+
+predictionNoColor = [S ones(size(S))]*regWeights;
 
 figure;
-plot([d_ir ones(size(d_ir))]*regWeights,A,'ko');
+hold on;
+for i = 1:length(A)
+    plot(predictionNoColor(i),A(i),'o','MarkerFaceColor',rgb1stack(i,:),'Color',rgb1stack(i,:));
+end
 axis square;
 set(gca,'FontSize',15);
 xlabel('Prediction');
@@ -317,7 +322,7 @@ ylabel('Actual');
 % MEASURED ACCOMMODATIVE STATE AT 875nm
 A = defocus875stack./defocusCorrectionFactor;
 % STIMULUS OPTICAL DISTANCE--ASSOCIATE IT WITH IR? WHY? NOT SURE. 
-d_ir = meanv00stack.*0.87-0.46;
+S = meanv00stack.*0.87-0.46;
 % LUMINANCES
 lumR1 = 0.4.*(rgb1stack(:,1).^(2.4)).*scaleEquateRB;
 lumG1 = 0.4.*(rgb1stack(:,2).^(2.6)).*scaleEquateRG;
@@ -327,11 +332,158 @@ d_r = humanWaveDefocus(875)-humanWaveDefocus(620);
 d_g = humanWaveDefocus(875)-humanWaveDefocus(532);
 d_b = humanWaveDefocus(875)-humanWaveDefocus(460);
 
-regWeights = [d_ir ones(size(d_ir)) lumR1*d_r lumG1*d_g lumB1*d_b]\A;
+regWeights = [S ones(size(S)) lumR1*d_r lumG1*d_g lumB1*d_b]\A;
+predictionColor = [S ones(size(S)) lumR1*d_r lumG1*d_g lumB1*d_b]*regWeights;
 
 figure;
-plot([d_ir ones(size(d_ir)) lumR1*d_r lumG1*d_g lumB1*d_b]*regWeights,A,'ko');
+hold on;
+for i = 1:length(A)
+    plot(predictionColor(i),A(i),'o','MarkerFaceColor',rgb1stack(i,:),'Color',rgb1stack(i,:));
+end
 axis square;
 set(gca,'FontSize',15);
 xlabel('Prediction');
 ylabel('Actual');
+
+figure;
+hold on;
+bar(1,regWeights(1),'FaceColor','k');
+bar(2,regWeights(2),'FaceColor',[0.7 0.7 0.7]);
+bar(3,regWeights(3),'FaceColor','r');
+bar(4,regWeights(4),'FaceColor','g');
+bar(5,regWeights(5),'FaceColor','b');
+set(gca,'XTick',[]);
+set(gca,'FontSize',15)
+
+%% LOAD TRIALS FROM 'FIXED' CONDITIONS
+
+subjNum = 1;
+
+if subjNum==1
+    subjName = 'BenChin-OD';
+    blockNums = [8];
+    trialNums = {[1:30]'};
+    % blockNums = [2 3];
+    % trialNums = [[1:20]' [1:20]']; 
+    limVals = [-2 2];
+elseif subjNum==2
+    subjName = 'S2-OS';
+    blockNums = [2 3 4 5 6];
+    trialNums = {[1:20]' [1:20]' [1:20]' [1:20]' [1:20]'};
+    % blockNums = [2 3];
+    % trialNums = [[1:20]' [1:20]'];     
+    limVals = [-2 2];
+end
+
+wvInFocus1all = [];
+meanv00all = [];
+v00all = [];
+rgb1all = [];
+rgb2all = [];
+defocusBasic = [];
+defocusBasic2 = [];
+defocus875stack = [];
+defocus875stack2 = [];
+% STIMULUS DISTANCE
+meanv00stack = [];
+meanv01stack = [];
+% STIMULUS COLOR
+rgb1stack = [];
+rgb2stack = [];
+% CORRECTION FACTOR THAT IS ALSO IN AUSTIN'S CODE
+defocusCorrectionFactor = 0.57735;
+
+for l = 1:length(blockNums) % LOOP OVER BLOCK
+    trialsTmp = trialNums{l};
+    for k = 1:length(trialsTmp) % LOOP OVER TRIAL
+        % LOADING DATA
+        blockNumInd = l;
+        blockNumTmp = blockNums(blockNumInd);
+        trialNumTmp = trialsTmp(k);
+        
+        AFCp = ARCloadFileBVAMS(subjNum,blockNumTmp); % LOAD BVAMS DATA
+        % LOAD ZERNIKE TABLE AND TIMESTAMPS
+        [ZernikeTable, ~, ~, TimeStamp] = ARCloadFileFIAT(subjName,blockNumTmp,trialNumTmp,0);
+        % GET THE TIMESTAMP CORRESPONDING TO THE HALFWAY POINT
+        t = seconds(TimeStamp)-min(seconds(TimeStamp));
+        tHalfway = max(t)/2;
+        tDiffFromHalfway = abs(t-tHalfway);
+        [~,indMinT] = min(tDiffFromHalfway);
+        FrameStart = (indMinT-29):indMinT; % analyze 30 frames
+        FrameEnd = (length(t)-29):length(t);
+
+        NumCoeffs = width(ZernikeTable)-8; % determine how many coefficients are in the cvs file. 
+        c=zeros(30,65); %this is the vector that contains the Zernike polynomial coefficients. We can work with up to 65. 
+        PARAMS.PupilSize=mean(table2array(ZernikeTable(FrameStart,5))); %default setting is the pupil size that the Zernike coeffs define, PARAMS(3)
+        PARAMS.PupilFitSize=mean(table2array(ZernikeTable(FrameStart,5))); 
+        PARAMS.PupilFieldSize=PARAMS.PupilSize*2; %automatically compute the field size
+        c(:,3:NumCoeffs)=table2array(ZernikeTable(FrameStart,11:width(ZernikeTable)));
+        meanC = mean(c,1); % TAKE MEAN OF COEFFICIENTS
+        
+        c2=zeros(30,65); %this is the vector that contains the Zernike polynomial coefficients. We can work with up to 65. 
+        PARAMS2.PupilSize=mean(table2array(ZernikeTable(FrameEnd,5))); %default setting is the pupil size that the Zernike coeffs define, PARAMS(3)
+        PARAMS2.PupilFitSize=mean(table2array(ZernikeTable(FrameEnd,5))); 
+        PARAMS2.PupilFieldSize=PARAMS2.PupilSize*2; %automatically compute the field size
+        c2(:,3:NumCoeffs)=table2array(ZernikeTable(FrameEnd,11:width(ZernikeTable)));
+        meanC2 = mean(c2,1); % TAKE MEAN OF COEFFICIENTS   
+
+        % STORE COLORS FOR FIRST AND SECOND STIMULI
+        rgb00 = [];
+        rgb00(1,:) = AFCp.rgb100(trialNumTmp,:);
+        rgb00(2,:) = AFCp.rgb200(trialNumTmp,:);
+        defocusBasic(end+1,:) = meanC(4);
+        defocusBasic2(end+1,:) = meanC2(4);
+        rgb1all(end+1,:) = AFCp.rgb100(trialNumTmp,:);
+        rgb2all(end+1,:) = AFCp.rgb200(trialNumTmp,:);
+        meanv00all(end+1,:) = AFCp.meanv00(trialNumTmp);
+        v00all(end+1,:) = AFCp.v00(trialNumTmp);
+
+        defocus875stack(end+1,:) = meanC(4);
+        defocus875stack2(end+1,:) = meanC2(4);
+        meanv00stack(end+1,:) = AFCp.meanv00(trialNumTmp);
+        rgb1stack(end+1,:) = AFCp.rgb100(trialNumTmp,:);
+        rgb2stack(end+1,:) = AFCp.rgb200(trialNumTmp,:);
+        meanv01stack(end+1,:) = AFCp.meanv00(trialNumTmp)+AFCp.v00(trialNumTmp);
+    end
+end
+
+%%
+
+rgb1unq = unique(rgb1stack,'rows');
+
+figure;
+hold on;
+for i = 1:size(rgb1unq,1)
+    ind = abs(rgb1stack(:,1)-rgb1unq(i,1))<0.001 & ...
+          abs(rgb1stack(:,2)-rgb1unq(i,2))<0.001 & ...
+          abs(rgb1stack(:,3)-rgb1unq(i,3))<0.001;
+
+    plot(i.*ones([sum(ind) 1]),defocus875stack(ind)./defocusCorrectionFactor,'o','Color',rgb1unq(i,:),'MarkerFaceColor',rgb1unq(i,:));
+end
+ylim([0 3]);
+set(gca,'XTick',1:3);
+set(gca,'XTickLabel','');
+xlim([0.5 3.5]);
+set(gca,'FontSize',15);
+ylabel('Accommodative response at 875nm (D)');
+
+%%
+
+rgb2unq = unique([rgb2stack meanv01stack],'rows');
+
+figure;
+hold on;
+for i = 1:size(rgb2unq,1)
+    ind = abs(rgb2stack(:,1)-rgb2unq(i,1))<0.001 & ...
+          abs(rgb2stack(:,2)-rgb2unq(i,2))<0.001 & ...
+          abs(rgb2stack(:,3)-rgb2unq(i,3))<0.001 & ...
+          abs(meanv01stack-rgb2unq(i,4))<0.001;
+
+    plot(i.*ones([sum(ind) 1]),defocus875stack2(ind)./defocusCorrectionFactor,'o','Color',rgb2unq(i,1:3),'MarkerFaceColor',rgb2unq(i,1:3));
+end
+ylim([0 3]);
+set(gca,'XTick',1:3);
+set(gca,'XTickLabel','');
+xlim([0.5 6.5]);
+set(gca,'FontSize',15);
+ylabel('Accommodative response at 875nm (D)');
