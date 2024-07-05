@@ -25,6 +25,20 @@ for i = 1:5
     end
 end
 
+figure; 
+hist(wvInFocusStack,21); 
+axis square; 
+set(gca,'FontSize',15);
+xlabel('Wavelength in focus');
+ylabel('Count');
+
+figure; 
+hist(humanWaveDefocus(wvInFocusStack),21); 
+axis square; 
+set(gca,'FontSize',15);
+xlabel('Defocus due to LCA (D)');
+ylabel('Count');
+
 %% STIMULUS DISTANCE VS ESTIMATED DEFOCUS AT 550nm
 
 % CORRECTION FACTOR THAT IS ALSO IN AUSTIN'S CODE
@@ -67,7 +81,7 @@ ylim([0 4]);
 
 stimOptDistUnq = unique(stimOptDist);
 
-indSanityCheck = 1;
+indSanityCheck = 4;
 
 indOptDist = abs(stimOptDist-stimOptDistUnq(indSanityCheck))<0.001;
 
@@ -91,9 +105,9 @@ title(['Correlation = ' num2str(corr(colorBasedPrediction,defocus875stack./defoc
 xlim([0 4]);
 ylim([0 4]);
 
-%%
+%% LOADING DATA FOR ORIGINAL ANALYSIS
 
-subjNum = 1;
+subjNum = 2;
 
 if subjNum==1
     subjName = 'BenChin-OS';
@@ -177,7 +191,7 @@ for l = 1:length(blockNums) % LOOP OVER BLOCK
     end
 end
 
-%%
+%% ORIGINAL ANALYSIS
 
 scaleEquateRB = 4.1086;
 scaleEquateRG = 9.6592;
