@@ -137,42 +137,38 @@ rgb200 = rgb2(AFCv,:);
 % im2(im2>0) = 255;
 % im2 = flipud(im2);
 AFCfls0=[filePath 'S' num2str(sn) 'V' num2str(vs) '_AFC_' ey 'ACL' n2s(ACL) '_' tme];
-if strcmp(expSubType,'OLD')
-   AFCp=AFC9f(AFCim0, AFCim1, zL, zR, v00, sr, window1, window2);
-elseif strcmp(expSubType,'SIN')
-   [im2L0, im2L1, im2R0, im2R1] = AFCtcaStmImg(AFCim0, AFCim1, zL, zR);
-   AFCp=AFCsin(im2L0, im2L1, im2R0, im2R1, v00, meanv00, sr, window1, window2);
-elseif strcmp(expSubType,'STEP')
-   [im2L0, im2L1, im2R0, im2R1] = AFCtcaStmImg(AFCim0, AFCim1, zL, zR); 
-   AFCp=AFCstep(im2L0, im2L1, im2R0, im2R1, v00, meanv00, sr, window1, window2); 
-elseif strcmp(expSubType,'RGB')
-   % imB = imread('G:\My Drive\exp_bvams\code_repo\imgs\vrn10_B_sd1.png');
-   imB = AFCwordStimImproved('sun',[320 320],'green');
-   imB(imB>0) = 255;
-   imB = flipud(imB);   
-   imPatternTmp = squeeze(imB(:,:,2));
-   imPatternTmp = circshift(imPatternTmp,15,1);
-   imPattern(:,:,1) = imresize(imPatternTmp,[480 480]);
-   imC = AFCwordStimImproved('sea',[320 320],'green');
-   imC(imC>0) = 255;
-   imC = flipud(imC); 
-   imPatternTmp = squeeze(imC(:,:,2));
-   imPatternTmp = circshift(imPatternTmp,15,1);
-   imPattern(:,:,2) = imresize(imPatternTmp,[480 480]);
-   imD = AFCwordStimImproved('ace',[320 320],'green');
-   imD(imD>0) = 255;
-   imD = flipud(imD); 
-   imPatternTmp = squeeze(imD(:,:,2));
-   imPatternTmp = circshift(imPatternTmp,15,1);
-   imPattern(:,:,3) = imresize(imPatternTmp,[480 480]);
-   imE = AFCwordStimImproved('one',[320 320],'green');
-   imE(imE>0) = 255;
-   imE = flipud(imE); 
-   imPatternTmp = squeeze(imE(:,:,2));
-   imPatternTmp = circshift(imPatternTmp,15,1);
-   imPattern(:,:,4) = imresize(imPatternTmp,[480 480]);
-   AFCp=AFCrgb(imPattern,rgb100,rgb200,v00, meanv00, sr, window1, window2, vs);    
-end
+
+% imB = imread('G:\My Drive\exp_bvams\code_repo\imgs\vrn10_B_sd1.png');
+imPattern = {};
+im1 = imread('H:\Shared drives\CIVO_BVAMS\stimuli\word_image_01.png');
+im1(im1>0) = 255;
+im1 = flipud(im1);   
+imPatternTmp = squeeze(im1(:,:,3));
+imPatternTmp = [zeros([30 size(imPatternTmp,2)]); imPatternTmp; zeros([30 size(imPatternTmp,2)])];
+imPatternTmp = [zeros([size(imPatternTmp,1) 30]) imPatternTmp zeros([size(imPatternTmp,1) 30])];
+imPattern{1} = imPatternTmp;
+im2 = imread('H:\Shared drives\CIVO_BVAMS\stimuli\word_image_02.png');
+im2(im2>0) = 255;
+im2 = flipud(im2); 
+imPatternTmp = squeeze(im2(:,:,3));
+imPatternTmp = [zeros([30 size(imPatternTmp,2)]); imPatternTmp; zeros([30 size(imPatternTmp,2)])];
+imPatternTmp = [zeros([size(imPatternTmp,1) 30]) imPatternTmp zeros([size(imPatternTmp,1) 30])];
+imPattern{2} = imPatternTmp;
+im3 = imread('H:\Shared drives\CIVO_BVAMS\stimuli\word_image_03.png');
+im3(im3>0) = 255;
+im3 = flipud(im3); 
+imPatternTmp = squeeze(im3(:,:,3));
+imPatternTmp = [zeros([30 size(imPatternTmp,2)]); imPatternTmp; zeros([30 size(imPatternTmp,2)])];
+imPatternTmp = [zeros([size(imPatternTmp,1) 30]) imPatternTmp zeros([size(imPatternTmp,1) 30])];
+imPattern{3} = imPatternTmp;
+im4 = imread('H:\Shared drives\CIVO_BVAMS\stimuli\word_image_04.png');
+im4(im4>0) = 255;
+im4 = flipud(im4); 
+imPatternTmp = squeeze(im4(:,:,3));
+imPatternTmp = [zeros([30 size(imPatternTmp,2)]); imPatternTmp; zeros([30 size(imPatternTmp,2)])];
+imPatternTmp = [zeros([size(imPatternTmp,1) 30]) imPatternTmp zeros([size(imPatternTmp,1) 30])];
+imPattern{4} = imPatternTmp;
+AFCp=AFCrgb(imPattern,rgb100,rgb200,v00, meanv00, sr, window1, window2, vs);    
 
 AFCp.v0=v0;
 AFCp.v00=v00;

@@ -28,14 +28,14 @@ power_dispL=14+sr(1); %starting display power
 opto(name_map('r_disp')).control.setFocalPower(power_dispR-meanv0(1));
 opto(name_map('l_disp')).control.setFocalPower(power_dispL-meanv0(1));
 
-if size(imPattern,3)>1
-   indImPattern = randsample(1:size(imPattern,3),1);
+if length(imPattern)>1
+   indImPattern = randsample(1:length(imPattern),1);
 else
    indImPattern = 1;
 end
-im2R0(:,:,1) = imPattern(:,:,indImPattern).*rgb0(1,1);
-im2R0(:,:,2) = imPattern(:,:,indImPattern).*rgb0(1,2);
-im2R0(:,:,3) = imPattern(:,:,indImPattern).*rgb0(1,3);
+im2R0(:,:,1) = imPattern{indImPattern}.*rgb0(1,1);
+im2R0(:,:,2) = imPattern{indImPattern}.*rgb0(1,2);
+im2R0(:,:,3) = imPattern{indImPattern}.*rgb0(1,3);
 
 % wn=cwin0(img0, 'Stereo', cf, rc00, window1, window2);
 [iLf0 iRf0]=cwin3(im2R0, im2R0, cf, rc00, window1, window2);
@@ -91,18 +91,18 @@ for k0=1:size(v0,1)
          sinValues = [sinValues imresize([meanv0(k0) meanv0(k0)+v0(k0,i)],[1 length(sinValuesTmp)],'nearest')];
       end
       sinValuesAll(k0,:) = sinValues;
-      if size(imPattern,3)>1
-        indImPattern = randsample(1:size(imPattern,3),1);
+      if length(imPattern)>1
+        indImPattern = randsample(1:length(imPattern),1);
       else
         indImPattern = 1;
       end
       indImPatternAll(end+1,:) = indImPattern;
-      im2R0(:,:,1) = imPattern(:,:,indImPattern).*rgb0(k0,1);
-      im2R0(:,:,2) = imPattern(:,:,indImPattern).*rgb0(k0,2);
-      im2R0(:,:,3) = imPattern(:,:,indImPattern).*rgb0(k0,3);
-      im2R1(:,:,1) = imPattern(:,:,indImPattern).*rgb1(k0,1);
-      im2R1(:,:,2) = imPattern(:,:,indImPattern).*rgb1(k0,2);
-      im2R1(:,:,3) = imPattern(:,:,indImPattern).*rgb1(k0,3);
+      im2R0(:,:,1) = imPattern{indImPattern}.*rgb0(k0,1);
+      im2R0(:,:,2) = imPattern{indImPattern}.*rgb0(k0,2);
+      im2R0(:,:,3) = imPattern{indImPattern}.*rgb0(k0,3);
+      im2R1(:,:,1) = imPattern{indImPattern}.*rgb1(k0,1);
+      im2R1(:,:,2) = imPattern{indImPattern}.*rgb1(k0,2);
+      im2R1(:,:,3) = imPattern{indImPattern}.*rgb1(k0,3);
       %wn=cwin0(img1, 'Stereo', cf, rc00, window1, window2);
       [iLf0 iRf0]=cwin3(im2R0, im2R0, cf, rc00, window1, window2);
       opto(name_map('l_disp')).control.setFocalPower(power_dispL-meanv0(k0));
