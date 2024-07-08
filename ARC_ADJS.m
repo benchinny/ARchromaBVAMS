@@ -31,7 +31,7 @@ opto(name_map('r_disp')).control.getFocalPower.focal_power
 opto(name_map('l_disp')).control.setFocalPower(14+sr(1));%-dmnd(k0));
 opto(name_map('l_disp')).control.getFocalPower.focal_power
 
-bTexture = false;
+bTexture = true;
 if bTexture
     % ----LOADING IMAGE----------
     % im2L='texture0_nrm_rgb.png';

@@ -6,7 +6,7 @@ power_dispL_min = 7;
 power_dispL_max = 16;
 power_dispR_min = 7;
 power_dispR_max = 16.4;
-adjustIncrement = 0.5;
+adjustIncrement = 0.1;
 stimColor = 'blue';
 bRecord = 1;
 

@@ -35,11 +35,12 @@ bTexture = true;
 if bTexture
     % ----LOADING IMAGE----------
     % im2L='texture0_nrm_rgb.png';
-    im2L='H:\Shared drives\CIVO_BVAMS\stimuli\everest.jpg';
+    im2L='H:\Shared drives\CIVO_BVAMS\stimuli\Bronco_the_Beagle.jpg';
     % im2L = 'TCA_r540_k120_b120_cw5.png';
     % im2L = 'testEresized.png';
     im2R=im2L;
     testim = imread(im2R);
+    testim = imresize(testim,[floor(size(testim,1)/2) floor(size(testim,2)/2)]);
 %    testim = 255.*ones(size(testim));
     % ---------------------------
     % ----MAKING GABOR-----------
@@ -78,6 +79,7 @@ end
 
 power_dispL = 14;
 power_dispR = 13.9;
+power_dispRoriginal = 13.9;
 
 rightTrombonePowerNear = opto(name_map('r_t_near')).control.getFocalPower.focal_power;
 rightTrombonePowerFar = opto(name_map('r_t_far')).control.getFocalPower.focal_power;
@@ -105,10 +107,34 @@ try
         if timeDiff>20
             opt_chk = 1;
         end
-        incr = sin(2*pi.*1.*timeDiff)+1;
-        power_dispR=power_dispR-adjustIncrement;
+        incr = 2.*(sin(2*pi.*1.*timeDiff)+1);
+        power_dispR=power_dispRoriginal-incr;
         opto(name_map('r_disp')).control.setFocalPower(power_dispR);   
-        pause(0.2);
+        timeWaitRsp = clock;
+        timeWaitRsp = timeWaitRsp(4)*3600 + timeWaitRsp(5)*60 + timeWaitRsp(6);
+        opt_rsp = 0;
+        counter = 0;
+        while opt_rsp==0
+            [ keyIsDown, keyTime, keyCode ] = KbCheck;
+            if keyIsDown
+                opt_rsp = 1;
+                opt_chk = 1;
+            end
+            timeRsp = clock;
+            timeRsp = timeRsp(4)*3600 + timeRsp(5)*60 + timeRsp(6);
+            timeRsp-timeWaitRsp
+            if timeRsp-timeWaitRsp>2
+                opt_rsp = 1;
+                opt_chk = 1;
+            else
+                opt_rsp = 0;
+            end                
+            counter = counter+1;
+            % % Key debounce routine, which waits for key to be released
+            % while keyIsDown
+            %     [ keyIsDown, keyTime, keyCode ] = KbCheck;
+            % end            
+        end
         fprintf('Display power: L = %f  , R = %f , Optical Distance R = %f D, time = %f \n',power_dispL, power_dispR, 1.*(14.4-power_dispR), timeDiff);
     end
 
