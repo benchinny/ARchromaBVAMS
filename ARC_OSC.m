@@ -7,7 +7,7 @@ power_dispL_max = 16;
 power_dispR_min = 7;
 power_dispR_max = 16.4;
 adjustIncrement = 0.1;
-stimColor = 'red';
+stimColor = [0.555 0.418 1.00];
 
 %%input a output b
 cf=ones(3,2);
@@ -25,17 +25,17 @@ zaber(name_map('rotation')).control.getposition
 
 if exist('sr') ~=  1; sr=[0 0]; end
 %         dmnd=[-0.5:0.5:3]
-opto(name_map('r_disp')).control.setFocalPower(14.4+sr(2));% -dmnd(k0));
+opto(name_map('r_disp')).control.setFocalPower(13.9+sr(2));% -dmnd(k0));
 opto(name_map('r_disp')).control.getFocalPower.focal_power
 
 opto(name_map('l_disp')).control.setFocalPower(14+sr(1));%-dmnd(k0));
 opto(name_map('l_disp')).control.getFocalPower.focal_power
 
-bTexture = false;
+bTexture = true;
 if bTexture
     % ----LOADING IMAGE----------
     % im2L='texture0_nrm_rgb.png';
-    im2L='texture0_1080_newfill_malt.png';
+    im2L='H:\Shared drives\CIVO_BVAMS\stimuli\everest.jpg';
     % im2L = 'TCA_r540_k120_b120_cw5.png';
     % im2L = 'testEresized.png';
     im2R=im2L;
@@ -65,27 +65,19 @@ else
     wordInd = randsample(1:4,1);
     imB = imread(['H:\Shared drives\CIVO_BVAMS\stimuli\word_image_0' num2str(wordInd) '.png']);
     imB(imB>0) = 255;
-    if strcmp(stimColor,'blue')
-       clrInd = 3;
-    end
-    if strcmp(stimColor,'green')
-       clrInd = 2;
-    end
-    if strcmp(stimColor,'red')
-       clrInd = 1;    
-    end
+    clrInd = 1;
     imBpad = [zeros([30 size(imB,2)]); imB(:,:,clrInd); zeros([30 size(imB,2)])];
     imBpad = [zeros([size(imBpad,1) 30]) imBpad zeros([size(imBpad,1) 30])];
     imB = zeros([size(imBpad,1) size(imBpad,2) 3]);
-    imB(:,:,clrInd) = imBpad;
-%     imB(:,:,1) = imBmono;
-%     imB(:,:,3) = imBmono;
+    imB(:,:,1) = imBpad.*stimColor(1);
+    imB(:,:,2) = imBpad.*stimColor(2);
+    imB(:,:,3) = imBpad.*stimColor(3);
     testim = flipud(imB);   
 end
 [iLf iRf]=cwin3(imread("black.png"), testim , cf, rc00, window2, window1);
 
 power_dispL = 14;
-power_dispR = 14.4;
+power_dispR = 13.9;
 
 rightTrombonePowerNear = opto(name_map('r_t_near')).control.getFocalPower.focal_power;
 rightTrombonePowerFar = opto(name_map('r_t_far')).control.getFocalPower.focal_power;
@@ -99,75 +91,25 @@ addpath(genpath(fullfile('toolboxes')));
 KbName('UnifyKeyNames');
 KbWait([], 2); 
 
+timeStartInit = clock;
+timeStart = timeStartInit(4)*3600 + timeStartInit(5)*60 + timeStartInit(6);
+
 %% Control loop
 ListenChar(2);
 try
     opt_chk=0;
     while opt_chk==0
-        [ keyIsDown, keyTime, keyCode ] = KbCheck;
-        if keyIsDown
-            if keyCode(KbName('RightArrow')) | keyCode(KbName('6'))
-                if ey(1)=='R'
-                    power_dispR=power_dispR+adjustIncrement;
-                elseif ey(1)=='L'
-                    power_dispL=power_dispL+adjustIncrement;
-                else 
-                    power_dispR=power_dispR+adjustIncrement;
-                    power_dispL=power_dispL+adjustIncrement;
-                end
-                %end
-            elseif keyCode(KbName('LeftArrow')) | keyCode(KbName('4'))
-                if ey(1)=='R'
-                    power_dispR=power_dispR-adjustIncrement;
-                elseif ey(1)=='L'
-                    power_dispL=power_dispL-adjustIncrement;
-                else
-                    power_dispR=power_dispR-adjustIncrement;
-                    power_dispL=power_dispL-adjustIncrement;
-                end
-            elseif bTexture & (keyCode(KbName('DownArrow')) | keyCode(KbName('5')))
-                [iLf iRf]=cwin3(imread("black.png"), testim , cf, rc00, window2, window1);  
-                display('Refresh texture');
-            elseif ~bTexture & (keyCode(KbName('DownArrow')) | keyCode(KbName('5')))
-                wordInd = randsample(1:4,1);
-                imB = imread(['H:\Shared drives\CIVO_BVAMS\stimuli\word_image_0' num2str(wordInd) '.png']);
-                imB(imB>0) = 255;
-                imBpad = [zeros([30 size(imB,2)]); imB(:,:,clrInd); zeros([30 size(imB,2)])];
-                imBpad = [zeros([size(imBpad,1) 30]) imBpad zeros([size(imBpad,1) 30])];
-                imB = zeros([size(imBpad,1) size(imBpad,2) 3]);
-                imB(:,:,clrInd) = imBpad; 
-                testim = flipud(imB);   
-                [iLf iRf]=cwin3(imread("black.png"), testim , cf, rc00, window2, window1);
-            elseif keyCode(KbName('Return')) %| keyCode(KbName('Return'))
-                opt_chk=1;    
-            else
-                disp('WRONG KEY'); snd(100, 0.25);
-            end
-            
-            if power_dispL < power_dispL_min
-                power_dispL = power_dispL_min;
-            elseif power_dispL > power_dispL_max;
-                power_dispL = power_dispL_max;
-            end
-
-            if power_dispR < power_dispR_min
-                power_dispR = power_dispR_min;
-            elseif power_dispR > power_dispR_max;
-                power_dispR = power_dispR_max;
-            end            
-
-            opto(name_map('l_disp')).control.setFocalPower(power_dispL);
-            opto(name_map('r_disp')).control.setFocalPower(power_dispR);
-            
-            fprintf('Display power: L = %f  , R = %f , Optical Distance R = %f D \n',power_dispL, power_dispR, 1.*(14.4-power_dispR));
-
-            fprintf('\n');
+        timeCurrentInit = clock;
+        timeCurrent = timeCurrentInit(4)*3600 + timeCurrentInit(5)*60 + timeCurrentInit(6);
+        timeDiff = timeCurrent-timeStart;
+        if timeDiff>20
+            opt_chk = 1;
         end
-
-        % Key debounce routine, which waits for key to be released
-        while keyIsDown
-            [ keyIsDown, keyTime, keyCode ] = KbCheck;
-        end
+        incr = sin(2*pi.*1.*timeDiff)+1;
+        power_dispR=power_dispR-adjustIncrement;
+        opto(name_map('r_disp')).control.setFocalPower(power_dispR);   
+        pause(0.2);
+        fprintf('Display power: L = %f  , R = %f , Optical Distance R = %f D, time = %f \n',power_dispL, power_dispR, 1.*(14.4-power_dispR), timeDiff);
     end
 
 catch ERROR
