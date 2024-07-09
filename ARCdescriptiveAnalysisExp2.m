@@ -218,3 +218,242 @@ title('Weights');
 set(gca,'FontSize',20);
 ylim(max(weightsRBS1(3)).*[-1.2 1.2]);
 axis square;
+
+deltaSunq = unique(deltaS);
+
+figure;
+set(gcf,'Position',[214 355 1345 603]);
+for i = 1:length(deltaSunq)
+    subplot(2,4,i);
+    hold on;
+    ind = abs(deltaS-deltaSunq(i))<0.001;
+    weightsRB1 = [deltaR(ind) deltaB(ind) ones([sum(ind) 1])]\(defocusChange(ind));
+    weightsRB1all(:,i) = weightsRB1;
+    predictionTmp = [deltaR(ind) deltaB(ind) ones([sum(ind) 1])]*weightsRB1;
+    defocusChangeTmp = defocusChange(ind);
+    rhoColor(i) = corr(predictionTmp,defocusChangeTmp);
+    for j = 1:length(predictionTmp)
+        deltaRtmp = (1/maxLumCdm2)*deltaR(j);
+        deltaBtmp = (1/maxLumCdm2)*deltaB(j);
+        RBratio = 0.25.*(deltaRtmp-deltaBtmp+2);
+        plot(predictionTmp(j),defocusChangeTmp(j),'o','LineWidth',1,'Color',[RBratio 0 1-RBratio],'MarkerFaceColor',[RBratio 0 1-RBratio]);
+        % plot(predictionTmp(j),defocusChange(j),'o','LineWidth',1,'Color','k','MarkerFaceColor','w');
+    end    
+    set(gca,'FontSize',12);
+    xlabel('Prediction');
+    ylabel('Measured defocus');
+    title(['Correlation = ' num2str(rhoColor(i),3)]);
+end
+
+figure;
+set(gcf,'Position',[214 355 1345 603]);
+for i = 1:size(weightsRB1all,2)
+    subplot(2,4,i);
+    hold on;
+    bar(1,weightsRB1all(1,i),'FaceColor','r');
+    bar(2,weightsRB1all(2,i),'FaceColor','b');
+    bar(3,weightsRB1all(3,i),'FaceColor','k');
+    set(gca,'XTick',[1 2 3]);
+    set(gca,'XTickLabel',{'Red' 'Blue' 'D_{opt}'});
+    title('Weights');
+    set(gca,'FontSize',20);
+    ylim(max(abs(weightsRB1all(:,i))).*[-1.2 1.2]);
+    axis square;
+end
+
+%% CORRELATION ANALYSES
+
+rLum1 = 0.4.*scaleEquateRB.*rgb1stack(:,1).^2.4;
+gLum1 = 0.4.*scaleEquateRG.*rgb1stack(:,2).^2.6;
+bLum1 = 0.4.*rgb1stack(:,3).^2.2;
+opticalDistCorrected = meanv00stack.*0.87-0.46;
+opticalDistCorrectedUnq = unique(opticalDistCorrected);
+
+figure;
+set(gcf,'Position',[267 401 1096 527]);
+for i = 1:length(opticalDistCorrectedUnq)
+    ind = abs(opticalDistCorrected-opticalDistCorrectedUnq(i))<0.001;
+    subplot(2,3,i);
+    plot(rLum1(ind),defocus875stack(ind),'ro','MarkerSize',12,'MarkerFaceColor','w','LineWidth',1);
+    axis square;
+    set(gca,'FontSize',12);
+    xlabel('Red luminance');
+    ylabel('Defocus at 875nm');
+    yLims = ylim;
+    xLims = xlim; 
+    text(xLims(1)+(xLims(2)-xLims(1))*0.5,yLims(1)+(yLims(2)-yLims(1))*0.75,['\rho = ' num2str(corr(rLum1(ind),defocus875stack(ind)))]);      
+    title(['Optical distance = ' num2str(opticalDistCorrectedUnq(i),3)]);
+end
+
+figure;
+set(gcf,'Position',[267 401 1096 527]);
+for i = 1:length(opticalDistCorrectedUnq)
+    ind = abs(opticalDistCorrected-opticalDistCorrectedUnq(i))<0.001;
+    subplot(2,3,i);
+    plot(gLum1(ind),defocus875stack(ind),'go','MarkerSize',12,'MarkerFaceColor','w','LineWidth',1);
+    axis square;
+    set(gca,'FontSize',12);
+    xlabel('Red luminance');
+    ylabel('Defocus at 875nm');
+    yLims = ylim;
+    xLims = xlim; 
+    text(xLims(1)+(xLims(2)-xLims(1))*0.5,yLims(1)+(yLims(2)-yLims(1))*0.75,['\rho = ' num2str(corr(gLum1(ind),defocus875stack(ind)))]);      
+    title(['Optical distance = ' num2str(opticalDistCorrectedUnq(i),3)]);
+end
+
+figure;
+set(gcf,'Position',[267 401 1096 527]);
+for i = 1:length(opticalDistCorrectedUnq)
+    ind = abs(opticalDistCorrected-opticalDistCorrectedUnq(i))<0.001;
+    subplot(2,3,i);
+    plot(bLum1(ind),defocus875stack(ind),'bo','MarkerSize',12,'MarkerFaceColor','w','LineWidth',1);
+    axis square;
+    set(gca,'FontSize',12);
+    xlabel('Red luminance');
+    ylabel('Defocus at 875nm');
+    yLims = ylim;
+    xLims = xlim; 
+    text(xLims(1)+(xLims(2)-xLims(1))*0.5,yLims(1)+(yLims(2)-yLims(1))*0.75,['\rho = ' num2str(corr(bLum1(ind),defocus875stack(ind)))]);      
+    title(['Optical distance = ' num2str(opticalDistCorrectedUnq(i),3)]);
+end
+
+figure;
+set(gcf,'Position',[267 401 1096 527]);
+for i = 1:length(opticalDistCorrectedUnq)
+    ind = abs(opticalDistCorrected-opticalDistCorrectedUnq(i))<0.001;
+    subplot(2,3,i);
+    plot(rLum1(ind)./bLum1(ind),defocus875stack(ind),'o','Color',[1 0 0.5],'MarkerSize',12,'MarkerFaceColor','w','LineWidth',1);
+    axis square;
+    set(gca,'FontSize',12);
+    xlabel('Red luminance');
+    ylabel('Defocus at 875nm');
+    yLims = ylim;
+    xLims = xlim; 
+    text(xLims(1)+(xLims(2)-xLims(1))*0.5,yLims(1)+(yLims(2)-yLims(1))*0.75,['\rho = ' num2str(corr(rLum1(ind)./bLum1(ind),defocus875stack(ind)))]);      
+    if i==1
+       title(['R/B, Optical distance = ' num2str(opticalDistCorrectedUnq(i),3)]);
+    else
+       title(['Optical distance = ' num2str(opticalDistCorrectedUnq(i),3)]);
+    end
+end
+
+figure;
+set(gcf,'Position',[267 401 1096 527]);
+for i = 1:length(opticalDistCorrectedUnq)
+    ind = abs(opticalDistCorrected-opticalDistCorrectedUnq(i))<0.001;
+    subplot(2,3,i);
+    plot(bLum1(ind)./rLum1(ind),defocus875stack(ind),'o','Color',[0.5 0 1],'MarkerSize',12,'MarkerFaceColor','w','LineWidth',1);
+    axis square;
+    set(gca,'FontSize',12);
+    xlabel('Red luminance');
+    ylabel('Defocus at 875nm');
+    yLims = ylim;
+    xLims = xlim; 
+    text(xLims(1)+(xLims(2)-xLims(1))*0.5,yLims(1)+(yLims(2)-yLims(1))*0.75,['\rho = ' num2str(corr(bLum1(ind)./rLum1(ind),defocus875stack(ind)))]);      
+    if i==1
+       title(['B/R, Optical distance = ' num2str(opticalDistCorrectedUnq(i),3)]);
+    else
+       title(['Optical distance = ' num2str(opticalDistCorrectedUnq(i),3)]);
+    end
+end
+
+figure;
+set(gcf,'Position',[267 401 1096 527]);
+for i = 1:length(opticalDistCorrectedUnq)
+    ind = abs(opticalDistCorrected-opticalDistCorrectedUnq(i))<0.001;
+    subplot(2,3,i);
+    plot(rLum1(ind)./gLum1(ind),defocus875stack(ind),'o','Color',[1 0.5 0],'MarkerSize',12,'MarkerFaceColor','w','LineWidth',1);
+    axis square;
+    set(gca,'FontSize',12);
+    xlabel('Red luminance');
+    ylabel('Defocus at 875nm');
+    yLims = ylim;
+    xLims = xlim; 
+    text(xLims(1)+(xLims(2)-xLims(1))*0.5,yLims(1)+(yLims(2)-yLims(1))*0.75,['\rho = ' num2str(corr(rLum1(ind)./gLum1(ind),defocus875stack(ind)))]);       
+    if i==1
+       title(['R/G, Optical distance = ' num2str(opticalDistCorrectedUnq(i),3)]);
+    else
+       title(['Optical distance = ' num2str(opticalDistCorrectedUnq(i),3)]);
+    end
+end
+
+figure;
+set(gcf,'Position',[267 401 1096 527]);
+for i = 1:length(opticalDistCorrectedUnq)
+    ind = abs(opticalDistCorrected-opticalDistCorrectedUnq(i))<0.001;
+    subplot(2,3,i);
+    plot(gLum1(ind)./rLum1(ind),defocus875stack(ind),'o','Color',[0.5 0.7 0],'MarkerSize',12,'MarkerFaceColor','w','LineWidth',1);
+    axis square;
+    set(gca,'FontSize',12);
+    xlabel('Red luminance');
+    ylabel('Defocus at 875nm');
+    yLims = ylim;
+    xLims = xlim; 
+    text(xLims(1)+(xLims(2)-xLims(1))*0.5,yLims(1)+(yLims(2)-yLims(1))*0.75,['\rho = ' num2str(corr(gLum1(ind)./rLum1(ind),defocus875stack(ind)))]);       
+    if i==1
+       title(['G/R, Optical distance = ' num2str(opticalDistCorrectedUnq(i),3)]);
+    else
+       title(['Optical distance = ' num2str(opticalDistCorrectedUnq(i),3)]);
+    end
+end
+
+figure;
+set(gcf,'Position',[267 401 1096 527]);
+for i = 1:length(opticalDistCorrectedUnq)
+    ind = abs(opticalDistCorrected-opticalDistCorrectedUnq(i))<0.001;
+    subplot(2,3,i);
+    plot(gLum1(ind)./bLum1(ind),defocus875stack(ind),'o','Color',[0 1 0.5],'MarkerSize',12,'MarkerFaceColor','w','LineWidth',1);
+    axis square;
+    set(gca,'FontSize',12);
+    xlabel('Red luminance');
+    ylabel('Defocus at 875nm');
+    yLims = ylim;
+    xLims = xlim; 
+    text(xLims(1)+(xLims(2)-xLims(1))*0.5,yLims(1)+(yLims(2)-yLims(1))*0.75,['\rho = ' num2str(corr(gLum1(ind)./bLum1(ind),defocus875stack(ind)))]);     
+    if i==1
+       title(['G/B, Optical distance = ' num2str(opticalDistCorrectedUnq(i),3)]);
+    else
+       title(['Optical distance = ' num2str(opticalDistCorrectedUnq(i),3)]);
+    end
+end
+
+figure;
+set(gcf,'Position',[267 401 1096 527]);
+for i = 1:length(opticalDistCorrectedUnq)
+    ind = abs(opticalDistCorrected-opticalDistCorrectedUnq(i))<0.001;
+    subplot(2,3,i);
+    plot(bLum1(ind)./gLum1(ind),defocus875stack(ind),'o','Color',[0 0.5 1],'MarkerSize',12,'MarkerFaceColor','w','LineWidth',1);
+    axis square;
+    set(gca,'FontSize',12);
+    xlabel('Red luminance');
+    ylabel('Defocus at 875nm');
+    yLims = ylim;
+    xLims = xlim; 
+    text(xLims(1)+(xLims(2)-xLims(1))*0.5,yLims(1)+(yLims(2)-yLims(1))*0.75,['\rho = ' num2str(corr(bLum1(ind)./gLum1(ind),defocus875stack(ind)))]);    
+    if i==1
+       title(['B/G, Optical distance = ' num2str(opticalDistCorrectedUnq(i),3)]);
+    else
+       title(['Optical distance = ' num2str(opticalDistCorrectedUnq(i),3)]);
+    end
+end
+
+figure;
+set(gcf,'Position',[267 401 1096 527]);
+for i = 1:length(opticalDistCorrectedUnq)
+    ind = abs(opticalDistCorrected-opticalDistCorrectedUnq(i))<0.001;
+    subplot(2,3,i);
+    plot(rLum1(ind)+bLum1(ind)+gLum1(ind),defocus875stack(ind),'o','Color',[0 0 0],'MarkerSize',12,'MarkerFaceColor','w','LineWidth',1);
+    axis square;
+    set(gca,'FontSize',12);
+    xlabel('Red luminance');
+    ylabel('Defocus at 875nm');
+    yLims = ylim;
+    xLims = xlim; 
+    text(xLims(1)+(xLims(2)-xLims(1))*0.5,yLims(1)+(yLims(2)-yLims(1))*0.75,['\rho = ' num2str(corr(rLum1(ind)+bLum1(ind)+gLum1(ind),defocus875stack(ind)))]);
+    if i==1
+       title(['R+G+B, Optical distance = ' num2str(opticalDistCorrectedUnq(i),3)]);
+    else
+       title(['Optical distance = ' num2str(opticalDistCorrectedUnq(i),3)]);
+    end
+end
+
