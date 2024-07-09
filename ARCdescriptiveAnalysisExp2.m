@@ -219,6 +219,48 @@ set(gca,'FontSize',20);
 ylim(max(weightsRBS1(3)).*[-1.2 1.2]);
 axis square;
 
+deltaSunq = unique(deltaS);
+
+figure;
+set(gcf,'Position',[214 355 1345 603]);
+for i = 1:length(deltaSunq)
+    subplot(2,4,i);
+    hold on;
+    ind = abs(deltaS-deltaSunq(i))<0.001;
+    weightsRB1 = [deltaR(ind) deltaB(ind) ones([sum(ind) 1])]\(defocusChange(ind));
+    weightsRB1all(:,i) = weightsRB1;
+    predictionTmp = [deltaR(ind) deltaB(ind) ones([sum(ind) 1])]*weightsRB1;
+    defocusChangeTmp = defocusChange(ind);
+    rhoColor(i) = corr(predictionTmp,defocusChangeTmp);
+    for j = 1:length(predictionTmp)
+        deltaRtmp = (1/maxLumCdm2)*deltaR(j);
+        deltaBtmp = (1/maxLumCdm2)*deltaB(j);
+        RBratio = 0.25.*(deltaRtmp-deltaBtmp+2);
+        plot(predictionTmp(j),defocusChangeTmp(j),'o','LineWidth',1,'Color',[RBratio 0 1-RBratio],'MarkerFaceColor',[RBratio 0 1-RBratio]);
+        % plot(predictionTmp(j),defocusChange(j),'o','LineWidth',1,'Color','k','MarkerFaceColor','w');
+    end    
+    set(gca,'FontSize',12);
+    xlabel('Prediction');
+    ylabel('Measured defocus');
+    title(['Correlation = ' num2str(rhoColor(i),3)]);
+end
+
+figure;
+set(gcf,'Position',[214 355 1345 603]);
+for i = 1:size(weightsRB1all,2)
+    subplot(2,4,i);
+    hold on;
+    bar(1,weightsRB1all(1,i),'FaceColor','r');
+    bar(2,weightsRB1all(2,i),'FaceColor','b');
+    bar(3,weightsRB1all(3,i),'FaceColor','k');
+    set(gca,'XTick',[1 2 3]);
+    set(gca,'XTickLabel',{'Red' 'Blue' 'D_{opt}'});
+    title('Weights');
+    set(gca,'FontSize',20);
+    ylim(max(abs(weightsRB1all(:,i))).*[-1.2 1.2]);
+    axis square;
+end
+
 %% CORRELATION ANALYSES
 
 rLum1 = 0.4.*scaleEquateRB.*rgb1stack(:,1).^2.4;
