@@ -237,6 +237,9 @@ for i = 1:length(opticalDistCorrectedUnq)
     set(gca,'FontSize',12);
     xlabel('Red luminance');
     ylabel('Defocus at 875nm');
+    yLims = ylim;
+    xLims = xlim; 
+    text(xLims(1)+(xLims(2)-xLims(1))*0.5,yLims(1)+(yLims(2)-yLims(1))*0.75,['\rho = ' num2str(corr(rLum1(ind),defocus875stack(ind)))]);      
     title(['Optical distance = ' num2str(opticalDistCorrectedUnq(i),3)]);
 end
 
@@ -250,6 +253,9 @@ for i = 1:length(opticalDistCorrectedUnq)
     set(gca,'FontSize',12);
     xlabel('Red luminance');
     ylabel('Defocus at 875nm');
+    yLims = ylim;
+    xLims = xlim; 
+    text(xLims(1)+(xLims(2)-xLims(1))*0.5,yLims(1)+(yLims(2)-yLims(1))*0.75,['\rho = ' num2str(corr(gLum1(ind),defocus875stack(ind)))]);      
     title(['Optical distance = ' num2str(opticalDistCorrectedUnq(i),3)]);
 end
 
@@ -263,6 +269,9 @@ for i = 1:length(opticalDistCorrectedUnq)
     set(gca,'FontSize',12);
     xlabel('Red luminance');
     ylabel('Defocus at 875nm');
+    yLims = ylim;
+    xLims = xlim; 
+    text(xLims(1)+(xLims(2)-xLims(1))*0.5,yLims(1)+(yLims(2)-yLims(1))*0.75,['\rho = ' num2str(corr(bLum1(ind),defocus875stack(ind)))]);      
     title(['Optical distance = ' num2str(opticalDistCorrectedUnq(i),3)]);
 end
 
@@ -276,6 +285,9 @@ for i = 1:length(opticalDistCorrectedUnq)
     set(gca,'FontSize',12);
     xlabel('Red luminance');
     ylabel('Defocus at 875nm');
+    yLims = ylim;
+    xLims = xlim; 
+    text(xLims(1)+(xLims(2)-xLims(1))*0.5,yLims(1)+(yLims(2)-yLims(1))*0.75,['\rho = ' num2str(corr(rLum1(ind)./bLum1(ind),defocus875stack(ind)))]);      
     if i==1
        title(['R/B, Optical distance = ' num2str(opticalDistCorrectedUnq(i),3)]);
     else
@@ -293,6 +305,9 @@ for i = 1:length(opticalDistCorrectedUnq)
     set(gca,'FontSize',12);
     xlabel('Red luminance');
     ylabel('Defocus at 875nm');
+    yLims = ylim;
+    xLims = xlim; 
+    text(xLims(1)+(xLims(2)-xLims(1))*0.5,yLims(1)+(yLims(2)-yLims(1))*0.75,['\rho = ' num2str(corr(bLum1(ind)./rLum1(ind),defocus875stack(ind)))]);      
     if i==1
        title(['B/R, Optical distance = ' num2str(opticalDistCorrectedUnq(i),3)]);
     else
@@ -310,6 +325,9 @@ for i = 1:length(opticalDistCorrectedUnq)
     set(gca,'FontSize',12);
     xlabel('Red luminance');
     ylabel('Defocus at 875nm');
+    yLims = ylim;
+    xLims = xlim; 
+    text(xLims(1)+(xLims(2)-xLims(1))*0.5,yLims(1)+(yLims(2)-yLims(1))*0.75,['\rho = ' num2str(corr(rLum1(ind)./gLum1(ind),defocus875stack(ind)))]);       
     if i==1
        title(['R/G, Optical distance = ' num2str(opticalDistCorrectedUnq(i),3)]);
     else
@@ -327,6 +345,9 @@ for i = 1:length(opticalDistCorrectedUnq)
     set(gca,'FontSize',12);
     xlabel('Red luminance');
     ylabel('Defocus at 875nm');
+    yLims = ylim;
+    xLims = xlim; 
+    text(xLims(1)+(xLims(2)-xLims(1))*0.5,yLims(1)+(yLims(2)-yLims(1))*0.75,['\rho = ' num2str(corr(gLum1(ind)./rLum1(ind),defocus875stack(ind)))]);       
     if i==1
        title(['G/R, Optical distance = ' num2str(opticalDistCorrectedUnq(i),3)]);
     else
@@ -344,6 +365,9 @@ for i = 1:length(opticalDistCorrectedUnq)
     set(gca,'FontSize',12);
     xlabel('Red luminance');
     ylabel('Defocus at 875nm');
+    yLims = ylim;
+    xLims = xlim; 
+    text(xLims(1)+(xLims(2)-xLims(1))*0.5,yLims(1)+(yLims(2)-yLims(1))*0.75,['\rho = ' num2str(corr(gLum1(ind)./bLum1(ind),defocus875stack(ind)))]);     
     if i==1
        title(['G/B, Optical distance = ' num2str(opticalDistCorrectedUnq(i),3)]);
     else
@@ -361,6 +385,9 @@ for i = 1:length(opticalDistCorrectedUnq)
     set(gca,'FontSize',12);
     xlabel('Red luminance');
     ylabel('Defocus at 875nm');
+    yLims = ylim;
+    xLims = xlim; 
+    text(xLims(1)+(xLims(2)-xLims(1))*0.5,yLims(1)+(yLims(2)-yLims(1))*0.75,['\rho = ' num2str(corr(bLum1(ind)./gLum1(ind),defocus875stack(ind)))]);    
     if i==1
        title(['B/G, Optical distance = ' num2str(opticalDistCorrectedUnq(i),3)]);
     else
@@ -378,6 +405,9 @@ for i = 1:length(opticalDistCorrectedUnq)
     set(gca,'FontSize',12);
     xlabel('Red luminance');
     ylabel('Defocus at 875nm');
+    yLims = ylim;
+    xLims = xlim; 
+    text(xLims(1)+(xLims(2)-xLims(1))*0.5,yLims(1)+(yLims(2)-yLims(1))*0.75,['\rho = ' num2str(corr(rLum1(ind)+bLum1(ind)+gLum1(ind),defocus875stack(ind)))]);
     if i==1
        title(['R+G+B, Optical distance = ' num2str(opticalDistCorrectedUnq(i),3)]);
     else
