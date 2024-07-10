@@ -64,8 +64,8 @@ meanv00all = zeros([20 1]);
 rgb1all = zeros([20 3]);
 defocusBasic = zeros([20 1]);
 
-for l = 5 % LOOP OVER BLOCK
-    parfor k = 1:20 % LOOP OVER TRIAL
+for l = 1 % LOOP OVER BLOCK
+    for k = 1 % LOOP OVER TRIAL
         % LOADING DATA
         blockNumInd = l;
         blockNumTmp = blockNums(blockNumInd);
@@ -88,6 +88,8 @@ for l = 5 % LOOP OVER BLOCK
         PARAMS.PupilFitSize=mean(table2array(ZernikeTable(FrameStart,5))); 
         PARAMS.PupilFieldSize=PARAMS.PupilSize*2; %automatically compute the field size
         c(:,3:NumCoeffs)=table2array(ZernikeTable(FrameStart,11:width(ZernikeTable)));
+        indBad = c(:,4)==0;
+        c(indBad,4) = mean(c(~indBad,4));        
         meanC = mean(c,1); % TAKE MEAN OF COEFFICIENTS
         
         % STORE COLORS FOR FIRST AND SECOND STIMULI
@@ -114,17 +116,6 @@ for l = 5 % LOOP OVER BLOCK
         % I think this copies the struct into an object
         vcAddObject(s); 
         
-        % Turning original stimulus into luminance image
-        downScale = 1;
-        photonsImgXWorig = RGB2XWFormat(s.data.photons);
-        energyImgXWorig = Quanta2Energy(wave',photonsImgXWorig);
-        energyImgOrig = XW2RGBFormat(energyImgXWorig,320,320);
-        
-        lumImgOrig = zeros(size(s.data.photons,1),size(s.data.photons,2));
-        for j = 1:length(wave)
-            lumImgOrig = lumImgOrig+energyImgOrig(:,:,j).*T_sensorXYZ(2,j).*downScale;
-        end
-        
         figure; 
         set(gcf,'Position',[289 428 1056 420]);
         subplot(1,3,1);
@@ -149,9 +140,8 @@ for l = 5 % LOOP OVER BLOCK
         
         peakCorr = [];
         peakPSF = [];
-        peakImg = [];
-        Dall2 = -humanWaveDefocus(wave(16:66));
-        wave2 = wave(16:66);
+        Dall2 = -humanWaveDefocus(wave(16:80));
+        wave2 = wave(16:80);
 
         for i = 1:length(Dall2)
             zCoeffs = [0 meanC(1:end-1)];
@@ -165,19 +155,15 @@ for l = 5 % LOOP OVER BLOCK
             
             % Convert to siData format as well as wavefront object
             [siPSFData, wvfP] = wvf2SiPsf(wvfP,'showBar',false,'nPSFSamples',320,'umPerSample',1.5212); 
-            oi = wvf2oi(wvfP); % CONVERT TO OPTICS OBJECT
-            % oi = oiCreateARC('human',wave,Dall(i)); % create optics
-            oi = oiCompute(oi, s); % compute optical image of stimulus
         
-            photonsImgXW = RGB2XWFormat(oi.data.photons); % FORMATTING
-            energyImgXW = Quanta2Energy(wave,photonsImgXW);
+            photonsPSFXW = RGB2XWFormat(siPSFData.psf); % FORMATTING
+            photonsPSFXWweighted = bsxfun(@times,photonsPSFXW,squeeze(s.data.photons(160,160,:))');
+            energyPSFXW = Quanta2Energy(wave,photonsPSFXWweighted);
             
-            lumImgXW = sum(downScale*bsxfun(@times,energyImgXW,T_sensorXYZ(2,:)),2);
-            lumImgXYW = XW2RGBFormat(lumImgXW,400,400);
-            lumImg = lumImgXYW(41:360,41:360);
+            lumPSFXW = sum(bsxfun(@times,energyPSFXW,T_sensorXYZ(2,:)),2);
+            peakPSF(i) = max(lumPSFXW);
 
             % COMPUTE MAX CORRELATION
-            peakCorr(i) = max(max(xcorr2(lumImgOrig,lumImg)));
             % if ismember(round(humanWaveDefocusInvert(-Dall(i))),[460 520 620])
             %     figure;
             %     set(gcf,'Position',[326 418 924 420]);      
@@ -193,7 +179,7 @@ for l = 5 % LOOP OVER BLOCK
         
         %% Plotting peak correlation with wavelength in focus
         
-        [~,indPeak2] = max(peakCorr);
+        [~,indPeak2] = max(peakPSF);
         wvInFocus1 = wave2(indPeak2);
         wvInFocus1all(k,:) = wvInFocus1;
         rgb1all(k,:) = rgb00(1,:);
@@ -203,7 +189,7 @@ for l = 5 % LOOP OVER BLOCK
         figure; 
         hold on;
         % plot(humanWaveDefocusInvert(-Dall),peakCorr./max(peakCorr),'k-','LineWidth',1);
-        plot(humanWaveDefocusInvert(-Dall2),peakCorr./max(peakCorr),'k-','LineWidth',1);
+        plot(humanWaveDefocusInvert(-Dall2),peakPSF,'k-','LineWidth',1);
         % plot(humanWaveDefocusInvert(-Dall),peakPSF./max(peakPSF),'k-','LineWidth',1);
         % plot(humanWaveDefocusInvert(-Dall),peakImg./max(peakImg),'k-','LineWidth',1);
         axis square;
@@ -213,4 +199,4 @@ for l = 5 % LOOP OVER BLOCK
     end
 end
 
-save('/Users/benjaminchin/Documents/ARchromaScraps/ARCmodelOutput2_5.mat','meanv00all','wvInFocus1all','rgb1all','defocusBasic');
+% save('/Users/benjaminchin/Documents/ARchromaScraps/ARCmodelOutput2_5.mat','meanv00all','wvInFocus1all','rgb1all','defocusBasic');
