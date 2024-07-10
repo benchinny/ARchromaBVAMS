@@ -3,7 +3,7 @@ ieInit;
 
 %% Set up display struct and build Ben's stimulus
 
-subjNum = 2;
+subjNum = 1;
 
 % Setting up display properties
 d = displayCreate('OLED-Samsung');
@@ -64,8 +64,8 @@ meanv00all = zeros([20 1]);
 rgb1all = zeros([20 3]);
 defocusBasic = zeros([20 1]);
 
-for l = 1 % LOOP OVER BLOCK
-    for k = 1 % LOOP OVER TRIAL
+for l = 5 % LOOP OVER BLOCK
+    parfor k = 1:20 % LOOP OVER TRIAL
         % LOADING DATA
         blockNumInd = l;
         blockNumTmp = blockNums(blockNumInd);
@@ -199,4 +199,4 @@ for l = 1 % LOOP OVER BLOCK
     end
 end
 
-% save('/Users/benjaminchin/Documents/ARchromaScraps/ARCmodelOutput2_5.mat','meanv00all','wvInFocus1all','rgb1all','defocusBasic');
+save('/Users/benjaminchin/Documents/ARchromaScraps/ARCmodelOutputStrehl1_5.mat','meanv00all','wvInFocus1all','rgb1all','defocusBasic');
