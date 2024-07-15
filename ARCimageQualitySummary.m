@@ -1,10 +1,10 @@
-%% LOADING DATA
+%% LOADING DATA FOR IMAGE QUALITY ANALYSIS (CROSS-CORRELATION METRIC)
 
 defocus875stack = [];
 meanv00stack = [];
 rgb1stack = [];
 wvInFocusStack = [];
-subjNum = 2;
+subjNum = 1;
 bNoGreen = 0;
 
 if subjNum==1
@@ -25,6 +25,151 @@ end
 
 for i = fileNums
     load(['/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/imageQualityAnalysis/ARCmodelOutput' num2str(subjNum) '_' num2str(i) noGreenStr '.mat']);
+    % DEFOCUS AT 875nm (RAW FIAT MEASUREMENT)
+    defocus875stack = [defocus875stack; defocusBasic];
+    % STIMULUS DISTANCE
+    meanv00stack = [meanv00stack; meanv00all];
+    % STIMULUS COLOR
+    rgb1stack = [rgb1stack; rgb1all];
+    if exist('wvInFocus2all','var')
+        wvInFocusStack = [wvInFocusStack; wvInFocus2all];
+    else
+        % WAVELENGTH IN FOCUS
+        wvInFocusStack = [wvInFocusStack; wvInFocus1all];
+    end
+end
+
+figure; 
+hist(wvInFocusStack,21); 
+axis square; 
+set(gca,'FontSize',15);
+xlabel('Wavelength in focus');
+ylabel('Count');
+
+figure; 
+hist(humanWaveDefocus(wvInFocusStack),21); 
+axis square; 
+set(gca,'FontSize',15);
+xlabel('Defocus due to LCA (D)');
+ylabel('Count');
+
+% STIMULUS DISTANCE VS ESTIMATED DEFOCUS AT 550nm
+
+% CORRECTION FACTOR THAT IS ALSO IN AUSTIN'S CODE
+defocusCorrectionFactor = 0.57735;
+
+% CORRECTING FOR BVAMS RE-CALIBRATION (TOOK DATA BEFORE RE-CALIBRATION)
+stimOptDist = meanv00stack*0.82-0.09;
+
+% ESTIMATING DEFOCUS AT 550
+defocus550 = defocus875stack/defocusCorrectionFactor -(humanWaveDefocus(550)-humanWaveDefocus(875));
+
+figure; 
+plot([0 4],[0 4],'k--'); hold on;
+colorRB = [];
+colorRGB = [];
+lumScaleR = 1/(0.555^2.4);
+lumScaleG = 1/(0.418^2.6);
+for i = 1:length(stimOptDist)
+    redGam = rgb1stack(i,1).^2.4;
+    blueGam = rgb1stack(i,3).^2.2;
+    greenGam = rgb1stack(i,2).^2.6;
+    redPlot = lumScaleR*redGam/(lumScaleR*redGam+blueGam);
+    bluePlot = blueGam/(lumScaleR*redGam+blueGam);
+    redStore = lumScaleR*redGam/(lumScaleR*redGam+lumScaleG*greenGam+blueGam);
+    greenStore = lumScaleG*greenGam/(lumScaleR*redGam+lumScaleG*greenGam+blueGam);
+    blueStore = blueGam/(lumScaleR*redGam+lumScaleG*greenGam+blueGam);
+    colorRB(i,:) = [redPlot 0 bluePlot];
+    colorRGB(i,:) = [redStore greenStore blueStore];
+    plot(stimOptDist(i),defocus550(i),'o','Color',rgb1stack(i,:),'MarkerSize',10,'MarkerFaceColor',rgb1stack(i,:));
+end
+axis square;
+set(gca,'FontSize',15);
+xlabel('Stimulus distance (D)')
+ylabel('Defocus at 550nm (D)');
+title(['Correlation = ' num2str(corr(stimOptDist,defocus550))]);
+xlim([0 4]);
+ylim([0 4]);
+
+% stimOptDistUnq = unique(stimOptDist);
+% 
+% indSanityCheck = 4;
+% 
+% indOptDist = abs(stimOptDist-stimOptDistUnq(indSanityCheck))<0.001;
+% 
+% defocusSanityCheck = defocus550(indOptDist)-mean(defocus550(indOptDist));   
+
+% PREDICTIONS VS DEFOCUS AT 875nm
+
+% PREDICTION IS BASICALLY WORKS THIS WAY: TAKE STIMULUS OPTICAL DISTANCE,
+% THEN ADD THE DEFOCUS DISCREPANCY BETWEEN THE WAVELENGTH YIELDING BEST
+% FOCUS AND 875nm 
+colorBasedPrediction = stimOptDist+(humanWaveDefocus(wvInFocusStack)-humanWaveDefocus(875));
+
+figure; 
+plot([0 4],[0 4],'k--'); hold on;
+plot(colorBasedPrediction,defocus875stack./defocusCorrectionFactor,'ko','MarkerSize',10,'MarkerFaceColor','w');
+axis square;
+set(gca,'FontSize',15);
+xlabel('Image Quality Prediction (D)')
+ylabel('Defocus at 875nm (D)');
+title(['Correlation = ' num2str(corr(colorBasedPrediction,defocus875stack./defocusCorrectionFactor))]);
+xlim([0 4]);
+ylim([0 4]);
+
+% CONDITIONED ON DISTANCE
+
+stimOptDistUnq = unique(stimOptDist);
+
+figure;
+set(gcf,'Position',[172 381 1223 512]);
+for i = 1:length(stimOptDistUnq)
+    ind = abs(stimOptDist-stimOptDistUnq(i))<0.001;
+    subplot(2,3,i);
+    hold on;
+    plot(colorBasedPrediction(ind),defocus875stack(ind)./defocusCorrectionFactor,'ko','MarkerSize',10,'MarkerFaceColor','w');
+    axis square;
+    set(gca,'FontSize',15);
+    xlabel('Image Quality Prediction (D)')
+    ylabel('Defocus at 875nm (D)');
+    title(['Correlation = ' num2str(corr(colorBasedPrediction(ind),defocus875stack(ind)./defocusCorrectionFactor))]);
+end
+
+% COMBINING ACROSS DISTANCE
+
+colorBasedPredictionMeanCenteredAll = [];
+defocus875meanCenteredCorrectedAll = [];
+
+for i = 1:length(stimOptDistUnq)
+    ind = abs(stimOptDist-stimOptDistUnq(i))<0.001;
+    colorBasedPredictionMeanCenteredAll = [colorBasedPredictionMeanCenteredAll; colorBasedPrediction(ind)-mean(colorBasedPrediction(ind))];
+    defocus875meanCenteredCorrectedAll = [defocus875meanCenteredCorrectedAll; (defocus875stack(ind)-mean(defocus875stack(ind)))/defocusCorrectionFactor];
+end
+
+figure; 
+plot(colorBasedPredictionMeanCenteredAll,defocus875meanCenteredCorrectedAll,'ko');
+axis square;
+set(gca,'FontSize',15);
+xlabel('Mean-centered prediction');
+ylabel('Mean-centered response');
+title(['Correlation = ' num2str(corr(colorBasedPredictionMeanCenteredAll,defocus875meanCenteredCorrectedAll))]);
+
+%% LOADING DATA FOR IMAGE QUALITY ANALYSIS (STREHL METRIC)
+
+defocus875stack = [];
+meanv00stack = [];
+rgb1stack = [];
+wvInFocusStack = [];
+subjNum = 2;
+
+if subjNum==1
+    fileNums = 1:5;
+elseif subjNum==2
+    fileNums = 1:5;
+end
+
+for i = fileNums
+    load(['/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/imageQualityAnalysis/ARCmodelOutputStrehl' num2str(subjNum) '_' num2str(i) '.mat']);
     % DEFOCUS AT 875nm (RAW FIAT MEASUREMENT)
     defocus875stack = [defocus875stack; defocusBasic];
     % STIMULUS DISTANCE
@@ -462,6 +607,8 @@ for l = 1:length(blockNums) % LOOP OVER BLOCK
         PARAMS.PupilFitSize=mean(table2array(ZernikeTable(FrameStart,5))); 
         PARAMS.PupilFieldSize=PARAMS.PupilSize*2; %automatically compute the field size
         c(:,3:NumCoeffs)=table2array(ZernikeTable(FrameStart,11:width(ZernikeTable)));
+        indBad = c(:,4)==0;
+        c(indBad,4) = mean(c(~indBad,4));        
         meanC = mean(c,1); % TAKE MEAN OF COEFFICIENTS
         
         c2=zeros(30,65); %this is the vector that contains the Zernike polynomial coefficients. We can work with up to 65. 
@@ -469,6 +616,8 @@ for l = 1:length(blockNums) % LOOP OVER BLOCK
         PARAMS2.PupilFitSize=mean(table2array(ZernikeTable(FrameEnd,5))); 
         PARAMS2.PupilFieldSize=PARAMS2.PupilSize*2; %automatically compute the field size
         c2(:,3:NumCoeffs)=table2array(ZernikeTable(FrameEnd,11:width(ZernikeTable)));
+        indBad = c2(:,4)==0;
+        c2(indBad,4) = mean(c2(~indBad,4));        
         meanC2 = mean(c2,1); % TAKE MEAN OF COEFFICIENTS   
 
         % STORE COLORS FOR FIRST AND SECOND STIMULI
@@ -538,8 +687,8 @@ subjNum = 1;
 
 if subjNum==1
     subjName = 'BenChin-OD';
-    blockNums = [10];
-    trialNums = {[1:18]'};
+    blockNums = [9];
+    trialNums = {[1:30]'};
     % blockNums = [2 3];
     % trialNums = [[1:20]' [1:20]']; 
     limVals = [-2 2];
@@ -595,6 +744,8 @@ for l = 1:length(blockNums) % LOOP OVER BLOCK
         PARAMS.PupilFitSize=mean(table2array(ZernikeTable(FrameStart,5))); 
         PARAMS.PupilFieldSize=PARAMS.PupilSize*2; %automatically compute the field size
         c(:,3:NumCoeffs)=table2array(ZernikeTable(FrameStart,11:width(ZernikeTable)));
+        indBad = c(:,4)==0;
+        c(indBad,4) = mean(c(~indBad,4));        
         meanC = mean(c,1); % TAKE MEAN OF COEFFICIENTS
         
         c2=zeros(30,65); %this is the vector that contains the Zernike polynomial coefficients. We can work with up to 65. 
@@ -602,6 +753,8 @@ for l = 1:length(blockNums) % LOOP OVER BLOCK
         PARAMS2.PupilFitSize=mean(table2array(ZernikeTable(FrameEnd,5))); 
         PARAMS2.PupilFieldSize=PARAMS2.PupilSize*2; %automatically compute the field size
         c2(:,3:NumCoeffs)=table2array(ZernikeTable(FrameEnd,11:width(ZernikeTable)));
+        indBad = c2(:,4)==0;
+        c2(indBad,4) = mean(c2(~indBad,4));        
         meanC2 = mean(c2,1); % TAKE MEAN OF COEFFICIENTS   
 
         % STORE COLORS FOR FIRST AND SECOND STIMULI
@@ -658,7 +811,7 @@ for i = 1:size(rgb2unq,1)
 
     plot(i.*ones([sum(ind) 1]),defocus875stack2(ind)./defocusCorrectionFactor,'o','Color',rgb2unq(i,1:3),'MarkerFaceColor',rgb2unq(i,1:3));
 end
-ylim([0 3]);
+ylim([0 4]);
 set(gca,'XTick',1:3);
 set(gca,'XTickLabel','');
 xlim([0.5 6.5]);
