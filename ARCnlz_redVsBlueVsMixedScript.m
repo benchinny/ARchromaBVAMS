@@ -9,7 +9,7 @@ for j = 1:size(lumCutoff,1)
     figure;
     set(gcf,'Position',[105 245 1479 647]);    
     for i = 1:length(sn) 
-        subplot(2,4,i);
+        subplot(2,5,i);
         set(gca,'FontSize',15);
         hold on;
         [x3stackRed,x3stackBlue,x3stackMixed,x3stackMixedMoreRed,x3stackMixedMoreBlue,meanRedPerTrial,meanBluePerTrial,meanMixedPerTrial,meanMixedMoreRedPerTrial,meanMixedMoreBluePerTrial,tInterp,AFCp,indCndCell] = ARCnlz_redVsBlueVsMixed(sn(i),0,lumCutoff(j,:));
@@ -34,7 +34,7 @@ end
 
 %% HISTOGRAMS OF MEANS FOR EACH TRIAL
 
-sn = [18 23 24 26 27 29 32 33];
+sn = [18 23 24 26 27 28 29 30 32 33];
 frmDuration = 0.033;
 lumCutoff = [0.2 1.75];
 meanDiffPureRedVsBlue = [];
@@ -43,7 +43,7 @@ for j = 1:size(lumCutoff,1)
     figure;
     set(gcf,'Position',[105 245 1479 647]);    
     for i = 1:length(sn) 
-        subplot(2,4,i);
+        subplot(2,5,i);
         set(gca,'FontSize',15);
         hold on;
         [x3stackRed,x3stackBlue,x3stackMixed,x3stackMixedMoreRed,x3stackMixedMoreBlue,meanRedPerTrial,meanBluePerTrial,meanMixedPerTrial,meanMixedMoreRedPerTrial,meanMixedMoreBluePerTrial,tInterp,AFCp,indCndCell] = ARCnlz_redVsBlueVsMixed(sn(i),0,lumCutoff(j,:));

@@ -83,7 +83,7 @@ for i = 1:size(uniqueRGBvalues,1)
         fill([tSamples(ind2ndHalf) fliplr(tSamples(ind2ndHalf))],[xStackCI2(1,:) fliplr(xStackCI2(2,:))],uniqueRGBvalues(i,4:6),'EdgeColor','none');
         plot(tSamples(ind2ndHalf),mean(xStackAll(indCndMarkers,ind2ndHalf),1),'-','Color',uniqueRGBvalues(i,4:6),'LineWidth',2);
         xlim([0 6]);
-        ylim([-3 3]);
+        ylim([-0.75 2.8]);
         xlabel('Time (s)'); ylabel('Relative Power (Diopters)'); 
         title(['Step = ' num2str(stepSizes(j)*optDistScale) ...
               ', RGB = [' num2str(uniqueRGBvalues(i,1)) ' ' num2str(uniqueRGBvalues(i,2)) ' ' num2str(uniqueRGBvalues(i,3)) '] to ['...

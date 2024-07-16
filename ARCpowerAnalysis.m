@@ -357,7 +357,7 @@ set(gca,'XTickLabel',{'1' '2' '3' '4' '5' '6' '7' '8'});
 
 %% AIC ANALYSIS
 
-sn = [18 23 24 26 27 29 32 33];
+sn = [18 23 24 26 27 28 29 30 32 33];
 dAll1 = [];
 rbThreshold1 = [];
 aicSwitchAll1 = [];
@@ -366,7 +366,9 @@ rbThreshold2 = [];
 aicSwitchAll2 = [];
 aicLinAll = [];
 aicNoColorAll = [];
-meanDiffPureRedVsBlue = [0.9607 1.0299 0.9122 0.1594 0.4769 0.2107 0.8158 0.3803];
+% meanDiffPureRedVsBlue = [0.9607 1.0299 0.9122 0.1594 0.4769 0.5201 0.2107 0.2619 0.8158 0.3803];
+% meanDiffPureRedVsBlue = [0.8154 0.7792 0.5180 0.6472 0.4920 0.3267 0.5820 0.5690 0.7679 0.6513];
+meanDiffPureRedVsBlue = 0.8.*ones([1 10]);
 
 for i = 1:length(sn)
     [d, wS, rbThreshold, rhoSwitch, rhoColorSwitch, aicSwitch] = ARCnlz_linearSwitching(sn(i),false,0);
@@ -392,38 +394,86 @@ end
 figure;
 set(gcf,'Position',[215 337 792 420]);
 hold on;
-bar([1 6 11 16 21 26 31 36],aicLinAll,0.18,'FaceColor','w');
-bar([2 7 12 17 22 27 32 37],aicSwitchAll1,0.18,'FaceColor',[0.5 0.5 0.5]);
-bar([3 8 13 18 23 28 33 38],aicSwitchAll2,0.18,'FaceColor',[0.25 0.25 0.25]);
-bar([4 9 14 19 24 29 34 39],aicNoColorAll,0.18,'FaceColor','k');
+bar([1 6 11 16 21 26 31 36 41 46],aicLinAll,0.18,'FaceColor','w');
+bar([2 7 12 17 22 27 32 37 42 47],aicSwitchAll1,0.18,'FaceColor',[0.5 0.5 0.5]);
+bar([3 8 13 18 23 28 33 38 43 48],aicSwitchAll2,0.18,'FaceColor',[0.25 0.25 0.25]);
+bar([4 9 14 19 24 29 34 39 44 49],aicNoColorAll,0.18,'FaceColor','k');
 set(gca,'FontSize',15);
 xlabel('Subject'); ylabel('AIC');
-set(gca,'XTick',[2.5 7.5 12.5 17.5 22.5 27.5 32.5 37.5]);
-set(gca,'XTickLabel',{'1' '2' '3' '4' '5' '6' '7' '8'});
+set(gca,'XTick',[2.5 7.5 12.5 17.5 22.5 27.5 32.5 37.5 42.5 47.5]);
+set(gca,'XTickLabel',{'1' '2' '3' '4' '5' '6' '7' '8' '9' '10'});
 legend({'Weighting' 'Switch Float d' 'Switch fixed d' 'No color'});
 
 figure;
-set(gcf,'Position',[215 337 792 420]);
+set(gcf,'Position',[215 337 692 420]);
 hold on;
-bar([1 3 5 7 9  11 13 15],dAll1,0.4,'FaceColor','w');
-bar([2 4 6 8 10 12 14 16],dAll2,0.4,'FaceColor',[0.5 0.5 0.5]);
-% plot(xlim,0.35.*[1 1],'k--');
+bar([1 5 9  13 17 21 25 29 33 37],aicLinAll,0.18,'FaceColor','w');
+bar([2 6 10 14 18 22 26 30 34 38],aicSwitchAll2,0.18,'FaceColor',[0.5 0.5 0.5]);
+bar([3 7 11 15 19 23 27 31 35 39],aicNoColorAll,0.18,'FaceColor','k');
 set(gca,'FontSize',15);
-xlabel('Subject'); ylabel('Switching d');
-set(gca,'XTick',[1.5 3.5 5.5 7.5 9.5 11.5 13.5 15.5]);
-set(gca,'XTickLabel',{'1' '2' '3' '4' '5' '6' '7' '8'});
-legend({'Switch Float d' 'Switch constrained d'});
+xlabel('Subject'); ylabel('AIC');
+set(gca,'XTick',[2:4:38]);
+set(gca,'XTickLabel',{'1' '2' '3' '4' '5' '6' '7' '8' '9' '10'});
+legend({'Weighting' 'Switching' 'No color'});
 
 figure;
 set(gcf,'Position',[215 337 792 420]);
 hold on;
-bar([1 3 5 7 9  11 13 15],rbThreshold1,0.4,'FaceColor','w');
-bar([2 4 6 8 10 12 14 16],rbThreshold2,0.4,'FaceColor',[0.5 0.5 0.5]);
+plot([0 170],[0 170],'k--');
+plot(aicNoColorAll,aicLinAll,'ko','MarkerFaceColor',1.*[1 1 1],'MarkerSize',15);
+xlim([0 170]);
+ylim([0 170]);
+set(gca,'FontSize',15);
+axis square;
+xlabel('AIC (no color model)'); ylabel('AIC (linear weighting model)');
+
+figure;
+set(gcf,'Position',[215 337 792 420]);
+hold on;
+plot([0 170],[0 170],'k--');
+plot(aicSwitchAll2,aicLinAll,'ko','MarkerFaceColor',0.5.*[1 1 1],'MarkerSize',15);
+xlim([0 170]);
+ylim([0 170]);
+set(gca,'FontSize',15);
+axis square;
+xlabel('AIC (switching model)'); ylabel('AIC (linear weighting model)');
+
+figure;
+set(gcf,'Position',[215 337 792 420]);
+hold on;
+plot([0 170],[0 170],'k--');
+plot(aicNoColorAll,aicSwitchAll2,'ko','MarkerFaceColor',0.5.*[1 1 1],'MarkerSize',15);
+xlim([0 170]);
+ylim([0 170]);
+set(gca,'FontSize',15);
+axis square;
+xlabel('AIC (no color model)'); ylabel('AIC (switching model)');
+
+figure;
+set(gcf,'Position',[215 337 792 420]);
+hold on;
+% bar([1 3 5 7 9  11 13 15 17 19],dAll1,0.4,'FaceColor','w');
+% bar([2 4 6 8 10 12 14 16 18 20],dAll2,0.4,'FaceColor',[0.5 0.5 0.5]);
+bar(1:10,dAll2,0.4,'FaceColor',[0.5 0.5 0.5]);
+% plot(xlim,0.35.*[1 1],'k--');
+set(gca,'FontSize',15);
+xlabel('Subject'); ylabel('Switching d');
+% set(gca,'XTick',[1.5 3.5 5.5 7.5 9.5 11.5 13.5 15.5 17.5 19.5]);
+set(gca,'XTick',1:10);
+set(gca,'XTickLabel',{'1' '2' '3' '4' '5' '6' '7' '8' '9' '10'});
+% legend({'Switch Float d' 'Switch constrained d'});
+
+figure;
+set(gcf,'Position',[215 337 792 420]);
+hold on;
+% bar([1 3 5 7 9  11 13 15 17 19],rbThreshold2,0.4,'FaceColor','w');
+% bar([2 4 6 8 10 12 14 16 18 20],rbThreshold2,0.4,'FaceColor',[0.5 0.5 0.5]);
+bar(1:10,rbThreshold1,0.4,'FaceColor','w');
 set(gca,'FontSize',15);
 xlabel('Subject'); ylabel('Switching threshold');
-set(gca,'XTick',[1.5 3.5 5.5 7.5 9.5 11.5 13.5 15.5]);
-set(gca,'XTickLabel',{'1' '2' '3' '4' '5' '6' '7' '8'});
-legend({'Switch Float d' 'Switch 0.35 d'});
+set(gca,'XTick',1:10);
+set(gca,'XTickLabel',{'1' '2' '3' '4' '5' '6' '7' '8' '9' '10'});
+% legend({'Switch Float d' 'Switch 0.35 d'});
 ylim([-0.5 0.5]);
 
 %% COMPARING OUTPUTS OF LINEAR AND SWITCHING MODELS

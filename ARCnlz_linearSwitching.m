@@ -1,4 +1,4 @@
-function [d, wS, rbThreshold, rhoSwitch, rhoColorSwitch, aic, trialMeans] = ARCnlz_linearSwitching(sn,bPLOT,dMin)
+function [d, wS, rbThreshold, rhoSwitch, rhoColorSwitch, aic, trialMeans,meanChanges, deltaRB1, deltaRB2, deltaS] = ARCnlz_linearSwitching(sn,bPLOT,dMin)
 
 bEXCLUDE = true;
 gammaFactorR = 2.4;
@@ -62,10 +62,18 @@ elseif sn==27
    % vs = 4:11;
    vs = 9:12;
    excludeTrials = [];     
+elseif sn==28
+   % vs = 4:11;
+   vs = 17:20;
+   excludeTrials = [];       
 elseif sn==29
    % vs = 4:11;
    vs = 11:14;
    excludeTrials = [];        
+elseif sn==30
+   % vs = 4:11;
+   vs = 13:16;
+   excludeTrials = [];      
 elseif sn==32
    % vs = 4:11;
    vs = 15:18;
@@ -250,6 +258,7 @@ for i = 1:size(uniqueConditions,1)
     meanChangeXvec(indCnd) = meanChangeXtmp;
     meanChangeYvec(indCnd) = meanChangeYtmp;
 end
+meanChanges = meanChangeXvec;
 
 scaleEquateRB = 1/0.25;
 
@@ -295,7 +304,7 @@ end
 [~,bestInd] = min(LLtmp);
 estResidualStd = stdTmp(bestInd);
 LL = sum(log(normpdf(meanChangeXvec',trialMeans,estResidualStd)));
-nParams = 4;
+nParams = 3;
 aic = 2*nParams-2*LL;
 
 if bPLOT

@@ -48,9 +48,16 @@ elseif sn==25
 elseif sn==27
    vs = 5:12;
    excludeTrials = [];
+elseif sn==28
+   vs = 13:20;
+   excludeTrials = [];   
 elseif sn==29
    vs = 7:14;
    excludeTrials = [];   
+elseif sn==30
+   % vs = 4:11;
+   vs = 9:16;
+   excludeTrials = [];        
 elseif sn==32
    vs = 11:18;
    excludeTrials = []; 

@@ -41,6 +41,10 @@ imPatternTmp = circshift(imPatternTmp,-15,1);
 I(:,:,3) = imresize(imPatternTmp,nDotsI.*[1 1],'nearest');
 I(:,:,1) = 0.56.*imresize(imPatternTmp,nDotsI.*[1 1],'nearest');
 I = I./255;
+% I = zeros(size(I));
+% I(160,160,1) = 0.56;
+% I(160,160,2) = 0.00;
+% I(160,160,3) = 1.00;
 
 % Turn image into 'scene'
 s = sceneFromFile(I, 'rgb', [], d);  % The display is included here
@@ -90,7 +94,7 @@ end
 %% crop retinal image for visualization
 
 % Visualize image at each wavelength
-oi = oiCrop(oi, [50 50 300 300]);
+oi = oiCrop(oi, [150 150 100 100]);
 
 %% visualize retinal image
 
