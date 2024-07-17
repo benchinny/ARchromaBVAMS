@@ -45,7 +45,7 @@ zaber(name_map('rotation')).control.getposition
 
 if exist('sr') ~=  1; sr=[0 0]; end
 %         dmnd=[-0.5:0.5:3]
-opto(name_map('r_disp')).control.setFocalPower(13.936+sr(2));% -dmnd(k0));
+opto(name_map('r_disp')).control.setFocalPower(14.3+sr(2));% -dmnd(k0));
 opto(name_map('r_disp')).control.getFocalPower.focal_power
 
 opto(name_map('l_disp')).control.setFocalPower(14+sr(1));%-dmnd(k0));
@@ -108,7 +108,7 @@ end
 [iLf iRf]=cwin3(imread("black.png"), testim , cf, rc00, window2, window1);
 
 power_dispL = 14;
-power_dispR = 13.936;
+power_dispR = 14.3;
 
 rightTrombonePowerNear = opto(name_map('r_t_near')).control.getFocalPower.focal_power;
 rightTrombonePowerFar = opto(name_map('r_t_far')).control.getFocalPower.focal_power;
@@ -185,7 +185,7 @@ try
             opto(name_map('l_disp')).control.setFocalPower(power_dispL);
             opto(name_map('r_disp')).control.setFocalPower(power_dispR);
             
-            fprintf('Display power: L = %f  , R = %f , Optical Distance R = %f D \n',power_dispL, power_dispR, 0.87.*(13.936-power_dispR));
+            fprintf('Display power: L = %f  , R = %f , Optical Distance R = %f D \n',power_dispL, power_dispR, 0.82.*(14.3-power_dispR));
 
             fprintf('\n');
         end

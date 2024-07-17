@@ -13,7 +13,7 @@ end
 meanFocstmOptDst = [1.5 2.0 2.5 3.0 3.5]*1.25;
 meanFocstmOptDst = meanFocstmOptDst(randperm(length(meanFocstmOptDst)));
 rgb  = [
-        1.00 1.00 1.00; ...
+        0.555 0.418 1.00; ...
         ];
 indScrambleRgb = randperm(size(rgb,1));
 rgb = rgb(indScrambleRgb,:);
@@ -77,7 +77,7 @@ if sv == 1
 end
          
 opto(name_map('l_disp')).control.setFocalPower(14);
-opto(name_map('r_disp')).control.setFocalPower(14.4);
+opto(name_map('r_disp')).control.setFocalPower(14.3);
 % zaber(name_map('rotation')).move_deg(-3); %%-6400
 [iLf iRf]=cwin3(imread('black.png'), imread('black.png') , cf, rc00, window2, window1);
 clear LCAim;
