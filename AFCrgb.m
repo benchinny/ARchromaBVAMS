@@ -23,7 +23,7 @@ nRmpSteps = round(nRmpSteps/2)*2; % make sure it's even number
 tIntervalStm = 0.2; % how long to pause after each step
 nFrmStmPlat = 10; % number of frames for which the stimulus plateaus
 
-power_dispR=14.4+sr(2); %starting display power
+power_dispR=14.3+sr(2); %starting display power
 power_dispL=14+sr(1); %starting display power
 opto(name_map('r_disp')).control.setFocalPower(power_dispR-meanv0(1));
 opto(name_map('l_disp')).control.setFocalPower(power_dispL-meanv0(1));

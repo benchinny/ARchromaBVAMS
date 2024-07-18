@@ -50,7 +50,7 @@ stimSizePixAll(end+1,:) = 10;
 % 1 = 0°, 2 = 90°, 3 = 180°, 4 = 270° 
 stimOrientation = ceil(rand(size(focStmOptDstIncrAll))*2);
 
-power_dispR=13.936; %starting display power
+power_dispR=14.3; %starting display power
 power_dispL=14; %starting display power
 opto(name_map('r_disp')).control.setFocalPower(power_dispR-meanFocstmOptDstAll(1));
 opto(name_map('l_disp')).control.setFocalPower(power_dispL-meanFocstmOptDstAll(1));
