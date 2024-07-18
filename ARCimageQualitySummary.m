@@ -683,7 +683,7 @@ ylabel('Accommodative response at 875nm (D)');
 
 %% LOAD TRIALS FROM 'FIXED' CONDITIONS (MONOCHROMATIC)
 
-subjNum = 1;
+subjNum = 2;
 
 if subjNum==1
     subjName = 'BenChin-OD';
@@ -693,9 +693,9 @@ if subjNum==1
     % trialNums = [[1:20]' [1:20]']; 
     limVals = [-2 2];
 elseif subjNum==2
-    subjName = 'S2-OS';
-    blockNums = [2 3 4 5 6];
-    trialNums = {[1:20]' [1:20]' [1:20]' [1:20]' [1:20]'};
+    subjName = 'S2-OD';
+    blockNums = [8];
+    trialNums = {[1:30]'};
     % blockNums = [2 3];
     % trialNums = [[1:20]' [1:20]'];     
     limVals = [-2 2];

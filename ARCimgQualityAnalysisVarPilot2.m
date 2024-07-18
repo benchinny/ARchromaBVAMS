@@ -159,7 +159,9 @@ for k = 1:size(rgbConditions,1)
     % testWave = oi.optics.OTF.wave(ind);
     % testOTF = fftshift(oi.optics.OTF.OTF(:,:,ind));
     % testPSF = ifftshift(ifft2(oi.optics.OTF.OTF(:,:,ind)));
-    
+    [~,ind] = max(peakPSF);
+    wvInFocusST(k) = humanWaveDefocusInvert(-Dall(ind));
+    % 612 528 476 612 612 616 472 472 620 620
     %% Turning original stimulus into luminance image
     
     downScale = 1;
@@ -224,7 +226,7 @@ for k = 1:size(rgbConditions,1)
     ylabel('Peak correlation');
 
     [~,ind] = max(peakCorr);
-    wvInFocus(k) = humanWaveDefocusInvert(-Dall2(ind));
+    wvInFocusXC(k) = humanWaveDefocusInvert(-Dall2(ind));
     % 552 532 520 572 584 564 516 496 604 612
 end
 
