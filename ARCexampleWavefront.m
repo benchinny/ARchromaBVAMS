@@ -42,33 +42,43 @@ PARAMS.FileName = fname;
 c(3:NumCoeffs)=table2array(ZernikeTable(FrameStart,11:width(ZernikeTable)));
 
 %% Create wavefront structure with reasonable parameters.
-pupilMM = 7;
+pupilMM = 3;
 % zCoeffs = wvfLoadThibosVirtualEyes(pupilMM);
-zCoeffs = [0 c(1:end-1)];
-% zCoeffs = zeros([1 65]);
-% zCoeffs(4) = 0.05;
-% zCoeffs(5) = 0.1;
-wave = 550;
-wvfP = wvfCreate('calc wavelengths', wave, ...
-    'measured wavelength', 550, ...
+% zCoeffs = [0 c(1:end-1)];
+zCoeffs = zeros([1 65]);
+zCoeffs(1) = 1;
+zCoeffs(2) = 0;
+zCoeffs(3) = 0;
+zCoeffs(4) = 0.00;
+zCoeffs(5) = 0;
+wave = [380:555];
+wvfP = wvfCreate('calc wavelengths', wave, ...xl
+    'measured wavelength', 555, ... % THIS REALLY MEANS 'REFERENCE' WAVELENGTH
     'zcoeffs', zCoeffs, 'measured pupil', pupilMM, ...
-    'name', sprintf('human-%d', pupilMM),'spatial samples',401);
-wvfP.calcpupilMM = pupilMM;
-wvfP.refSizeOfFieldMM = 42;
+    'name', sprintf('human-%d', pupilMM),'spatial samples',320);
+% wvfP.calcpupilMM = pupilMM;
+% wvfP.refSizeOfFieldMM = 42;
 
 % Set a little defocus, just to make the PSF a bit more interesting
-wvfP = wvfSet(wvfP, 'zcoeff', 0, 'defocus');
+% wvfP = wvfSet(wvfP, 'zcoeff', 0, 'defocus');
 
 % Convert to siData format and save.  201 is the number of default 
 % samples in the wvfP object, and we need to match that here.
-[siPSFData, wvfP] = wvf2SiPsf(wvfP,'showBar',true,'nPSFSamples',401);
+[siPSFData, wvfP] = wvf2SiPsf(wvfP,'showBar',false,'nPSFSamples',320,'umPerSample',0.25);
 
 figure; 
+set(gcf,'Position',[318 486 928 420]);
 for i = 1:length(wave)
-   subplot(1,1,1);
+   subplot(1,2,1);
    imagesc(flipud(siPSFData.psf(:,:,i))); 
    colormap gray; 
    axis square
    title(['wave = ' num2str(wave(i)) 'mm']);
+   subplot(1,2,2);
+   plot(siPSFData.psf(80,:,i)); 
+   colormap gray; 
+   axis square
+   title(['wave = ' num2str(wave(i)) 'mm']);   
+   pause;
 end
 
