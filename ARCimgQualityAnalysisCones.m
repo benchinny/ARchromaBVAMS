@@ -9,6 +9,7 @@ subjNum = 2;
 d = displayCreate('OLED-Samsung');
 d = displaySet(d, 'name', 'my display');
 d = displaySet(d,'ViewingDistance',1); % simulated screen distance
+d = displaySet(d,'dpi',378); % simulated screen distance
 
 bUseBVAMScal = 1; % if using BVAMS calibration data
 
@@ -65,7 +66,7 @@ rgb1all = zeros([20 3]);
 defocusBasic = zeros([20 1]);
 
 for l = 5 % LOOP OVER BLOCK
-    parfor k = 1:20 % LOOP OVER TRIAL
+    for k = 1:20 % LOOP OVER TRIAL
         % LOADING DATA
         blockNumInd = l;
         blockNumTmp = blockNums(blockNumInd);
@@ -164,11 +165,20 @@ for l = 5 % LOOP OVER BLOCK
             wvfP = wvfSet(wvfP, 'zcoeff', 0, 'defocus');
             
             % Convert to siData format as well as wavefront object
-            [siPSFData, wvfP] = wvf2SiPsf(wvfP,'showBar',false,'nPSFSamples',320,'umPerSample',1.5212); 
+            [siPSFData, wvfP] = wvf2SiPsf(wvfP,'showBar',false,'nPSFSamples',320,'umPerSample',1.1512); 
             oi = wvf2oi(wvfP); % CONVERT TO OPTICS OBJECT
             % oi = oiCreateARC('human',wave,Dall(i)); % create optics
             oi = oiCompute(oi, s); % compute optical image of stimulus
         
+            % Create the coneMosaic object
+            cMosaic = coneMosaic;
+
+            % Set size to show relevant portion of scene
+            cMosaic.setSizeToFOV(1 * sceneGet(s, 'fov'));
+
+            % key line for computing absorptions
+            absorptions = cMosaic.computeSingleFrame(oi, 'fullLMS', true);            
+
             photonsImgXW = RGB2XWFormat(oi.data.photons); % FORMATTING
             energyImgXW = Quanta2Energy(wave,photonsImgXW);
             
