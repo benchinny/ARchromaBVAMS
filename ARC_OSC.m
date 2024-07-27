@@ -42,6 +42,13 @@ if bTexture
     testim = imread(im2R);
     testim = imresize(testim,[floor(size(testim,1)/2) floor(size(testim,2)/2)]);
     testim = flipud(testim);
+    % CROPPING WITH CIRCULAR MASK
+    [mskX, mskY] = meshgrid(-floor(size(testim,2)/2):(ceil(size(testim,2)/2)-1),-floor(size(testim,1)/2):(ceil(size(testim,1)/2)-1));
+    mskRad = 840;
+    mskCirc = uint8(sqrt(mskX.^2 + mskY.^2)<mskRad);
+    testim(:,:,1) = mskCirc.*squeeze(testim(:,:,1));
+    testim(:,:,2) = mskCirc.*squeeze(testim(:,:,2));
+    testim(:,:,3) = mskCirc.*squeeze(testim(:,:,3));
 %    testim = 255.*ones(size(testim));
     % ---------------------------
     % ----MAKING GABOR-----------

@@ -20,10 +20,12 @@ stdErrorLowMyopes = std(low_myopes(:,1)+low_myopes(:,2))./sqrt(size(low_myopes,1
 
 figure;
 hold on;
-bar(1,meanHighMyopes,'red');
-bar(2,meanLowMyopes,'blue');
-errorbar(1,meanHighMyopes,stdErrorHighMyopes,'k');
-errorbar(2,meanLowMyopes,stdErrorLowMyopes,'k');
+bar(1,meanHighMyopes,'w','LineWidth',1);
+bar(2,meanLowMyopes,'w','LineWidth',1);
+errorbar(1,meanHighMyopes,stdErrorHighMyopes,'k','LineWidth',1);
+errorbar(2,meanLowMyopes,stdErrorLowMyopes,'k','LineWidth',1);
+axis square;
+set(gca,'FontSize',15);
 set(gca,'XTick',[1 2])
-set(gca,'XTickLabel',{'High' 'Low'})
-
+set(gca,'XTickLabel',{'High myopes' 'Low myopes'});
+ylabel('w_{R}-|w_{B}|');

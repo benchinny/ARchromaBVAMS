@@ -188,16 +188,21 @@ for l = 5 % LOOP OVER BLOCK
 
             % COMPUTE MAX CORRELATION
             peakCorr(i) = max(max(xcorr2(lumImgOrig,lumImg)));
-            % if ismember(round(humanWaveDefocusInvert(-Dall(i))),[460 520 620])
-            %     figure;
-            %     set(gcf,'Position',[326 418 924 420]);      
-            %     subplot(1,2,1);
-            %     imagesc(lumImg); axis square; colormap gray;
-            %     subplot(1,2,2);
-            %     imagesc(lumImgOrig); axis square; colormap gray;    
-            %     title(['wavelength in focus: ' num2str(round(humanWaveDefocusInvert(-Dall(i)))) 'nm, ' ...
-            %            'max(xcorr) = ' num2str(peakCorr(i))]);
-            % end
+            if ismember(round(humanWaveDefocusInvert(-Dall2(i))),[460 520 620])
+                figure;
+                set(gcf,'Position',[326 418 924 420]);      
+                subplot(1,3,1);
+                imagesc(squeeze(absorptions(:,:,1))); axis square; colormap gray;
+                set(gca,'XTick',[]); set(gca,'YTick',[]);
+                subplot(1,3,2);
+                imagesc(squeeze(absorptions(:,:,2))); axis square; colormap gray;
+                set(gca,'XTick',[]); set(gca,'YTick',[]);
+                subplot(1,3,3);
+                imagesc(squeeze(absorptions(:,:,3))); axis square; colormap gray;
+                set(gca,'XTick',[]); set(gca,'YTick',[]);
+                title(['wavelength in focus: ' num2str(round(humanWaveDefocusInvert(-Dall2(i)))) 'nm, ' ...
+                       'max(xcorr) = ' num2str(peakCorr(i))]);
+            end
             display(['Peak correlation loop ' num2str(i)]);
         end
         
