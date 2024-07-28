@@ -8,7 +8,7 @@ power_dispR_min = 7;
 power_dispR_max = 16.4;
 adjustIncrement = 0.1;
 stimColor = [0.555 0.418 1.00];
-sr = [-2 -2];
+sr = [0 0];
 
 %%input a output b
 cf=ones(3,2);
@@ -44,11 +44,12 @@ if bTexture
     testim = flipud(testim);
     % CROPPING WITH CIRCULAR MASK
     [mskX, mskY] = meshgrid(-floor(size(testim,2)/2):(ceil(size(testim,2)/2)-1),-floor(size(testim,1)/2):(ceil(size(testim,1)/2)-1));
-    mskRad = 840;
+    mskRad = 420;
     mskCirc = uint8(sqrt(mskX.^2 + mskY.^2)<mskRad);
     testim(:,:,1) = mskCirc.*squeeze(testim(:,:,1));
     testim(:,:,2) = mskCirc.*squeeze(testim(:,:,2));
     testim(:,:,3) = mskCirc.*squeeze(testim(:,:,3));
+    testim = imresize(testim,0.7.*[size(testim,1) size(testim,2)]);
 %    testim = 255.*ones(size(testim));
     % ---------------------------
     % ----MAKING GABOR-----------
@@ -107,18 +108,23 @@ pause(2);
 
 %% Control loop
 ListenChar(2);
+incrAll = [];
 try
     opt_chk=0;
     while ~KbCheck && opt_chk==0
         timeCurrentInit = clock;
         timeCurrent = timeCurrentInit(4)*3600 + timeCurrentInit(5)*60 + timeCurrentInit(6);
         timeDiff = timeCurrent-timeStart;
-        if timeDiff>20
+        if timeDiff>40
             opt_chk = 1;
         end
-        incr = 2.*(sin(2*pi.*0.25.*timeDiff)+1);
+        incr = 2.*(sin(2*pi.*0.1.*timeDiff + pi/2)+1);
+        incrAll(end+1) = incr;
         power_dispR=power_dispRoriginal-incr;
+        scaleFac = 1+4*incr/100;
+        testim2 = imresize(testim,scaleFac.*[size(testim,1) size(testim,2)]);
         opto(name_map('r_disp')).control.setFocalPower(power_dispR);   
+        [iLf iRf]=cwin3(imread("black.png"), testim2 , cf, rc00, window2, window1);
         pause(0.25);
         fprintf('Display power: L = %f  , R = %f , Optical Distance R = %f D, time = %f \n',power_dispL, power_dispR, 1.*(14.3-power_dispR), timeDiff);
     end
