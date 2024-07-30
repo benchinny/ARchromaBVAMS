@@ -20,6 +20,7 @@ rgbConditions = [0.555 0.320 1.00; ...
 d = displayCreate('OLED-Samsung');
 d = displaySet(d, 'name', 'my display');
 d = displaySet(d,'ViewingDistance',1); % simulated screen distance
+d = displaySet(d,'dpi',378); % simulated screen distance
 
 bUseBVAMScal = 1; % if using BVAMS calibration data
 
@@ -61,35 +62,23 @@ N = ifftshift(ifft2(fftshift(CSF2d)));
 
 for k = 1:size(rgbConditions,1)
     % Ben's stimulus
-    nDotsI = 320;
     rVal = rgbConditions(k,1);
     gVal = rgbConditions(k,2);
     bVal = rgbConditions(k,3);
-    im = AFCwordStimImproved('sea',nDotsI.*[1 1],'green');
-    imPatternTmp = squeeze(im(:,:,2));
-    imPatternTmp = circshift(imPatternTmp,-15,1);
-    I(:,:,3) = bVal.*imresize(imPatternTmp,nDotsI.*[1 1],'nearest');
-    I(:,:,2) = gVal.*imresize(imPatternTmp,nDotsI.*[1 1],'nearest');
-    I(:,:,1) = rVal.*imresize(imPatternTmp,nDotsI.*[1 1],'nearest');
+
+    im1 = imread('/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/stimuli/word_image_01.png');
+    im1(im1>0) = 255;
+    % im1 = flipud(im1);   
+    imPatternTmp = squeeze(im1(:,:,3));
+    imPatternTmp = [zeros([30 size(imPatternTmp,2)]); imPatternTmp; zeros([30 size(imPatternTmp,2)])];
+    imPatternTmp = [zeros([size(imPatternTmp,1) 30]) imPatternTmp zeros([size(imPatternTmp,1) 30])];
+    indTestMax = find(imPatternTmp==255);
+    [rowTest,colTest]=ind2sub(size(imPatternTmp),indTestMax(1));
+
+    I(:,:,3) = bVal.*double(imPatternTmp);
+    I(:,:,2) = gVal.*double(imPatternTmp);
+    I(:,:,1) = rVal.*double(imPatternTmp);
     I = I./255;
-    % I = zeros(size(I));
-    % I(159:161,159:161,1) = rVal;
-    % I(159:161,159:161,2) = 0.00;
-    % I(159:161,159:161,3) = bVal;
-    % I(160,160,1) = rVal;
-    % I(160,160,2) = 0.00;
-    % I(160,160,3) = bVal;
-    % I(156:164,156:164,1) = rVal;
-    % I(156:164,156:164,2) = 0.00;
-    % I(156:164,156:164,3) = bVal;
-    % I(147:173,147:173,1) = rVal;
-    % I(147:173,147:173,2) = 0.00;
-    % I(147:173,147:173,3) = bVal;
-    
-    % acuStimOrig1 = ARC2Dgabor(smpPos(256,256),[],0,0,24,1,-15,0,0.2,0.2,[0.25 0 0],1,1,0,1);
-    % acuStimOrig1(:,:,1) = acuStimOrig1(:,:,1).^(1/2.4);
-    % acuStimOrig1(:,:,3) = acuStimOrig1(:,:,3).^(1/2.6);
-    % I = acuStimOrig1;
     
     % Turn image into 'scene'
     s = sceneFromFile(I, 'rgb', [], d);  % The display is included here
@@ -113,7 +102,7 @@ for k = 1:size(rgbConditions,1)
     set(gca,'FontSize',15);
     title('Original');
     subplot(1,3,3);
-    plot(s.spectrum.wave,squeeze(s.data.photons(160,160,:)),'-k','LineWidth',1);
+    plot(s.spectrum.wave,squeeze(s.data.photons(rowTest,colTest,:)),'-k','LineWidth',1);
     formatFigure('Wavelength (\lambda)','Photons');
     axis square;
     
@@ -131,7 +120,7 @@ for k = 1:size(rgbConditions,1)
     
         polyPSF = [];
         
-        photonsTmp = squeeze(s.data.photons(160,160,:));
+        photonsTmp = squeeze(s.data.photons(rowTest,colTest,:));
         energyTmp = Quanta2Energy(wave,photonsTmp);
     
         for ind = 1:length(wave)
@@ -167,7 +156,7 @@ for k = 1:size(rgbConditions,1)
     downScale = 1;
     photonsImgXWorig = RGB2XWFormat(s.data.photons);
     energyImgXWorig = Quanta2Energy(wave',photonsImgXWorig);
-    energyImgOrig = XW2RGBFormat(energyImgXWorig,320,320);
+    energyImgOrig = XW2RGBFormat(energyImgXWorig,size(s.data.photons,1),size(s.data.photons,2));
     
     lumImgOrig = zeros(size(s.data.photons,1),size(s.data.photons,2));
     for j = 1:length(wave)
@@ -189,15 +178,14 @@ for k = 1:size(rgbConditions,1)
     
         photonsImgXW = RGB2XWFormat(oi.data.photons);
         energyImgXW = Quanta2Energy(wave,photonsImgXW);
-        energyImg = XW2RGBFormat(energyImgXW,400,400);
+        energyImg = XW2RGBFormat(energyImgXW,size(oi.data.photons,1),size(oi.data.photons,2));
         
         lumImg = zeros(size(oi.data.photons,1),size(oi.data.photons,2));
         for j = 1:length(wave)
            lumImg = lumImg+downScale*energyImg(:,:,j).*T_sensorXYZ(2,j);
         end
-        lumImg = lumImg(41:360,41:360);
-    %    lumImg = oi.data.illuminance(41:360,41:360);
-        % lumImg = lumImg(33:288,33:288);
+        cropCorner = floor((size(lumImg)-size(lumImgOrig))/2);
+        lumImg = imcrop(lumImg,[fliplr(cropCorner) fliplr(size(lumImgOrig))]);
         peakCorr(i) = max(max(xcorr2(lumImgOrig,lumImg)));
         if ismember(round(humanWaveDefocusInvert(-Dall2(i))),[460 520 620])
             figure;
