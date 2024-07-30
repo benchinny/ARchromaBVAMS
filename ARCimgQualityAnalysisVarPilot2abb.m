@@ -60,6 +60,42 @@ CSF2d = 0.04992*(1+5.9375*df).*exp(-0.114*df.^1.1);
 % inverse Fourier transform of 2D CSF
 N = ifftshift(ifft2(fftshift(CSF2d)));
 
+% PARAMETERS OF WAVEFRONT ANALYSIS
+PARAMS.PixelDimension = 512;% size of pupil aperture field in pixels (this defines the resolution of the calculation)
+PARAMS.PupilSize = 7; %default values - will be replaced depending on choices below
+PARAMS.PupilFieldSize =42; %default values - will be replaced depending on choices below
+PARAMS.PupilFitSize = 7; %default values - will be replaced depending on choices below
+PARAMS.ImagingWavelength = 0.55;% imaging wavelength in microns
+PARAMS.WavefrontResolution = 53;% increase to enhance the display of the wavefront (doesn't affect calculation)
+
+subjNum = 1;
+blockNumTmp = 2;
+if subjNum==1
+    subjName = 'BenChin-OS';
+elseif subjNum==2
+    subjName = 'S2-OS'; 
+end
+trialNumTmp = 1;
+
+AFCp = ARCloadFileBVAMS(subjNum,blockNumTmp); % LOAD BVAMS DATA
+% LOAD ZERNIKE TABLE AND TIMESTAMPS
+[ZernikeTable, ~, ~, TimeStamp] = ARCloadFileFIAT(subjName,blockNumTmp,trialNumTmp,0);
+% GET THE TIMESTAMP CORRESPONDING TO THE HALFWAY POINT
+t = seconds(TimeStamp)-min(seconds(TimeStamp));
+tHalfway = max(t)/2;
+tDiffFromHalfway = abs(t-tHalfway);
+[~,indMinT] = min(tDiffFromHalfway);
+FrameStart = (indMinT-29):indMinT; % analyze 30 frames
+
+NumCoeffs = width(ZernikeTable)-8; % determine how many coefficients are in the cvs file. 
+c=zeros(30,65); %this is the vector that contains the Zernike polynomial coefficients. We can work with up to 65. 
+PARAMS = struct;
+PARAMS.PupilSize=mean(table2array(ZernikeTable(FrameStart,5))); %default setting is the pupil size that the Zernike coeffs define, PARAMS(3)
+PARAMS.PupilFitSize=mean(table2array(ZernikeTable(FrameStart,5))); 
+PARAMS.PupilFieldSize=PARAMS.PupilSize*2; %automatically compute the field size
+c(:,3:NumCoeffs)=table2array(ZernikeTable(FrameStart,11:width(ZernikeTable)));
+meanC = mean(c,1); % TAKE MEAN OF COEFFICIENTS
+
 for k = 1:size(rgbConditions,1)
     % Ben's stimulus
     rVal = rgbConditions(k,1);
@@ -106,16 +142,42 @@ for k = 1:size(rgbConditions,1)
     formatFigure('Wavelength (\lambda)','Photons');
     axis square;
     
+    %% Turning original stimulus into luminance image
+    
+    downScale = 1;
+    photonsImgXWorig = RGB2XWFormat(s.data.photons);
+    energyImgXWorig = Quanta2Energy(wave',photonsImgXWorig);
+    energyImgOrig = XW2RGBFormat(energyImgXWorig,size(s.data.photons,1),size(s.data.photons,2));
+    
+    lumImgOrig = zeros(size(s.data.photons,1),size(s.data.photons,2));
+    for j = 1:length(wave)
+        lumImgOrig = lumImgOrig+energyImgOrig(:,:,j).*T_sensorXYZ(2,j).*downScale;
+    end
+
     %% Computing visual Strehl ratio
     
     Dall = -humanWaveDefocus(wave); % defocus values to look at
     peakPSF = [];
     polyPSFall = [];
     maxRawPSFcheck = [];
+    Dall2 = -humanWaveDefocus(wave(16:66));
+    wave2 = wave(16:66);    
     
-    for i = 1:length(Dall)
-    
-        oi = oiCreateARC('human',wave,Dall(i)); % create optics
+    for i = 1:length(Dall2)
+        zCoeffs = [0 meanC(1:end-1)];
+        wvfP = wvfCreate('calc wavelengths', wave, ...
+            'measured wavelength', humanWaveDefocusInvert(-Dall2(i)), ...
+            'zcoeffs', zCoeffs, 'measured pupil', PARAMS.PupilSize, ...
+            'name', sprintf('human-%d', PARAMS.PupilSize),'spatial samples',320);
+        wvfP.calcpupilMM = PARAMS.PupilSize;
+        wvfP.refSizeOfFieldMM = 42;
+        wvfP = wvfSet(wvfP, 'zcoeff', 0, 'defocus');
+        
+        % Convert to siData format as well as wavefront object
+        [siPSFData, wvfP] = wvf2SiPsf(wvfP,'showBar',false,'nPSFSamples',320,'umPerSample',1.5212); 
+        oi = wvf2oi(wvfP); % CONVERT TO OPTICS OBJECT
+        % oi = oiCreateARC('human',wave,Dall(i)); % create optics
+        oi = oiCompute(oi, s); % compute optical image of stimulus
         maxRawPSFcheck(i) = max(max(ifftshift(ifft2(oi.optics.OTF.OTF(:,:,i)))));
     
         polyPSF = [];
@@ -131,55 +193,9 @@ for k = 1:size(rgbConditions,1)
         
         polyPSF = sum(polyPSF,3);
         peakPSF(i) = max(max(polyPSF));
-        vsx(i) = sum(sum(N.*polyPSF));
     
         polyPSFall(:,:,i) = polyPSF;
-    end
-    
-    figure; 
-    % plot(humanWaveDefocusInvert(-Dall),vsx./max(vsx),'k-','LineWidth',1); hold on;
-    plot(humanWaveDefocusInvert(-Dall),0.29.*peakPSF./max(peakPSF),'k-','LineWidth',1);
-    % legend('Visual Strehl','Strehl');
-    axis square;
-    set(gca,'FontSize',15);
-    xlabel('Wavelength in focus');
-    ylabel('Ratio');
-    % ind = 21; % examine at particular wavelength index
-    % testWave = oi.optics.OTF.wave(ind);
-    % testOTF = fftshift(oi.optics.OTF.OTF(:,:,ind));
-    % testPSF = ifftshift(ifft2(oi.optics.OTF.OTF(:,:,ind)));
-    [~,ind] = max(peakPSF);
-    wvInFocusST(k) = humanWaveDefocusInvert(-Dall(ind));
-    % original: 612 528 476 612 612 616 472 472 620 620
-    % ave:      612 528 476 612 612 616 472 472 620 620
-    % ceo:      612 528 476 612 612 616 472 472 620 620
-    % sea:      612 528 476 612 612 616 472 472 620 620
-    % osx:      612 528 476 612 612 616 472 472 620 620
-    %% Turning original stimulus into luminance image
-    
-    downScale = 1;
-    photonsImgXWorig = RGB2XWFormat(s.data.photons);
-    energyImgXWorig = Quanta2Energy(wave',photonsImgXWorig);
-    energyImgOrig = XW2RGBFormat(energyImgXWorig,size(s.data.photons,1),size(s.data.photons,2));
-    
-    lumImgOrig = zeros(size(s.data.photons,1),size(s.data.photons,2));
-    for j = 1:length(wave)
-        lumImgOrig = lumImgOrig+energyImgOrig(:,:,j).*T_sensorXYZ(2,j).*downScale;
-    end
-    
-    %% Computing peak correlation for different wavelengths in focus
-    
-    peakCorr = [];
-    % Dall2 = fliplr(Dall);
-    Dall2 = -humanWaveDefocus(wave);
-    peakPSF = [];
-    peakImg = [];
-    
-    for i = 1:length(Dall2)
-    
-        oi = oiCreateARC('human',wave,Dall2(i)); % create optics
-        oi = oiCompute(oi, s); % compute optical image of stimulus
-    
+
         photonsImgXW = RGB2XWFormat(oi.data.photons);
         energyImgXW = Quanta2Energy(wave,photonsImgXW);
         energyImg = XW2RGBFormat(energyImgXW,size(oi.data.photons,1),size(oi.data.photons,2));
@@ -201,8 +217,28 @@ for k = 1:size(rgbConditions,1)
             title(['wavelength in focus: ' num2str(round(humanWaveDefocusInvert(-Dall2(i)))) 'nm, ' ...
                    'max(xcorr) = ' num2str(peakCorr(i))]);
         end
-        display(['Correlation iteration ' num2str(i)]);
+        display(['Correlation iteration ' num2str(i)]);        
     end
+    
+    figure; 
+    % plot(humanWaveDefocusInvert(-Dall),vsx./max(vsx),'k-','LineWidth',1); hold on;
+    plot(humanWaveDefocusInvert(-Dall2),0.29.*peakPSF./max(peakPSF),'k-','LineWidth',1);
+    % legend('Visual Strehl','Strehl');
+    axis square;
+    set(gca,'FontSize',15);
+    xlabel('Wavelength in focus');
+    ylabel('Ratio');
+    % ind = 21; % examine at particular wavelength index
+    % testWave = oi.optics.OTF.wave(ind);
+    % testOTF = fftshift(oi.optics.OTF.OTF(:,:,ind));
+    % testPSF = ifftshift(ifft2(oi.optics.OTF.OTF(:,:,ind)));
+    [~,ind] = max(peakPSF);
+    wvInFocusST(k) = humanWaveDefocusInvert(-Dall2(ind));
+    % original: 612 528 476 612 612 616 472 472 620 620
+    % ave:      612 528 476 612 612 616 472 472 620 620
+    % ceo:      612 528 476 612 612 616 472 472 620 620
+    % sea:      612 528 476 612 612 616 472 472 620 620
+    % osx:      612 528 476 612 612 616 472 472 620 620
     
     %% Plotting peak correlation with wavelength in focus
     
