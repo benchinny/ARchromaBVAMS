@@ -1,8 +1,10 @@
+function [wvInFocusST, wvInFocusXC] = ARCimgQualityAnalysisVarPilot2abb(stimNum)
+
 %% Initialize and clear
 ieInit;
 
 % COLOR CONDITIONS
-rgbConditions = [0.555 0.320 1.00; ...
+rgbConditions = [0.555 0.000 1.00; ...
                  0.416 0.320 1.00; ...
                  0.312 0.320 1.00; ...
                  0.555 0.320 0.73; ...
@@ -96,13 +98,16 @@ PARAMS.PupilFieldSize=PARAMS.PupilSize*2; %automatically compute the field size
 c(:,3:NumCoeffs)=table2array(ZernikeTable(FrameStart,11:width(ZernikeTable)));
 meanC = mean(c,1); % TAKE MEAN OF COEFFICIENTS
 
-for k = 1:size(rgbConditions,1)
+wvInFocusXC = zeros([size(rgbConditions,1) 1]);
+wvInFocusST = zeros([size(rgbConditions,1) 1]);
+
+parfor k = 1:size(rgbConditions,1)
     % Ben's stimulus
     rVal = rgbConditions(k,1);
     gVal = rgbConditions(k,2);
     bVal = rgbConditions(k,3);
 
-    im1 = imread('/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/stimuli/word_image_04.png');
+    im1 = imread(['/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/stimuli/word_image_0' num2str(stimNum) '.png']);
     im1(im1>0) = 255;
     % im1 = flipud(im1);   
     imPatternTmp = squeeze(im1(:,:,3));
@@ -160,41 +165,33 @@ for k = 1:size(rgbConditions,1)
     peakPSF = [];
     polyPSFall = [];
     maxRawPSFcheck = [];
-    Dall2 = -humanWaveDefocus(wave(16:66));
-    wave2 = wave(16:66);    
+    Dall2 = -humanWaveDefocus(wave(16:101));
+    wave2 = wave(16:91);    
+    peakCorr = [];
     
     for i = 1:length(Dall2)
         zCoeffs = [0 meanC(1:end-1)];
         wvfP = wvfCreate('calc wavelengths', wave, ...
             'measured wavelength', humanWaveDefocusInvert(-Dall2(i)), ...
             'zcoeffs', zCoeffs, 'measured pupil', PARAMS.PupilSize, ...
-            'name', sprintf('human-%d', PARAMS.PupilSize),'spatial samples',320);
+            'name', sprintf('human-%d', PARAMS.PupilSize),'spatial samples',max(size(imPatternTmp)));
         wvfP.calcpupilMM = PARAMS.PupilSize;
         wvfP.refSizeOfFieldMM = 42;
         wvfP = wvfSet(wvfP, 'zcoeff', 0, 'defocus');
         
         % Convert to siData format as well as wavefront object
-        [siPSFData, wvfP] = wvf2SiPsf(wvfP,'showBar',false,'nPSFSamples',320,'umPerSample',1.5212); 
+        [siPSFData, wvfP] = wvf2SiPsf(wvfP,'showBar',false,'nPSFSamples',max(size(imPatternTmp)),'umPerSample',1.1512); 
         oi = wvf2oi(wvfP); % CONVERT TO OPTICS OBJECT
         % oi = oiCreateARC('human',wave,Dall(i)); % create optics
         oi = oiCompute(oi, s); % compute optical image of stimulus
         maxRawPSFcheck(i) = max(max(ifftshift(ifft2(oi.optics.OTF.OTF(:,:,i)))));
     
-        polyPSF = [];
+        photonsPSFXW = RGB2XWFormat(siPSFData.psf); % FORMATTING
+        photonsPSFXWweighted = bsxfun(@times,photonsPSFXW,squeeze(s.data.photons(rowTest,colTest,:))');
+        energyPSFXW = Quanta2Energy(wave,photonsPSFXWweighted);
         
-        photonsTmp = squeeze(s.data.photons(rowTest,colTest,:));
-        energyTmp = Quanta2Energy(wave,photonsTmp);
-    
-        for ind = 1:length(wave)
-            polyPSF(:,:,ind) = ifftshift(ifft2(oi.optics.OTF.OTF(:,:,ind))).* ...
-                              energyTmp(ind).* ...
-                              T_sensorXYZ(2,ind);
-        end
-        
-        polyPSF = sum(polyPSF,3);
-        peakPSF(i) = max(max(polyPSF));
-    
-        polyPSFall(:,:,i) = polyPSF;
+        lumPSFXW = sum(bsxfun(@times,energyPSFXW,T_sensorXYZ(2,:)),2);
+        peakPSF(i) = max(lumPSFXW);
 
         photonsImgXW = RGB2XWFormat(oi.data.photons);
         energyImgXW = Quanta2Energy(wave,photonsImgXW);
@@ -207,58 +204,55 @@ for k = 1:size(rgbConditions,1)
         cropCorner = floor((size(lumImg)-size(lumImgOrig))/2);
         lumImg = imcrop(lumImg,[fliplr(cropCorner) fliplr(size(lumImgOrig))]);
         peakCorr(i) = max(max(xcorr2(lumImgOrig,lumImg)));
-        if ismember(round(humanWaveDefocusInvert(-Dall2(i))),[460 520 620])
-            figure;
-            set(gcf,'Position',[326 418 924 420]);      
-            subplot(1,2,1);
-            imagesc(lumImg); axis square; colormap gray;
-            subplot(1,2,2);
-            imagesc(lumImgOrig); axis square; colormap gray;    
-            title(['wavelength in focus: ' num2str(round(humanWaveDefocusInvert(-Dall2(i)))) 'nm, ' ...
-                   'max(xcorr) = ' num2str(peakCorr(i))]);
-        end
+        % if ismember(round(humanWaveDefocusInvert(-Dall2(i))),[460 520 620])
+        %     figure;
+        %     set(gcf,'Position',[326 418 924 420]);      
+        %     subplot(1,2,1);
+        %     imagesc(lumImg); axis square; colormap gray;
+        %     subplot(1,2,2);
+        %     imagesc(lumImgOrig); axis square; colormap gray;    
+        %     title(['wavelength in focus: ' num2str(round(humanWaveDefocusInvert(-Dall2(i)))) 'nm, ' ...
+        %            'max(xcorr) = ' num2str(peakCorr(i))]);
+        % end
         display(['Correlation iteration ' num2str(i)]);        
     end
     
-    figure; 
-    % plot(humanWaveDefocusInvert(-Dall),vsx./max(vsx),'k-','LineWidth',1); hold on;
-    plot(humanWaveDefocusInvert(-Dall2),0.29.*peakPSF./max(peakPSF),'k-','LineWidth',1);
-    % legend('Visual Strehl','Strehl');
-    axis square;
-    set(gca,'FontSize',15);
-    xlabel('Wavelength in focus');
-    ylabel('Ratio');
-    % ind = 21; % examine at particular wavelength index
-    % testWave = oi.optics.OTF.wave(ind);
-    % testOTF = fftshift(oi.optics.OTF.OTF(:,:,ind));
-    % testPSF = ifftshift(ifft2(oi.optics.OTF.OTF(:,:,ind)));
+    % figure; 
+    % % plot(humanWaveDefocusInvert(-Dall),vsx./max(vsx),'k-','LineWidth',1); hold on;
+    % plot(humanWaveDefocusInvert(-Dall2),0.29.*peakPSF./max(peakPSF),'k-','LineWidth',1);
+    % % legend('Visual Strehl','Strehl');
+    % axis square;
+    % set(gca,'FontSize',15);
+    % xlabel('Wavelength in focus');
+    % ylabel('Ratio');
+
     [~,ind] = max(peakPSF);
     wvInFocusST(k) = humanWaveDefocusInvert(-Dall2(ind));
     % original: 612 528 476 612 612 616 472 472 620 620
-    % ave:      612 528 476 612 612 616 472 472 620 620
-    % ceo:      612 528 476 612 612 616 472 472 620 620
-    % sea:      612 528 476 612 612 616 472 472 620 620
-    % osx:      612 528 476 612 612 616 472 472 620 620
+    % ave:      684 680 576 688 692 680 564 560 552 552
+    % ceo:      692 680 576 696 696 684 560 560 552 552
+    % sea:      688 680 580 688 688 676 564 564 552 552
+    % osx:      696 684 572 696 696 684 560 556 552 552
     
     %% Plotting peak correlation with wavelength in focus
     
-    figure; 
-    hold on;
+    % figure; 
+    % hold on;
+    % % plot(humanWaveDefocusInvert(-Dall2),peakCorr./max(peakCorr),'k-','LineWidth',1);
     % plot(humanWaveDefocusInvert(-Dall2),peakCorr./max(peakCorr),'k-','LineWidth',1);
-    plot(humanWaveDefocusInvert(-Dall2),peakCorr./max(peakCorr),'k-','LineWidth',1);
-    % plot(humanWaveDefocusInvert(-Dall2),peakPSF./max(peakPSF),'k-','LineWidth',1);
-    % plot(humanWaveDefocusInvert(-Dall2),peakImg./max(peakImg),'k-','LineWidth',1);
-    axis square;
-    set(gca,'FontSize',15);
-    xlabel('Wavelength in focus');
-    ylabel('Peak correlation');
+    % % plot(humanWaveDefocusInvert(-Dall2),peakPSF./max(peakPSF),'k-','LineWidth',1);
+    % % plot(humanWaveDefocusInvert(-Dall2),peakImg./max(peakImg),'k-','LineWidth',1);
+    % axis square;
+    % set(gca,'FontSize',15);
+    % xlabel('Wavelength in focus');
+    % ylabel('Peak correlation');
 
     [~,ind] = max(peakCorr);
     wvInFocusXC(k) = humanWaveDefocusInvert(-Dall2(ind));
     % original: 552 532 520 572 584 564 516 496 604 612
-    % ave:      564 532 520 580 588 592 496 488 612 616
-    % ceo:      564 532 520 580 588 592 496 488 612 616
-    % sea:      564 532 520 580 588 596 496 488 612 616
-    % osx:      564 532 520 580 588 592 496 488 612 616
+    % ave:      564 548 536 572 580 564 544 524 580 600
+    % ceo:      560 544 528 564 572 560 544 524 568 584
+    % sea:      552 540 524 560 564 556 544 524 564 564
+    % osx:      564 548 532 572 580 568 548 516 588 592
 end
 
