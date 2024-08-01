@@ -12,7 +12,7 @@ rgbConditions = [0.555 0.320 1.00; ...
                  0.555 0.000 0.533; ...
                  ];
 
-load('/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/ARChroma/Meetings/MeetingJuly18/wvInFocusComparison1.mat');
+load('/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/ARChroma/Meetings/MeetingJuly18/wvInFocusComparisonPermute2.mat');
 
 reorderGreen = [5 4 1 2 3];
 
@@ -21,7 +21,7 @@ reorderNoGreen = [10 9 6 7 8];
 figure;
 set(gcf,'Position',[338 156 1087 788]);
 subplot(2,2,1);
-plot(1:length(reorderGreen),wvInFocusXCall(reorderGreen,:),'ko','MarkerSize',15, ...
+plot(1:length(reorderGreen),wvInFocusXCall(reorderGreen,:),'ko','MarkerSize',12, ...
      'MarkerFaceColor','w');
 axis square;
 set(gca,'FontSize',15);
@@ -33,7 +33,7 @@ ylim([470 max(wvInFocusXCall(:))+10]);
 set(gca,'XTickLabel',{});
 
 subplot(2,2,2);
-plot(1:length(reorderNoGreen),wvInFocusXCall(reorderNoGreen,:),'ko','MarkerSize',15, ...
+plot(1:length(reorderNoGreen),wvInFocusXCall(reorderNoGreen,:),'ko','MarkerSize',12, ...
      'MarkerFaceColor','w');
 axis square;
 set(gca,'FontSize',15);
@@ -44,7 +44,7 @@ xlim([0.5 5.5]);
 ylim([470 max(wvInFocusXCall(:))+10]);set(gca,'XTickLabel',{});
 
 subplot(2,2,3);
-plot(1:length(reorderGreen),wvInFocusSTall(reorderGreen,:),'ko','MarkerSize',15, ...
+plot(1:length(reorderGreen),wvInFocusSTall(reorderGreen,:),'ko','MarkerSize',12, ...
      'MarkerFaceColor','w');
 axis square;
 set(gca,'FontSize',15);
@@ -56,7 +56,7 @@ ylim([470 max(wvInFocusSTall(:))+10]);
 set(gca,'XTickLabel',{});
 
 subplot(2,2,4);
-plot(1:length(reorderNoGreen),wvInFocusSTall(reorderNoGreen,:),'ko','MarkerSize',15, ...
+plot(1:length(reorderNoGreen),wvInFocusSTall(reorderNoGreen,:),'ko','MarkerSize',12, ...
      'MarkerFaceColor','w');
 axis square;
 set(gca,'FontSize',15);
@@ -70,7 +70,7 @@ set(gca,'XTickLabel',{});
 figure;
 set(gcf,'Position',[338 156 1087 788]);
 subplot(2,2,1);
-plot(1:length(reorderGreen),humanWaveDefocus(wvInFocusXCall(reorderGreen,:)),'ko','MarkerSize',15, ...
+plot(1:length(reorderGreen),humanWaveDefocus(wvInFocusXCall(reorderGreen,:)),'ko','MarkerSize',12, ...
      'MarkerFaceColor','w');
 axis square;
 set(gca,'FontSize',15);
@@ -82,7 +82,7 @@ ylim([-0.8 0.2]);
 set(gca,'XTickLabel',{});
 
 subplot(2,2,2);
-plot(1:length(reorderNoGreen),humanWaveDefocus(wvInFocusXCall(reorderNoGreen,:)),'ko','MarkerSize',15, ...
+plot(1:length(reorderNoGreen),humanWaveDefocus(wvInFocusXCall(reorderNoGreen,:)),'ko','MarkerSize',12, ...
      'MarkerFaceColor','w');
 axis square;
 set(gca,'FontSize',15);
@@ -94,7 +94,7 @@ ylim([-0.8 0.2]);
 set(gca,'XTickLabel',{});
 
 subplot(2,2,3);
-plot(1:length(reorderGreen),humanWaveDefocus(wvInFocusSTall(reorderGreen,:)),'ko','MarkerSize',15, ...
+plot(1:length(reorderGreen),humanWaveDefocus(wvInFocusSTall(reorderGreen,:)),'ko','MarkerSize',12, ...
      'MarkerFaceColor','w');
 axis square;
 set(gca,'FontSize',15);
@@ -106,7 +106,7 @@ ylim([min(humanWaveDefocus(wvInFocusSTall(:)))-0.05 max(humanWaveDefocus(wvInFoc
 set(gca,'XTickLabel',{});
 
 subplot(2,2,4);
-plot(1:length(reorderNoGreen),humanWaveDefocus(wvInFocusSTall(reorderNoGreen,:)),'ko','MarkerSize',15, ...
+plot(1:length(reorderNoGreen),humanWaveDefocus(wvInFocusSTall(reorderNoGreen,:)),'ko','MarkerSize',12, ...
      'MarkerFaceColor','w');
 axis square;
 set(gca,'FontSize',15);

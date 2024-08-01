@@ -4,10 +4,10 @@
 %% set these parameters as needed
 
 % Desired letter height in pixels
-desiredHeight = 100;
+desiredHeight = 86;
 
 % desired stroke width in pixels
-desiredStroke = 5;
+desiredStroke = 4;
 
 % text color (0-1 float)
 color = [1 0 1];
@@ -43,11 +43,14 @@ measStroke = 100;
 % new stroke width needed to acheive desiredRatio at this font size
 newStroke = desiredRatio*measHeight;
 
+words = {'sea' 'sae' 'esa' 'eas' 'aes' 'ase'};
+
 %% Generate 3 letter words
-for x = 1:numWords
+for x = 1:length(words)
     % Generate a random 3-letter word
     randLetters = letters(randperm(length(letters), 3));
-    word = strjoin(randLetters, '');
+    % word = strjoin(randLetters, '');
+    word = words{x};
 
     % Create a figure (invisible)
     hFig = figure('Visible', 'off', 'Position', [100, 100, imgWidth, imgHeight], 'Color', 'k');
