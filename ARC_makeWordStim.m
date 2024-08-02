@@ -4,7 +4,7 @@
 %% set these parameters as needed
 
 % Desired letter height in pixels
-desiredHeight = 86;
+desiredHeight = 90;
 
 % desired stroke width in pixels
 desiredStroke = 4;
