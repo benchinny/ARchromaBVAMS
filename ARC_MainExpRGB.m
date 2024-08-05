@@ -17,7 +17,7 @@ meanFocstmOptDstUnq = meanFocstmOptDstUnq*1.25;
 % gVals = [0.418 0.375 0.320 0.245]'; % POSSIBLE GREEN PRIMARY VALUES
 % bVals = [1.00 0.877 0.730 0.533]'; % POSSIBLE BLUE PRIMARY VALUES
 
-nRepeats = 5;
+nRepeats = 1;
 rgb1 = [0.555 0.418 1.000; ...
         0.555 0.320 1.000; ...
         0.416 0.320 1.000; ...
@@ -32,8 +32,8 @@ rgb1 = [0.555 0.418 1.000; ...
         ];
        
 % TRIALS
-meanFocstmOptDst = repmat(meanFocstmOptDstUnq,[nRepeats 1]);
-rgb1 = repmat(rgb1,[nRepeats 1]);
+rgb1 = repmat(rgb1,[nRepeats*length(meanFocstmOptDstUnq) 1]);
+meanFocstmOptDst = imresize(meanFocstmOptDstUnq,[size(rgb1,1) 1],'nearest');
 % AFCv IS JUST A VECTOR OF INDICES FOR RANDOMIZING TRIAL ORDER
 AFCv = randsample(1:length(meanFocstmOptDst),length(meanFocstmOptDst));
 
