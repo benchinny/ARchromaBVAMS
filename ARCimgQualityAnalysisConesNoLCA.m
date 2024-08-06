@@ -151,8 +151,8 @@ for l = 5 % LOOP OVER BLOCK
         peakCorr = [];
         peakPSF = [];
         peakImg = [];
-        Dall2 = -humanWaveDefocus(wave(16:101));
-        wave2 = wave(16:101);
+        Dall2 = -humanWaveDefocus(wave(46:56));
+        wave2 = wave(46:56);
 
         for i = 1:length(Dall2)
             zCoeffs = [0 meanC(1:end-1)];
@@ -165,7 +165,7 @@ for l = 5 % LOOP OVER BLOCK
             wvfP = wvfSet(wvfP, 'zcoeff', 0, 'defocus');
             
             % Convert to siData format as well as wavefront object
-            [siPSFData, wvfP] = wvf2SiPsf(wvfP,'showBar',false,'nPSFSamples',320,'umPerSample',1.1512); 
+            [siPSFData, wvfP] = wvf2SiPsfNoLCA(wvfP,'showBar',false,'nPSFSamples',320,'umPerSample',1.1512); 
             oi = wvf2oi(wvfP); % CONVERT TO OPTICS OBJECT
             % oi = oiCreateARC('human',wave,Dall(i)); % create optics
             oi = oiCompute(oi, s); % compute optical image of stimulus
@@ -205,7 +205,7 @@ for l = 5 % LOOP OVER BLOCK
             % end
             display(['Peak correlation loop ' num2str(i)]);
             absorptions = single(absorptions);
-            fnameCone = ['subj' num2str(subjNum) 'stimulus' num2str(k) 'focusInd' num2str(i)];
+            fnameCone = ['subj' num2str(subjNum) 'stimulus' num2str(k) 'focusInd' num2str(i) 'noLCA'];
             save(['/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/coneImages/' fnameCone '.mat'],'absorptions');
         end
         
