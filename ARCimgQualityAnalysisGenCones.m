@@ -38,37 +38,12 @@ end
 d.gamma(:,1) = (d.gamma(:,1).^(1/2.2)).^2.4;
 d.gamma(:,2) = (d.gamma(:,2).^(1/2.2)).^2.6;
 d.gamma(:,3) = (d.gamma(:,3).^(1/2.2)).^2.2;
-% d.spd = ones(size(d.spd)).*0.000200 + 0.03.*(repmat([1:length(d.wave)]',[1 3])./1000);
-% d.spd(:,1) = [normpdf(380:4:780,624,10).*0.005]';
-% d.spd(:,2) = [normpdf(380:4:780,532,10).*0.005]';
-% d.spd(:,3) = [normpdf(380:4:780,488,10).*0.005]';
 
 % DEFINING COLOR-MATCHING FUNCTIONS
 S = [380 4 101]; % weird convention used by Brainard lab for defining wavelengths
 load T_xyz1931; % load color matching functions
 T_sensorXYZ = 683*SplineCmf(S_xyz1931,T_xyz1931,S); % interpolate and scale
 wave = S(1):S(2):S(1)+S(2)*(S(3)-1); % define wavelength vector
-% T_sensorXYZ(2,:) = normpdf(wave,556,40).*70000;
-
-% MAKING 2D CSF FUNCTION
-oi = oiCreateARC('human',wave,0); % create optics
-
-[fx, fy] = meshgrid(oi.optics.OTF.fx,oi.optics.OTF.fy);
-% % scale so frequencies are in units of cyc/deg
-fx = fx./3.37;
-fy = fy./3.37;
-df = sqrt(fx.^2 + fy.^2); % compute distance from origin
-CSF2d = 0.04992*(1+5.9375*df).*exp(-0.114*df.^1.1);
-% inverse Fourier transform of 2D CSF
-N = ifftshift(ifft2(fftshift(CSF2d)));
-
-% PARAMETERS OF WAVEFRONT ANALYSIS
-PARAMS.PixelDimension = 512;% size of pupil aperture field in pixels (this defines the resolution of the calculation)
-PARAMS.PupilSize = 7; %default values - will be replaced depending on choices below
-PARAMS.PupilFieldSize =42; %default values - will be replaced depending on choices below
-PARAMS.PupilFitSize = 7; %default values - will be replaced depending on choices below
-PARAMS.ImagingWavelength = 0.55;% imaging wavelength in microns
-PARAMS.WavefrontResolution = 53;% increase to enhance the display of the wavefront (doesn't affect calculation)
 
 subjNum = 1;
 blockNumTmp = 2;
@@ -79,7 +54,6 @@ elseif subjNum==2
 end
 trialNumTmp = 1;
 
-AFCp = ARCloadFileBVAMS(subjNum,blockNumTmp); % LOAD BVAMS DATA
 % LOAD ZERNIKE TABLE AND TIMESTAMPS
 [ZernikeTable, ~, ~, TimeStamp] = ARCloadFileFIAT(subjName,blockNumTmp,trialNumTmp,0);
 % GET THE TIMESTAMP CORRESPONDING TO THE HALFWAY POINT
@@ -161,12 +135,9 @@ for k = 1:size(rgbConditions,1)
 
     %% Computing visual Strehl ratio
     
-    Dall = -humanWaveDefocus(wave); % defocus values to look at
     peakPSF = [];
-    polyPSFall = [];
     maxRawPSFcheck = [];
     Dall2 = -humanWaveDefocus(wave(16:101));
-    wave2 = wave(16:91);    
     peakCorr = [];
     
     for i = 1:length(Dall2)
@@ -184,6 +155,16 @@ for k = 1:size(rgbConditions,1)
         oi = wvf2oi(wvfP); % CONVERT TO OPTICS OBJECT
         % oi = oiCreateARC('human',wave,Dall(i)); % create optics
         oi = oiCompute(oi, s); % compute optical image of stimulus
+
+        % Create the coneMosaic object
+        cMosaic = coneMosaic;
+
+        % Set size to show relevant portion of scene
+        cMosaic.setSizeToFOV(1 * sceneGet(s, 'fov'));
+
+        % key line for computing absorptions
+        absorptions = cMosaic.computeSingleFrame(oi, 'fullLMS', true); 
+        
         maxRawPSFcheck(i) = max(max(ifftshift(ifft2(oi.optics.OTF.OTF(:,:,i)))));
     
         photonsPSFXW = RGB2XWFormat(siPSFData.psf); % FORMATTING
@@ -216,43 +197,5 @@ for k = 1:size(rgbConditions,1)
         % end
         display(['Correlation iteration ' num2str(i)]);        
     end
-    
-    % figure; 
-    % % plot(humanWaveDefocusInvert(-Dall),vsx./max(vsx),'k-','LineWidth',1); hold on;
-    % plot(humanWaveDefocusInvert(-Dall2),0.29.*peakPSF./max(peakPSF),'k-','LineWidth',1);
-    % % legend('Visual Strehl','Strehl');
-    % axis square;
-    % set(gca,'FontSize',15);
-    % xlabel('Wavelength in focus');
-    % ylabel('Ratio');
-
-    [~,ind] = max(peakPSF);
-    wvInFocusST(k) = humanWaveDefocusInvert(-Dall2(ind));
-    % original: 612 528 476 612 612 616 472 472 620 620
-    % ave:      684 680 576 688 692 680 564 560 552 552
-    % ceo:      692 680 576 696 696 684 560 560 552 552
-    % sea:      688 680 580 688 688 676 564 564 552 552
-    % osx:      696 684 572 696 696 684 560 556 552 552
-    
-    %% Plotting peak correlation with wavelength in focus
-    
-    % figure; 
-    % hold on;
-    % % plot(humanWaveDefocusInvert(-Dall2),peakCorr./max(peakCorr),'k-','LineWidth',1);
-    % plot(humanWaveDefocusInvert(-Dall2),peakCorr./max(peakCorr),'k-','LineWidth',1);
-    % % plot(humanWaveDefocusInvert(-Dall2),peakPSF./max(peakPSF),'k-','LineWidth',1);
-    % % plot(humanWaveDefocusInvert(-Dall2),peakImg./max(peakImg),'k-','LineWidth',1);
-    % axis square;
-    % set(gca,'FontSize',15);
-    % xlabel('Wavelength in focus');
-    % ylabel('Peak correlation');
-
-    [~,ind] = max(peakCorr);
-    wvInFocusXC(k) = humanWaveDefocusInvert(-Dall2(ind));
-    % original: 552 532 520 572 584 564 516 496 604 612
-    % ave:      564 548 536 572 580 564 544 524 580 600
-    % ceo:      560 544 528 564 572 560 544 524 568 584
-    % sea:      552 540 524 560 564 556 544 524 564 564
-    % osx:      564 548 532 572 580 568 548 516 588 592
 end
 
