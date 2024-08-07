@@ -88,7 +88,7 @@ end
 
 power_dispL = 14;
 power_dispR = 14.3;
-power_dispRoriginal = 13.9+sr(2);
+power_dispRoriginal = 14.3+sr(2);
 
 rightTrombonePowerNear = opto(name_map('r_t_near')).control.getFocalPower.focal_power;
 rightTrombonePowerFar = opto(name_map('r_t_far')).control.getFocalPower.focal_power;

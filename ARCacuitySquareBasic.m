@@ -10,7 +10,7 @@ if vsIncrement>=1
    vs = vs+1;
 end
 
-meanFocstmOptDst = [2.5]*1.25;
+meanFocstmOptDst = [2.5]*1.2255;
 
 rgb  = [0.555 0.00 1.00];
 

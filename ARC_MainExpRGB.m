@@ -11,7 +11,7 @@ if vsIncrement>=1
 end
 
 meanFocstmOptDstUnq = [1.5 2.5 3.5]';
-meanFocstmOptDstUnq = meanFocstmOptDstUnq*1.25;
+meanFocstmOptDstUnq = meanFocstmOptDstUnq*1.2255;
 
 % rVals = [0.555 0.492 0.416 0.312]'; % POSSIBLE RED PRIMARY VALUES
 % gVals = [0.418 0.375 0.320 0.245]'; % POSSIBLE GREEN PRIMARY VALUES

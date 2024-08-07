@@ -10,7 +10,7 @@ if vsIncrement>=1
    vs = vs+1;
 end
 
-meanFocstmOptDst = [2.5]*1.25;
+meanFocstmOptDst = [2.5]*1.2255;
 meanFocstmOptDst = meanFocstmOptDst(randperm(length(meanFocstmOptDst)));
 % rgb  = [0.56 0.00 1.00; ...
 %         0.56 0.00 0.00; ...
@@ -22,7 +22,7 @@ rgb = rgb(indScrambleRgb,:);
 
 % focStmOptDstIncr = [-0.5:0.25:0.5];
 focStmOptDstIncr = [-1.2 -0.9 -0.6 -0.3 0.0 0.3 0.6 0.9 1.2];
-focStmOptDstIncr = focStmOptDstIncr.*1.25;
+focStmOptDstIncr = focStmOptDstIncr.*1.2255;
 trlPerLvl = 4;
 
 % DEFAULT NO TCA CORRECTION

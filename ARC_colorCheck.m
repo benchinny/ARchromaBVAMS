@@ -38,7 +38,8 @@ end
 % n1=[2.458 2.611 2.482]; %ones(1,3).*2.33;
 
 % % checking gamma
-figure; plot([0 0.6 0.7 0.8 0.9 1.0],[0 Meas1xyY(3,:)./max(Meas1xyY(3,:))],'ko'); hold on; plot(0:0.01:1,[0:0.01:1].^2.5);
+figure; plot([0 0.6 0.7 0.8 0.9 1.0],[0 Meas1xyY(3,:)./max(Meas1xyY(3,:))],'ko'); hold on; plot(0:0.01:1,[0:0.01:1].^2.4);
+% figure; plot([0 0.50 0.6 0.7 0.8 0.9 1.0],[0 Meas1xyY(3,:)./max(Meas1xyY(3,:))],'ko'); hold on; plot(0:0.01:1,[0:0.01:1].^2.4);
 
 %%
 

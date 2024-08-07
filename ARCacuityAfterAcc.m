@@ -10,7 +10,7 @@ if vsIncrement>=1
    vs = vs+1;
 end
 
-meanFocstmOptDst = [1.5 2.0 2.5 3.0 3.5]*1.25;
+meanFocstmOptDst = [1.5 2.0 2.5 3.0 3.5]*1.2255;
 meanFocstmOptDst = meanFocstmOptDst(randperm(length(meanFocstmOptDst)));
 rgb  = [
         0.555 0.418 1.00; ...
@@ -21,7 +21,7 @@ stimSizePix = [125];
 stimSizePix = stimSizePix(indScrambleRgb);
 
 focStmOptDstIncr = [0];
-focStmOptDstIncr = focStmOptDstIncr.*1.25;
+focStmOptDstIncr = focStmOptDstIncr.*1.2255;
 trlPerLvl = 10;
 
 % DEFAULT NO TCA CORRECTION
