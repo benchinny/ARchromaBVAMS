@@ -6,9 +6,9 @@ rgbAll = [];
 meanFocstmOptDstAll = [];
 contrastAll = [];
 maskBrightness = 0;
-gammaR = 2.4;
-gammaG = 2.6;
-gammaB = 2.2;
+gammaR = 2.5;
+gammaG = 2.7;
+gammaB = 2.3;
 
 for i = 1:size(rgb,1)
    for j = 1:size(contrast,2)

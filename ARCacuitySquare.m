@@ -10,15 +10,15 @@ if vsIncrement>=1
    vs = vs+1;
 end
 
-meanFocstmOptDst = [3.5]*1.2255;
+meanFocstmOptDst = [1.5 3.5]*1.2255;
 meanFocstmOptDst = meanFocstmOptDst(randperm(length(meanFocstmOptDst)));
 % rgb  = [0.56 0.00 1.00; ...
 %         0.56 0.00 0.00; ...
 %         0.00 0.00 1.00];
-rgb = [0.555 0 1.00];
+rgb = [0.569 0 1.00];
 indScrambleRgb = randperm(size(rgb,1));
 rgb = rgb(indScrambleRgb,:);
-frqCpd = 18;
+frqCpd = 15;
 contrast = 1;
 
 % focStmOptDstIncr = [-0.5:0.25:0.5];
@@ -47,34 +47,15 @@ if ey(1)=='R'; cf(:,2)=0; elseif ey(1)=='L'; cf(:,1)=0; end
 AFCfls0=[filePath 'S' num2str(sn) 'V' num2str(vs) '_AFC_' ey 'ACL' n2s(ACL) '_' tme];
 
 imPattern = {};
-im1 = imread('H:\Shared drives\CIVO_BVAMS\stimuli\word_image_01.png');
-im1(im1>0) = 255;
-im1 = flipud(im1);   
-imPatternTmp = squeeze(im1(:,:,3));
-imPatternTmp = [zeros([30 size(imPatternTmp,2)]); imPatternTmp; zeros([30 size(imPatternTmp,2)])];
-imPatternTmp = [zeros([size(imPatternTmp,1) 30]) imPatternTmp zeros([size(imPatternTmp,1) 30])];
-imPattern{1} = imPatternTmp;
-im2 = imread('H:\Shared drives\CIVO_BVAMS\stimuli\word_image_02.png');
-im2(im2>0) = 255;
-im2 = flipud(im2); 
-imPatternTmp = squeeze(im2(:,:,3));
-imPatternTmp = [zeros([30 size(imPatternTmp,2)]); imPatternTmp; zeros([30 size(imPatternTmp,2)])];
-imPatternTmp = [zeros([size(imPatternTmp,1) 30]) imPatternTmp zeros([size(imPatternTmp,1) 30])];
-imPattern{2} = imPatternTmp;
-im3 = imread('H:\Shared drives\CIVO_BVAMS\stimuli\word_image_03.png');
-im3(im3>0) = 255;
-im3 = flipud(im3); 
-imPatternTmp = squeeze(im3(:,:,3));
-imPatternTmp = [zeros([30 size(imPatternTmp,2)]); imPatternTmp; zeros([30 size(imPatternTmp,2)])];
-imPatternTmp = [zeros([size(imPatternTmp,1) 30]) imPatternTmp zeros([size(imPatternTmp,1) 30])];
-imPattern{3} = imPatternTmp;
-im4 = imread('H:\Shared drives\CIVO_BVAMS\stimuli\word_image_04.png');
-im4(im4>0) = 255;
-im4 = flipud(im4); 
-imPatternTmp = squeeze(im4(:,:,3));
-imPatternTmp = [zeros([30 size(imPatternTmp,2)]); imPatternTmp; zeros([30 size(imPatternTmp,2)])];
-imPatternTmp = [zeros([size(imPatternTmp,1) 30]) imPatternTmp zeros([size(imPatternTmp,1) 30])];
-imPattern{4} = imPatternTmp;
+for i = 1:6
+    im1 = imread(['H:\Shared drives\CIVO_BVAMS\stimuli\word_image_0' num2str(i) '.png']);
+    im1(im1>0) = 255;
+    im1 = flipud(im1);   
+    imPatternTmp = squeeze(im1(:,:,3));
+    imPatternTmp = [zeros([30 size(imPatternTmp,2)]); imPatternTmp; zeros([30 size(imPatternTmp,2)])];
+    imPatternTmp = [zeros([size(imPatternTmp,1) 30]) imPatternTmp zeros([size(imPatternTmp,1) 30])];
+    imPattern{i} = imPatternTmp;
+end
 AFCp=ARCacuitySquareFunc(imPattern,rgb,meanFocstmOptDst,focStmOptDstIncr, window1, window2, trlPerLvl,vs,frqCpd, contrast);    
 
 if sv == 1

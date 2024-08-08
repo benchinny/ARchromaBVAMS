@@ -10,10 +10,10 @@ if vsIncrement>=1
    vs = vs+1;
 end
 
-meanFocstmOptDst = [1.5 2.0 2.5 3.0 3.5]*1.2255;
+meanFocstmOptDst = [1.5 2.5 3.5]*1.2255;
 meanFocstmOptDst = meanFocstmOptDst(randperm(length(meanFocstmOptDst)));
 rgb  = [
-        0.555 0.418 1.00; ...
+        0.569 0.432 1.00; ...
         ];
 indScrambleRgb = randperm(size(rgb,1));
 rgb = rgb(indScrambleRgb,:);
@@ -75,7 +75,7 @@ if sv == 1
     load([filePath 'AFCfls' ey(1) '.mat'], 'AFCfls'); AFCfls{sn-1000,vs}=AFCfls0; 
     save([filePath 'AFCfls' ey(1) '.mat'], 'AFCfls'); 
 end
-         
+
 opto(name_map('l_disp')).control.setFocalPower(14);
 opto(name_map('r_disp')).control.setFocalPower(14.3);
 % zaber(name_map('rotation')).move_deg(-3); %%-6400

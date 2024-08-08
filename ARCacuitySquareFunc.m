@@ -8,9 +8,9 @@ focStmOptDstIncrAll = [];
 indScramble = [];
 maskBrightness = 0;
 maskSize = [100 100];
-gammaR = 2.4;
-gammaG = 2.6;
-gammaB = 2.2;
+gammaR = 2.5;
+gammaG = 2.7;
+gammaB = 2.3;
 
 % CAREFUL ATTEMPT TO BLOCK CONDITIONS SO EACH OPTICAL DISTANCE INCREMENT IS
 % PRESENTED ONCE PER BLOCK
