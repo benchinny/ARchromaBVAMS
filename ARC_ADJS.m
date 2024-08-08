@@ -85,7 +85,7 @@ end
 [iLf iRf]=cwin3(imread("black.png"), testim , cf, rc00, window2, window1);
 
 power_dispL = 14;
-power_dispR = 14.4;
+power_dispR = 14.3;
 
 rightTrombonePowerNear = opto(name_map('r_t_near')).control.getFocalPower.focal_power;
 rightTrombonePowerFar = opto(name_map('r_t_far')).control.getFocalPower.focal_power;

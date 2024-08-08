@@ -44,6 +44,7 @@ if ey(1)=='R'; cf(:,2)=0; elseif ey(1)=='L'; cf(:,1)=0; end
 
 AFCfls0=[filePath 'S' num2str(sn) 'V' num2str(vs) '_AFC_' ey 'ACL' n2s(ACL) '_' tme];
 
+imPattern = [];
 im1 = AFCwordStimImproved('sun',[320 320],'green');
 im1(im1>0) = 255;
 im1 = flipud(im1);   

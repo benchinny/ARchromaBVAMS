@@ -13,6 +13,8 @@ end
 meanFocstmOptDst = [2.5]*1.2255;
 
 rgb  = [0.569 0.00 1.00];
+% rgb  = [0.569 0.00 0.00];
+% rgb  = [0.000 0.00 1.00];
 
 frqCpd = 15;
 contrast = [0.1 0.2 0.3 0.4 0.5];
@@ -63,4 +65,4 @@ opto(name_map('r_disp')).control.setFocalPower(14.3);
 clear LCAim;
 sca;
 
-psyfitgengauss(zeros(size(AFCp.frqCpd)),AFCp.contrast,AFCp.rspAcu'==AFCp.stimOrientation,[],[],[],1,2,1);
+psyfitgengauss(zeros(size(AFCp.frqCpd)),AFCp.contrast,AFCp.rspAcu'==AFCp.stimOrientation,[],[],[],1.18,2,1);

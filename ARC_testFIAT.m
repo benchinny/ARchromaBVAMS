@@ -6,7 +6,7 @@ power_dispL_min = 7;
 power_dispL_max = 16;
 power_dispR_min = 7;
 power_dispR_max = 16.4;
-adjustIncrement = 0.1;
+adjustIncrement = 0.12255;
 stimColor = 'blue';
 bRecord = 1;
 
@@ -185,7 +185,7 @@ try
             opto(name_map('l_disp')).control.setFocalPower(power_dispL);
             opto(name_map('r_disp')).control.setFocalPower(power_dispR);
             
-            fprintf('Display power: L = %f  , R = %f , Optical Distance R = %f D \n',power_dispL, power_dispR, 0.82.*(14.3-power_dispR));
+            fprintf('Display power: L = %f  , R = %f , Optical Distance R = %f D \n',power_dispL, power_dispR, 0.816.*(14.3-power_dispR));
 
             fprintf('\n');
         end

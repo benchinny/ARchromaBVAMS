@@ -65,6 +65,7 @@ for k0=1:size(meanv0,1)
         indImPattern = 1;
       end
       indImPatternAll(end+1,:) = indImPattern;
+      im2R0 = [];
       im2R0(:,:,1) = imPattern{indImPattern}.*rgb0(k0,1);
       im2R0(:,:,2) = imPattern{indImPattern}.*rgb0(k0,2);
       im2R0(:,:,3) = imPattern{indImPattern}.*rgb0(k0,3);
@@ -88,7 +89,7 @@ for k0=1:size(meanv0,1)
           while opt_chk==0
               [ keyIsDown, keyTime, keyCode ] = KbCheck;
               if keyIsDown
-                  if keyCode(KbName('RightArrow')) | keyCode(KbName('5'))
+                  if keyCode(KbName('RightArrow')) | keyCode(12)
                       opt_chk = 1;
                       %end
                   elseif keyCode(KbName('Return')) %| keyCode(KbName('Return'))
