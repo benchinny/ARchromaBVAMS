@@ -22,7 +22,7 @@ stimSizePix = stimSizePix(indScrambleRgb);
 
 focStmOptDstIncr = [0];
 focStmOptDstIncr = focStmOptDstIncr.*1.2255;
-trlPerLvl = 10;
+trlPerLvl = 20;
 
 % DEFAULT NO TCA CORRECTION
 LfarPower=opto(name_map('r_t_far')).control.getFocalPower.focal_power; 
