@@ -112,6 +112,7 @@ for k0=1:length(focStmOptDstIncrAll)
       else
         indImPattern = 1;
       end
+      im2R0 = [];
       im2R0(:,:,1) = imPattern{indImPattern}.*rgbAll(k0,1);
       im2R0(:,:,2) = imPattern{indImPattern}.*rgbAll(k0,2);
       im2R0(:,:,3) = imPattern{indImPattern}.*rgbAll(k0,3);
@@ -210,11 +211,7 @@ for k0=1:length(focStmOptDstIncrAll)
       % opto(name_map('l_disp')).control.setFocalPower(power_dispL-meanFocstmOptDstAll(k0));
       % opto(name_map('r_disp')).control.setFocalPower(power_dispR-meanFocstmOptDstAll(k0));
       cwin3(im2R0, im2R0, cf, rc00, window1, window2);
-      if mod(k0,length(focStmOptDstIncr))==1
-         pause(3);
-      else
-         pause(2);
-      end
+      pause(4);
       cwin3(blackStim, blackStim, cf, rc00, window1, window2);
       if scene.enable_tcp; send_tcp0(scene, 1); end; t1(k0,:)=clock;
       tChange1(k0,:) = clock;
