@@ -1,4 +1,4 @@
-function AFCp = ARCacuityAfterAccFuncBlock(imPattern,rgb,meanFocstmOptDst,focStmOptDstIncr, window1, window2, trlPerLvl, stimSizePix)
+function AFCp = ARCacuityAfterAccFuncBlockThin(imPattern,rgb,meanFocstmOptDst,focStmOptDstIncr, window1, window2, trlPerLvl, stimSizePix)
 
 global cf rc00 name_map zaber opto log
 
@@ -51,14 +51,14 @@ opto(name_map('r_disp')).control.setFocalPower(power_dispR-meanFocstmOptDstAll(1
 opto(name_map('l_disp')).control.setFocalPower(power_dispL-meanFocstmOptDstAll(1));
 
 stimSizePix = 100;
-if size(imPattern,3)>1
-   indImPattern = randsample(1:size(imPattern,3),1);
+if length(imPattern)>1
+   indImPattern = randsample(1:length(imPattern),1);
 else
    indImPattern = 1;
 end
-im2R0(:,:,1) = imPattern(:,:,indImPattern).*rgb(1,1);
-im2R0(:,:,2) = imPattern(:,:,indImPattern).*rgb(1,2);
-im2R0(:,:,3) = imPattern(:,:,indImPattern).*rgb(1,3);
+im2R0(:,:,1) = imPattern{indImPattern}.*rgb(1,1);
+im2R0(:,:,2) = imPattern{indImPattern}.*rgb(1,2);
+im2R0(:,:,3) = imPattern{indImPattern}.*rgb(1,3);
 
 optoType = 'C';
 
@@ -107,14 +107,14 @@ disp('ready to start');  KbWait([], 2);
 
 rspAcu = [];
 for k0=1:length(focStmOptDstIncrAll)
-      if size(imPattern,3)>1
-        indImPattern = randsample(1:size(imPattern,3),1);
+      if length(imPattern)>1
+        indImPattern = randsample(1:length(imPattern),1);
       else
         indImPattern = 1;
       end
-      im2R0(:,:,1) = imPattern(:,:,indImPattern).*rgbAll(k0,1);
-      im2R0(:,:,2) = imPattern(:,:,indImPattern).*rgbAll(k0,2);
-      im2R0(:,:,3) = imPattern(:,:,indImPattern).*rgbAll(k0,3);
+      im2R0(:,:,1) = imPattern{indImPattern}.*rgbAll(k0,1);
+      im2R0(:,:,2) = imPattern{indImPattern}.*rgbAll(k0,2);
+      im2R0(:,:,3) = imPattern{indImPattern}.*rgbAll(k0,3);
       blackStim = zeros(size(im2R0));
       acuStim = [];
       acuStimTmp = imresize(acuStimOrig,stimSizePixAll(k0).*[1 1]);

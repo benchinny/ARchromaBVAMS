@@ -44,32 +44,18 @@ if ey(1)=='R'; cf(:,2)=0; elseif ey(1)=='L'; cf(:,1)=0; end
 
 AFCfls0=[filePath 'S' num2str(sn) 'V' num2str(vs) '_AFC_' ey 'ACL' n2s(ACL) '_' tme];
 
-imPattern = [];
-im1 = AFCwordStimImproved('sun',[320 320],'green');
-im1(im1>0) = 255;
-im1 = flipud(im1);   
-imPatternTmp = squeeze(im1(:,:,2));
-imPatternTmp = circshift(imPatternTmp,15,1);
-imPattern(:,:,1) = imresize(imPatternTmp,[480 480]);
-im2 = AFCwordStimImproved('sea',[320 320],'green');
-im2(im2>0) = 255;
-im2 = flipud(im2); 
-imPatternTmp = squeeze(im2(:,:,2));
-imPatternTmp = circshift(imPatternTmp,15,1);
-imPattern(:,:,2) = imresize(imPatternTmp,[480 480]);
-im3 = AFCwordStimImproved('ace',[320 320],'green');
-im3(im3>0) = 255;
-im3 = flipud(im3); 
-imPatternTmp = squeeze(im3(:,:,2));
-imPatternTmp = circshift(imPatternTmp,15,1);
-imPattern(:,:,3) = imresize(imPatternTmp,[480 480]);
-im4 = AFCwordStimImproved('one',[320 320],'green');
-im4(im4>0) = 255;
-im4 = flipud(im4); 
-imPatternTmp = squeeze(im4(:,:,2));
-imPatternTmp = circshift(imPatternTmp,15,1);
-imPattern(:,:,4) = imresize(imPatternTmp,[480 480]);
-AFCp=ARCacuityAfterAccFuncBlock(imPattern,rgb,meanFocstmOptDst,focStmOptDstIncr, window1, window2, trlPerLvl, stimSizePix);    
+imPattern = {};
+for i = 1:6
+    im1 = imread(['H:\Shared drives\CIVO_BVAMS\stimuli\word_image_0' num2str(i) '.png']);
+    im1(im1>0) = 255;
+    im1 = flipud(im1);   
+    imPatternTmp = squeeze(im1(:,:,3));
+    imPatternTmp = [zeros([30 size(imPatternTmp,2)]); imPatternTmp; zeros([30 size(imPatternTmp,2)])];
+    imPatternTmp = [zeros([size(imPatternTmp,1) 30]) imPatternTmp zeros([size(imPatternTmp,1) 30])];
+    imPattern{i} = imPatternTmp;
+end
+
+AFCp=ARCacuityAfterAccFuncBlockThin(imPattern,rgb,meanFocstmOptDst,focStmOptDstIncr, window1, window2, trlPerLvl, stimSizePix);    
 
 if sv == 1
     save(AFCfls0, 'AFCp'); 
