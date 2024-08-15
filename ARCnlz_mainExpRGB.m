@@ -12,6 +12,7 @@ meanC = [];
 rgb1all = [];
 meanv00all = [];
 nIndBadTracker = [];
+c4all = {};
 
 for i = 1:length(blockNums)
     blockNumTmp = blockNums(i);
@@ -29,13 +30,14 @@ for i = 1:length(blockNums)
         indBad = c(:,4)==0;
         nIndBadTracker(end+1) = sum(indBad);
         c(indBad,4) = mean(c(~indBad,4));
-        meanC(end+1,:) = mean(c,1); % TAKE MEAN OF COEFFICIENTS        
+        meanC(end+1,:) = mean(c,1); % TAKE MEAN OF COEFFICIENTS    
+        c4all{end+1} = c(:,4);
     end
     rgb1all = [rgb1all; AFCp.rgb100];
     meanv00all = [meanv00all; AFCp.meanv00./1.2255];
 end
 
-%%
+%% PLOTTING ALL TRIALS FOCUS FOR EACH OF 3 OPTICAL DISTANCES
 
 defocusCorrectionFactor = (1e6/(4*sqrt(3)))*((PARAMS.PupilSize/2000)^2);
 defocusAt550 = humanWaveDefocus(875)-humanWaveDefocus(550)+meanC(:,4)./defocusCorrectionFactor;
@@ -48,7 +50,7 @@ axis square;
 xlabel('Stimulus optical distance');
 ylabel('Raw refractive power (D)');
 
-%%
+%% PLOTTING ALL TRIAL MEANS PER CONDITION AND DISTANCE
 
 lumScaleRGB = [4.0888 9.6669 1];
 
@@ -84,3 +86,35 @@ plot(5.5.*[1 1],ylim,'k-');
 set(gca,'FontSize',15);
 xlabel('Condition');
 ylabel('Defocus at 550nm');
+
+%% PLOT INDIVIDUAL TRIALS FOR REFERENCE
+
+figure;
+set(gcf,'Position',[148 265 1384 710]);
+hold on;
+optDistToCheck = 3.5;
+lengthTrialMax = 120;
+indDist = abs(meanv00all-optDistToCheck)<0.01;
+for i = 1:size(conditionsOrderedNorm,1)
+    subplot(2,5,i);
+    hold on;
+    ind = find(abs(rgbLumNorm(:,1)-conditionsOrderedNorm(i,1))<0.01 & ...
+               abs(rgbLumNorm(:,2)-conditionsOrderedNorm(i,2))<0.01 & ...
+               abs(rgbLumNorm(:,3)-conditionsOrderedNorm(i,3))<0.01 & ...
+               abs(meanv00all-optDistToCheck)<0.01);
+    for j = randsample(1:length(ind),1)
+        trialTmp = zeros([1 lengthTrialMax]);
+        trialTmp(1:length(c4all{ind(j)})) = c4all{ind(j)};
+        trialTmp(trialTmp==0) = NaN;
+        trialTmp550 = humanWaveDefocus(875)-humanWaveDefocus(550)+trialTmp./defocusCorrectionFactor;
+        plot(1:lengthTrialMax,trialTmp550,'-','Color',conditionsOrderedNorm(i,:));
+    end
+    axis square;
+    ylim(mean(defocusAt550(indDist))+[-0.6 0.6]);
+    set(gca,'FontSize',15);
+    if i==1
+        xlabel('Condition');
+        ylabel('Defocus at 550nm');
+    end
+end
+
