@@ -1,44 +1,44 @@
-function AFCp = ARCacuitySquareLCAFunc(imPattern,rgb,meanFocstmOptDst,focStmOptDstIncr, cAcuRB, window1, window2, trlPerLvl, vs)
+function AFCp = ARCacuitySquareLCAFunc(imPattern,rgb,meanFocstmOptDst,focStmOptDstIncr, cAcuRGB, window1, window2, trlPerLvl, vs)
 
 global cf rc00 name_map zaber opto log
 
 rgbAll = [];
 meanFocstmOptDstAll = [];
 focStmOptDstIncrAll = [];
-indAcuRBall = [];
+indAcuRGBall = [];
 indScramble = [];
 maskBrightness = 0;
 maskSize = [100 100];
 gammaR = 2.5;
 gammaG = 2.7;
 gammaB = 2.3;
-frqCpdRB = 15;
-rgbAcuRB = [0.569 0 0; 0 0 1];
+frqCpd = 15;
+rgbAcuRGB = [0.569 0 0; 0 0.432 0; 0 0 1];
 
 % CAREFUL ATTEMPT TO BLOCK CONDITIONS SO EACH OPTICAL DISTANCE INCREMENT IS
 % PRESENTED ONCE PER BLOCK
 for i = 1:size(rgb,1)
    for j = 1:length(meanFocstmOptDst)
-       for m = 1:size(rgbAcuRB,1)
+       for m = 1:size(rgbAcuRGB,1)
            for k = 1:length(focStmOptDstIncr)           
                rgbAll(end+1,:) = rgb(i,:);
                meanFocstmOptDstAll(end+1,:) = meanFocstmOptDst(j);
                focStmOptDstIncrAll(end+1,:) = focStmOptDstIncr(k);
-               indAcuRBall(end+1,:) = m;
+               indAcuRGBall(end+1,:) = m;
            end
        end
        for l = 1:trlPerLvl
-          indScramble = [indScramble; randperm(length(focStmOptDstIncr)*size(rgbAcuRB,1))'];
+          indScramble = [indScramble; randperm(length(focStmOptDstIncr)*size(rgbAcuRGB,1))'];
        end
    end
 end
 
 % RANDOMIZING TRIALS
-indScramble = indScramble+imresize(length(focStmOptDstIncr).*size(rgbAcuRB,1).*[0:(trlPerLvl*size(rgb,1)*length(meanFocstmOptDst)-1)]',size(indScramble),'nearest');
+indScramble = indScramble+imresize(length(focStmOptDstIncr).*size(rgbAcuRGB,1).*[0:(trlPerLvl*size(rgb,1)*length(meanFocstmOptDst)-1)]',size(indScramble),'nearest');
 rgbAll = repmat(rgbAll,[trlPerLvl 1]);
 meanFocstmOptDstAll = repmat(meanFocstmOptDstAll,[trlPerLvl 1]);
 focStmOptDstIncrAll = repmat(focStmOptDstIncrAll,[trlPerLvl 1]);
-indAcuRBall = repmat(indAcuRBall,[trlPerLvl 1]);
+indAcuRGBall = repmat(indAcuRGBall,[trlPerLvl 1]);
 stimSizePixAll = 10.*ones(size(focStmOptDstIncrAll));
 offsetXall = 5.*ones(size(focStmOptDstIncrAll));
 offsetYall = 10.*ones(size(focStmOptDstIncrAll));
@@ -48,14 +48,14 @@ rgbAll = rgbAll(indScramble,:);
 meanFocstmOptDstAll = meanFocstmOptDstAll(indScramble);
 focStmOptDstIncrAll = focStmOptDstIncrAll(indScramble);
 stimSizePixAll = stimSizePixAll(indScramble);
-indAcuRBall = indAcuRBall(indScramble);
+indAcuRGBall = indAcuRGBall(indScramble);
 
 % ADD DUMMY TRIAL RIGHT AT THE END (PECULIAR TO WAY CODE IS WRITTEN)
 rgbAll(end+1,:) = [0 0 0];
 focStmOptDstIncrAll(end+1,:) = 0;
 meanFocstmOptDstAll(end+1,:) = 3;
 stimSizePixAll(end+1,:) = 10;
-indAcuRBall(end+1,:) = 1;
+indAcuRGBall(end+1,:) = 1;
 
 % 1 = 0°, 2 = 90°, 3 = 180°, 4 = 270° 
 stimOrientation = ceil(rand(size(focStmOptDstIncrAll))*2);
@@ -120,17 +120,18 @@ for k0=1:length(focStmOptDstIncrAll)
       im2R0 = [];
       imPatternTmp = imPattern{indImPattern};
       indImPatternAll(end+1,:) = indImPattern;
-      indAcuRB = round(rand)+1;
-      indAcuRBall(k0) = indAcuRB;
+      indAcuRGB = indAcuRGBall(k0);
       im2R0(:,:,1) = imPatternTmp.*rgbAll(k0,1);
       im2R0(:,:,2) = imPatternTmp.*rgbAll(k0,2);
       im2R0(:,:,3) = imPatternTmp.*rgbAll(k0,3);
       blackStim = zeros(size(im2R0));
-      acuStimOrig1 = ARC2Dgabor(smpPos(256,256),[],0,0,[frqCpdRB frqCpdRB*3 frqCpdRB*5 frqCpdRB*7],[cAcuRB(indAcuRB) cAcuRB(indAcuRB)/3 cAcuRB(indAcuRB)/5 cAcuRB(indAcuRB)/7],-15,90,0.2,0.2,[rgbAcuRB(indAcuRB,1)^gammaR rgbAcuRB(indAcuRB,2)^gammaG rgbAcuRB(indAcuRB,3)^gammaB],1,1,0,0);
+      acuStimOrig1 = ARC2Dgabor(smpPos(256,256),[],0,0,[frqCpd frqCpd*3 frqCpd*5 frqCpd*7],[cAcuRGB(indAcuRGB) cAcuRGB(indAcuRGB)/3 cAcuRGB(indAcuRGB)/5 cAcuRGB(indAcuRGB)/7],-15,90,0.2,0.2,[rgbAcuRGB(indAcuRGB,1)^gammaR rgbAcuRGB(indAcuRGB,2)^gammaG rgbAcuRGB(indAcuRGB,3)^gammaB],1,1,0,0);
       acuStimOrig1(:,:,1) = acuStimOrig1(:,:,1).^(1/gammaR);
+      acuStimOrig1(:,:,2) = acuStimOrig1(:,:,2).^(1/gammaG);
       acuStimOrig1(:,:,3) = acuStimOrig1(:,:,3).^(1/gammaB);
-      acuStimOrig2 = ARC2Dgabor(smpPos(256,256),[],0,0,[frqCpdRB frqCpdRB*3 frqCpdRB*5 frqCpdRB*7],[cAcuRB(indAcuRB) cAcuRB(indAcuRB)/3 cAcuRB(indAcuRB)/5 cAcuRB(indAcuRB)/7],15,90,0.2,0.2,[rgbAcuRB(indAcuRB,1)^gammaR rgbAcuRB(indAcuRB,2)^gammaG rgbAcuRB(indAcuRB,3)^gammaB],1,1,0,0);
+      acuStimOrig2 = ARC2Dgabor(smpPos(256,256),[],0,0,[frqCpd frqCpd*3 frqCpd*5 frqCpd*7],[cAcuRGB(indAcuRGB) cAcuRGB(indAcuRGB)/3 cAcuRGB(indAcuRGB)/5 cAcuRGB(indAcuRGB)/7],15,90,0.2,0.2,[rgbAcuRGB(indAcuRGB,1)^gammaR rgbAcuRGB(indAcuRGB,2)^gammaG rgbAcuRGB(indAcuRGB,3)^gammaB],1,1,0,0);
       acuStimOrig2(:,:,1) = acuStimOrig2(:,:,1).^(1/gammaR);
+      acuStimOrig2(:,:,2) = acuStimOrig2(:,:,2).^(1/gammaG);
       acuStimOrig2(:,:,3) = acuStimOrig2(:,:,3).^(1/gammaB);      
       acuStimOrig(:,:,:,1) = acuStimOrig1;
       acuStimOrig(:,:,:,2) = acuStimOrig2;
@@ -250,7 +251,7 @@ AFCp.rspAcu = rspAcu;
 AFCp.stimOrientation = stimOrientation(1:end-1);
 AFCp.im2R0 = im2R0;
 AFCp.stimSizePixAll = stimSizePixAll(1:end-1);
-AFCp.indAcuRBall = indAcuRBall;
-AFCp.cAcuRB = cAcuRB;
-AFCp.frqCpdRB = frqCpdRB;
+AFCp.indAcuRGBall = indAcuRGBall;
+AFCp.cAcuRGB = cAcuRGB;
+AFCp.frqCpd = frqCpd;
 AFCp.indImPatternAll = indImPatternAll;

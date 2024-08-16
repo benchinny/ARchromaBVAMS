@@ -16,9 +16,7 @@ meanFocstmOptDst = meanFocstmOptDst(randperm(length(meanFocstmOptDst)));
 %         0.56 0.00 0.00; ...
 %         0.00 0.00 1.00];
 rgb = [0.569 0 1.00];
-cAcuRB = [0.4 0.5];
-indScrambleRgb = randperm(size(rgb,1));
-rgb = rgb(indScrambleRgb,:);
+cAcuRGB = [0.4 0.5 0.5];
 
 % focStmOptDstIncr = [-0.5:0.25:0.5];
 focStmOptDstIncr = [-1.2 -0.9 -0.6 -0.3 0.0 0.3 0.6 0.9 1.2];
@@ -55,7 +53,7 @@ for i = 1:6
     imPatternTmp = [zeros([size(imPatternTmp,1) 30]) imPatternTmp zeros([size(imPatternTmp,1) 30])];
     imPattern{i} = imPatternTmp;
 end
-AFCp=ARCacuitySquareLCAFunc(imPattern,rgb,meanFocstmOptDst,focStmOptDstIncr, cAcuRB, window1, window2, trlPerLvl, vs);    
+AFCp=ARCacuitySquareLCAFunc(imPattern,rgb,meanFocstmOptDst,focStmOptDstIncr, cAcuRGB, window1, window2, trlPerLvl, vs);    
 
 if sv == 1
     save(AFCfls0, 'AFCp'); 
