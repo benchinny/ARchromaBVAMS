@@ -11,6 +11,7 @@ maskSize = [100 100];
 gammaR = 2.5;
 gammaG = 2.7;
 gammaB = 2.3;
+nRec = 9;
 
 % CAREFUL ATTEMPT TO BLOCK CONDITIONS SO EACH OPTICAL DISTANCE INCREMENT IS
 % PRESENTED ONCE PER BLOCK
@@ -108,6 +109,7 @@ for k0=1:length(focStmOptDstIncrAll)
         indImPattern = 1;
       end
       indImPatternAll(end+1,:) = indImPattern; 
+      im2R0 = [];
       im2R0(:,:,1) = imPattern{indImPattern}.*rgbAll(k0,1);
       im2R0(:,:,2) = imPattern{indImPattern}.*rgbAll(k0,2);
       im2R0(:,:,3) = imPattern{indImPattern}.*rgbAll(k0,3);
@@ -204,7 +206,10 @@ for k0=1:length(focStmOptDstIncrAll)
       else
          pause(1.6);
       end
-      if scene.enable_tcp; send_tcp0fiatAcu(tcp_socket, 1, k0, vs); end; t1(k0,:)=clock;
+      if scene.enable_tcp && (k0<=nRec || mod(k0,nRec)==1)
+          send_tcp0fiatAcu(tcp_socket, 1, k0, vs); 
+      end 
+      t1(k0,:)=clock;
       pause(0.4);
       cwin3(blackStim, blackStim, cf, rc00, window1, window2);
       tChange1(k0,:) = clock;
@@ -218,7 +223,9 @@ for k0=1:length(focStmOptDstIncrAll)
       opto(name_map('l_disp')).control.setFocalPower(power_dispL-meanFocstmOptDstAll(k0));
       opto(name_map('r_disp')).control.setFocalPower(power_dispR-meanFocstmOptDstAll(k0));      
       pause(0.15);
-      if scene.enable_tcp; send_tcp0fiatAcu(tcp_socket, 0, k0, vs); end %stage) 0stop 1record
+      if scene.enable_tcp && (k0<=nRec || mod(k0,nRec)==1)
+          send_tcp0fiatAcu(tcp_socket, 0, k0, vs)
+      end %stage) 0stop 1record
       cwin3(blackStim, blackStim, cf, rc00, window1, window2);
       t2(k0,:)=clock;
 

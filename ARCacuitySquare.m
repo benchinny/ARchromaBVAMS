@@ -10,7 +10,7 @@ if vsIncrement>=1
    vs = vs+1;
 end
 
-meanFocstmOptDst = [2.5 3.5]*1.2255;
+meanFocstmOptDst = [2.5]*1.2255;
 meanFocstmOptDst = meanFocstmOptDst(randperm(length(meanFocstmOptDst)));
 % rgb  = [0.56 0.00 1.00; ...
 %         0.56 0.00 0.00; ...
@@ -19,7 +19,7 @@ rgb = [0.569 0 1.00];
 indScrambleRgb = randperm(size(rgb,1));
 rgb = rgb(indScrambleRgb,:);
 frqCpd = 15;
-contrast = 1;
+contrast = 0.5;
 
 % focStmOptDstIncr = [-0.5:0.25:0.5];
 focStmOptDstIncr = [-1.2 -0.9 -0.6 -0.3 0.0 0.3 0.6 0.9 1.2];

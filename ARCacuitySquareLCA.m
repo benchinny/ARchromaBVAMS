@@ -16,7 +16,7 @@ meanFocstmOptDst = meanFocstmOptDst(randperm(length(meanFocstmOptDst)));
 %         0.56 0.00 0.00; ...
 %         0.00 0.00 1.00];
 rgb = [0.569 0 1.00];
-cAcuRGB = [0.4 0.5 0.5];
+cAcuRGB = [0.4 0.5 0.6];
 
 % focStmOptDstIncr = [-0.5:0.25:0.5];
 focStmOptDstIncr = [-1.2 -0.9 -0.6 -0.3 0.0 0.3 0.6 0.9 1.2];

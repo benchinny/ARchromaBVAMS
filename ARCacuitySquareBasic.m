@@ -12,12 +12,13 @@ end
 
 meanFocstmOptDst = [2.5]*1.2255;
 
-rgb  = [0.569 0.00 1.00];
+% rgb  = [0.569 0.00 1.00];
 % rgb  = [0.569 0.00 0.00];
 % rgb  = [0.000 0.00 1.00];
+rgb  = [0.000 0.432 0.00];
 
 frqCpd = 15;
-contrast = [0.1 0.2 0.3 0.4 0.5];
+contrast = [0.1 0.2 0.3 0.4 0.5 0.6];
 trlPerLvl = 20;
 
 % DEFAULT NO TCA CORRECTION
