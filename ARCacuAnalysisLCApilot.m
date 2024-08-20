@@ -8,7 +8,7 @@ subj = 1;
 if strcmp(getenv('username'),'bankslab')
    dataDirectory = [filePath];
 elseif strcmp(getenv("USER"),'benjaminchin')
-   dataDirectory = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/ARChroma/Analysis/'; 
+   dataDirectory = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/ARC/'; 
 elseif strcmp(getenv("USER"),'emily')
    dataDirectory = '/Users/emily/Library/CloudStorage/GoogleDrive-emilyacooper@gmail.com/Shared drives/ARChroma/Analysis/';
 end
@@ -68,14 +68,14 @@ if size(unique(rgb,'rows'),1)>1
    error('ARCacuAnalysisPilot: code does not handle multiple colors yet!');
 else
    rgbUnq = unique(rgb,'rows');
-   rgbUnq = [0 0 1];
+   rgbUnq = [1 0 0; 0 1 0; 0 0 1];
 end
 
 unqFocDst = unique(focStmOptDstIncr);
 scaleFac = 0.816;
 % meanFocInt = 5;
 
-rgbAcuCnd = 1;
+rgbAcuCnd = 2;
 for i = 1:length(unqFocDst)
     indAnalysis = focStmOptDstIncr==unqFocDst(i) & indAcuRB==rgbAcuCnd;
 %    PC(i) = sum(rspAcu(focStmOptDstIncr==unqFocDst(i) & meanFocstmOptDst==meanFocInt)==stimOrientation(focStmOptDstIncr==unqFocDst(i) & meanFocstmOptDst==meanFocInt))./sum(focStmOptDstIncr==unqFocDst(i) & meanFocstmOptDst==meanFocInt); 
@@ -85,8 +85,8 @@ end
 
 figure;
 hold on;
-plot(unqFocDst.*scaleFac,PC,'o-','Color',rgbUnq,'MarkerFaceColor','w','LineWidth',1.5,'MarkerSize',10);
-errorbar(unqFocDst.*scaleFac,PC,PC-PCci(1,:),PCci(2,:)-PC,'o-','Color',rgbUnq,'MarkerFaceColor','w','LineWidth',1.5,'MarkerSize',10);
+plot(unqFocDst.*scaleFac,PC,'o-','Color',rgbUnq(rgbAcuCnd,:),'MarkerFaceColor','w','LineWidth',1.5,'MarkerSize',10);
+errorbar(unqFocDst.*scaleFac,PC,PC-PCci(1,:),PCci(2,:)-PC,'o-','Color',rgbUnq(rgbAcuCnd,:),'MarkerFaceColor','w','LineWidth',1.5,'MarkerSize',10);
 axis square;
 ylim([0.4 1]);
 formatFigure('Relative optical distance (D)','Proportion Correct');
