@@ -6,6 +6,10 @@ if subjNum==11 || subjNum==12
    blockNums = 2:7;
    trialNums = {1:33 1:33 1:33 1:33 1:33 1:33};
    subjName = ['S' num2str(subjNum) '-OD'];
+elseif subjNum==13
+   blockNums = 3:8;
+   trialNums = {1:33 1:33 1:33 1:33 1:33 1:33};
+   subjName = ['S' num2str(subjNum) '-OD'];   
 end
 
 meanC = [];
@@ -79,7 +83,9 @@ for i = 1:size(conditionsOrderedNorm,1)
           abs(rgbLumNorm(:,3)-conditionsOrderedNorm(i,3))<0.01 & ...
           abs(meanv00all-optDistToCheck)<0.01;
     plot(i.*ones([sum(ind) 1]),defocusAt550(ind),'o','Color',conditionsOrderedNorm(i,:),'MarkerFaceColor',conditionsOrderedNorm(i,:));
+    defocusAt550mean(i) = mean(defocusAt550(ind));
 end
+plot(defocusAt550mean,'k-');
 xlim([0 11]);
 ylim(mean(defocusAt550(indDist))+[-0.6 0.6]);
 plot(5.5.*[1 1],ylim,'k-');
