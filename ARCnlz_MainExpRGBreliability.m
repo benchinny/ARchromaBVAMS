@@ -1,6 +1,8 @@
 %% LOOKING AT RELIABILITY OF WAVEFRONT MEASUREMENTS
 
 subjNum = 11;
+plot2make = 'raw';
+% plot2make = 'correlation';
 
 if subjNum==11 || subjNum==12
    blockNums = 2:7;
@@ -12,11 +14,8 @@ elseif subjNum==13
    subjName = ['S' num2str(subjNum) '-OD'];   
 end
 
-meanC = [];
 rgb1all = [];
 meanv00all = [];
-nIndBadTracker = [];
-c4all = {};
 
 for i = 1:length(blockNums)
     blockNumTmp = blockNums(i);
@@ -26,16 +25,68 @@ for i = 1:length(blockNums)
         [ZernikeTable, ~, ~, ~] = ARCloadFileFIAT(subjName,blockNumTmp,trialNumsTmp(j),0);
         NumCoeffs = width(ZernikeTable)-8; % determine how many coefficients are in the cvs file. 
         c=zeros(size(ZernikeTable,1),65); %this is the vector that contains the Zernike polynomial coefficients. We can work with up to 65.
-        indBadPupil = table2array(ZernikeTable(:,5))==0;
-        PARAMS.PupilSize=mean(table2array(ZernikeTable(~indBadPupil,5))); %default setting is the pupil size that the Zernike coeffs define, PARAMS(3)
-        PARAMS.PupilFitSize=mean(table2array(ZernikeTable(~indBadPupil,5))); 
+        
+        PARAMS.PupilSize=mean(table2array(ZernikeTable(:,5))); %default setting is the pupil size that the Zernike coeffs define, PARAMS(3)
+        PARAMS.PupilFitSize=mean(table2array(ZernikeTable(:,5))); 
         PARAMS.PupilFieldSize=PARAMS.PupilSize*2; %automatically compute the field size
         c(:,3:NumCoeffs)=table2array(ZernikeTable(:,11:width(ZernikeTable)));
         indBad = c(:,4)==0;
-        nIndBadTracker(end+1) = sum(indBad);
-        c(indBad,4) = mean(c(~indBad,4));
-        meanC(end+1,:) = mean(c,1); % TAKE MEAN OF COEFFICIENTS    
-        c4all{end+1} = c(:,4);
+        if strcmp(plot2make,'raw')
+            figure(1); 
+            plot(c(:,1:7)); 
+            axis square;
+            set(gca,'FontSize',15);
+            xlabel('Frame');
+            ylabel('Coefficient');
+            title(['Block ' num2str(blockNumTmp) ' Trial ' num2str(j)]);
+        end
+        if strcmp(plot2make,'correlation')
+            figure(1);
+            set(gcf,'Position',[233 291 1363 631]);
+            subplot(2,3,1);
+            plot(c(~indBad,4),c(~indBad,3),'ko');
+            title(['Correlation = ' num2str(corr(c(~indBad,4),c(~indBad,3)),3)]);
+            axis square;
+            set(gca,'FontSize',15);
+            xlabel('Coefficient 4 (defocus)');
+            ylabel('Coefficient 3 (oblique astigmatism)');
+            subplot(2,3,2);
+            plot(c(~indBad,4),c(~indBad,5),'ko');
+            title(['Correlation = ' num2str(corr(c(~indBad,4),c(~indBad,5)),3)]);
+            axis square;
+            set(gca,'FontSize',15);
+            xlabel('Coefficient 4 (defocus)');
+            ylabel('Coefficient 5 (astigmatism)');       
+            subplot(2,3,3);
+            plot(c(~indBad,4),c(~indBad,6),'ko');
+            title(['Correlation = ' num2str(corr(c(~indBad,4),c(~indBad,6)),3)]);
+            axis square;
+            set(gca,'FontSize',15);
+            xlabel('Coefficient 4 (defocus)');
+            ylabel('Coefficient 6 (oblique trefoil)');       
+            subplot(2,3,4);
+            plot(c(~indBad,4),c(~indBad,7),'ko');
+            title(['Correlation = ' num2str(corr(c(~indBad,4),c(~indBad,7)),3)]);
+            axis square;
+            set(gca,'FontSize',15);
+            xlabel('Coefficient 4 (defocus)');
+            ylabel('Coefficient 7 (vertical coma)');     
+            subplot(2,3,5);
+            plot(c(~indBad,4),c(~indBad,8),'ko');
+            title(['Correlation = ' num2str(corr(c(~indBad,4),c(~indBad,8)),3)]);
+            axis square;
+            set(gca,'FontSize',15);
+            xlabel('Coefficient 4 (defocus)');
+            ylabel('Coefficient 8 (horizontal coma)');      
+            subplot(2,3,6);
+            plot(c(~indBad,4),c(~indBad,9),'ko');
+            title(['Correlation = ' num2str(corr(c(~indBad,4),c(~indBad,9)),3)]);
+            axis square;
+            set(gca,'FontSize',15);
+            xlabel('Coefficient 4 (defocus)');
+            ylabel('Coefficient 9 (horizontal trefoil)');                  
+        end
+        pause;
     end
     rgb1all = [rgb1all; AFCp.rgb100];
     meanv00all = [meanv00all; AFCp.meanv00./1.2255];
