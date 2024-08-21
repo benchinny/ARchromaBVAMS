@@ -92,3 +92,41 @@ for i = 1:length(blockNums)
     meanv00all = [meanv00all; AFCp.meanv00./1.2255];
 end
 
+%% LOOKING AT PSFs AT EVERY TIME POINT
+
+subjNum = 12;
+subjName = ['S' num2str(subjNum) '-OD'];
+plot2make = 'raw';
+% plot2make = 'correlation';
+
+blockNumTmp = 2;
+trialNumsTmp = 11;
+AFCp = ARCloadFileBVAMS(subjNum,blockNumTmp);
+[ZernikeTable, ~, ~, ~] = ARCloadFileFIAT(subjName,blockNumTmp,trialNumsTmp,0);
+NumCoeffs = width(ZernikeTable)-8; % determine how many coefficients are in the cvs file. 
+c=zeros(size(ZernikeTable,1),65); %this is the vector that contains the Zernike polynomial coefficients. We can work with up to 65.
+
+PARAMS.PupilSize=mean(table2array(ZernikeTable(:,5))); %default setting is the pupil size that the Zernike coeffs define, PARAMS(3)
+PARAMS.PupilFitSize=mean(table2array(ZernikeTable(:,5))); 
+PARAMS.PupilFieldSize=PARAMS.PupilSize*2; %automatically compute the field size
+c(:,3:NumCoeffs)=table2array(ZernikeTable(:,11:width(ZernikeTable)));
+indGd = find(c(:,4)~=0);
+
+wave = 380:5:780;
+for j = 1:length(indGd)
+    zCoeffs = [0 c(j,1:end-1)];
+    wvfP = wvfCreate('calc wavelengths', 875, ...
+        'measured wavelength', 875, ...
+        'zcoeffs', zCoeffs, 'measured pupil', PARAMS.PupilSize, ...
+        'name', sprintf('human-%d', PARAMS.PupilSize),'spatial samples',320);
+    wvfP.calcpupilMM = PARAMS.PupilSize;
+    wvfP.refSizeOfFieldMM = 42;
+    wvfP = wvfSet(wvfP, 'zcoeff', 0, 'defocus');
+    
+    % Convert to siData format as well as wavefront object
+    [siPSFData, wvfP] = wvf2SiPsf(wvfP,'showBar',false,'nPSFSamples',320,'umPerSample',1.1512);
+    figure(1);
+    imagesc(squeeze(siPSFData.psf(:,:,1)));
+    axis square;
+    pause;
+end
