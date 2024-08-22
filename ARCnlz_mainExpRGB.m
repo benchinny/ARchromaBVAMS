@@ -1,6 +1,6 @@
 %%
 
-subjNum = 11;
+subjNum = 13;
 
 if subjNum==11 || subjNum==12
    blockNums = 2:7;
@@ -75,7 +75,7 @@ conditionsOrderedNorm = [0.25 0.00 1.00; ...
 
 figure;
 hold on;
-optDistToCheck = 3.5;
+optDistToCheck = 2.5;
 indDist = abs(meanv00all-optDistToCheck)<0.01;
 for i = 1:size(conditionsOrderedNorm,1)
     ind = abs(rgbLumNorm(:,1)-conditionsOrderedNorm(i,1))<0.01 & ...
@@ -98,7 +98,7 @@ ylabel('Defocus at 550nm');
 figure;
 set(gcf,'Position',[148 265 1384 710]);
 hold on;
-optDistToCheck = 3.5;
+optDistToCheck = 2.5;
 lengthTrialMax = 120;
 indDist = abs(meanv00all-optDistToCheck)<0.01;
 for i = 1:size(conditionsOrderedNorm,1)
@@ -108,7 +108,8 @@ for i = 1:size(conditionsOrderedNorm,1)
                abs(rgbLumNorm(:,2)-conditionsOrderedNorm(i,2))<0.01 & ...
                abs(rgbLumNorm(:,3)-conditionsOrderedNorm(i,3))<0.01 & ...
                abs(meanv00all-optDistToCheck)<0.01);
-    for j = randsample(1:length(ind),1)
+    for j = 1:length(ind)
+    % for j = 2
         trialTmp = zeros([1 lengthTrialMax]);
         trialTmp(1:length(c4all{ind(j)})) = c4all{ind(j)};
         trialTmp(trialTmp==0) = NaN;
@@ -119,7 +120,7 @@ for i = 1:size(conditionsOrderedNorm,1)
     ylim(mean(defocusAt550(indDist))+[-0.6 0.6]);
     set(gca,'FontSize',15);
     if i==1
-        xlabel('Condition');
+        xlabel('Frame');
         ylabel('Defocus at 550nm');
     end
 end

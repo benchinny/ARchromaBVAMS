@@ -9,6 +9,7 @@ maskBrightness = 0;
 gammaR = 2.5;
 gammaG = 2.7;
 gammaB = 2.3;
+bAccStimEqualsAcuStim = false;
 
 for i = 1:size(rgb,1)
    for j = 1:size(contrast,2)
@@ -42,9 +43,21 @@ if length(imPattern)>1
 else
    indImPattern = 1;
 end
-im2R0(:,:,1) = imPattern{indImPattern}.*rgb(1,1);
-im2R0(:,:,2) = imPattern{indImPattern}.*rgb(1,2);
-im2R0(:,:,3) = imPattern{indImPattern}.*rgb(1,3);
+
+im2R0 = [];
+if bAccStimEqualsAcuStim
+    accStim = ARC2Dgabor(smpPos(256,256),[],0,0,[frqCpd 3*frqCpd 5*frqCpd 7*frqCpd],[0.9 0.9/3 0.9/5 0.9/7],0,90,0.2,0.2,[rgb(1,1)^gammaR rgb(1,2)^gammaG rgb(1,3)^gammaB],1,1,0,0);
+    accStim(:,:,1) = accStim(:,:,1).^(1/gammaR);
+    accStim(:,:,2) = accStim(:,:,2).^(1/gammaG);
+    accStim(:,:,3) = accStim(:,:,3).^(1/gammaB);    
+    im2R0(:,:,1) = accStim(:,:,1).*255;
+    im2R0(:,:,2) = accStim(:,:,2).*255;
+    im2R0(:,:,3) = accStim(:,:,3).*255;
+else
+   im2R0(:,:,1) = imPattern{indImPattern}.*rgb(1,1);
+   im2R0(:,:,2) = imPattern{indImPattern}.*rgb(1,2);
+   im2R0(:,:,3) = imPattern{indImPattern}.*rgb(1,3);
+end
 
 cwin3(im2R0, im2R0, cf, rc00, window1, window2);
 
@@ -78,10 +91,12 @@ for k0=1:length(contrastAll)
         indImPattern = 1;
       end
       imPatternTmp = imPattern{indImPattern};
-      im2R0 = [];
-      im2R0(:,:,1) = imPatternTmp.*rgbAll(k0,1);
-      im2R0(:,:,2) = imPatternTmp.*rgbAll(k0,2);
-      im2R0(:,:,3) = imPatternTmp.*rgbAll(k0,3);
+      if ~bAccStimEqualsAcuStim
+          im2R0 = [];
+          im2R0(:,:,1) = imPatternTmp.*rgbAll(k0,1);
+          im2R0(:,:,2) = imPatternTmp.*rgbAll(k0,2);
+          im2R0(:,:,3) = imPatternTmp.*rgbAll(k0,3);
+      end
       blackStim = zeros(size(im2R0));
       acuStimOrig1 = ARC2Dgabor(smpPos(256,256),[],0,0,[frqCpd 3*frqCpd 5*frqCpd 7*frqCpd],[contrastAll(k0) contrastAll(k0)/3 contrastAll(k0)/5 contrastAll(k0)/7],-15,90,0.2,0.2,[rgbAll(k0,1)^gammaR rgbAll(k0,2)^gammaG rgbAll(k0,3)^gammaB],1,1,0,0);
       acuStimOrig1(:,:,1) = acuStimOrig1(:,:,1).^(1/gammaR);
