@@ -90,7 +90,7 @@ for k0=1:size(meanv0,1)
               [ keyIsDown, keyTime, keyCode ] = KbCheck;
               if keyIsDown
                   % if keyCode(KbName('RightArrow')) | keyCode(12)
-                  if keyCode(KbName('RightArrow')) | keyCode(KbName('5'))
+                  if keyCode(KbName('RightArrow')) | keyCode(KbName('5')) | keyCode(12)
                       opt_chk = 1;
                       %end
                   elseif keyCode(KbName('Return')) %| keyCode(KbName('Return'))
