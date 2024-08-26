@@ -73,25 +73,35 @@ conditionsOrderedNorm = [0.25 0.00 1.00; ...
                          1.00 0.50 0.50; ...
                          1.00 0.50 0.25];
 
-figure;
-hold on;
-optDistToCheck = 2.5;
-indDist = abs(meanv00all-optDistToCheck)<0.01;
-for i = 1:size(conditionsOrderedNorm,1)
-    ind = abs(rgbLumNorm(:,1)-conditionsOrderedNorm(i,1))<0.01 & ...
-          abs(rgbLumNorm(:,2)-conditionsOrderedNorm(i,2))<0.01 & ...
-          abs(rgbLumNorm(:,3)-conditionsOrderedNorm(i,3))<0.01 & ...
-          abs(meanv00all-optDistToCheck)<0.01;
-    plot(i.*ones([sum(ind) 1]),defocusAt550(ind),'o','Color',conditionsOrderedNorm(i,:),'MarkerFaceColor',conditionsOrderedNorm(i,:));
-    defocusAt550mean(i) = mean(defocusAt550(ind));
+figPositions = [14 493 560 420; ...
+                544 496 560 420; ...
+                1079 498 560 420; ...
+                ];
+optDistToCheckAll = [1.5 2.5 3.5];
+
+for j = 1:length(optDistToCheckAll)
+    figure;
+    set(gcf,'Position',figPositions(j,:));
+    hold on;
+    optDistToCheck = optDistToCheckAll(j);
+    indDist = abs(meanv00all-optDistToCheck)<0.01;
+    for i = 1:size(conditionsOrderedNorm,1)
+        ind = abs(rgbLumNorm(:,1)-conditionsOrderedNorm(i,1))<0.01 & ...
+              abs(rgbLumNorm(:,2)-conditionsOrderedNorm(i,2))<0.01 & ...
+              abs(rgbLumNorm(:,3)-conditionsOrderedNorm(i,3))<0.01 & ...
+              abs(meanv00all-optDistToCheck)<0.01;
+        plot(i.*ones([sum(ind) 1]),defocusAt550(ind),'o','Color',conditionsOrderedNorm(i,:),'MarkerFaceColor',conditionsOrderedNorm(i,:));
+        defocusAt550mean(i) = mean(defocusAt550(ind));
+    end
+    plot(defocusAt550mean,'k-');
+    xlim([0 11]);
+    ylim(mean(defocusAt550(indDist))+[-0.6 0.6]);
+    title(['Optical Distances = ' num2str(optDistToCheck)]);
+    plot(5.5.*[1 1],ylim,'k-');
+    set(gca,'FontSize',15);
+    xlabel('Condition');
+    ylabel('Defocus at 550nm');
 end
-plot(defocusAt550mean,'k-');
-xlim([0 11]);
-ylim(mean(defocusAt550(indDist))+[-0.6 0.6]);
-plot(5.5.*[1 1],ylim,'k-');
-set(gca,'FontSize',15);
-xlabel('Condition');
-ylabel('Defocus at 550nm');
 
 %% PLOT INDIVIDUAL TRIALS FOR REFERENCE
 
@@ -122,6 +132,7 @@ for i = 1:size(conditionsOrderedNorm,1)
     if i==1
         xlabel('Frame');
         ylabel('Defocus at 550nm');
+        title(['Optical Distance = ' num2str(optDistToCheck)]);
     end
 end
 
