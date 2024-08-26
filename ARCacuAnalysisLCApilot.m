@@ -3,7 +3,7 @@
 % filePath = 'G:\My Drive\exp_bvams\code_repo\ARC\';
 filePath = 'H:\Shared drives\CIVO_BVAMS\data\ARC\';
 
-subj = 2;
+subj = 1;
 
 if strcmp(getenv('username'),'bankslab')
    dataDirectory = [filePath];
@@ -83,24 +83,30 @@ if size(unique(rgb,'rows'),1)>1
 else
    rgbUnq = unique(rgb,'rows');
    rgbUnq = [1 0 0; 0 1 0; 0 0 1];
+   figPositions = [62 488 560 420; ...
+                   623 488 560 420; ...
+                   1111 493 560 420];
 end
 
 unqFocDst = unique(focStmOptDstIncr);
 scaleFac = 0.816;
 % meanFocInt = 5;
 
-rgbAcuCnd = 1;
-for i = 1:length(unqFocDst)
-    indAnalysis = focStmOptDstIncr==unqFocDst(i) & indAcuRB==rgbAcuCnd;
-%    PC(i) = sum(rspAcu(focStmOptDstIncr==unqFocDst(i) & meanFocstmOptDst==meanFocInt)==stimOrientation(focStmOptDstIncr==unqFocDst(i) & meanFocstmOptDst==meanFocInt))./sum(focStmOptDstIncr==unqFocDst(i) & meanFocstmOptDst==meanFocInt); 
-     PC(i) = sum(rspAcu(indAnalysis)==stimOrientation(indAnalysis))./sum(indAnalysis);
-     PCci(:,i) = binoinv([0.16 0.84],sum(focStmOptDstIncr==unqFocDst(i)),PC(i))./sum(focStmOptDstIncr==unqFocDst(i));
+for rgbAcuCnd = 1:3
+    for i = 1:length(unqFocDst)
+        indAnalysis = focStmOptDstIncr==unqFocDst(i) & indAcuRB==rgbAcuCnd;
+    %    PC(i) = sum(rspAcu(focStmOptDstIncr==unqFocDst(i) & meanFocstmOptDst==meanFocInt)==stimOrientation(focStmOptDstIncr==unqFocDst(i) & meanFocstmOptDst==meanFocInt))./sum(focStmOptDstIncr==unqFocDst(i) & meanFocstmOptDst==meanFocInt); 
+         PC(i) = sum(rspAcu(indAnalysis)==stimOrientation(indAnalysis))./sum(indAnalysis);
+         PCci(:,i) = binoinv([0.16 0.84],sum(focStmOptDstIncr==unqFocDst(i)),PC(i))./sum(focStmOptDstIncr==unqFocDst(i));
+    end
+    
+    
+    figure;
+    set(gcf,'Position',figPositions(rgbAcuCnd,:));
+    hold on;
+    plot(unqFocDst.*scaleFac,PC,'o-','Color',rgbUnq(rgbAcuCnd,:),'MarkerFaceColor','w','LineWidth',1.5,'MarkerSize',10);
+    errorbar(unqFocDst.*scaleFac,PC,PC-PCci(1,:),PCci(2,:)-PC,'o-','Color',rgbUnq(rgbAcuCnd,:),'MarkerFaceColor','w','LineWidth',1.5,'MarkerSize',10);
+    axis square;
+    ylim([0.4 1]);
+    formatFigure('Relative optical distance (D)','Proportion Correct');
 end
-
-figure;
-hold on;
-plot(unqFocDst.*scaleFac,PC,'o-','Color',rgbUnq(rgbAcuCnd,:),'MarkerFaceColor','w','LineWidth',1.5,'MarkerSize',10);
-errorbar(unqFocDst.*scaleFac,PC,PC-PCci(1,:),PCci(2,:)-PC,'o-','Color',rgbUnq(rgbAcuCnd,:),'MarkerFaceColor','w','LineWidth',1.5,'MarkerSize',10);
-axis square;
-ylim([0.4 1]);
-formatFigure('Relative optical distance (D)','Proportion Correct');
