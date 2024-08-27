@@ -1,6 +1,6 @@
-%%
+%% LOAD MAIN EXPERIMENT FILES
 
-subjNum = 13;
+subjNum = 11;
 
 if subjNum==11 || subjNum==12
    blockNums = 2:7;
@@ -73,25 +73,35 @@ conditionsOrderedNorm = [0.25 0.00 1.00; ...
                          1.00 0.50 0.50; ...
                          1.00 0.50 0.25];
 
-figure;
-hold on;
-optDistToCheck = 2.5;
-indDist = abs(meanv00all-optDistToCheck)<0.01;
-for i = 1:size(conditionsOrderedNorm,1)
-    ind = abs(rgbLumNorm(:,1)-conditionsOrderedNorm(i,1))<0.01 & ...
-          abs(rgbLumNorm(:,2)-conditionsOrderedNorm(i,2))<0.01 & ...
-          abs(rgbLumNorm(:,3)-conditionsOrderedNorm(i,3))<0.01 & ...
-          abs(meanv00all-optDistToCheck)<0.01;
-    plot(i.*ones([sum(ind) 1]),defocusAt550(ind),'o','Color',conditionsOrderedNorm(i,:),'MarkerFaceColor',conditionsOrderedNorm(i,:));
-    defocusAt550mean(i) = mean(defocusAt550(ind));
+figPositions = [14 493 560 420; ...
+                544 496 560 420; ...
+                1079 498 560 420; ...
+                ];
+optDistToCheckAll = [1.5 2.5 3.5];
+
+for j = 1:length(optDistToCheckAll)
+    figure;
+    set(gcf,'Position',figPositions(j,:));
+    hold on;
+    optDistToCheck = optDistToCheckAll(j);
+    indDist = abs(meanv00all-optDistToCheck)<0.01;
+    for i = 1:size(conditionsOrderedNorm,1)
+        ind = abs(rgbLumNorm(:,1)-conditionsOrderedNorm(i,1))<0.01 & ...
+              abs(rgbLumNorm(:,2)-conditionsOrderedNorm(i,2))<0.01 & ...
+              abs(rgbLumNorm(:,3)-conditionsOrderedNorm(i,3))<0.01 & ...
+              abs(meanv00all-optDistToCheck)<0.01;
+        plot(i.*ones([sum(ind) 1]),defocusAt550(ind),'o','Color',conditionsOrderedNorm(i,:),'MarkerFaceColor',conditionsOrderedNorm(i,:));
+        defocusAt550mean(i) = mean(defocusAt550(ind));
+    end
+    plot(defocusAt550mean,'k-');
+    xlim([0 11]);
+    ylim(mean(defocusAt550(indDist))+[-0.6 0.6]);
+    title(['Optical Distances = ' num2str(optDistToCheck)]);
+    plot(5.5.*[1 1],ylim,'k-');
+    set(gca,'FontSize',15);
+    xlabel('Condition');
+    ylabel('Defocus at 550nm');
 end
-plot(defocusAt550mean,'k-');
-xlim([0 11]);
-ylim(mean(defocusAt550(indDist))+[-0.6 0.6]);
-plot(5.5.*[1 1],ylim,'k-');
-set(gca,'FontSize',15);
-xlabel('Condition');
-ylabel('Defocus at 550nm');
 
 %% PLOT INDIVIDUAL TRIALS FOR REFERENCE
 
@@ -122,6 +132,82 @@ for i = 1:size(conditionsOrderedNorm,1)
     if i==1
         xlabel('Frame');
         ylabel('Defocus at 550nm');
+        title(['Optical Distance = ' num2str(optDistToCheck)]);
     end
 end
+
+%% RSP AS FUNCTION OF LUMINANCE
+
+subjNum = 12;
+
+if subjNum==12
+   blockNums = 8;
+   trialNums = {1:30};
+   subjName = ['S' num2str(subjNum) '-OD'];
+elseif subjNum==13
+   blockNums = 9;
+   trialNums = {1:30};
+   subjName = ['S' num2str(subjNum) '-OD'];   
+end
+
+meanC = [];
+rgb1all = [];
+meanv00all = [];
+nIndBadTracker = [];
+c4all = {};
+
+for i = 1:length(blockNums)
+    blockNumTmp = blockNums(i);
+    trialNumsTmp = trialNums{i};
+    AFCp = ARCloadFileBVAMS(subjNum,blockNumTmp);
+    for j = 1:length(trialNumsTmp)
+        [ZernikeTable, ~, ~, ~] = ARCloadFileFIAT(subjName,blockNumTmp,trialNumsTmp(j),0);
+        NumCoeffs = width(ZernikeTable)-8; % determine how many coefficients are in the cvs file. 
+        c=zeros(size(ZernikeTable,1),65); %this is the vector that contains the Zernike polynomial coefficients. We can work with up to 65.
+        indBadPupil = table2array(ZernikeTable(:,5))==0;
+        PARAMS.PupilSize=mean(table2array(ZernikeTable(~indBadPupil,5))); %default setting is the pupil size that the Zernike coeffs define, PARAMS(3)
+        PARAMS.PupilFitSize=mean(table2array(ZernikeTable(~indBadPupil,5))); 
+        PARAMS.PupilFieldSize=PARAMS.PupilSize*2; %automatically compute the field size
+        c(:,3:NumCoeffs)=table2array(ZernikeTable(:,11:width(ZernikeTable)));
+        indBad = c(:,4)==0;
+        nIndBadTracker(end+1) = sum(indBad);
+        c(indBad,4) = mean(c(~indBad,4));
+        meanC(end+1,:) = mean(c,1); % TAKE MEAN OF COEFFICIENTS    
+        c4all{end+1} = c(:,4);
+    end
+    rgb1all = [rgb1all; AFCp.rgb100];
+    meanv00all = [meanv00all; AFCp.meanv00./1.2255];
+end
+
+%% PLOT MEANS
+
+defocusCorrectionFactor = (1e6/(4*sqrt(3)))*((PARAMS.PupilSize/2000)^2);
+defocusAt550 = humanWaveDefocus(875)-humanWaveDefocus(550)+meanC(:,4)./defocusCorrectionFactor;
+indHigherLum = abs(rgb1all(:,3)-1)<0.001;
+
+figure; 
+hold on;
+plot(meanv00all(indHigherLum)-0.1,defocusAt550(indHigherLum),'ko','MarkerFaceColor','w');
+plot(meanv00all(~indHigherLum)+0.1,defocusAt550(~indHigherLum),'ko','MarkerFaceColor','k');
+set(gca,'FontSize',15);
+xlim([1 4]);
+axis square;
+xlabel('Stimulus optical distance');
+ylabel('Raw refractive power (D)');
+
+%% LOAD RECORDINGS DURING ACUITY TASK
+
+[ZernikeTable, ~, ~, ~] = ARCloadFileFIATallInstances('S12-OD',10,0);
+NumCoeffs = width(ZernikeTable)-8; % determine how many coefficients are in the cvs file. 
+c=zeros(size(ZernikeTable,1),65); %this is the vector that contains the Zernike polynomial coefficients. We can work with up to 65.
+indBadPupil = table2array(ZernikeTable(:,5))==0;
+PARAMS.PupilSize=mean(table2array(ZernikeTable(~indBadPupil,5))); %default setting is the pupil size that the Zernike coeffs define, PARAMS(3)
+PARAMS.PupilFitSize=mean(table2array(ZernikeTable(~indBadPupil,5))); 
+PARAMS.PupilFieldSize=PARAMS.PupilSize*2; %automatically compute the field size
+c(:,3:NumCoeffs)=table2array(ZernikeTable(:,11:width(ZernikeTable)));
+
+indBad = c(:,4)==0;
+cGood = c(~indBad,4);
+defocusCorrectionFactor = (1e6/(4*sqrt(3)))*((PARAMS.PupilSize/2000)^2);
+defocusAt550 = humanWaveDefocus(875)-humanWaveDefocus(550)+cGood./defocusCorrectionFactor;
 

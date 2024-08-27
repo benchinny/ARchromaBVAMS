@@ -26,6 +26,23 @@ if subj==1
                  [dataDirectory 'S1001V12_AFC_RightACL0_2408191439.mat'] ...
                  };
 elseif subj==2
+    % filenames = {
+    %              [dataDirectory 'S1002V7_AFC_RightACL0_2406101420.mat'] ...
+    %              [dataDirectory 'S1002V7_AFC_RightACL0_2406101425.mat'] ...
+    %              [dataDirectory 'S1002V7_AFC_RightACL0_2406101428.mat'] ...
+    %              [dataDirectory 'S1002V7_AFC_RightACL0_2406101432.mat'] ...
+    %              [dataDirectory 'S1002V7_AFC_RightACL0_2406101435.mat'] ... 
+    %              [dataDirectory 'S1002V7_AFC_RightACL0_2406101439.mat'] ... 
+    %              [dataDirectory 'S1002V7_AFC_RightACL0_2406101443.mat'] ...
+    %              [dataDirectory 'S1002V7_AFC_RightACL0_2406101446.mat'] ... 
+    %              [dataDirectory 'S1002V7_AFC_RightACL0_2406101449.mat'] ...
+    %              [dataDirectory 'S1002V7_AFC_RightACL0_2406101453.mat'] ... 
+    %              [dataDirectory 'S1002V7_AFC_RightACL0_2406101515.mat'] ... 
+    %              [dataDirectory 'S1002V7_AFC_RightACL0_2406101519.mat'] ... 
+    %              [dataDirectory 'S1002V7_AFC_RightACL0_2406101524.mat'] ... 
+    %              [dataDirectory 'S1002V7_AFC_RightACL0_2406101528.mat'] ... 
+    %              [dataDirectory 'S1002V7_AFC_RightACL0_2406101535.mat'] ...
+    %              };    
     filenames = {
                  [dataDirectory 'S1002V7_AFC_RightACL0_2406101420.mat'] ...
                  [dataDirectory 'S1002V7_AFC_RightACL0_2406101425.mat'] ...
@@ -84,24 +101,30 @@ if size(unique(rgb,'rows'),1)>1
 else
    rgbUnq = unique(rgb,'rows');
    rgbUnq = [1 0 0; 0 1 0; 0 0 1];
+   figPositions = [62 488 560 420; ...
+                   623 488 560 420; ...
+                   1111 493 560 420];
 end
 
 unqFocDst = unique(focStmOptDstIncr);
 scaleFac = 0.816;
 % meanFocInt = 5;
 
-rgbAcuCnd = 3;
-for i = 1:length(unqFocDst)
-    indAnalysis = focStmOptDstIncr==unqFocDst(i) & indAcuRB==rgbAcuCnd;
-%    PC(i) = sum(rspAcu(focStmOptDstIncr==unqFocDst(i) & meanFocstmOptDst==meanFocInt)==stimOrientation(focStmOptDstIncr==unqFocDst(i) & meanFocstmOptDst==meanFocInt))./sum(focStmOptDstIncr==unqFocDst(i) & meanFocstmOptDst==meanFocInt); 
-     PC(i) = sum(rspAcu(indAnalysis)==stimOrientation(indAnalysis))./sum(indAnalysis);
-     PCci(:,i) = binoinv([0.16 0.84],sum(focStmOptDstIncr==unqFocDst(i)),PC(i))./sum(focStmOptDstIncr==unqFocDst(i));
+for rgbAcuCnd = 1:3
+    for i = 1:length(unqFocDst)
+        indAnalysis = focStmOptDstIncr==unqFocDst(i) & indAcuRB==rgbAcuCnd;
+    %    PC(i) = sum(rspAcu(focStmOptDstIncr==unqFocDst(i) & meanFocstmOptDst==meanFocInt)==stimOrientation(focStmOptDstIncr==unqFocDst(i) & meanFocstmOptDst==meanFocInt))./sum(focStmOptDstIncr==unqFocDst(i) & meanFocstmOptDst==meanFocInt); 
+         PC(i) = sum(rspAcu(indAnalysis)==stimOrientation(indAnalysis))./sum(indAnalysis);
+         PCci(:,i) = binoinv([0.16 0.84],sum(focStmOptDstIncr==unqFocDst(i)),PC(i))./sum(focStmOptDstIncr==unqFocDst(i));
+    end
+    
+    
+    figure;
+    set(gcf,'Position',figPositions(rgbAcuCnd,:));
+    hold on;
+    plot(unqFocDst.*scaleFac,PC,'o-','Color',rgbUnq(rgbAcuCnd,:),'MarkerFaceColor','w','LineWidth',1.5,'MarkerSize',10);
+    errorbar(unqFocDst.*scaleFac,PC,PC-PCci(1,:),PCci(2,:)-PC,'o-','Color',rgbUnq(rgbAcuCnd,:),'MarkerFaceColor','w','LineWidth',1.5,'MarkerSize',10);
+    axis square;
+    ylim([0.4 1]);
+    formatFigure('Relative optical distance (D)','Proportion Correct');
 end
-
-figure;
-hold on;
-plot(unqFocDst.*scaleFac,PC,'o-','Color',rgbUnq(rgbAcuCnd,:),'MarkerFaceColor','w','LineWidth',1.5,'MarkerSize',10);
-errorbar(unqFocDst.*scaleFac,PC,PC-PCci(1,:),PCci(2,:)-PC,'o-','Color',rgbUnq(rgbAcuCnd,:),'MarkerFaceColor','w','LineWidth',1.5,'MarkerSize',10);
-axis square;
-ylim([0.4 1]);
-formatFigure('Relative optical distance (D)','Proportion Correct');
