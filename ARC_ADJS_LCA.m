@@ -51,7 +51,7 @@ opto(name_map('r_disp')).control.getFocalPower.focal_power
 opto(name_map('l_disp')).control.setFocalPower(14+sr(1));%-dmnd(k0));
 opto(name_map('l_disp')).control.getFocalPower.focal_power
 
-bTexture = true;
+bTexture = false;
 if bTexture
     % ----LOADING IMAGE----------
     % im2L='texture0_nrm_rgb.png';
@@ -109,6 +109,8 @@ end
 
 power_dispL = 14;
 power_dispR = 14.3;
+clrIndAll = [];
+powerDispRall = [];
 
 rightTrombonePowerNear = opto(name_map('r_t_near')).control.getFocalPower.focal_power;
 rightTrombonePowerFar = opto(name_map('r_t_far')).control.getFocalPower.focal_power;
@@ -148,17 +150,20 @@ try
                     power_dispR=power_dispR-adjustIncrement;
                     power_dispL=power_dispL-adjustIncrement;
                 end
-            elseif ~bTexture & (keyCode(KbName('DownArrow')) | keyCode(KbName('5')))
-                wordInd = randsample(1:size(wordList,1),1);
-                imB = AFCwordStimImproved(wordList(wordInd,:),[320 320],stimColor);
-                imB(imB>0) = 255;
-                imB(:,:,clrInd) = circshift(squeeze(imB(:,:,clrInd)),-15,1);           
-                imBmono = squeeze(imB(:,:,clrInd));
-                imBmono = imresize(imBmono,[480 480]);
-                imB = zeros([size(imBmono) 3]);
-                imB(:,:,clrInd) = imBmono;
-                testim = flipud(imB);   
-                display(['Word is ' wordList(wordInd,:)]);
+            elseif ~bTexture & (keyCode(KbName('DownArrow')) | keyCode(KbName('5'))) | keyCode(12)
+                send_tcp0fiatAcu(tcp_socket, 1, clrInd, vs);
+                pause(0.25);
+                send_tcp0fiatAcu(tcp_socket, 0, clrInd, vs);
+                powerDispRall(end+1) = power_dispR;
+                
+                clrIndAll(end+1) = clrInd;
+                testPatternTmp = squeeze(testim(:,:,clrInd));
+                testim(:,:,clrInd) = zeros(size(testPatternTmp));
+
+                clrInd = randsample(1:3,1);
+                testim(:,:,clrInd) = testPatternTmp;
+                display(['Color index is ' num2str(clrInd)]);
+                power_dispR = 15.3;
                 [iLf iRf]=cwin3(imread("black.png"), testim , cf, rc00, window2, window1);
             elseif keyCode(KbName('Return')) %| keyCode(KbName('Return'))
                 opt_chk=1;    
@@ -221,7 +226,7 @@ ListenChar(0);
 
 KbWait([], 2);
 [iLf iRf]=cwin3(imread("black.png"), imread("black.png") , cf, rc00, window2, window1);
-
+save('LCAfile.mat','powerDispRall','clrIndAll');
 sca   
 % if bRecord
 %     clear tcp_socket;
