@@ -7,7 +7,6 @@ power_dispL_max = 16;
 power_dispR_min = 7;
 power_dispR_max = 16.4;
 adjustIncrement = 0.12255;
-stimColor = 'blue';
 bRecord = 1;
 
 if bRecord && ~ismember('tcp_socket', who('global'))
@@ -82,28 +81,22 @@ if bTexture
 %     testim = acuStimTmpRGB;
     % ---------------------------
 else
-    wordList = ['car'; 'arc'; 'sea'; 'one'; 'uno'; 'sun'; 'new'; 'ace'; 'air'];
-    wordInd = randsample(1:size(wordList,1),1);
-    imB = AFCwordStimImproved(wordList(wordInd,:),[320 320],stimColor);
-    imB(imB>0) = 255;
-    if strcmp(stimColor,'blue')
-       clrInd = 3;
-    end
-    if strcmp(stimColor,'green')
-       clrInd = 2;
-    end
-    if strcmp(stimColor,'red')
-       clrInd = 1;    
-    end
-    imB(:,:,clrInd) = circshift(squeeze(imB(:,:,clrInd)),-15,1);
-    imBmono = squeeze(imB(:,:,clrInd));
-    imBmono = imresize(imBmono,[480 480]); % FOR 2/3 of [960 960] SCREEN--PIXELS FROM 90 TO 855 SPAN VIEWPORT
-    imB = zeros([size(imBmono) 3]);
-    imB(:,:,clrInd) = imBmono;
-%     imB(:,:,1) = imBmono;
-%     imB(:,:,3) = imBmono;
-    testim = flipud(imB);   
-    display(['Word is ' wordList(wordInd,:)]);
+    clrInd = 1;
+    im1 = imread('H:\Shared drives\CIVO_BVAMS\stimuli\word_image_01.png');
+    im1(im1>0) = 255;
+    im1 = flipud(im1);   
+    imPatternTmp = squeeze(im1(:,:,3));
+    imPatternTmp = [zeros([30 size(imPatternTmp,2)]); imPatternTmp; zeros([30 size(imPatternTmp,2)])];
+    imPatternTmp = [zeros([size(imPatternTmp,1) 30]) imPatternTmp zeros([size(imPatternTmp,1) 30])];  
+
+    imPatternColor = [];
+    imPatternColor(:,:,1) = round(imPatternTmp.*0.569);
+    imPatternColor(:,:,2) = round(imPatternTmp.*0.432);
+    imPatternColor(:,:,3) = imPatternTmp;
+
+    testim = zeros([size(imPatternTmp) 3]);
+    testim(:,:,clrInd) = squeeze(imPatternColor(:,:,clrInd));
+    display(['Color index is ' num2str(clrInd)]);
 end
 [iLf iRf]=cwin3(imread("black.png"), testim , cf, rc00, window2, window1);
 
@@ -150,27 +143,26 @@ try
                     power_dispR=power_dispR-adjustIncrement;
                     power_dispL=power_dispL-adjustIncrement;
                 end
-            elseif ~bTexture & (keyCode(KbName('DownArrow')) | keyCode(KbName('5'))) | keyCode(12)
+            elseif ~bTexture & bRecord & (keyCode(KbName('DownArrow')) | keyCode(KbName('5')) | keyCode(12))
+                % RECORD CURRENT WAVEFRONT
                 send_tcp0fiatAcu(tcp_socket, 1, clrInd, vs);
                 pause(0.25);
                 send_tcp0fiatAcu(tcp_socket, 0, clrInd, vs);
-                powerDispRall(end+1) = power_dispR;
                 
+                % SAVE CURRENT OPTOTUNE POWER AND COLOR INDEX
+                powerDispRall(end+1) = power_dispR;
                 clrIndAll(end+1) = clrInd;
-                testPatternTmp = squeeze(testim(:,:,clrInd));
-                testim(:,:,clrInd) = zeros(size(testPatternTmp));
+                
+                % ZERO OUT STIMULUS AT CURRENT COLOR INDEX
+                testim(:,:,clrInd) = zeros([size(testim,1) size(testim,2)]);
 
-                clrInd = randsample(1:3,1);
-                testim(:,:,clrInd) = testPatternTmp;
+                clrInd = randsample(1:3,1); % NEW COLOR INDEX
+                testim(:,:,clrInd) = squeeze(imPatternColor(:,:,clrInd));
                 display(['Color index is ' num2str(clrInd)]);
                 power_dispR = 15.3;
                 [iLf iRf]=cwin3(imread("black.png"), testim , cf, rc00, window2, window1);
             elseif keyCode(KbName('Return')) %| keyCode(KbName('Return'))
                 opt_chk=1;    
-            elseif keyCode(KbName('+')) && bRecord
-                send_tcp0fiat(tcp_socket,1);
-                pause(0.25);
-                send_tcp0fiat(tcp_socket,0);
             else
                 disp('WRONG KEY'); snd(100, 0.25);
             end
