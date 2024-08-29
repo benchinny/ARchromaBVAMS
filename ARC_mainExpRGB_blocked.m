@@ -10,36 +10,44 @@ if vsIncrement>=1
    vs = vs+1;
 end
 
-bControl = false;
+colorGroup = 1;
 
 meanFocstmOptDstUnq = [1.5 2.5 3.5]';
 meanFocstmOptDstUnq = meanFocstmOptDstUnq*1.2255;
 
-if bControl
-    nRepeats = 5;
+if colorGroup==1
+    nRepeats = 3;
     rgb1 = [0.569 0.000 1.000; ...
-            0.472 0.000 0.815];
-else
-    nRepeats = 1;
-    rgb1 = [0.569 0.432 1.000; ...
+            0.472 0.000 0.815; ...
+            0.569 0.432 1.000; ...
             0.569 0.334 1.000; ...
+            ];
+elseif colorGroup==2
+    nRepeats = 3;
+    rgb1 = [
             0.432 0.334 1.000; ...
             0.327 0.334 1.000; ...
             0.569 0.334 0.740; ...   
-            0.569 0.334 0.547; ...
-            0.569 0.000 1.000; ...
+            0.569 0.334 0.547; ...   
+            ];
+elseif colorGroup==3
+    nRepeats = 3;
+    rgb1 = [
             0.432 0.000 1.000; ...
             0.327 0.000 1.000; ...
             0.569 0.000 0.740; ...   
-            0.569 0.000 0.547; ...        
+            0.569 0.000 0.547; ...     
             ];
 end
        
 % TRIALS
-rgb1 = repmat(rgb1,[nRepeats*length(meanFocstmOptDstUnq) 1]);
-meanFocstmOptDst = imresize(meanFocstmOptDstUnq,[size(rgb1,1) 1],'nearest');
+meanFocstmOptDst = repmat(imresize(meanFocstmOptDstUnq,[nRepeats*length(meanFocstmOptDstUnq) 1],'nearest'),[size(rgb1,1) 1]);
+rgb1 = imresize(rgb1,[size(rgb1,1)*nRepeats*length(meanFocstmOptDstUnq) size(rgb1,2)],'nearest');
 % AFCv IS JUST A VECTOR OF INDICES FOR RANDOMIZING TRIAL ORDER
-AFCv = randsample(1:length(meanFocstmOptDst),length(meanFocstmOptDst));
+AFCv = [];
+for i = 1:size(unique(rgb1,'rows'),1)
+    AFCv = [AFCv; length(meanFocstmOptDstUnq)*nRepeats*(i-1)+randsample(1:length(meanFocstmOptDstUnq)*nRepeats,length(meanFocstmOptDstUnq)*nRepeats)'];
+end
 
 if ~exist('sr')
    sr = [0 0]; 
