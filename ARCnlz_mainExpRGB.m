@@ -2,9 +2,17 @@
 
 subjNum = 12;
 
-if subjNum==11 || subjNum==12
+if subjNum==11
    blockNums = 2:7;
    trialNums = {1:33 1:33 1:33 1:33 1:33 1:33};
+   subjName = ['S' num2str(subjNum) '-OD'];
+elseif subjNum==12
+   % blockNums = 2:7;
+   % trialNums = {1:33 1:33 1:33 1:33 1:33 1:33};
+   % subjName = ['S' num2str(subjNum) '-OD'];
+
+   blockNums = [11:15 18];
+   trialNums = {1:36 1:36 1:36 1:36 1:36 1:36};
    subjName = ['S' num2str(subjNum) '-OD'];
 elseif subjNum==13
    blockNums = 3:8;

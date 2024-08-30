@@ -6,11 +6,18 @@ filePath = 'H:\Shared drives\CIVO_BVAMS\data\ARC\';
 vsIncrement = input(['Increment visit number? The current visit number is ' num2str(vs) ' (1 for yes, 0 for no)']);
 vsIncrement = input(['Asking again: increment visit number? The current visit number is ' num2str(vs) ' (1 for yes, 0 for no)']);
 
+if exist('colorGroup','var')
+    colorGroupOriginal = colorGroup;
+    colorGroup = input(['Color group? The current group is ' num2str(colorGroupOriginal) '. Possibilities: 1, 2, or 3. ']);
+    colorGroup = input(['Asking again: color group? The current group is ' num2str(colorGroupOriginal) '. Possibilities: 1, 2, or 3. ']);
+else
+    colorGroup = input(['Color group? The options are 1, 2, or 3. ']);
+    colorGroup = input(['Asking again: color group? The options are 1, 2, or 3. ']);
+end
+
 if vsIncrement>=1
    vs = vs+1;
 end
-
-colorGroup = 1;
 
 meanFocstmOptDstUnq = [1.5 2.5 3.5]';
 meanFocstmOptDstUnq = meanFocstmOptDstUnq*1.2255;
