@@ -8,6 +8,9 @@ power_dispR_min = 7;
 power_dispR_max = 16.4;
 adjustIncrement = 0.12255;
 bRecord = 1;
+clrIndAll = repmat([1 2 3]',[20 1]);
+clrIndAll = clrIndAll(randperm(length(clrIndAll)));
+clrIndCounter = 1;
 
 if bRecord && ~ismember('tcp_socket', who('global'))
     cmsg('TCP enabled');
@@ -81,7 +84,7 @@ if bTexture
 %     testim = acuStimTmpRGB;
     % ---------------------------
 else
-    clrInd = 1;
+    clrInd = clrIndAll(1);
     im1 = imread('H:\Shared drives\CIVO_BVAMS\stimuli\word_image_01.png');
     im1(im1>0) = 255;
     im1 = flipud(im1);   
@@ -102,7 +105,6 @@ end
 
 power_dispL = 14;
 power_dispR = 15.3;
-clrIndAll = [];
 powerDispRall = [];
 
 rightTrombonePowerNear = opto(name_map('r_t_near')).control.getFocalPower.focal_power;
@@ -153,12 +155,13 @@ try
                 
                 % SAVE CURRENT OPTOTUNE POWER AND COLOR INDEX
                 powerDispRall(end+1) = power_dispR;
-                clrIndAll(end+1) = clrInd;
                 
                 % ZERO OUT STIMULUS AT CURRENT COLOR INDEX
                 testim(:,:,clrInd) = zeros([size(testim,1) size(testim,2)]);
+                
+                clrIndCounter = clrIndCounter+1;
 
-                clrInd = randsample(1:3,1); % NEW COLOR INDEX
+                clrInd = clrIndAll(clrIndCounter); % NEW COLOR INDEX
                 testim(:,:,clrInd) = squeeze(imPatternColor(:,:,clrInd));
                 display(['Color index is ' num2str(clrInd)]);
                 power_dispR = 15.3;
@@ -220,6 +223,7 @@ ListenChar(0);
 
 KbWait([], 2);
 [iLf iRf]=cwin3(imread("black.png"), imread("black.png") , cf, rc00, window2, window1);
+clrIndAll = clrIndAll(1:clrIndCounter);
 save('LCAfile.mat','powerDispRall','clrIndAll');
 sca   
 % if bRecord
