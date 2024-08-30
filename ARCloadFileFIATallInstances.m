@@ -1,4 +1,4 @@
-function [trialDataAll, defocus, strehl, TimeStamp] = ARCloadFileFIATallInstances(subjName,blockNum,bExtended)
+function [trialDataAll, defocus, strehl, TimeStamp, trialTagIndex] = ARCloadFileFIATallInstances(subjName,blockNum,bExtended)
 
 strehl = [];
 
@@ -20,10 +20,12 @@ else
     ind = find(contains(filenamesAll,filenameTmp) & ~contains(filenamesAll,'FullPupil'));
 end
 
+trialTagIndex = [];
 trialDataAll = table;
 for subInd = 1:length(ind)
    filename = filenamesAll{ind(subInd)};
    trialData = readtable([dataFolder filename]);
+   trialTagIndex = [trialTagIndex; subInd.*ones([size(trialData,1) 1])];
    if subInd==1
       trialDataAll = trialData;
    else
