@@ -17,7 +17,13 @@ trialTagIndexGood = trialTagIndex(~indBad);
 
 %%
 
+load('/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/ARC/LCAadjustmentS12.mat');
+
 for i = 1:length(unique(trialTagIndexGood))
     trialInd = trialTagIndexGood==i;
     defocusAt550mean(i) = mean(defocusAt550(trialInd));
 end
+
+mean(0.816*(14.3-powerDispRall(clrIndAll'==1 & powerDispRall'<15)')-defocusAt550mean(clrIndAll'==1 & powerDispRall'<15)')
+mean(0.816*(14.3-powerDispRall(clrIndAll'==2 & powerDispRall'<15)')-defocusAt550mean(clrIndAll'==2 & powerDispRall'<15)')
+mean(0.816*(14.3-powerDispRall(clrIndAll'==3 & powerDispRall'<15)')-defocusAt550mean(clrIndAll'==3 & powerDispRall'<15)')
