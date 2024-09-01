@@ -7,12 +7,13 @@ vsIncrement = input(['Increment visit number? The current visit number is ' num2
 vsIncrement = input(['Asking again: increment visit number? The current visit number is ' num2str(vs) ' (1 for yes, 0 for no)']);
 
 if exist('colorGroup','var')
-    colorGroupOriginal = colorGroup;
-    colorGroup = input(['Color group? The current group is ' num2str(colorGroupOriginal) '. Possibilities: 1, 2, or 3. ']);
-    colorGroup = input(['Asking again: color group? The current group is ' num2str(colorGroupOriginal) '. Possibilities: 1, 2, or 3. ']);
+    colorGroup = input(['Color group? The current group is ' colorGroupString '. Possibilities: 1, 2, or 3. ']);
+    colorGroup = input(['Asking again: color group? The current group is ' num2str(colorGroupString) '. Possibilities: 1, 2, or 3. ']);
+    colorGroupString = [colorGroupString ', ' num2str(colorGroup(end))];
 else
     colorGroup = input(['Color group? The options are 1, 2, or 3. ']);
     colorGroup = input(['Asking again: color group? The options are 1, 2, or 3. ']);
+    colorGroupString = num2str(colorGroup);
 end
 
 if vsIncrement>=1
