@@ -7,6 +7,7 @@ ieInit;
 d = displayCreate('OLED-Samsung');
 d = displaySet(d, 'name', 'my display');
 d = displaySet(d,'ViewingDistance',1); % simulated screen distance
+d = displaySet(d,'dpi',378); % simulated screen distance
 
 bUseBVAMScal = 1; % if using BVAMS calibration data
 
@@ -29,21 +30,22 @@ d.gamma(:,3) = (d.gamma(:,3).^(1/2.2)).^2.2;
 
 % Ben's stimulus
 nDotsI = 320;
-rVal = 0.56;
+rVal = 0.569;
+gVal = 0.432;
 bVal = 1.00;
-im = AFCwordStimImproved('sea',nDotsI.*[1 1],'green');
-imPatternTmp = squeeze(im(:,:,2));
-imPatternTmp = circshift(imPatternTmp,-15,1);
+im = imread('/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/stimuli/word_image_01.png');
+im = double(im);
+imPatternTmp = squeeze(im(:,:,3));
 I(:,:,3) = bVal.*imresize(imPatternTmp,nDotsI.*[1 1],'nearest');
+I(:,:,2) = gVal.*imresize(imPatternTmp,nDotsI.*[1 1],'nearest');
 I(:,:,1) = rVal.*imresize(imPatternTmp,nDotsI.*[1 1],'nearest');
 I = I./255;
-I = zeros(size(I));
 % I(159:161,159:161,1) = rVal;
 % I(159:161,159:161,2) = 0.00;
 % I(159:161,159:161,3) = bVal;
-I(160,160,1) = rVal;
-I(160,160,2) = 0.00;
-I(160,160,3) = bVal;
+% I(160,160,1) = rVal;
+% I(160,160,2) = 0.00;
+% I(160,160,3) = bVal;
 % I(156:164,156:164,1) = rVal;
 % I(156:164,156:164,2) = 0.00;
 % I(156:164,156:164,3) = bVal;
@@ -181,6 +183,23 @@ for i = 1:length(Dall2)
     % lumImg = lumImg(33:288,33:288);
     peakCorr(i) = max(max(xcorr2(lumImgOrig,lumImg)));
     if ismember(round(humanWaveDefocusInvert(-Dall2(i))),[460 520 620])
+        if ismember(round(humanWaveDefocusInvert(-Dall2(i))),[620])
+            oiIllustrate = oi;
+            imgWaveR = zeros([size(oiIllustrate.data.photons,1) size(oiIllustrate.data.photons,2) 3]);
+            imgWaveR(:,:,1) = squeeze(oiIllustrate.data.photons(:,:,61))./max(max(squeeze(oiIllustrate.data.photons(:,:,61))));
+            imgWaveG = zeros([size(oiIllustrate.data.photons,1) size(oiIllustrate.data.photons,2) 3]);
+            imgWaveG(:,:,2) = squeeze(oiIllustrate.data.photons(:,:,38))./max(max(squeeze(oiIllustrate.data.photons(:,:,38))));
+            imgWaveB = zeros([size(oiIllustrate.data.photons,1) size(oiIllustrate.data.photons,2) 3]);
+            imgWaveB(:,:,3) = squeeze(oiIllustrate.data.photons(:,:,21))./max(max(squeeze(oiIllustrate.data.photons(:,:,21))));
+            figure;
+            set(gcf,'Position',[263 471 1219 420]);
+            subplot(1,3,1);
+            imagesc(imgWaveR);
+            subplot(1,3,2);
+            imagesc(imgWaveG);
+            subplot(1,3,3);
+            imagesc(imgWaveB);            
+        end
         figure;
         set(gcf,'Position',[326 418 924 420]);      
         subplot(1,2,1);
