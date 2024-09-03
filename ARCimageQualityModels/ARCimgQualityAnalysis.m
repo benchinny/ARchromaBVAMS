@@ -189,15 +189,25 @@ for i = 1:length(Dall2)
             imgWaveR(:,:,1) = squeeze(oiIllustrate.data.photons(:,:,61))./max(max(squeeze(oiIllustrate.data.photons(:,:,61))));
             imgWaveG = zeros([size(oiIllustrate.data.photons,1) size(oiIllustrate.data.photons,2) 3]);
             imgWaveG(:,:,2) = squeeze(oiIllustrate.data.photons(:,:,38))./max(max(squeeze(oiIllustrate.data.photons(:,:,38))));
+            imgWaveGB = zeros([size(oiIllustrate.data.photons,1) size(oiIllustrate.data.photons,2) 3]);
+            imgWaveGB(:,:,3) = squeeze(oiIllustrate.data.photons(:,:,30))./max(max(squeeze(oiIllustrate.data.photons(:,:,30))));  
+            imgWaveGB(:,:,2) = squeeze(oiIllustrate.data.photons(:,:,30))./max(max(squeeze(oiIllustrate.data.photons(:,:,30))));  
             imgWaveB = zeros([size(oiIllustrate.data.photons,1) size(oiIllustrate.data.photons,2) 3]);
             imgWaveB(:,:,3) = squeeze(oiIllustrate.data.photons(:,:,21))./max(max(squeeze(oiIllustrate.data.photons(:,:,21))));
+            imgWaveRG = zeros([size(oiIllustrate.data.photons,1) size(oiIllustrate.data.photons,2) 3]);
+            imgWaveRG(:,:,1) = squeeze(oiIllustrate.data.photons(:,:,51))./max(max(squeeze(oiIllustrate.data.photons(:,:,51))));  
+            imgWaveRG(:,:,2) = 0.7.*squeeze(oiIllustrate.data.photons(:,:,51))./max(max(squeeze(oiIllustrate.data.photons(:,:,51))));              
             figure;
             set(gcf,'Position',[263 471 1219 420]);
-            subplot(1,3,1);
+            subplot(3,2,1);
             imagesc(imgWaveR);
-            subplot(1,3,2);
+            subplot(3,2,2);
+            imagesc(imgWaveRG);            
+            subplot(3,2,3);
             imagesc(imgWaveG);
-            subplot(1,3,3);
+            subplot(3,2,4);
+            imagesc(imgWaveGB);            
+            subplot(3,2,5);
             imagesc(imgWaveB);            
         end
         figure;
