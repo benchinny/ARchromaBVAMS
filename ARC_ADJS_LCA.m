@@ -228,7 +228,7 @@ KbWait([], 2);
 [iLf iRf]=cwin3(imread("black.png"), imread("black.png") , cf, rc00, window2, window1);
 clrIndAll = clrIndAll(1:clrIndCounter);
 filePath = 'H:\Shared drives\CIVO_BVAMS\data\ARC\';
-save([filePath 'LCAfile ' num2str(sn) '.mat'],'powerDispRall','clrIndAll');
+save([filePath 'LCAfileS' num2str(sn-1000) '.mat'],'powerDispRall','clrIndAll');
 sca   
 % if bRecord
 %     clear tcp_socket;
