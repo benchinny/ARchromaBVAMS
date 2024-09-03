@@ -3,17 +3,32 @@ ex='RGB'; %ey=input('which eye? Right/Binc');
 ey=input('which eye are we testing (type 1 for Right or 2 for Binocular)? ');
 if ey==1; ey='Right'; elseif ey==2; ey='Binc'; end
 filePath = 'H:\Shared drives\CIVO_BVAMS\data\ARC\';
-vsIncrement = input(['Increment visit number? The current visit number is ' num2str(vs) ' (1 for yes, 0 for no)']);
-vsIncrement = input(['Asking again: increment visit number? The current visit number is ' num2str(vs) ' (1 for yes, 0 for no)']);
+vsIncrement1 = input(['Increment visit number? The current visit number is ' num2str(vs) ' (1 for yes, 0 for no)']);
+vsIncrement2 = input(['Asking again: increment visit number? The current visit number is ' num2str(vs) ' (1 for yes, 0 for no)']);
+if vsIncrement1==vsIncrement2
+    vsIncrement = vsIncrement2;
+else
+    error('Start over: did not give same answer regarding whether to increment');
+end
 
 if exist('colorGroup','var')
-    colorGroup = input(['Color group? The current group is ' colorGroupString '. Possibilities: 1, 2, or 3. ']);
-    colorGroup = input(['Asking again: color group? The current group is ' num2str(colorGroupString) '. Possibilities: 1, 2, or 3. ']);
-    colorGroupString = [colorGroupString ', ' num2str(colorGroup(end))];
+    colorGroup1 = input(['Color group? The current group is ' colorGroupString '. Possibilities: 1, 2, or 3. ']);
+    colorGroup2 = input(['Asking again: color group? The current group is ' num2str(colorGroupString) '. Possibilities: 1, 2, or 3. ']);
+    if colorGroup1==colorGroup2
+       colorGroup = colorGroup2;
+       colorGroupString = [colorGroupString ', ' num2str(colorGroup(end))];
+    else
+       error('Start over: inconsistent answers about color group');
+    end
 else
-    colorGroup = input(['Color group? The options are 1, 2, or 3. ']);
-    colorGroup = input(['Asking again: color group? The options are 1, 2, or 3. ']);
-    colorGroupString = num2str(colorGroup);
+    colorGroup1 = input(['Color group? The options are 1, 2, or 3. ']);
+    colorGroup2 = input(['Asking again: color group? The options are 1, 2, or 3. ']);
+    if colorGroup1==colorGroup2
+       colorGroup = colorGroup2;
+       colorGroupString = num2str(colorGroup);
+    else
+       error('Start over: inconsistent answers about color group');
+    end
 end
 
 if vsIncrement>=1

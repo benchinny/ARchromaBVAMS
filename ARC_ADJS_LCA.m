@@ -8,7 +8,7 @@ power_dispR_min = 7;
 power_dispR_max = 16.4;
 adjustIncrement = 0.12255;
 bRecord = 1;
-clrIndAll = repmat([1 2 3]',[20 1]);
+clrIndAll = repmat([1 2 3]',[40 1]);
 clrIndAll = clrIndAll(randperm(length(clrIndAll)));
 clrIndCounter = 1;
 
@@ -166,6 +166,9 @@ try
                 display(['Color index is ' num2str(clrInd)]);
                 power_dispR = 15.3;
                 [iLf iRf]=cwin3(imread("black.png"), testim , cf, rc00, window2, window1);
+                if clrIndCounter>60
+                    opt_chk = 1;
+                end
             elseif keyCode(KbName('Return')) %| keyCode(KbName('Return'))
                 opt_chk=1;    
             else
@@ -187,7 +190,7 @@ try
             opto(name_map('l_disp')).control.setFocalPower(power_dispL);
             opto(name_map('r_disp')).control.setFocalPower(power_dispR);
             
-            fprintf('Display power: L = %f  , R = %f , Optical Distance R = %f D \n',power_dispL, power_dispR, 0.816.*(15.3-power_dispR));
+            fprintf('Display power: L = %f  , R = %f , Optical Distance R = %f D, Trial %f \n',power_dispL, power_dispR, 0.816.*(15.3-power_dispR),clrIndCounter);
 
             fprintf('\n');
         end
@@ -224,7 +227,8 @@ ListenChar(0);
 KbWait([], 2);
 [iLf iRf]=cwin3(imread("black.png"), imread("black.png") , cf, rc00, window2, window1);
 clrIndAll = clrIndAll(1:clrIndCounter);
-save('LCAfile.mat','powerDispRall','clrIndAll');
+filePath = 'H:\Shared drives\CIVO_BVAMS\data\ARC\';
+save(['LCAfile ' num2str(sn) '.mat'],'powerDispRall','clrIndAll');
 sca   
 % if bRecord
 %     clear tcp_socket;
