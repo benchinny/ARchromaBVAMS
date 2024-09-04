@@ -141,8 +141,12 @@ for k0=1:size(meanv0,1)
     %           zaber(name_map('rotation')).move_deg(-3); %%-6400
 
       t1(k0,:)=clock;
-
-      pause(0.5);
+      
+      if k0<size(meanv0,1) && ~isequal(rgb0(k0+1,:),rgb0(k0,:))
+         pause(3);
+      else
+         pause(0.5);
+      end
 
       %if scene.enable_tcp; send_tcp0(scene, 0); end %stage) 0stop 1record
       t2(k0,:)=clock;
