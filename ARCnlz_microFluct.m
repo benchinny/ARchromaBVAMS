@@ -1,6 +1,6 @@
 %% LOAD MAIN EXPERIMENT FILES
 
-subjNum = 12;
+subjNum = 13;
 
 if subjNum==11
    blockNums = 2:7;
@@ -64,13 +64,14 @@ end
 
 % MAKE SURE YOU DIVIDE BY THIS VALUE TO CONVERT THE DEFOCUS TERM FROM THE
 % WAVEFRONT SENSOR TO THE ACTUAL DEFOCUS VALUE
-defocusCorrectionFactor = (1e6/(4*sqrt(3)))*((PARAMS.PupilSize/2000)^2);
+defocusScaleFactor = 1./((1e6/(4*sqrt(3)))*((PARAMS.PupilSize/2000)^2));
+defocusAddFactor = 0.9274;
 
 % DEFOCUS AT 550NM. REMEMBER THE WAVEFRONT SENSOR MEASURES THE WAVEFRONT AT
 % 875NM, SO TO PREDICT THE DEFOCUS AT A REASONABLE WAVELENGTH SUCH AS
 % 550NM, WE NEED TO CORRECT BY THE EXPECTED AMOUNT OF LONGITUDINAL
 % CHROMATIC ABERRATION
-defocusAt550 = humanWaveDefocus(875)-humanWaveDefocus(550)+meanC(:,4)./defocusCorrectionFactor;
+defocusAt550 = defocusAddFactor+meanC(:,4).*defocusScaleFactor;
 
 figure; 
 plot(meanv00all,defocusAt550,'ko');
@@ -104,3 +105,18 @@ conditionsOrderedNormRGB = [0.25 0.00 1.00; ...
 
 % OPTICAL DISTANCES TO ANALYZE
 optDistToCheckAll = [1.5 2.5 3.5];
+
+%%
+
+% UNIQUE RED GREEN BLUE VALUES (IN TERMS OF NORMALIZED LUMINANCE)
+rgbLumNormUnq = unique(rgbLumNorm,'rows');
+% INDEX TO GET ALL TRIALS NUMBERS WITH SAME COLOR AND OPTICAL DISTANCE
+ind = find(rgbLumNorm(:,1)==rgbLumNormUnq(1,1) & rgbLumNorm(:,2)==rgbLumNormUnq(1,2) & rgbLumNorm(:,3)==rgbLumNormUnq(1,3) & meanv00all==1.5);
+
+cTmp = []; % INITIALIZING VECTOR CONTAINING ALL MEASUREMENTS FOR A GIVEN CONDITION
+for j = 1:length(ind) % LOOPING OVER TRIAL INDICES
+    cTmp = [cTmp; c4all{ind(j)}]; % COMBINING ALL TRIALS IN THAT CONDITION INTO ONE VECTOR
+end
+
+% std(cTmp.*defocusScaleFactor+defocusAddFactor)
+% figure; hist(cTmp.*defocusScaleFactor+defocusAddFactor,21)
