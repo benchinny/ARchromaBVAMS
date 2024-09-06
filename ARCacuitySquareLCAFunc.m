@@ -215,16 +215,15 @@ for k0=1:length(focStmOptDstIncrAll)
       % opto(name_map('l_disp')).control.setFocalPower(power_dispL-meanFocstmOptDstAll(k0));
       % opto(name_map('r_disp')).control.setFocalPower(power_dispR-meanFocstmOptDstAll(k0));
       cwin3(im2R0, im2R0, cf, rc00, window1, window2);
-      pause(1.25);
-      if scene.enable_tcp && (k0<=nRec || mod(k0,nRec)==1)
-          send_tcp0fiatAcu(tcp_socket, 1, k0, vs)
-      end
+      pause(2);
       t1(k0,:)=clock;
-      pause(0.25);
       cwin3(blackStim, blackStim, cf, rc00, window1, window2);
       tChange1(k0,:) = clock;
       opto(name_map('l_disp')).control.setFocalPower(power_dispL-meanFocstmOptDstAll(k0)-focStmOptDstIncrAll(k0));
-      opto(name_map('r_disp')).control.setFocalPower(power_dispR-meanFocstmOptDstAll(k0)-focStmOptDstIncrAll(k0));      
+      opto(name_map('r_disp')).control.setFocalPower(power_dispR-meanFocstmOptDstAll(k0)-focStmOptDstIncrAll(k0));   
+      if scene.enable_tcp && (k0<=nRec || mod(k0,nRec)==1)
+          send_tcp0fiatAcu(tcp_socket, 1, k0, vs)
+      end
       pause(0.15);
       cwin3(squeeze(acuStim(:,:,:,stimOrientation(k0))), squeeze(acuStim(:,:,:,stimOrientation(k0))), cf, rc00, window1, window2);
       tChange2(k0,:) = clock;
@@ -232,10 +231,10 @@ for k0=1:length(focStmOptDstIncrAll)
       cwin3(noiseStim, noiseStim, cf, rc00, window1, window2);
       opto(name_map('l_disp')).control.setFocalPower(power_dispL-meanFocstmOptDstAll(k0));
       opto(name_map('r_disp')).control.setFocalPower(power_dispR-meanFocstmOptDstAll(k0));      
-      pause(0.15);
       if scene.enable_tcp && (k0<=nRec || mod(k0,nRec)==1)
           send_tcp0fiatAcu(tcp_socket, 0, k0, vs)
-      end %stage) 0stop 1record
+      end %stage) 0stop 1record      
+      pause(0.15);
       cwin3(blackStim, blackStim, cf, rc00, window1, window2);
       t2(k0,:)=clock;
 
