@@ -131,7 +131,7 @@ for k0=1:size(meanv0,1)
       
       if scene.enable_tcp; send_tcp0fiatAcu(tcp_socket, 1, k0, vs); end; t0(k0,:)=clock;
       snd(1000, 0.2); 
-      pause(2.8);
+      pause(3.0);
       if scene.enable_tcp; send_tcp0fiatAcu(tcp_socket, 0, k0, vs); end; %stage) 0stop 1record
       tRealEnd(k0,:) = clock;
 
