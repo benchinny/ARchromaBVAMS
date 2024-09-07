@@ -46,7 +46,7 @@ end
 
 im2R0 = [];
 if bAccStimEqualsAcuStim
-    accStim = ARC2Dgabor(smpPos(256,256),[],0,0,[frqCpd 3*frqCpd 5*frqCpd 7*frqCpd],[0.9 0.9/3 0.9/5 0.9/7],0,90,0.2,0.2,[rgb(1,1)^gammaR rgb(1,2)^gammaG rgb(1,3)^gammaB],1,1,0,0);
+    accStim = ARC2Dgabor(smpPos(512,512),[],0,0,[8 24 40 56],[0.9 0.9/3 0.9/5 0.9/7],0,90,0.3,0.3,[rgb(1,1)^gammaR rgb(1,2)^gammaG rgb(1,3)^gammaB],1,1,0,0);
     accStim(:,:,1) = accStim(:,:,1).^(1/gammaR);
     accStim(:,:,2) = accStim(:,:,2).^(1/gammaG);
     accStim(:,:,3) = accStim(:,:,3).^(1/gammaB);    
