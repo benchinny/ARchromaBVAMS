@@ -1,4 +1,4 @@
-function AFCp = ARCacuitySquareBasicFunc(imPattern,rgb,meanFocstmOptDst,frqCpd, contrast, window1, window2, trlPerLvl)
+function AFCp = ARCacuitySquareBasicAdjsFunc(imPattern,rgb,meanFocstmOptDst,frqCpd, contrast, window1, window2, trlPerLvl)
 
 global cf rc00 name_map zaber opto log
 
@@ -137,9 +137,11 @@ for k0=1:length(contrastAll)
                       opt_chk = 1;
                       if k0>1 rspAcu(k0-1) = 2; end                 
                   elseif keyCode(KbName('UpArrow')) | keyCode(KbName('8'))
-                      powerDiscrepancy = powerDiscrepancy+0.25;
+                      powerDiscrepancy = powerDiscrepancy+0.25/0.816;
+                      disp(['Power discrepancy = ' num2str(powerDiscrepancy)]);
                   elseif keyCode(KbName('DownArrow')) | keyCode(KbName('2'))
-                      powerDiscrepancy = powerDiscrepancy-0.25;                      
+                      powerDiscrepancy = powerDiscrepancy-0.25/0.816;            
+                      disp(['Power discrepancy = ' num2str(powerDiscrepancy)]);
                   elseif keyCode(KbName('Escape')) %| keyCode(KbName('Return'))
                       exitLoop = 1;
                       opt_chk = 1;
@@ -192,14 +194,16 @@ for k0=1:length(contrastAll)
       pause(1);
       cwin3(blackStim, blackStim, cf, rc00, window1, window2);
       tChange1(k0,:) = clock;
-      % opto(name_map('l_disp')).control.setFocalPower(power_dispL-meanFocstmOptDstAll(k0));
-      % opto(name_map('r_disp')).control.setFocalPower(power_dispR-meanFocstmOptDstAll(k0));      
+      opto(name_map('l_disp')).control.setFocalPower(power_dispL-meanFocstmOptDstAll(k0)-powerDiscrepancy);
+      opto(name_map('r_disp')).control.setFocalPower(power_dispR-meanFocstmOptDstAll(k0)-powerDiscrepancy);      
       if scene.enable_tcp; send_tcp0(scene, 1); end; t1(k0,:)=clock;
       pause(0.1);      
       cwin3(squeeze(acuStim(:,:,:,stimOrientation(k0))), squeeze(acuStim(:,:,:,stimOrientation(k0))), cf, rc00, window1, window2);
       tChange2(k0,:) = clock;
       pause(0.1);
       cwin3(noiseStim, noiseStim, cf, rc00, window1, window2);
+      opto(name_map('l_disp')).control.setFocalPower(power_dispL-meanFocstmOptDstAll(k0));
+      opto(name_map('r_disp')).control.setFocalPower(power_dispR-meanFocstmOptDstAll(k0));      
       pause(0.15);
       cwin3(blackStim, blackStim, cf, rc00, window1, window2);
       if scene.enable_tcp; send_tcp0(scene, 0); end %stage) 0stop 1record
