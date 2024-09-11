@@ -1,6 +1,6 @@
 %% LOAD MAIN EXPERIMENT FILES
 
-subjNum = 12;
+subjNum = 14;
 
 if subjNum==11
    blockNums = 2:7;
@@ -19,8 +19,8 @@ elseif subjNum==13
    trialNums = {1:33 1:33 1:33 1:33 1:33 1:33};
    subjName = ['S' num2str(subjNum) '-OD'];   
 elseif subjNum==14
-   blockNums = 3:8;
-   trialNums = {1:33 1:33 1:33 1:33 1:33 1:33};
+   blockNums = 9:14;
+   trialNums = {1:36 1:36 1:36 1:36 1:36 1:36};
    subjName = ['S' num2str(subjNum) '-OD'];      
 end
 
@@ -120,7 +120,7 @@ end
 figure;
 set(gcf,'Position',[148 265 1384 710]);
 hold on;
-optDistToCheck = 1.5;
+optDistToCheck = 3.5;
 lengthTrialMax = 120;
 indDist = abs(meanv00all-optDistToCheck)<0.01;
 for i = 1:size(conditionsOrderedNorm,1)
