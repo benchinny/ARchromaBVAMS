@@ -115,7 +115,7 @@ try
         timeCurrentInit = clock;
         timeCurrent = timeCurrentInit(4)*3600 + timeCurrentInit(5)*60 + timeCurrentInit(6);
         timeDiff = timeCurrent-timeStart;
-        if timeDiff>40
+        if timeDiff>60
             opt_chk = 1;
         end
         incr = 2.*(sin(2*pi.*0.1.*timeDiff + pi/2)+1);
