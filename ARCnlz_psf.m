@@ -1,8 +1,14 @@
 %%
 
-foldername = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/ARC/';
+if strcmp(getenv('username'),'bankslab')
+   foldername = 'H:\Shared drives\CIVO_BVAMS\data\ARC\';
+elseif strcmp(getenv("USER"),'benchin')
+   foldername = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/ARC/';
+elseif strcmp(getenv("USER"),'benjaminchin')
+   foldername = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/ARC/';
+end
 
-subjNum = 11;
+subjNum = 20;
 
 if subjNum==18
     filenames = {
