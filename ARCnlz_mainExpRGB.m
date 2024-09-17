@@ -1,6 +1,6 @@
 %% LOAD MAIN EXPERIMENT FILES
 
-subjNum = 14;
+subjNum = 18;
 
 if subjNum==11
    blockNums = 2:7;
@@ -22,6 +22,22 @@ elseif subjNum==14
    blockNums = 9:14;
    trialNums = {1:36 1:36 1:36 1:36 1:36 1:36};
    subjName = ['S' num2str(subjNum) '-OD'];      
+elseif subjNum==15
+   blockNums = 3:8;
+   trialNums = {1:36 1:36 1:36 1:36 1:36 1:36};
+   subjName = ['S' num2str(subjNum) '-OD'];   
+elseif subjNum==18
+   blockNums = 2:7;
+   trialNums = {1:36 1:36 1:36 1:36 1:36 1:36};
+   subjName = ['S' num2str(subjNum) '-OD'];      
+elseif subjNum==20
+   blockNums = 3:8;
+   trialNums = {1:36 1:36 1:36 1:36 1:36 1:36};
+   subjName = ['S' num2str(subjNum) '-OD'];         
+elseif subjNum==22
+   blockNums = 2:7;
+   trialNums = {1:36 1:36 1:36 1:36 1:36 1:36};
+   subjName = ['S' num2str(subjNum) '-OD'];            
 end
 
 meanC = [];
@@ -46,7 +62,7 @@ for i = 1:length(blockNums)
         indBad = c(:,4)==0;
         nIndBadTracker(end+1) = sum(indBad);
         c(indBad,4) = mean(c(~indBad,4));
-        meanC(end+1,:) = mean(c,1); % TAKE MEAN OF COEFFICIENTS    
+        meanC(end+1,:) = mean(c(1:end,:),1); % TAKE MEAN OF COEFFICIENTS    
         c4all{end+1} = c(:,4);
     end
     rgb1all = [rgb1all; AFCp.rgb100];
@@ -121,7 +137,7 @@ figure;
 set(gcf,'Position',[148 265 1384 710]);
 hold on;
 optDistToCheck = 3.5;
-lengthTrialMax = 120;
+lengthTrialMax = 150;
 indDist = abs(meanv00all-optDistToCheck)<0.01;
 for i = 1:size(conditionsOrderedNorm,1)
     subplot(2,5,i);
