@@ -1,6 +1,8 @@
 %% LOAD MAIN EXPERIMENT FILES
 
-subjNum = 18;
+subjNum = 20;
+bSave = true;
+filePath = '/Users/benjaminchin/Documents/ARchromaScraps/meeting_Sept18/';
 
 if subjNum==11
    blockNums = 2:7;
@@ -21,6 +23,8 @@ elseif subjNum==13
 elseif subjNum==14
    blockNums = 9:14;
    trialNums = {1:36 1:36 1:36 1:36 1:36 1:36};
+   % blockNums = 3:8;
+   % trialNums = {1:33 1:33 1:33 1:33 1:33 1:33};   
    subjName = ['S' num2str(subjNum) '-OD'];      
 elseif subjNum==15
    blockNums = 3:8;
@@ -74,13 +78,16 @@ end
 defocusCorrectionFactor = (1e6/(4*sqrt(3)))*((PARAMS.PupilSize/2000)^2);
 defocusAt550 = humanWaveDefocus(875)-humanWaveDefocus(550)+meanC(:,4)./defocusCorrectionFactor;
 
-figure; 
+figure 
 plot(meanv00all,defocusAt550,'ko');
 set(gca,'FontSize',15);
 xlim([1 4]);
 axis square;
 xlabel('Stimulus optical distance');
 ylabel('Raw refractive power (D)');
+if bSave
+    saveas(gcf,[filePath 'S' num2str(subjNum) 'stimRsp'],'epsc');
+end
 
 %% PLOTTING ALL TRIAL MEANS PER CONDITION AND DISTANCE
 
@@ -99,7 +106,8 @@ conditionsOrderedNorm = [0.25 0.00 1.00; ...
                          0.50 0.50 1.00; ...
                          1.00 0.50 1.00; ...
                          1.00 0.50 0.50; ...
-                         1.00 0.50 0.25];
+                         1.00 0.50 0.25; ...
+                         1.00 1.00 1.00];
 
 figPositions = [14 493 560 420; ...
                 544 496 560 420; ...
@@ -118,10 +126,16 @@ for j = 1:length(optDistToCheckAll)
               abs(rgbLumNorm(:,2)-conditionsOrderedNorm(i,2))<0.01 & ...
               abs(rgbLumNorm(:,3)-conditionsOrderedNorm(i,3))<0.01 & ...
               abs(meanv00all-optDistToCheck)<0.01;
-        plot(i.*ones([sum(ind) 1]),defocusAt550(ind),'o','Color',conditionsOrderedNorm(i,:),'MarkerFaceColor',conditionsOrderedNorm(i,:));
+        if i<size(conditionsOrderedNorm,1)
+            plot(i.*ones([sum(ind) 1]),defocusAt550(ind),'o','Color',conditionsOrderedNorm(i,:),'MarkerFaceColor',conditionsOrderedNorm(i,:));
+        else
+            plot(i.*ones([sum(ind) 1]),defocusAt550(ind),'o','Color','k','MarkerFaceColor','k');
+        end
         defocusAt550mean(i) = mean(defocusAt550(ind));
     end
-    plot(defocusAt550mean,'k-');
+    plot(defocusAt550mean(1:5),'k-');
+    plot(6:10,defocusAt550mean(6:10),'k-');
+    plot([0 11],defocusAt550mean(11).*[1 1],'k--','LineWidth',1);
     xlim([0 11]);
     ylim(mean(defocusAt550(indDist))+[-0.6 0.6]);
     title(['Optical Distances = ' num2str(optDistToCheck)]);
@@ -129,38 +143,48 @@ for j = 1:length(optDistToCheckAll)
     set(gca,'FontSize',15);
     xlabel('Condition');
     ylabel('Defocus at 550nm');
+    if bSave
+       saveas(gcf,[filePath 'S' num2str(subjNum) 'ColorSplitDistInd' num2str(j)],'epsc');
+    end
 end
 
 %% PLOT INDIVIDUAL TRIALS FOR REFERENCE
 
-figure;
-set(gcf,'Position',[148 265 1384 710]);
-hold on;
-optDistToCheck = 3.5;
+optDistToCheckAll = [1.5 2.5 3.5];
 lengthTrialMax = 150;
-indDist = abs(meanv00all-optDistToCheck)<0.01;
-for i = 1:size(conditionsOrderedNorm,1)
-    subplot(2,5,i);
+
+for k = 1:length(optDistToCheckAll)
+    optDistToCheck = optDistToCheckAll(k);
+    indDist = abs(meanv00all-optDistToCheck)<0.01;
+    figure;
+    set(gcf,'Position',[148 265 1384 710]);
     hold on;
-    ind = find(abs(rgbLumNorm(:,1)-conditionsOrderedNorm(i,1))<0.01 & ...
-               abs(rgbLumNorm(:,2)-conditionsOrderedNorm(i,2))<0.01 & ...
-               abs(rgbLumNorm(:,3)-conditionsOrderedNorm(i,3))<0.01 & ...
-               abs(meanv00all-optDistToCheck)<0.01);
-    for j = 1:length(ind)
-    % for j = 2
-        trialTmp = zeros([1 lengthTrialMax]);
-        trialTmp(1:length(c4all{ind(j)})) = c4all{ind(j)};
-        trialTmp(trialTmp==0) = NaN;
-        trialTmp550 = humanWaveDefocus(875)-humanWaveDefocus(550)+trialTmp./defocusCorrectionFactor;
-        plot(1:lengthTrialMax,trialTmp550,'-','Color',conditionsOrderedNorm(i,:));
+    for i = 1:(size(conditionsOrderedNorm,1)-1)
+        subplot(2,5,i);
+        hold on;
+        ind = find(abs(rgbLumNorm(:,1)-conditionsOrderedNorm(i,1))<0.01 & ...
+                   abs(rgbLumNorm(:,2)-conditionsOrderedNorm(i,2))<0.01 & ...
+                   abs(rgbLumNorm(:,3)-conditionsOrderedNorm(i,3))<0.01 & ...
+                   abs(meanv00all-optDistToCheck)<0.01);
+        for j = 1:length(ind)
+        % for j = 2
+            trialTmp = zeros([1 lengthTrialMax]);
+            trialTmp(1:length(c4all{ind(j)})) = c4all{ind(j)};
+            trialTmp(trialTmp==0) = NaN;
+            trialTmp550 = humanWaveDefocus(875)-humanWaveDefocus(550)+trialTmp./defocusCorrectionFactor;
+            plot(1:lengthTrialMax,trialTmp550,'-','Color',conditionsOrderedNorm(i,:));
+        end
+        axis square;
+        ylim(mean(defocusAt550(indDist))+[-0.6 0.6]);
+        set(gca,'FontSize',15);
+        if i==1
+            xlabel('Frame');
+            ylabel('Defocus at 550nm');
+            title(['Optical Distance = ' num2str(optDistToCheck)]);
+        end
     end
-    axis square;
-    ylim(mean(defocusAt550(indDist))+[-0.6 0.6]);
-    set(gca,'FontSize',15);
-    if i==1
-        xlabel('Frame');
-        ylabel('Defocus at 550nm');
-        title(['Optical Distance = ' num2str(optDistToCheck)]);
+    if bSave
+       saveas(gcf,[filePath 'S' num2str(subjNum) 'TrialSplitDistInd' num2str(k)],'epsc');
     end
 end
 
