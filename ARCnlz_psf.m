@@ -8,7 +8,8 @@ elseif strcmp(getenv("USER"),'benjaminchin')
    foldername = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/ARC/';
 end
 
-subjNum = 15;
+subjNum = 20;
+fitType = 'weibull';
 
 if subjNum==18
     filenames = {
@@ -112,30 +113,62 @@ rgbUnq = [0.569 0.000 0.000; ...
           0.000 0.000 1.000; ...
           0.569 0.000 1.000];
 
-figure;
-set(gcf,'Position',[414 281 1013 660]);
-for i = 1:size(rgbUnq,1)
-    ind = abs(AFCpAll.rgb(:,1)-rgbUnq(i,1))<0.001 & ...
-          abs(AFCpAll.rgb(:,2)-rgbUnq(i,2))<0.001 & ...
-          abs(AFCpAll.rgb(:,3)-rgbUnq(i,3))<0.001;
-    [mFit,sFit,bFit,Tfit,PCdta,PCfit,negLL] = psyfitgengauss(zeros(size(AFCpAll.contrast(ind))),AFCpAll.contrast(ind),AFCpAll.rspAcu(ind)==AFCpAll.stimOrientation(ind),0,[],[],1.48,2,0);
-    if subjNum==13
-       contrastIncr = 0.1:0.01:1;
-    else
-       contrastIncr = 0.2:0.01:1;
+if strcmp(fitType,'gauss')
+    figure;
+    set(gcf,'Position',[414 281 1013 660]);
+    for i = 1:size(rgbUnq,1)
+        ind = abs(AFCpAll.rgb(:,1)-rgbUnq(i,1))<0.001 & ...
+              abs(AFCpAll.rgb(:,2)-rgbUnq(i,2))<0.001 & ...
+              abs(AFCpAll.rgb(:,3)-rgbUnq(i,3))<0.001;
+        [mFit,sFit,bFit,Tfit,PCdta,PCfit,negLL] = psyfitgengauss(zeros(size(AFCpAll.contrast(ind))),AFCpAll.contrast(ind),AFCpAll.rspAcu(ind)==AFCpAll.stimOrientation(ind),0,[],[],1.48,2,0);
+        if subjNum==13
+           contrastIncr = 0.1:0.01:1;
+        else
+           contrastIncr = 0.2:0.01:1;
+        end
+        [PCplt,~]=psyfitgengaussfunc(zeros(size(contrastIncr)),contrastIncr,mFit,sFit,bFit,1.48,2,0);
+        subplot(2,2,i);
+        hold on;
+        plot([1 1].*(mFit+Tfit),[min(contrastIncr) 1].*0.85,'k--','LineWidth',1);
+        plot([min(contrastIncr) 1].*(mFit+Tfit),[1 1].*0.85,'k--','LineWidth',1);
+        plot(contrastIncr,PCplt,'-','Color',rgbUnq(i,:),'LineWidth',1);
+        plot(unique(AFCpAll.contrast(ind)),PCdta,'o','Color',rgbUnq(i,:),'LineWidth',1,'MarkerSize',10,'MarkerFaceColor','w');
+        axis square;
+        xlabel('Contrast');
+        ylabel('Proportion correct');
+        title(['Subj ' num2str(subjNum-10) ', Threshold = ' num2str(mFit+Tfit,2)]);
+        set(gca,'FontSize',15);
+        xlim([min(contrastIncr) 1]);
+        ylim([0.3 1]);
     end
-    [PCplt,~]=psyfitgengaussfunc(zeros(size(contrastIncr)),contrastIncr,mFit,sFit,bFit,1.48,2,0);
-    subplot(2,2,i);
-    hold on;
-    plot([1 1].*(mFit+Tfit),[min(contrastIncr) 1].*0.85,'k--','LineWidth',1);
-    plot([min(contrastIncr) 1].*(mFit+Tfit),[1 1].*0.85,'k--','LineWidth',1);
-    plot(contrastIncr,PCplt,'-','Color',rgbUnq(i,:),'LineWidth',1);
-    plot(unique(AFCpAll.contrast(ind)),PCdta,'o','Color',rgbUnq(i,:),'LineWidth',1,'MarkerSize',10,'MarkerFaceColor','w');
-    axis square;
-    xlabel('Contrast');
-    ylabel('Proportion correct');
-    title(['Subj ' num2str(subjNum-10) ', Threshold = ' num2str(mFit+Tfit,2)]);
-    set(gca,'FontSize',15);
-    xlim([min(contrastIncr) 1]);
-    ylim([0.3 1]);
+end
+
+if strcmp(fitType,'weibull')
+    figure;
+    set(gcf,'Position',[414 281 1013 660]);
+    for i = 1:size(rgbUnq,1)
+        ind = abs(AFCpAll.rgb(:,1)-rgbUnq(i,1))<0.001 & ...
+              abs(AFCpAll.rgb(:,2)-rgbUnq(i,2))<0.001 & ...
+              abs(AFCpAll.rgb(:,3)-rgbUnq(i,3))<0.001;
+        [mFit,sFit,bFit,Tfit,PCdta,PCfit,negLL] = psyfitWeibull(zeros(size(AFCpAll.contrast(ind))),AFCpAll.contrast(ind),AFCpAll.rspAcu(ind)==AFCpAll.stimOrientation(ind),[],[],[],1.48,2,0);
+        if subjNum==13
+           contrastIncr = 0.1:0.01:1;
+        else
+           contrastIncr = 0.2:0.01:1;
+        end
+        [PCplt,~]=psyfitWeibullfunc(zeros(size(contrastIncr)),contrastIncr,mFit,sFit,bFit,1.48,2,0);
+        subplot(2,2,i);
+        hold on;
+        plot([1 1].*(mFit+Tfit),[min(contrastIncr) 1].*0.85,'k--','LineWidth',1);
+        plot([min(contrastIncr) 1].*(mFit+Tfit),[1 1].*0.85,'k--','LineWidth',1);
+        plot(contrastIncr,PCplt,'-','Color',rgbUnq(i,:),'LineWidth',1);
+        plot(unique(AFCpAll.contrast(ind)),PCdta,'o','Color',rgbUnq(i,:),'LineWidth',1,'MarkerSize',10,'MarkerFaceColor','w');
+        axis square;
+        xlabel('Contrast');
+        ylabel('Proportion correct');
+        title(['Subj ' num2str(subjNum-10) ', Threshold = ' num2str(mFit+Tfit,2)]);
+        set(gca,'FontSize',15);
+        xlim([min(contrastIncr) 1]);
+        ylim([0.3 1]);
+    end
 end
