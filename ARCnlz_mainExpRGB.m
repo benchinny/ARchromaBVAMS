@@ -1,7 +1,7 @@
 %% LOAD MAIN EXPERIMENT FILES
 
-subjNum = 20;
-bSave = true;
+subjNum = 21;
+bSave = false;
 filePath = '/Users/benjaminchin/Documents/ARchromaScraps/meeting_Sept18/';
 
 if subjNum==11
@@ -38,6 +38,10 @@ elseif subjNum==20
    blockNums = 3:8;
    trialNums = {1:36 1:36 1:36 1:36 1:36 1:36};
    subjName = ['S' num2str(subjNum) '-OD'];         
+elseif subjNum==21
+   blockNums = 2:7;
+   trialNums = {1:36 1:36 1:36 1:36 1:36 1:36};
+   subjName = ['S' num2str(subjNum) '-OD'];            
 elseif subjNum==22
    blockNums = 2:7;
    trialNums = {1:36 1:36 1:36 1:36 1:36 1:36};
