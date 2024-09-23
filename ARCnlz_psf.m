@@ -1,4 +1,4 @@
-%%
+function ARCnlz_psf
 
 if strcmp(getenv('username'),'bankslab')
    foldername = 'H:\Shared drives\CIVO_BVAMS\data\ARC\';
@@ -8,7 +8,7 @@ elseif strcmp(getenv("USER"),'benjaminchin')
    foldername = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/ARC/';
 end
 
-subjNum = 20;
+subjNum = 13;
 fitType = 'weibull';
 
 if subjNum==18
@@ -171,4 +171,6 @@ if strcmp(fitType,'weibull')
         xlim([min(contrastIncr) 1]);
         ylim([0.3 1]);
     end
+end
+
 end
