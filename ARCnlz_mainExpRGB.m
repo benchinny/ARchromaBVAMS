@@ -1,12 +1,14 @@
 %% LOAD MAIN EXPERIMENT FILES
 
-subjNum = 21;
+subjNum = 18;
 bSave = false;
 filePath = '/Users/benjaminchin/Documents/ARchromaScraps/meeting_Sept18/';
 
 if subjNum==11
-   blockNums = 2:7;
-   trialNums = {1:33 1:33 1:33 1:33 1:33 1:33};
+   % blockNums = 2:7;
+   % trialNums = {1:33 1:33 1:33 1:33 1:33 1:33};
+   blockNums = 11:16;
+   trialNums = {1:36 1:36 1:36 1:36 1:36 1:36};   
    subjName = ['S' num2str(subjNum) '-OD'];
 elseif subjNum==12
    % blockNums = 2:7;
@@ -17,8 +19,10 @@ elseif subjNum==12
    trialNums = {1:36 1:36 1:36 1:36 1:36 1:36};
    subjName = ['S' num2str(subjNum) '-OD'];
 elseif subjNum==13
-   blockNums = 3:8;
-   trialNums = {1:33 1:33 1:33 1:33 1:33 1:33};
+   % blockNums = 3:8;
+   % trialNums = {1:33 1:33 1:33 1:33 1:33 1:33};
+   blockNums = 12:17;
+   trialNums = {1:36 1:36 1:36 1:36 1:36 1:36};   
    subjName = ['S' num2str(subjNum) '-OD'];   
 elseif subjNum==14
    blockNums = 9:14;
@@ -30,10 +34,19 @@ elseif subjNum==15
    blockNums = 3:8;
    trialNums = {1:36 1:36 1:36 1:36 1:36 1:36};
    subjName = ['S' num2str(subjNum) '-OD'];   
-elseif subjNum==18
+elseif subjNum==17
    blockNums = 2:7;
    trialNums = {1:36 1:36 1:36 1:36 1:36 1:36};
    subjName = ['S' num2str(subjNum) '-OD'];      
+elseif subjNum==18
+   blockNums = 10:15;
+   % blockNums = 2:7;
+   trialNums = {1:36 1:36 1:36 1:36 1:36 1:36};
+   subjName = ['S' num2str(subjNum) '-OD'];      
+elseif subjNum==19
+   blockNums = 2:7;
+   trialNums = {1:36 1:36 1:36 1:36 1:36 1:36};
+   subjName = ['S' num2str(subjNum) '-OD'];         
 elseif subjNum==20
    blockNums = 3:8;
    trialNums = {1:36 1:36 1:36 1:36 1:36 1:36};
@@ -45,7 +58,11 @@ elseif subjNum==21
 elseif subjNum==22
    blockNums = 2:7;
    trialNums = {1:36 1:36 1:36 1:36 1:36 1:36};
-   subjName = ['S' num2str(subjNum) '-OD'];            
+   subjName = ['S' num2str(subjNum) '-OD'];          
+elseif subjNum==26
+   blockNums = 2:7;
+   trialNums = {1:36 1:36 1:36 1:36 1:36 1:36};
+   subjName = ['S' num2str(subjNum) '-OD'];             
 end
 
 meanC = [];
@@ -70,7 +87,11 @@ for i = 1:length(blockNums)
         indBad = c(:,4)==0;
         nIndBadTracker(end+1) = sum(indBad);
         c(indBad,4) = mean(c(~indBad,4));
-        meanC(end+1,:) = mean(c(1:end,:),1); % TAKE MEAN OF COEFFICIENTS    
+        if subjNum==18
+           meanC(end+1,:) = mean(c(1:end,:),1);
+        else
+           meanC(end+1,:) = mean(c(1:end,:),1); % TAKE MEAN OF COEFFICIENTS    
+        end
         c4all{end+1} = c(:,4);
     end
     rgb1all = [rgb1all; AFCp.rgb100];
@@ -179,7 +200,11 @@ for k = 1:length(optDistToCheckAll)
             plot(1:lengthTrialMax,trialTmp550,'-','Color',conditionsOrderedNorm(i,:));
         end
         axis square;
-        ylim(mean(defocusAt550(indDist))+[-0.6 0.6]);
+        if subjNum==18
+            ylim(mean(defocusAt550(indDist))+[-1.2 1.2]);
+        else
+            ylim(mean(defocusAt550(indDist))+[-0.6 0.6]);
+        end
         set(gca,'FontSize',15);
         if i==1
             xlabel('Frame');
