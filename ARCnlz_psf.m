@@ -1,5 +1,8 @@
 function ARCnlz_psf
 
+bSave = true;
+filePath = '/Users/benjaminchin/Documents/ARchromaScraps/meeting_Sept25/';
+
 if strcmp(getenv('username'),'bankslab')
    foldername = 'H:\Shared drives\CIVO_BVAMS\data\ARC\';
 elseif strcmp(getenv("USER"),'benchin')
@@ -8,7 +11,7 @@ elseif strcmp(getenv("USER"),'benjaminchin')
    foldername = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/ARC/';
 end
 
-subjNum = 13;
+subjNum = 27;
 fitType = 'weibull';
 
 if subjNum==18
@@ -78,6 +81,16 @@ elseif subjNum==15
                  'S1015V9_AFC_RightACL0_2409181633.mat' ...
                  'S1015V9_AFC_RightACL0_2409181622.mat' ...
                  };             
+elseif subjNum==19
+    filenames = {
+                 'S1019V8_AFC_RightACL0_2409201425.mat' ...
+                 'S1019V8_AFC_RightACL0_2409201420.mat' ...
+                 'S1019V8_AFC_RightACL0_2409201416.mat' ...
+                 'S1019V8_AFC_RightACL0_2409201412.mat' ...
+                 'S1019V8_AFC_RightACL0_2409201410.mat' ...
+                 'S1019V8_AFC_RightACL0_2409201407.mat' ...
+                 'S1015V9_AFC_RightACL0_2409181622.mat' ...
+                 };                 
 elseif subjNum==26
     filenames = {
                  'S1026V1_AFC_RightACL0_2409161339.mat' ...
@@ -90,6 +103,13 @@ elseif subjNum==26
                  'S1026V1_AFC_RightACL0_2409161403.mat' ...
                  'S1026V1_AFC_RightACL0_2409161408.mat' ...
                  };             
+elseif subjNum==27
+    filenames = {
+                 'S1027V8_AFC_RightACL0_2409241158.mat' ...
+                 'S1027V8_AFC_RightACL0_2409241150.mat' ...
+                 'S1027V8_AFC_RightACL0_2409241141.mat' ...
+                 'S1027V8_AFC_RightACL0_2409241134.mat' ...
+                 };                 
 end
 
 for i = 1:length(filenames)
@@ -171,6 +191,10 @@ if strcmp(fitType,'weibull')
         xlim([min(contrastIncr) 1]);
         ylim([0.3 1]);
     end
+end
+
+if bSave
+    saveas(gcf,[filePath 'psf/S' num2str(subjNum) 'psf'],'epsc');
 end
 
 end
