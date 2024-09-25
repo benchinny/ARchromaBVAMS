@@ -1,6 +1,6 @@
 %% LOAD MAIN EXPERIMENT FILES
 
-subjNum = 18;
+subjNum = 17;
 bSave = false;
 filePath = '/Users/benjaminchin/Documents/ARchromaScraps/meeting_Sept18/';
 
@@ -202,6 +202,10 @@ for k = 1:length(optDistToCheckAll)
         axis square;
         if subjNum==18
             ylim(mean(defocusAt550(indDist))+[-1.2 1.2]);
+        elseif subjNum==19
+            ylim(mean(defocusAt550(indDist))+[-3 3]);       
+        elseif subjNum==17
+            ylim(mean(defocusAt550(indDist))+[-1.2 1.2]);                   
         else
             ylim(mean(defocusAt550(indDist))+[-0.6 0.6]);
         end
