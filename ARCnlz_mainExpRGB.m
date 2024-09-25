@@ -1,8 +1,8 @@
 %% LOAD MAIN EXPERIMENT FILES
 
-subjNum = 18;
-bSave = false;
-filePath = '/Users/benjaminchin/Documents/ARchromaScraps/meeting_Sept18/';
+subjNum = 26;
+bSave = true;
+filePath = '/Users/benjaminchin/Documents/ARchromaScraps/meeting_Sept25/';
 
 if subjNum==11
    % blockNums = 2:7;
@@ -107,11 +107,14 @@ figure
 plot(meanv00all,defocusAt550,'ko');
 set(gca,'FontSize',15);
 xlim([1 4]);
+hold on;
+plot([1 4],[1 4],'k--','LineWidth',1);
 axis square;
 xlabel('Stimulus optical distance');
 ylabel('Raw refractive power (D)');
+title(['Subject ' num2str(subjNum-10)]);
 if bSave
-    saveas(gcf,[filePath 'S' num2str(subjNum) 'stimRsp'],'epsc');
+    saveas(gcf,[filePath 'stimRsp/S' num2str(subjNum) 'stimRsp'],'epsc');
 end
 
 %% PLOTTING ALL TRIAL MEANS PER CONDITION AND DISTANCE
@@ -163,13 +166,13 @@ for j = 1:length(optDistToCheckAll)
     plot([0 11],defocusAt550mean(11).*[1 1],'k--','LineWidth',1);
     xlim([0 11]);
     ylim(mean(defocusAt550(indDist))+[-0.6 0.6]);
-    title(['Optical Distances = ' num2str(optDistToCheck)]);
+    title(['Subject ' num2str(subjNum-10) ', Optical Distances = ' num2str(optDistToCheck)]);
     plot(5.5.*[1 1],ylim,'k-');
     set(gca,'FontSize',15);
     xlabel('Condition');
     ylabel('Defocus at 550nm');
     if bSave
-       saveas(gcf,[filePath 'S' num2str(subjNum) 'ColorSplitDistInd' num2str(j)],'epsc');
+       saveas(gcf,[filePath 'colorConditions/S' num2str(subjNum) 'ColorSplitDistInd' num2str(j)],'epsc');
     end
 end
 
@@ -202,6 +205,10 @@ for k = 1:length(optDistToCheckAll)
         axis square;
         if subjNum==18
             ylim(mean(defocusAt550(indDist))+[-1.2 1.2]);
+        elseif subjNum==19
+            ylim(mean(defocusAt550(indDist))+[-3 3]);       
+        elseif subjNum==17
+            ylim(mean(defocusAt550(indDist))+[-1.2 1.2]);                   
         else
             ylim(mean(defocusAt550(indDist))+[-0.6 0.6]);
         end
@@ -209,11 +216,11 @@ for k = 1:length(optDistToCheckAll)
         if i==1
             xlabel('Frame');
             ylabel('Defocus at 550nm');
-            title(['Optical Distance = ' num2str(optDistToCheck)]);
+            title(['Subject ' num2str(subjNum-10) ', Optical Distance = ' num2str(optDistToCheck)]);
         end
     end
     if bSave
-       saveas(gcf,[filePath 'S' num2str(subjNum) 'TrialSplitDistInd' num2str(k)],'epsc');
+       saveas(gcf,[filePath 'rawTraces/S' num2str(subjNum) 'TrialSplitDistInd' num2str(k)],'epsc');
     end
 end
 
