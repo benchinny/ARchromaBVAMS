@@ -1,10 +1,12 @@
 %% LOAD MAIN EXPERIMENT FILES
 
-subjNum = 13;
+subjNum = 15;
 
 if subjNum==11
-   blockNums = 2:7;
-   trialNums = {1:33 1:33 1:33 1:33 1:33 1:33};
+   % blockNums = 2:7;
+   % trialNums = {1:33 1:33 1:33 1:33 1:33 1:33};
+   blockNums = 11:16;
+   trialNums = {1:36 1:36 1:36 1:36 1:36 1:36};   
    subjName = ['S' num2str(subjNum) '-OD'];
 elseif subjNum==12
    % blockNums = 2:7;
@@ -15,13 +17,54 @@ elseif subjNum==12
    trialNums = {1:36 1:36 1:36 1:36 1:36 1:36};
    subjName = ['S' num2str(subjNum) '-OD'];
 elseif subjNum==13
-   blockNums = 3:8;
-   trialNums = {1:33 1:33 1:33 1:33 1:33 1:33};
+   % blockNums = 3:8;
+   % trialNums = {1:33 1:33 1:33 1:33 1:33 1:33};
+   blockNums = 12:17;
+   trialNums = {1:36 1:36 1:36 1:36 1:36 1:36};   
    subjName = ['S' num2str(subjNum) '-OD'];   
 elseif subjNum==14
-   blockNums = 3:8;
-   trialNums = {1:33 1:33 1:33 1:33 1:33 1:33};
+   blockNums = 9:14;
+   trialNums = {1:36 1:36 1:36 1:36 1:36 1:36};
+   % blockNums = 3:8;
+   % trialNums = {1:33 1:33 1:33 1:33 1:33 1:33};   
    subjName = ['S' num2str(subjNum) '-OD'];      
+elseif subjNum==15
+   blockNums = 3:8;
+   trialNums = {1:36 1:36 1:36 1:36 1:36 1:36};
+   subjName = ['S' num2str(subjNum) '-OD'];   
+elseif subjNum==17
+   blockNums = 2:7;
+   trialNums = {1:36 1:36 1:36 1:36 1:36 1:36};
+   subjName = ['S' num2str(subjNum) '-OD'];      
+elseif subjNum==18
+   blockNums = 10:15;
+   % blockNums = 2:7;
+   trialNums = {1:36 1:36 1:36 1:36 1:36 1:36};
+   subjName = ['S' num2str(subjNum) '-OD'];      
+elseif subjNum==19
+   blockNums = 2:7;
+   trialNums = {1:36 1:36 1:36 1:36 1:36 1:36};
+   subjName = ['S' num2str(subjNum) '-OD'];         
+elseif subjNum==20
+   blockNums = 3:8;
+   trialNums = {1:36 1:36 1:36 1:36 1:36 1:36};
+   subjName = ['S' num2str(subjNum) '-OD'];         
+elseif subjNum==21
+   blockNums = 2:7;
+   trialNums = {1:36 1:36 1:36 1:36 1:36 1:36};
+   subjName = ['S' num2str(subjNum) '-OD'];            
+elseif subjNum==22
+   blockNums = 2:7;
+   trialNums = {1:36 1:36 1:36 1:36 1:36 1:36};
+   subjName = ['S' num2str(subjNum) '-OD'];          
+elseif subjNum==26
+   blockNums = 2:7;
+   trialNums = {1:36 1:36 1:36 1:36 1:36 1:36};
+   subjName = ['S' num2str(subjNum) '-OD'];      
+elseif subjNum==27
+   blockNums = 2:7;
+   trialNums = {1:36 1:36 1:36 1:36 1:36 1:36};
+   subjName = ['S' num2str(subjNum) '-OD'];         
 end
 
 meanC = [];
