@@ -1,7 +1,7 @@
 %% LOAD MAIN EXPERIMENT FILES
 
-subjNum = 26;
-bSave = true;
+subjNum = 22;
+bSave = false;
 filePath = '/Users/benjaminchin/Documents/ARchromaScraps/meeting_Sept25/';
 
 if subjNum==11
@@ -62,7 +62,15 @@ elseif subjNum==22
 elseif subjNum==26
    blockNums = 2:7;
    trialNums = {1:36 1:36 1:36 1:36 1:36 1:36};
-   subjName = ['S' num2str(subjNum) '-OD'];             
+   subjName = ['S' num2str(subjNum) '-OD'];      
+elseif subjNum==27
+   blockNums = 2:7;
+   trialNums = {1:36 1:36 1:36 1:36 1:36 1:36};
+   subjName = ['S' num2str(subjNum) '-OD'];      
+elseif subjNum==28
+   blockNums = 2:7;
+   trialNums = {1:36 1:36 1:36 1:36 1:36 1:36};
+   subjName = ['S' num2str(subjNum) '-OD'];         
 end
 
 meanC = [];
@@ -205,14 +213,23 @@ for k = 1:length(optDistToCheckAll)
         axis square;
         if subjNum==18
             ylim(mean(defocusAt550(indDist))+[-1.2 1.2]);
+            yBuffer = 1.2;
         elseif subjNum==19
-            ylim(mean(defocusAt550(indDist))+[-3 3]);       
+            ylim(mean(defocusAt550(indDist))+[-3 3]);  
+            yBuffer = 3;
         elseif subjNum==17
-            ylim(mean(defocusAt550(indDist))+[-1.2 1.2]);                   
+            ylim(mean(defocusAt550(indDist))+[-1.2 1.2]);   
+            yBuffer = 1.2;
         else
             ylim(mean(defocusAt550(indDist))+[-0.6 0.6]);
+            yBuffer = 0.6;
         end
         set(gca,'FontSize',15);
+        trialStr = [];
+        for l = 1:length(ind)
+            trialStr = [trialStr ' ' num2str(ind(l))];
+            text(50,mean(defocusAt550(indDist))+0.5,trialStr);
+        end
         if i==1
             xlabel('Frame');
             ylabel('Defocus at 550nm');

@@ -128,7 +128,10 @@ elseif subj==26
                  [dataDirectory 'S1026V9_AFC_RightACL0_2409251308.mat'] ... 
                  [dataDirectory 'S1026V9_AFC_RightACL0_2409251300.mat'] ...     
                  [dataDirectory 'S1026V9_AFC_RightACL0_2409251253.mat'] ...     
-                 [dataDirectory 'S1026V9_AFC_RightACL0_2409251246.mat'] ...     
+                 [dataDirectory 'S1026V9_AFC_RightACL0_2409251246.mat'] ...    
+                 [dataDirectory 'S1026V9_AFC_RightACL0_2409261655.mat'] ...     
+                 [dataDirectory 'S1026V9_AFC_RightACL0_2409261649.mat'] ...     
+                 [dataDirectory 'S1026V9_AFC_RightACL0_2409261643.mat'] ...                     
                  }; 
 elseif subj==15
     filenames = {
@@ -177,6 +180,8 @@ unqFocDst = unique(focStmOptDstIncr);
 scaleFac = 0.816;
 % meanFocInt = 5;
 
+figure;
+set(gcf,'Position',[149 495 1277 420]);
 for rgbAcuCnd = 1:3
     for i = 1:length(unqFocDst)
         indAnalysis = focStmOptDstIncr==unqFocDst(i) & indAcuRB==rgbAcuCnd;
@@ -186,8 +191,8 @@ for rgbAcuCnd = 1:3
     end
     
     
-    figure;
-    set(gcf,'Position',figPositions(rgbAcuCnd,:));
+    subplot(1,3,rgbAcuCnd);
+    % set(gcf,'Position',figPositions(rgbAcuCnd,:));
     hold on;
     plot(unqFocDst.*scaleFac,PC,'o-','Color',rgbUnq(rgbAcuCnd,:),'MarkerFaceColor','w','LineWidth',1.5,'MarkerSize',10);
     errorbar(unqFocDst.*scaleFac,PC,PC-PCci(1,:),PCci(2,:)-PC,'o-','Color',rgbUnq(rgbAcuCnd,:),'MarkerFaceColor','w','LineWidth',1.5,'MarkerSize',10);
