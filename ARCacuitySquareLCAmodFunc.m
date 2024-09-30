@@ -28,14 +28,18 @@ for i = 1:size(rgb,1)
                indAcuRGBall(end+1,:) = m;
            end
        end
+       rgbAll = [rgbAll; repmat([0 0 1],[10 1])];
+       meanFocstmOptDstAll = [meanFocstmOptDstAll; [2.5]*1.2255.*ones([10 1])];
+       focStmOptDstIncrAll = [focStmOptDstIncrAll; [1.2 1.2 1.5 1.5 1.5 1.5 1.8 1.8 1.8 1.8]']; 
+       indAcuRGBall = [indAcuRGBall; 3.*ones([10 1])];
        for l = 1:trlPerLvl
-          indScramble = [indScramble; randperm(length(focStmOptDstIncr)*size(rgbAcuRGB,1))'];
+          indScramble = [indScramble; randperm(length(focStmOptDstIncr)*size(rgbAcuRGB,1)+10)'];
        end
    end
 end
 
 % RANDOMIZING TRIALS
-indScramble = indScramble+imresize(length(focStmOptDstIncr).*size(rgbAcuRGB,1).*[0:(trlPerLvl*size(rgb,1)*length(meanFocstmOptDst)-1)]',size(indScramble),'nearest');
+indScramble = indScramble+imresize([length(focStmOptDstIncr).*size(rgbAcuRGB,1)+10].*[0:(trlPerLvl*size(rgb,1)*length(meanFocstmOptDst)-1)]',size(indScramble),'nearest');
 rgbAll = repmat(rgbAll,[trlPerLvl 1]);
 meanFocstmOptDstAll = repmat(meanFocstmOptDstAll,[trlPerLvl 1]);
 focStmOptDstIncrAll = repmat(focStmOptDstIncrAll,[trlPerLvl 1]);
