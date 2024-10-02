@@ -1,6 +1,6 @@
 %% LOAD MAIN EXPERIMENT FILES
 
-subjNum = 22;
+subjNum = 19;
 bSave = false;
 filePath = '/Users/benjaminchin/Documents/ARchromaScraps/meeting_Sept25/';
 
@@ -102,8 +102,8 @@ for i = 1:length(blockNums)
         end
         c4all{end+1} = c(:,4);
     end
-    rgb1all = [rgb1all; AFCp.rgb100];
-    meanv00all = [meanv00all; AFCp.meanv00./1.2255];
+    rgb1all = [rgb1all; AFCp.rgb100(trialNumsTmp,:)];
+    meanv00all = [meanv00all; AFCp.meanv00(trialNumsTmp)./1.2255];
 end
 
 %% PLOTTING ALL TRIALS FOCUS FOR EACH OF 3 OPTICAL DISTANCES
