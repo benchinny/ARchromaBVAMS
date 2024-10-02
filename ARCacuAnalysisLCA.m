@@ -3,7 +3,8 @@
 % filePath = 'G:\My Drive\exp_bvams\code_repo\ARC\';
 filePath = 'H:\Shared drives\CIVO_BVAMS\data\ARC\';
 
-subj = 19;
+subj = 16;
+bSave = 1;
 
 if strcmp(getenv('username'),'bankslab')
    dataDirectory = [filePath];
@@ -108,7 +109,7 @@ elseif subj==10
                  [dataDirectory 'S1020V11_AFC_RightACL0_2409171654.mat'] ...
                  [dataDirectory 'S1020V11_AFC_RightACL0_2409171645.mat'] ...                  
                  };            
-elseif subj==18
+elseif subj==8
     filenames = {
                  [dataDirectory 'S1018V17_AFC_RightACL0_2409241724.mat'] ...
                  [dataDirectory 'S1018V17_AFC_RightACL0_2409241714.mat'] ...
@@ -117,7 +118,7 @@ elseif subj==18
                  [dataDirectory 'S1018V17_AFC_RightACL0_2409241653.mat'] ... 
                  [dataDirectory 'S1018V17_AFC_RightACL0_2409241646.mat'] ...                 
                  };                
-elseif subj==26
+elseif subj==16
     filenames = {
                  [dataDirectory 'S1026V9_AFC_RightACL0_2409251353.mat'] ...
                  [dataDirectory 'S1026V9_AFC_RightACL0_2409251346.mat'] ...
@@ -133,7 +134,7 @@ elseif subj==26
                  [dataDirectory 'S1026V9_AFC_RightACL0_2409261649.mat'] ...     
                  [dataDirectory 'S1026V9_AFC_RightACL0_2409261643.mat'] ...                     
                  }; 
-elseif subj==15
+elseif subj==5
     filenames = {
                  [dataDirectory 'S1015V10_AFC_RightACL0_2409261217.mat'] ...
                  [dataDirectory 'S1015V10_AFC_RightACL0_2409261208.mat'] ...
@@ -145,7 +146,7 @@ elseif subj==15
                  [dataDirectory 'S1015V10_AFC_RightACL0_2409261130.mat'] ...     
                  [dataDirectory 'S1015V10_AFC_RightACL0_2409261122.mat'] ...     
                  };     
-elseif subj==19
+elseif subj==9
     filenames = {
                  [dataDirectory 'S1019V9_AFC_RightACL0_2409301015.mat'] ...
                  [dataDirectory 'S1019V9_AFC_RightACL0_2409301009.mat'] ...
@@ -210,5 +211,14 @@ for rgbAcuCnd = 1:3
     errorbar(unqFocDst.*scaleFac,PC,PC-PCci(1,:),PCci(2,:)-PC,'o-','Color',rgbUnq(rgbAcuCnd,:),'MarkerFaceColor','w','LineWidth',1.5,'MarkerSize',10);
     axis square;
     ylim([0.4 1]);
-    formatFigure('Relative optical distance (D)','Proportion Correct');
+    if rgbAcuCnd==1
+       formatFigure('Relative optical distance (D)','Proportion Correct',['Subject ' num2str(subj)]);
+    else
+       formatFigure('Relative optical distance (D)','Proportion Correct'); 
+    end
+end
+
+filePathSave = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/ARChroma/Meetings/meeting_Sept25/';
+if bSave
+   saveas(gcf,[filePathSave 'LCA/S' num2str(subj) 'LCA'],'epsc');
 end
