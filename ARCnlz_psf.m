@@ -11,7 +11,7 @@ elseif strcmp(getenv("USER"),'benjaminchin')
    foldername = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/ARC/';
 end
 
-subjNum = 28;
+subjNum = 19;
 fitType = 'weibull';
 
 if subjNum==18
@@ -90,6 +90,8 @@ elseif subjNum==19
                  'S1019V8_AFC_RightACL0_2409201410.mat' ...
                  'S1019V8_AFC_RightACL0_2409201407.mat' ...
                  'S1015V9_AFC_RightACL0_2409181622.mat' ...
+                 'S1019V9_AFC_RightACL0_2410041240.mat' ...
+                 'S1019V9_AFC_RightACL0_2410041239.mat' ...
                  };                 
 elseif subjNum==26
     filenames = {
