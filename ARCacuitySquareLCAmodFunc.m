@@ -28,9 +28,9 @@ for i = 1:size(rgb,1)
                indAcuRGBall(end+1,:) = m;
            end
        end
-       rgbAll = [rgbAll; repmat([0 0 1],[10 1])];
+       rgbAll = [rgbAll; repmat([0.569 0 1],[10 1])];
        meanFocstmOptDstAll = [meanFocstmOptDstAll; [2.5]*1.2255.*ones([10 1])];
-       focStmOptDstIncrAll = [focStmOptDstIncrAll; [1.2 1.2 1.5 1.5 1.5 1.5 1.8 1.8 1.8 1.8]']; 
+       focStmOptDstIncrAll = [focStmOptDstIncrAll; 1.2255.*[1.2 1.2 1.5 1.5 1.5 1.5 1.8 1.8 1.8 1.8]']; 
        indAcuRGBall = [indAcuRGBall; 3.*ones([10 1])];
        for l = 1:trlPerLvl
           indScramble = [indScramble; randperm(length(focStmOptDstIncr)*size(rgbAcuRGB,1)+10)'];
