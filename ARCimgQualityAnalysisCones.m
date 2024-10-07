@@ -22,9 +22,9 @@ if bUseBVAMScal
     load([drivePath 'Right_disp_Blue.mat']);
     d.spd(:,3) = CurrentSpectrum.Spectral.emission_data;
 end
-d.gamma(:,1) = (d.gamma(:,1).^(1/2.2)).^2.4;
-d.gamma(:,2) = (d.gamma(:,2).^(1/2.2)).^2.6;
-d.gamma(:,3) = (d.gamma(:,3).^(1/2.2)).^2.2;
+d.gamma(:,1) = (d.gamma(:,1).^(1/2.2)).^2.5;
+d.gamma(:,2) = (d.gamma(:,2).^(1/2.2)).^2.7;
+d.gamma(:,3) = (d.gamma(:,3).^(1/2.2)).^2.3;
 
 % COLOR MATCHING FUNCTIONS
 S = [380 4 101]; % weird convention used by Brainard lab for defining wavelengths
@@ -46,27 +46,29 @@ PARAMS.WavefrontResolution = 53;% increase to enhance the display of the wavefro
 
 %%
 
-if subjNum==1
-    subjName = 'BenChin-OS';
-    blockNums = [2 3 4 5 6];
-    trialNums = [[1:20]' [1:20]' [1:20]' [1:20]' [1:20]'];
+if subjNum==3
+    subjName = 'S13-OD';
+    blockNums = 12:17;
+    trialNums = [[1:36]' [1:36]' [1:36]' [1:36]' [1:36]' [1:36]'];
     % blockNums = [2 3];
     % trialNums = [[1:20]' [1:20]']; 
-elseif subjNum==2
-    subjName = 'S2-OS';
-    blockNums = [2 3 4 5 6];
-    trialNums = [[1:20]' [1:20]' [1:20]' [1:20]' [1:20]'];
+    nTrialTotal = 216;
+elseif subjNum==10
+    subjName = 'S20-OD';
+    blockNums = 3:8;
+    trialNums = [[1:36]' [1:36]' [1:36]' [1:36]' [1:36]' [1:36]'];
     % blockNums = [2 3];
     % trialNums = [[1:20]' [1:20]'];     
+    nTrialTotal = 216;
 end
 
-wvInFocus1all = zeros([20 1]);
-meanv00all = zeros([20 1]);
-rgb1all = zeros([20 3]);
-defocusBasic = zeros([20 1]);
+wvInFocus1all = zeros([nTrialTotal 1]);
+meanv00all = zeros([nTrialTotal 1]);
+rgb1all = zeros([nTrialTotal 3]);
+defocusBasic = zeros([nTrialTotal 1]);
 
-for l = 5 % LOOP OVER BLOCK
-    for k = 1:20 % LOOP OVER TRIAL
+for l = 1 % LOOP OVER BLOCK
+    for k = 1:36 % LOOP OVER TRIAL
         % LOADING DATA
         blockNumInd = l;
         blockNumTmp = blockNums(blockNumInd);
@@ -75,39 +77,29 @@ for l = 5 % LOOP OVER BLOCK
         AFCp = ARCloadFileBVAMS(subjNum,blockNumTmp); % LOAD BVAMS DATA
         % LOAD ZERNIKE TABLE AND TIMESTAMPS
         [ZernikeTable, ~, ~, TimeStamp] = ARCloadFileFIAT(subjName,blockNumTmp,trialNumTmp,0);
-        % GET THE TIMESTAMP CORRESPONDING TO THE HALFWAY POINT
-        t = seconds(TimeStamp)-min(seconds(TimeStamp));
-        tHalfway = max(t)/2;
-        tDiffFromHalfway = abs(t-tHalfway);
-        [~,indMinT] = min(tDiffFromHalfway);
-        FrameStart = (indMinT-29):indMinT; % analyze 30 frames
 
         NumCoeffs = width(ZernikeTable)-8; % determine how many coefficients are in the cvs file. 
         c=zeros(30,65); %this is the vector that contains the Zernike polynomial coefficients. We can work with up to 65. 
         PARAMS = struct;
-        PARAMS.PupilSize=mean(table2array(ZernikeTable(FrameStart,5))); %default setting is the pupil size that the Zernike coeffs define, PARAMS(3)
-        PARAMS.PupilFitSize=mean(table2array(ZernikeTable(FrameStart,5))); 
+        PARAMS.PupilSize=mean(table2array(ZernikeTable(:,5))); %default setting is the pupil size that the Zernike coeffs define, PARAMS(3)
+        PARAMS.PupilFitSize=mean(table2array(ZernikeTable(:,5))); 
         PARAMS.PupilFieldSize=PARAMS.PupilSize*2; %automatically compute the field size
-        c(:,3:NumCoeffs)=table2array(ZernikeTable(FrameStart,11:width(ZernikeTable)));
+        c(:,3:NumCoeffs)=table2array(ZernikeTable(:,11:width(ZernikeTable)));
         meanC = mean(c,1); % TAKE MEAN OF COEFFICIENTS
         
         % STORE COLORS FOR FIRST AND SECOND STIMULI
-        rgb00 = [];
-        rgb00(1,:) = AFCp.rgb100(trialNumTmp,:);
-        rgb00(2,:) = AFCp.rgb200(trialNumTmp,:);
-        % rgb00(:,2) = [0; 0];
+        rgb00 = AFCp.rgb100(trialNumTmp,:);
 
         % recreate stimulus
         nDotsI = 320;
         rVal = rgb00(1,1);
         gVal = rgb00(1,2);
         bVal = rgb00(1,3);
-        im = AFCwordStimImproved('sea',nDotsI.*[1 1],'green');
-        imPatternTmp = squeeze(im(:,:,2));
-        imPatternTmp = circshift(imPatternTmp,-15,1);
-        I(:,:,3) = bVal.*imresize(imPatternTmp,nDotsI.*[1 1],'nearest');
-        I(:,:,2) = gVal.*imresize(imPatternTmp,nDotsI.*[1 1],'nearest');
-        I(:,:,1) = rVal.*imresize(imPatternTmp,nDotsI.*[1 1],'nearest');
+        im = imread('/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/stimuli/word_image_01.png');
+        im = double(im);
+        I(:,:,3) = bVal.*im(:,:,3);
+        I(:,:,2) = gVal.*im(:,:,2);
+        I(:,:,1) = rVal.*im(:,:,1);
         I = I./255;
         
         % Turn image into 'scene'
