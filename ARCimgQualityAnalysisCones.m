@@ -63,8 +63,8 @@ elseif subjNum==10
     nTrialTotal = 216;
 end
 
-for l = 1 % LOOP OVER BLOCK
-    for k = [1 10 19 28] % LOOP OVER TRIAL
+for l = 1:6 % LOOP OVER BLOCK
+    for k = 1:36 % LOOP OVER TRIAL
         % LOADING DATA
         blockNumInd = l;
         blockNumTmp = blockNums(blockNumInd);
@@ -127,7 +127,7 @@ for l = 1 % LOOP OVER BLOCK
         
         Dall2 = -humanWaveDefocus(wave(1:101));
 
-        for i = 1:length(Dall2)
+        parfor i = 1:length(Dall2)
             zCoeffs = [0 meanC(1:end-1)];
             wvfP = wvfCreate('calc wavelengths', wave, ...
                 'measured wavelength', humanWaveDefocusInvert(-Dall2(i)), ...
@@ -154,8 +154,10 @@ for l = 1 % LOOP OVER BLOCK
                         
             display(['Peak correlation loop ' num2str(i) ' block ' num2str(blockNumTmp) ' trial ' num2str(k)]);
             absorptions = single(absorptions);
-            fnameCone = ['subj' num2str(subjNum) 'block' num2str(l) 'stimulus' num2str(k) 'focusInd' num2str(i)];
-            save(['/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/coneImages/' fnameCone '.mat'],'absorptions');
+            S = struct;
+            S.absorptions = absorptions;
+            fnameCone = ['subj' num2str(subjNum) 'block' num2str(blockNumTmp) 'stimulus' num2str(k) 'focusInd' num2str(i)];
+            save(['/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/coneImages/S' num2str(subjNum) '/' fnameCone '.mat'],"-fromstruct",S);
         end
     end
 end
