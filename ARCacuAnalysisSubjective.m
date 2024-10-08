@@ -1,5 +1,5 @@
 %%
-
+function ARCacuAnalysisSubjective
 % filePath = 'G:\My Drive\exp_bvams\code_repo\ARC\';
 filePath = 'H:\Shared drives\CIVO_BVAMS\data\ARC\';
 
@@ -11,7 +11,7 @@ elseif strcmp(getenv("USER"),'emily')
    dataDirectory = '/Users/emily/Library/CloudStorage/GoogleDrive-emilyacooper@gmail.com/Shared drives/ARChroma/Analysis/';
 end
 
-subjNum = 9;
+subjNum = 17;
 
 if subjNum==3
     filenames = {
@@ -23,7 +23,7 @@ if subjNum==3
                   };
 elseif subjNum==9
     filenames = {
-                  % S9 PURPLE
+                  % S10 PURPLE
                   [dataDirectory 'S1019V9_AFC_RightACL0_2410041308.mat'] ...
                   [dataDirectory 'S1019V9_AFC_RightACL0_2410041301.mat'] ...
                   [dataDirectory 'S1019V9_AFC_RightACL0_2410041254.mat'] ...
@@ -37,9 +37,9 @@ elseif subjNum==10
                   [dataDirectory 'S1020V10_AFC_RightACL0_2409111607.mat'] ...
                   [dataDirectory 'S1020V10_AFC_RightACL0_2409111615.mat'] ...
                   };
-elseif subjNum==5
+elseif subjNum==15
     filenames = {
-                  % S5 PURPLE
+                  % S10 PURPLE
                   [dataDirectory 'S1015V10_AFC_RightACL0_2410031638.mat'] ...
                   [dataDirectory 'S1015V10_AFC_RightACL0_2410031631.mat'] ...
                   [dataDirectory 'S1015V10_AFC_RightACL0_2410031615.mat'] ...
@@ -53,6 +53,14 @@ elseif subjNum==16
                   [dataDirectory 'S1026V8_AFC_RightACL0_2409230953.mat'] ...
                   [dataDirectory 'S1026V8_AFC_RightACL0_2409230946.mat'] ...    
                   };    
+elseif subjNum==17
+    filenames = {
+                  % S17 PURPLE
+                  [dataDirectory 'S1027V9_AFC_RightACL0_2410081135.mat'] ...
+                  [dataDirectory 'S1027V9_AFC_RightACL0_2410081141.mat'] ...
+                  [dataDirectory 'S1027V9_AFC_RightACL0_2410081208.mat'] ...
+                  [dataDirectory 'S1027V9_AFC_RightACL0_2410081214.mat'] ...    
+                  };        
 end
 
 % filenames = {
@@ -262,3 +270,4 @@ errorbar(unqFocDst.*scaleFac,PC,PC-PCci(1,:),PCci(2,:)-PC,'o-','Color',rgbUnq,'M
 axis square;
 ylim([0.4 1]);
 formatFigure('Relative optical distance (D)','Proportion Correct',['Subject ' num2str(subjNum)]);
+end
