@@ -64,7 +64,7 @@ elseif subjNum==10
 end
 
 for l = 1 % LOOP OVER BLOCK
-    for k = 1:36 % LOOP OVER TRIAL
+    for k = [1 10 19 28] % LOOP OVER TRIAL
         % LOADING DATA
         blockNumInd = l;
         blockNumTmp = blockNums(blockNumInd);
