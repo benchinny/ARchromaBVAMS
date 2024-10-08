@@ -11,7 +11,7 @@ elseif strcmp(getenv("USER"),'emily')
    dataDirectory = '/Users/emily/Library/CloudStorage/GoogleDrive-emilyacooper@gmail.com/Shared drives/ARChroma/Analysis/';
 end
 
-subjNum = 9;
+subjNum = 17;
 
 if subjNum==3
     filenames = {
@@ -53,6 +53,14 @@ elseif subjNum==16
                   [dataDirectory 'S1026V8_AFC_RightACL0_2409230953.mat'] ...
                   [dataDirectory 'S1026V8_AFC_RightACL0_2409230946.mat'] ...    
                   };    
+elseif subjNum==17
+    filenames = {
+                  % S17 PURPLE
+                  [dataDirectory 'S1027V9_AFC_RightACL0_2410081135.mat'] ...
+                  [dataDirectory 'S1027V9_AFC_RightACL0_2410081141.mat'] ...
+                  [dataDirectory 'S1027V9_AFC_RightACL0_2410081208.mat'] ...
+                  [dataDirectory 'S1027V9_AFC_RightACL0_2410081214.mat'] ...    
+                  };        
 end
 
 % filenames = {
