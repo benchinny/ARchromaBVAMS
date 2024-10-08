@@ -63,11 +63,6 @@ elseif subjNum==10
     nTrialTotal = 216;
 end
 
-wvInFocus1all = zeros([nTrialTotal 1]);
-meanv00all = zeros([nTrialTotal 1]);
-rgb1all = zeros([nTrialTotal 3]);
-defocusBasic = zeros([nTrialTotal 1]);
-
 for l = 1 % LOOP OVER BLOCK
     for k = 1:36 % LOOP OVER TRIAL
         % LOADING DATA
@@ -99,25 +94,14 @@ for l = 1 % LOOP OVER BLOCK
         im = imread('/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/stimuli/word_image_01.png');
         im = double(im);
         I(:,:,3) = bVal.*im(:,:,3);
-        I(:,:,2) = gVal.*im(:,:,2);
-        I(:,:,1) = rVal.*im(:,:,1);
+        I(:,:,2) = gVal.*im(:,:,3);
+        I(:,:,1) = rVal.*im(:,:,3);
         I = I./255;
         
         % Turn image into 'scene'
         s = sceneFromFile(I, 'rgb', [], d);  % The display is included here
         % I think this copies the struct into an object
         vcAddObject(s); 
-        
-        % Turning original stimulus into luminance image
-        downScale = 1;
-        photonsImgXWorig = RGB2XWFormat(s.data.photons);
-        energyImgXWorig = Quanta2Energy(wave',photonsImgXWorig);
-        energyImgOrig = XW2RGBFormat(energyImgXWorig,size(s.data.photons,1),size(s.data.photons,2));
-        
-        lumImgOrig = zeros(size(s.data.photons,1),size(s.data.photons,2));
-        for j = 1:length(wave)
-            lumImgOrig = lumImgOrig+energyImgOrig(:,:,j).*T_sensorXYZ(2,j).*downScale;
-        end
         
         % figure; 
         % set(gcf,'Position',[289 428 1056 420]);
@@ -141,11 +125,7 @@ for l = 1 % LOOP OVER BLOCK
         
         %% Computing peak correlation for different wavelengths in focus
         
-        peakCorr = [];
-        peakPSF = [];
-        peakImg = [];
-        Dall2 = -humanWaveDefocus(wave(16:101));
-        wave2 = wave(16:101);
+        Dall2 = -humanWaveDefocus(wave(1:101));
 
         for i = 1:length(Dall2)
             zCoeffs = [0 meanC(1:end-1)];
@@ -172,10 +152,10 @@ for l = 1 % LOOP OVER BLOCK
             % key line for computing absorptions
             absorptions = cMosaic.computeSingleFrame(oi, 'fullLMS', true);            
                         
-            display(['Peak correlation loop ' num2str(i)]);
+            display(['Peak correlation loop ' num2str(i) ' block ' num2str(blockNumTmp) ' trial ' num2str(k)]);
             absorptions = single(absorptions);
             fnameCone = ['subj' num2str(subjNum) 'block' num2str(l) 'stimulus' num2str(k) 'focusInd' num2str(i)];
-            % save(['/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/coneImages/' fnameCone '.mat'],'absorptions');
+            save(['/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/coneImages/' fnameCone '.mat'],'absorptions');
         end
     end
 end
