@@ -1,10 +1,10 @@
 %%
 
+function ARCacuAnalysisLCA(subj)
 % filePath = 'G:\My Drive\exp_bvams\code_repo\ARC\';
 filePath = 'H:\Shared drives\CIVO_BVAMS\data\ARC\';
 
-subj = 17;
-bSave = 1;
+bSave = 0;
 
 if strcmp(getenv('username'),'bankslab')
    dataDirectory = [filePath];
@@ -181,8 +181,6 @@ elseif subj==17
                  };             
 end
 
-%%
-
 rgb = [];
 meanFocstmOptDst = [];
 focStmOptDstIncr = [];
@@ -213,6 +211,7 @@ end
 unqFocDst = unique(focStmOptDstIncr);
 scaleFac = 0.816;
 % meanFocInt = 5;
+defocusLCAmeasured = [];
 
 figure;
 set(gcf,'Position',[149 495 1277 420]);
@@ -224,12 +223,16 @@ for rgbAcuCnd = 1:3
          PCci(:,i) = binoinv([0.16 0.84],sum(focStmOptDstIncr==unqFocDst(i)),PC(i))./sum(focStmOptDstIncr==unqFocDst(i));
     end
     
-    
+    PCfitSupport = min(unqFocDst.*scaleFac):0.02:max(unqFocDst.*scaleFac);
+    PCfit = spline(unqFocDst.*scaleFac,PC,PCfitSupport);
+    [~,indLCA] = max(PCfit);
+    defocusLCAmeasured(rgbAcuCnd) = PCfitSupport(indLCA);
     subplot(1,3,rgbAcuCnd);
     % set(gcf,'Position',figPositions(rgbAcuCnd,:));
     hold on;
-    plot(unqFocDst.*scaleFac,PC,'o-','Color',rgbUnq(rgbAcuCnd,:),'MarkerFaceColor','w','LineWidth',1.5,'MarkerSize',10);
-    errorbar(unqFocDst.*scaleFac,PC,PC-PCci(1,:),PCci(2,:)-PC,'o-','Color',rgbUnq(rgbAcuCnd,:),'MarkerFaceColor','w','LineWidth',1.5,'MarkerSize',10);
+    plot(unqFocDst.*scaleFac,PC,'o','Color',rgbUnq(rgbAcuCnd,:),'MarkerFaceColor','w','LineWidth',1.5,'MarkerSize',10);
+    errorbar(unqFocDst.*scaleFac,PC,PC-PCci(1,:),PCci(2,:)-PC,'o','Color',rgbUnq(rgbAcuCnd,:),'MarkerFaceColor','w','LineWidth',1.5,'MarkerSize',10);
+    plot(PCfitSupport,PCfit,'-','Color',rgbUnq(rgbAcuCnd,:),'MarkerFaceColor','w','LineWidth',1.5,'MarkerSize',10);
     axis square;
     ylim([0.4 1]);
     if rgbAcuCnd==1
@@ -242,4 +245,19 @@ end
 filePathSave = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/ARChroma/Meetings/meeting_Sept25/';
 if bSave
    saveas(gcf,[filePathSave 'LCA/S' num2str(subj) 'LCA'],'epsc');
+end
+
+wavePlotLCA = 380:875;
+wavePlotPrimaries = [624 532 460];
+[q1,q2,q3,err] = ARC_LCAfit([624 532 460],-defocusLCAmeasured);
+
+figure; 
+hold on;
+plot(wavePlotLCA,humanWaveDefocusParameterized(wavePlotLCA,q1,q2,q3),'k-','LineWidth',1); 
+plot(wavePlotPrimaries,-defocusLCAmeasured,'ko','MarkerSize',15,'MarkerFaceColor','w');
+axis square; 
+set(gca,'FontSize',15); 
+xlabel('Wavelength (\lambda)'); 
+ylabel('Relative Defocus (D)');
+
 end
