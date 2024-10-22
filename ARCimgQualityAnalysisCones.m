@@ -93,9 +93,12 @@ for l = 1:6 % LOOP OVER BLOCK
         bVal = rgb00(1,3);
         im = imread('/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/stimuli/word_image_01.png');
         im = double(im);
-        I(:,:,3) = bVal.*im(:,:,3);
-        I(:,:,2) = gVal.*im(:,:,3);
-        I(:,:,1) = rVal.*im(:,:,3);
+        imPattern = squeeze(im(:,:,3));
+        imPattern = [zeros([30 size(imPattern,2)]); imPattern; zeros([30 size(imPattern,2)])];
+        imPattern = [zeros([size(imPattern,1) 30]) imPattern zeros([size(imPattern,1) 30])];
+        I(:,:,3) = bVal.*imPattern;
+        I(:,:,2) = gVal.*imPattern;
+        I(:,:,1) = rVal.*imPattern;
         I = I./255;
         
         % Turn image into 'scene'
@@ -127,7 +130,7 @@ for l = 1:6 % LOOP OVER BLOCK
         
         Dall2 = -humanWaveDefocus(wave(1:101));
 
-        parfor i = 1:length(Dall2)
+        for i = 1:length(Dall2)
             zCoeffs = [0 meanC(1:end-1)];
             wvfP = wvfCreate('calc wavelengths', wave, ...
                 'measured wavelength', humanWaveDefocusInvert(-Dall2(i)), ...
@@ -151,7 +154,9 @@ for l = 1:6 % LOOP OVER BLOCK
 
             % key line for computing absorptions
             absorptions = cMosaic.computeSingleFrame(oi, 'fullLMS', true);            
-                        
+            
+            absorptions = absorptions(55:128,6:177,:);
+
             display(['Peak correlation loop ' num2str(i) ' block ' num2str(blockNumTmp) ' trial ' num2str(k)]);
             absorptions = single(absorptions);
             S = struct;
