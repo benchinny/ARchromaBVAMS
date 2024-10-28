@@ -227,6 +227,11 @@ for rgbAcuCnd = 1:3
     PCfit = spline(unqFocDst.*scaleFac,PC,PCfitSupport);
     [~,indLCA] = max(PCfit);
     defocusLCAmeasured(rgbAcuCnd) = PCfitSupport(indLCA);
+    if subj==5 && rgbAcuCnd==2
+        PCfit(PCfitSupport>0.6) = 0;
+        [~,indLCA] = max(PCfit);
+        defocusLCAmeasured(rgbAcuCnd) = PCfitSupport(indLCA);
+    end
     subplot(1,3,rgbAcuCnd);
     % set(gcf,'Position',figPositions(rgbAcuCnd,:));
     hold on;
@@ -249,15 +254,38 @@ end
 
 wavePlotLCA = 380:875;
 wavePlotPrimaries = [624 532 460];
-[q1,q2,q3,err] = ARC_LCAfit([624 532 460],-defocusLCAmeasured);
+nRepeatFit = 100;
+q1all = [];
+q2all = [];
+q3all = [];
+errAll = [];
+for i = 1:nRepeatFit
+   [q1,q2,q3,err] = ARC_LCAfit([624 532 460],-defocusLCAmeasured);
+   q1all(i) = q1;
+   q2all(i) = q2;
+   q3all(i) = q3;
+   errAll(i) = err;
+   if mod(i,1000)==0
+       display(['Iteration ' num2str(i)]);
+   end
+end
+[~,indBestFit] = min(errAll);
+q1best = q1all(indBestFit);
+q2best = q2all(indBestFit);
+q3best = q3all(indBestFit);
 
 figure; 
 hold on;
-plot(wavePlotLCA,humanWaveDefocusParameterized(wavePlotLCA,q1,q2,q3),'k-','LineWidth',1); 
+plot(wavePlotLCA,humanWaveDefocusParameterized(wavePlotLCA,q1best,q2best,q3best),'k-','LineWidth',1); 
 plot(wavePlotPrimaries,-defocusLCAmeasured,'ko','MarkerSize',15,'MarkerFaceColor','w');
 axis square; 
 set(gca,'FontSize',15); 
 xlabel('Wavelength (\lambda)'); 
 ylabel('Relative Defocus (D)');
+xlim([400 875]);
+
+if bSave
+   saveas(gcf,[filePathSave 'LCA/S' num2str(subj) 'LCAfit'],'epsc');
+end
 
 end

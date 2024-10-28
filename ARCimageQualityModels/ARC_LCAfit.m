@@ -8,9 +8,9 @@ opts.LargeScale  = 'off';
 opts.Display     = 'off';
 % opts.MaxIter     = 500;
 
-p0 = [1.73 0.63 0.21];
-pLB = [0 0 0];
-pUB = [2 2 2];
+p0 = [rand*2 rand*0.99 rand*0.37];
+pLB = [0.01 0.01 0.01];
+pUB = [2.00 0.99 0.37];
 
 [pFit,err] = fmincon(   @(p) humanWaveDefocusObjFunc(wave,D,p),p0,[],[],[],[],pLB,pUB,[],opts);
 
