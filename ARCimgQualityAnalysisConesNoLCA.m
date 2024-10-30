@@ -93,9 +93,12 @@ for l = 1 % LOOP OVER BLOCK
         bVal = rgb00(1,3);
         im = imread('/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/stimuli/word_image_01.png');
         im = double(im);
-        I(:,:,3) = bVal.*im(:,:,3);
-        I(:,:,2) = gVal.*im(:,:,3);
-        I(:,:,1) = rVal.*im(:,:,3);
+        imPattern = squeeze(im(:,:,3));
+        imPattern = [zeros([30 size(imPattern,2)]); imPattern; zeros([30 size(imPattern,2)])];
+        imPattern = [zeros([size(imPattern,1) 30]) imPattern zeros([size(imPattern,1) 30])];
+        I(:,:,3) = bVal.*imPattern;
+        I(:,:,2) = gVal.*imPattern;
+        I(:,:,1) = rVal.*imPattern;
         I = I./255;
         
         % Turn image into 'scene'
@@ -127,8 +130,8 @@ for l = 1 % LOOP OVER BLOCK
         
         Dall2 = -humanWaveDefocus(wave(1:101));
 
-        for i = 1:length(Dall2)
-            zCoeffs = [0 meanC(1:end-1)];
+        parfor i = 1:length(Dall2)
+            zCoeffs = [0 zeros(size(meanC(1:end-1)))];
             wvfP = wvfCreate('calc wavelengths', wave, ...
                 'measured wavelength', humanWaveDefocusInvert(-Dall2(i)), ...
                 'zcoeffs', zCoeffs, 'measured pupil', PARAMS.PupilSize, ...
@@ -154,8 +157,10 @@ for l = 1 % LOOP OVER BLOCK
                         
             display(['Peak correlation loop ' num2str(i) ' block ' num2str(blockNumTmp) ' trial ' num2str(k)]);
             absorptions = single(absorptions);
-            fnameCone = ['subj' num2str(subjNum) 'block' num2str(l) 'stimulus' num2str(k) 'focusInd' num2str(i) 'noLCA'];
-            save(['/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/coneImages/' fnameCone '.mat'],'absorptions');
+            S = struct;
+            S.absorptions = absorptions;            
+            fnameCone = ['subj' num2str(subjNum) 'block' num2str(blockNumTmp) 'stimulus' num2str(k) 'focusInd' num2str(i) 'noLCA'];
+            save(['/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/coneImages/' fnameCone '.mat'],"-fromstruct",S);
         end
     end
 end
