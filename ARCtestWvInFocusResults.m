@@ -1,9 +1,9 @@
 %%
 
-RMSEall = zeros([11 11 7]);
-SvaluesAll = [-0.6 -0.4 -0.2 0 0.2 0.4 0.6];
+RMSEall = zeros([11 11 9]);
+SvaluesAll = [-0.6 -0.4 -0.2 0 0.2 0.4 0.6 0.8 1];
 
-for i = 1:3
+for i = 1:5
     load(['/Users/benjaminchin/Documents/ARchromaScraps/wvInFocusModelResults' num2str(i) '.mat']);
     if i==1
         RMSEall(:,:,3) = RMSE(:,:,1);
@@ -18,6 +18,12 @@ for i = 1:3
     if i==3
         RMSEall(:,:,7) = RMSE(:,:,1);
     end
+    if i==4
+        RMSEall(:,:,8) = RMSE(:,:,1);
+    end    
+    if i==5
+        RMSEall(:,:,9) = RMSE(:,:,1);
+    end        
 end
 
 for i = 1:size(RMSEall,3)
@@ -32,7 +38,8 @@ for i = 1:size(RMSEall,3)
     set(gca,'XTick',1:11);
     set(gca,'XTickLabel',{'-1' '-0.8' '-0.6' '-0.4' '-0.2' '0' '0.2' '0.4' '0.6' '0.8' '1'});
     set(gca,'YTickLabel',{'-1' '-0.8' '-0.6' '-0.4' '-0.2' '0' '0.2' '0.4' '0.6' '0.8' '1'});
-    title(['S weight = ' num2str(SvaluesAll(i))]);    
+    title(['S weight = ' num2str(SvaluesAll(i))]);   
+    min(RMSEtmp(:))
 end
 
 %%
