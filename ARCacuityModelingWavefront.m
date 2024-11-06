@@ -19,6 +19,9 @@ if bUseBVAMScal
     d.spd(:,2) = CurrentSpectrum.Spectral.emission_data;
     load([drivePath 'Right_disp_Blue.mat']);
     d.spd(:,3) = CurrentSpectrum.Spectral.emission_data;
+    [maxR,indMaxR] = max(d.spd(:,1));
+    % d.spd(:,1) = zeros(size(d.spd(:,1)));
+    % d.spd(indMaxR,1) = maxR;
 end
 d.gamma(:,1) = (d.gamma(:,1).^(1/2.2)).^2.5;
 d.gamma(:,2) = (d.gamma(:,2).^(1/2.2)).^2.7;
@@ -87,6 +90,8 @@ wave = S(1):S(2):S(1)+S(2)*(S(3)-1); % define wavelength vector
 % DEFOCUSES TO LOOK AT
 Dall = -humanWaveDefocus(wave);
 
+bPlotIndvWvf = false;
+
 % PARAMETERS OF WAVEFRONT ANALYSIS
 PARAMS.PixelDimension = 512;% size of pupil aperture field in pixels (this defines the resolution of the calculation)
 PARAMS.PupilSize = 7; %default values - will be replaced depending on choices below
@@ -129,6 +134,8 @@ wvfFiles = { ...
 
 dataFolder = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/csvFiles/';
 
+cAll = [];
+
 for i = 1:length(wvfFiles)
     ZernikeTable = readtable([dataFolder wvfFiles{i}]);
     NumCoeffs = width(ZernikeTable)-8; % determine how many coefficients are in the cvs file. 
@@ -138,17 +145,67 @@ for i = 1:length(wvfFiles)
     PARAMS.PupilFitSize=mean(table2array(ZernikeTable(:,5))); 
     PARAMS.PupilFieldSize=PARAMS.PupilSize*2; %automatically compute the field size
     c(:,3:NumCoeffs)=table2array(ZernikeTable(:,11:width(ZernikeTable)));
-    indBad = c(:,4)==0;
-    meanC = mean(c(~indBad,:),1); % TAKE MEAN OF COEFFICIENTS
+    cAll = [cAll; c];
+    if bPlotIndvWvf
+        indBadIndv = c(:,4)==0;
+        meanCindv = mean(c(~indBadIndv,:),1);
+        zCoeffsIndv = [0 meanCindv(1:end-1)];
+        wvfPindv = wvfCreate('calc wavelengths', 875, ...
+            'measured wavelength', 875, ...
+            'zcoeffs', zCoeffsIndv, 'measured pupil', PARAMS.PupilSize, ...
+            'name', sprintf('human-%d', PARAMS.PupilSize),'spatial samples',size(I,2)); 
+        wvfPindv.calcpupilMM = PARAMS.PupilSize;
+        wvfPindv.refSizeOfFieldMM = 42;
+        wvfPindv = wvfSet(wvfPindv, 'zcoeff', 0, 'defocus');
+        % Convert to siData format as well as wavefront object
+        [siPSFDataIndv, wvfPindv] = wvf2SiPsf(wvfPindv,'showBar',false,'nPSFSamples',size(I,2),'umPerSample',1.1512); 
+        oiIndv = wvf2oi(wvfPindv); % CONVERT TO OPTICS OBJECT       
+        figure; 
+        imagesc(fftshift(ifft2(squeeze(oiIndv.optics.OTF.OTF(:,:,1))))); 
+        axis square; 
+        colormap gray;
+        pause;
+        close;
+    end
 end
 
-Dall2 = -humanWaveDefocus(wave(1:101));
+indBad = cAll(:,4)==0;
+meanC = mean(cAll(~indBad,:),1); % TAKE MEAN OF COEFFICIENTS
 
-zCoeffs = [0 meanC(1:end-1)];
-wvfP = wvfCreate('calc wavelengths', wave, ...
-    'measured wavelength', humanWaveDefocusInvert(-Dall2(i)), ...
-    'zcoeffs', zCoeffs, 'measured pupil', PARAMS.PupilSize, ...
-    'name', sprintf('human-%d', PARAMS.PupilSize),'spatial samples',size(im,2));
-wvfP.calcpupilMM = PARAMS.PupilSize;
-wvfP.refSizeOfFieldMM = 42;
-wvfP = wvfSet(wvfP, 'zcoeff', 0, 'defocus');
+defocusAll = -1:0.1:1;
+xCorrMetric = [];
+
+for i = 1:length(defocusAll)
+    zCoeffs = [0 meanC(1:end-1)];
+    wvfP = wvfCreate('calc wavelengths', wave, ...
+        'measured wavelength', 875, ...
+        'zcoeffs', zCoeffs, 'measured pupil', PARAMS.PupilSize, ...
+        'name', sprintf('human-%d', PARAMS.PupilSize),'spatial samples',size(I,2));
+    wvfP.calcpupilMM = PARAMS.PupilSize;
+    wvfP.refSizeOfFieldMM = 42;
+    wvfP = wvfSet(wvfP, 'zcoeff', defocusAll(i), 'defocus');
+    
+    % Convert to siData format as well as wavefront object
+    [siPSFData, wvfP] = wvf2SiPsf(wvfP,'showBar',false,'nPSFSamples',size(I,2),'umPerSample',1.1512); 
+    oi = wvf2oi(wvfP); % CONVERT TO OPTICS OBJECT
+    oi = oiCompute(oi, s); % compute optical image of stimulus
+
+    photonsXW = RGB2XWFormat(oi.data.photons); % FORMATTING
+    lumImgXW = sum(bsxfun(@times,photonsXW,squeeze(T_sensorXYZ(2,:))),2);
+    lumImgXY = reshape(lumImgXW,[size(oi.data.photons,1) size(oi.data.photons,2)]);
+    xCorrMetric(i) = max(max(xcorr2(lumImgXY,squeeze(I(:,:,1)))));
+
+    figure(2); 
+    imagesc(lumImgXY); 
+    axis square; 
+    colormap gray;
+    title(['Defocus = ' num2str(defocusAll(i)) ', x-correlation = ' num2str(xCorrMetric(i))]);
+    pause;
+end
+
+figure; 
+plot(defocusAll,xCorrMetric,'k-','LineWidth',1);
+xlabel('Defocus term');
+ylabel('X-correlation metric');
+set(gca,'FontSize',15);
+
