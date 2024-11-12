@@ -42,22 +42,22 @@ PARAMS.FileName = fname;
 c(3:NumCoeffs)=table2array(ZernikeTable(FrameStart,11:width(ZernikeTable)));
 
 %% Create wavefront structure with reasonable parameters.
-pupilMM = 3;
+pupilMM = 7;
 % zCoeffs = wvfLoadThibosVirtualEyes(pupilMM);
 % zCoeffs = [0 c(1:end-1)];
 zCoeffs = zeros([1 65]);
-zCoeffs(1) = 1;
+zCoeffs(1) = 0;
 zCoeffs(2) = 0;
 zCoeffs(3) = 0;
-zCoeffs(4) = 0.00;
-zCoeffs(5) = 0;
-wave = [380:555];
+zCoeffs(4) = 0.1;
+zCoeffs(5) = 0.1768;
+wave = [555];
 wvfP = wvfCreate('calc wavelengths', wave, ...xl
     'measured wavelength', 555, ... % THIS REALLY MEANS 'REFERENCE' WAVELENGTH
     'zcoeffs', zCoeffs, 'measured pupil', pupilMM, ...
     'name', sprintf('human-%d', pupilMM),'spatial samples',320);
-% wvfP.calcpupilMM = pupilMM;
-% wvfP.refSizeOfFieldMM = 42;
+wvfP.calcpupilMM = pupilMM;
+wvfP.refSizeOfFieldMM = 42;
 
 % Set a little defocus, just to make the PSF a bit more interesting
 % wvfP = wvfSet(wvfP, 'zcoeff', 0, 'defocus');
