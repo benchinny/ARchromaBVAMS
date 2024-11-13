@@ -42,7 +42,7 @@ PARAMS.FileName = fname;
 c(3:NumCoeffs)=table2array(ZernikeTable(FrameStart,11:width(ZernikeTable)));
 
 %% Create wavefront structure with reasonable parameters.
-pupilMM = 7;
+pupilMM = 4;
 % zCoeffs = wvfLoadThibosVirtualEyes(pupilMM);
 % zCoeffs = [0 c(1:end-1)];
 zCoeffs = zeros([1 65]);
@@ -50,7 +50,7 @@ zCoeffs(1) = 0;
 zCoeffs(2) = 0;
 zCoeffs(3) = 0;
 zCoeffs(4) = 0.1;
-zCoeffs(5) = 0.1768;
+zCoeffs(5) = 0.2887;
 wave = [555];
 wvfP = wvfCreate('calc wavelengths', wave, ...xl
     'measured wavelength', 555, ... % THIS REALLY MEANS 'REFERENCE' WAVELENGTH

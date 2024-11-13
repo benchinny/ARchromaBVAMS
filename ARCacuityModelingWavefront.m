@@ -177,17 +177,17 @@ end
 indBad = cAll(:,4)==0;
 meanC = mean(cAll(~indBad,:),1); % TAKE MEAN OF COEFFICIENTS
 meanC = cAll(1,:);
-meanC = zeros([1 65]);
-meanC(3) = 0.1;
-meanC(4) = 0.1;
+% meanC = zeros([1 65]);
+% meanC(3) = 0.1;
+% meanC(4) = 0;
 
-defocusAll = 0.1768;
+defocusAll = (meanC(4)-0.1609)*0.5774;
 xCorrMetric = [];
 
 for i = 1:length(defocusAll)
     zCoeffs = [0 meanC(1:end-1)];
     wvfP = wvfCreate('calc wavelengths', wave, ...
-        'measured wavelength', 780, ...
+        'measured wavelength', 875, ...
         'zcoeffs', zCoeffs, 'measured pupil', PARAMS.PupilSize, ...
         'name', sprintf('human-%d', PARAMS.PupilSize),'spatial samples',size(I,2));
     wvfP.calcpupilMM = PARAMS.PupilSize;
@@ -197,8 +197,8 @@ for i = 1:length(defocusAll)
     
     % Convert to siData format as well as wavefront object
     [siPSFData, wvfP] = wvf2SiPsfARC(wvfP,'showBar',false,'nPSFSamples',size(I,2),'umPerSample',1.1512); % 1.1512
-    oi = wvf2oi(wvfP); % CONVERT TO OPTICS OBJECT
-    % oi.optics.OTF.OTF = siPSFData.otf;
+    oi = wvf2oi(wvfP); % CONVERT TO OPTICS OBJECTA
+    oi.optics.OTF.OTF = siPSFData.otf;
     oi = oiCompute(oi, s); % compute optical image of stimulus
 
     photonsXW = RGB2XWFormat(oi.data.photons); % FORMATTING

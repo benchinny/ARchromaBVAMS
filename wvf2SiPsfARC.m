@@ -172,7 +172,7 @@ for ii = 1:nWave
         psf(:, :, ii) = interp2(inSamp, inSamp', thisPSF, outSamp, ...
             outSamp', 'linear', 0);
     end
-    otf(:,:,ii) = fft2(squeeze(psf(:,:,ii)));
+    otf(:,:,ii) = fft2(fftshift(squeeze(psf(:,:,ii))));
 end
 if (p.Results.showBar), close(wBar); end
 
