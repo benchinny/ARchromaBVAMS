@@ -63,7 +63,7 @@ elseif subjNum==10
     nTrialTotal = 216;
 end
 
-for l = 1:6 % LOOP OVER BLOCK
+for l = 2:6 % LOOP OVER BLOCK
     for k = 1:36 % LOOP OVER TRIAL
         % LOADING DATA
         blockNumInd = l;
@@ -139,10 +139,12 @@ for l = 1:6 % LOOP OVER BLOCK
             wvfP.calcpupilMM = PARAMS.PupilSize;
             wvfP.refSizeOfFieldMM = 42;
             wvfP = wvfSet(wvfP, 'zcoeff', 0, 'defocus');
+            wvfP = wvfSet(wvfP, 'customlca', @humanWaveDefocusS10);
             
             % Convert to siData format as well as wavefront object
-            [siPSFData, wvfP] = wvf2SiPsf(wvfP,'showBar',false,'nPSFSamples',size(im,2),'umPerSample',1.1512); 
+            [siPSFData, wvfP] = wvf2SiPsfARC(wvfP,'showBar',false,'nPSFSamples',size(im,2),'umPerSample',1.1512); 
             oi = wvf2oi(wvfP); % CONVERT TO OPTICS OBJECT
+            oi.optics.OTF.OTF = siPSFData.otf;
             % oi = oiCreateARC('human',wave,Dall(i)); % create optics
             oi = oiCompute(oi, s); % compute optical image of stimulus
         
@@ -155,14 +157,14 @@ for l = 1:6 % LOOP OVER BLOCK
             % key line for computing absorptions
             absorptions = cMosaic.computeSingleFrame(oi, 'fullLMS', true);            
             
-            absorptions = absorptions(55:128,6:177,:);
+            % absorptions = absorptions(55:128,6:177,:);
 
             display(['Peak correlation loop ' num2str(i) ' block ' num2str(blockNumTmp) ' trial ' num2str(k)]);
             absorptions = single(absorptions);
             S = struct;
             S.absorptions = absorptions;
             fnameCone = ['subj' num2str(subjNum) 'block' num2str(blockNumTmp) 'stimulus' num2str(k) 'focusInd' num2str(i)];
-            save(['/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/coneImages/S' num2str(subjNum) '/' fnameCone '.mat'],"-fromstruct",S);
+            % save(['/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/coneImages/S' num2str(subjNum) '/' fnameCone '.mat'],"-fromstruct",S);
         end
     end
 end
