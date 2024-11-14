@@ -137,7 +137,13 @@ for l = 2:6 % LOOP OVER BLOCK
                 'zcoeffs', zCoeffs, 'measured pupil', PARAMS.PupilSize, ...
                 'name', sprintf('human-%d', PARAMS.PupilSize),'spatial samples',size(im,2));
             wvfP.calcpupilMM = PARAMS.PupilSize;
-            wvfP.refSizeOfFieldMM = 42;
+            defocusFromLCA = max(abs([humanWaveDefocusS10(humanWaveDefocusInvert(-Dall2(i)),min(wave)) ...
+                              humanWaveDefocusS10(humanWaveDefocusInvert(-Dall2(i)),max(wave))]));
+            if defocusFromLCA<1
+                wvfP.refSizeOfFieldMM = 21;
+            else
+                wvfP.refSizeOfFieldMM = 7;
+            end
             wvfP = wvfSet(wvfP, 'zcoeff', 0, 'defocus');
             wvfP = wvfSet(wvfP, 'customlca', @humanWaveDefocusS10);
             

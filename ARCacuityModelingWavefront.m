@@ -197,7 +197,7 @@ for i = 1:length(defocusAll)
     
     % Convert to siData format as well as wavefront object
     [siPSFData, wvfP] = wvf2SiPsfARC(wvfP,'showBar',false,'nPSFSamples',size(I,2),'umPerSample',1.1512); % 1.1512
-    oi = wvf2oi(wvfP); % CONVERT TO OPTICS OBJECTA
+    oi = wvf2oi(wvfP); % CONVERT TO OPTICS OBJECT
     oi.optics.OTF.OTF = siPSFData.otf;
     oi = oiCompute(oi, s); % compute optical image of stimulus
 
