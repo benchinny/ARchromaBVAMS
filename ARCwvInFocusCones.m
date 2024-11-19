@@ -1,7 +1,6 @@
 function wvInFocus = ARCwvInFocusCones(subjNum,blockNum,trialNum,wLMS)
 
 wave = 380:4:780;
-wave = wave(16:101);
 nFocus = length(wave);
 foldernameCones = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/coneImages/';
 

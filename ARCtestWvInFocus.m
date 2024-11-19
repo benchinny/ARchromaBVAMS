@@ -8,11 +8,12 @@ blockNumAll = 3:8;
 trialNumAll = 1:36;
 wLunq = -1:0.2:1;
 wMunq = -1:0.2:1;
-wSunq = [0.6];
+wSunq = [0 0.2 0.4];
 RMSE = [];
 defocus875all = [];
 defocus875predAll = [];
 wvInFocusAll = [];
+savePath = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/coneWeightsError/';
 
 for Sindex = 1:length(wSunq)
     for i = 1:length(wLunq)
@@ -41,7 +42,7 @@ for Sindex = 1:length(wSunq)
                     defocusCorrectionFactor = (1e6/(4*sqrt(3)))*((PARAMS.PupilSize/2000)^2);
                     defocus875(k,l) = meanC(4)./defocusCorrectionFactor;
                     AFCp = ARCloadFileBVAMS(subjNum+10,blockNumAll(k));
-                    defocus875pred(k,l) = AFCp.meanv00(trialNumAll(l))./1.2255 + humanWaveDefocus(wvInFocus(k,l))-humanWaveDefocus(875);
+                    defocus875pred(k,l) = AFCp.meanv00(trialNumAll(l))./1.2255 - humanWaveDefocusS10(wvInFocus(k,l),875);
                 end
             end
             RMSE(i,j,Sindex) = sqrt(mean((defocus875pred(:)-defocus875(:)).^2));
@@ -50,9 +51,8 @@ for Sindex = 1:length(wSunq)
             wvInFocusAll(:,:,i,j,Sindex) = wvInFocus;
         end
     end
+   save([savePath 'wvInFocusModelResults' num2str(round(wSunq(Sindex)*10)) '.mat'],'defocus875all','defocus875predAll','wvInFocusAll','RMSE','wSunq'); 
 end
-
-save('/Users/benjaminchin/Documents/wvInFocusModelResults.mat','defocus875all','defocus875predAll','wvInFocusAll','RMSE');
 
 % %%
 % 

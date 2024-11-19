@@ -50,21 +50,21 @@ zCoeffs(1) = 0;
 zCoeffs(2) = 0;
 zCoeffs(3) = 0;
 zCoeffs(4) = 0.1;
-zCoeffs(5) = 0.2887;
-wave = [555];
+zCoeffs(5) = 0.2887*0;
+wave = [780];
 wvfP = wvfCreate('calc wavelengths', wave, ...xl
-    'measured wavelength', 555, ... % THIS REALLY MEANS 'REFERENCE' WAVELENGTH
+    'measured wavelength', 780, ... % THIS REALLY MEANS 'REFERENCE' WAVELENGTH
     'zcoeffs', zCoeffs, 'measured pupil', pupilMM, ...
     'name', sprintf('human-%d', pupilMM),'spatial samples',320);
 wvfP.calcpupilMM = pupilMM;
-wvfP.refSizeOfFieldMM = 42;
+wvfP.refSizeOfFieldMM = 11;
 
 % Set a little defocus, just to make the PSF a bit more interesting
 % wvfP = wvfSet(wvfP, 'zcoeff', 0, 'defocus');
 
 % Convert to siData format and save.  201 is the number of default 
 % samples in the wvfP object, and we need to match that here.
-[siPSFData, wvfP] = wvf2SiPsf(wvfP,'showBar',false,'nPSFSamples',320,'umPerSample',0.25);
+[siPSFData, wvfP] = wvf2SiPsf(wvfP,'showBar',false,'nPSFSamples',320,'umPerSample',1.1512);
 
 figure; 
 set(gcf,'Position',[318 486 928 420]);
@@ -75,7 +75,7 @@ for i = 1:length(wave)
    axis square
    title(['wave = ' num2str(wave(i)) 'mm']);
    subplot(1,2,2);
-   plot(siPSFData.psf(80,:,i)); 
+   plot(siPSFData.psf(161,:,1)); 
    colormap gray; 
    axis square
    title(['wave = ' num2str(wave(i)) 'mm']);   
