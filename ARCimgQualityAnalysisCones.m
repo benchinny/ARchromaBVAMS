@@ -14,13 +14,24 @@ d = displaySet(d,'dpi',378); % simulated screen distance
 
 bUseBVAMScal = 1; % if using BVAMS calibration data
 
+if strcmp(getenv('USER'),'benjaminchin')
+    calPath = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/ARChroma/BVAMS_calibration_files/display calibration on August3/';
+     stimPath = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/stimuli/';
+     savePath = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/coneImages/S';
+end
+
+if strcmp(getenv('USER'),'benchin')
+    calPath = '/Users/benchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/ARChroma/BVAMS_calibration_files/display calibration on August3/';
+    stimPath = '/Users/benchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/stimuli/';
+    savePath = '/Users/benchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/coneImages/S';
+end
+
 if bUseBVAMScal
-    drivePath = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/ARChroma/BVAMS_calibration_files/display calibration on August3/';
-    load([drivePath 'Right_disp_Red.mat']);
+    load([calPath 'Right_disp_Red.mat']);
     d.spd(:,1) = CurrentSpectrum.Spectral.emission_data;
-    load([drivePath 'Right_disp_Green.mat']);
+    load([calPath 'Right_disp_Green.mat']);
     d.spd(:,2) = CurrentSpectrum.Spectral.emission_data;
-    load([drivePath 'Right_disp_Blue.mat']);
+    load([calPath 'Right_disp_Blue.mat']);
     d.spd(:,3) = CurrentSpectrum.Spectral.emission_data;
 end
 d.gamma(:,1) = (d.gamma(:,1).^(1/2.2)).^2.5;
@@ -63,7 +74,7 @@ elseif subjNum==10
     nTrialTotal = 216;
 end
 
-for l = 2:6 % LOOP OVER BLOCK
+for l = 3 % LOOP OVER BLOCK
     for k = 1:36 % LOOP OVER TRIAL
         % LOADING DATA
         blockNumInd = l;
@@ -91,10 +102,10 @@ for l = 2:6 % LOOP OVER BLOCK
         rVal = rgb00(1,1);
         gVal = rgb00(1,2);
         bVal = rgb00(1,3);
-        im = imread('/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/stimuli/word_image_01.png');
+        im = imread([stimPath '/word_image_01.png']);
         im = double(im);
         imPattern = squeeze(im(:,:,3));
-        imPattern = [zeros([30 size(imPattern,2)]); imPattern; zeros([30 size(imPattern,2)])];
+        imPattern = [zeros([60 size(imPattern,2)]); imPattern; zeros([60 size(imPattern,2)])];
         imPattern = [zeros([size(imPattern,1) 30]) imPattern zeros([size(imPattern,1) 30])];
         I(:,:,3) = bVal.*imPattern;
         I(:,:,2) = gVal.*imPattern;
@@ -130,7 +141,7 @@ for l = 2:6 % LOOP OVER BLOCK
         
         Dall2 = -humanWaveDefocus(wave(1:101));
 
-        for i = 1:length(Dall2)
+        parfor i = 1:length(Dall2)
             zCoeffs = [0 meanC(1:end-1)];
             wvfP = wvfCreate('calc wavelengths', wave, ...
                 'measured wavelength', humanWaveDefocusInvert(-Dall2(i)), ...
@@ -140,9 +151,9 @@ for l = 2:6 % LOOP OVER BLOCK
             defocusFromLCA = max(abs([humanWaveDefocusS10(humanWaveDefocusInvert(-Dall2(i)),min(wave)) ...
                               humanWaveDefocusS10(humanWaveDefocusInvert(-Dall2(i)),max(wave))]));
             if defocusFromLCA<1
-                wvfP.refSizeOfFieldMM = 21;
+                wvfP.refSizeOfFieldMM = 12;
             else
-                wvfP.refSizeOfFieldMM = 7;
+                wvfP.refSizeOfFieldMM = 6;
             end
             wvfP = wvfSet(wvfP, 'zcoeff', 0, 'defocus');
             wvfP = wvfSet(wvfP, 'customlca', @humanWaveDefocusS10);
@@ -170,7 +181,7 @@ for l = 2:6 % LOOP OVER BLOCK
             S = struct;
             S.absorptions = absorptions;
             fnameCone = ['subj' num2str(subjNum) 'block' num2str(blockNumTmp) 'stimulus' num2str(k) 'focusInd' num2str(i)];
-            % save(['/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/coneImages/S' num2str(subjNum) '/' fnameCone '.mat'],"-fromstruct",S);
+            save([savePath num2str(subjNum) '/' fnameCone '.mat'],"-fromstruct",S);
         end
     end
 end

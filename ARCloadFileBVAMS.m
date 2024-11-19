@@ -4,6 +4,8 @@ AFCp = [];
 
 if strcmp(getenv("USER"),'ben')
    dataFolder= '/home/ben/Documents/ARchroma/FIAT/ARC/';
+elseif strcmp(getenv("USER"),'benchin')
+   dataFolder = '/Users/benchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/ARC/';
 else
    dataFolder = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/ARC/';
 end
