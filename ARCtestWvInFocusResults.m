@@ -1,11 +1,12 @@
 %%
 
-RMSEall = zeros([11 11 1]);
-SvaluesAll = [0];
-loadStr = {'0'};
+RMSEall = zeros([11 11 5]);
+SvaluesAll = [-0.6 -0.4 -0.2 0 0.2];
+loadStr = {'-6' '-4' '-2' '0' '2'};
 folderPath = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/coneWeightsError/';
 blockNums = 3:8;
 rgbAll = [];
+ind2examine = 1;
 
 for i = 1:length(blockNums)
     AFCp = ARCloadFileBVAMS(20,blockNums(i));
@@ -18,12 +19,12 @@ rgbAllGammaCorrected(:,2) = (rgbAll(:,2).^2.7)./0.1037;
 rgbAllGammaCorrected(:,3) = (rgbAll(:,3).^2.3)./1;
 rgbAllGammaCorrected(rgbAllGammaCorrected>1) = 1;
 
-for i = 1:length(loadStr)
+for i = ind2examine
     load([folderPath 'wvInFocusModelResults' num2str(loadStr{i}) '.mat']);
-    RMSEall(:,:,i) = RMSE;
+    RMSEall(:,:,i) = RMSE(:,:,end);
 end
 
-for i = 1:size(RMSEall,3)
+for i = ind2examine
     RMSEtmp = squeeze(RMSEall(:,:,i)); 
 
     figure; 
@@ -39,9 +40,9 @@ for i = 1:size(RMSEall,3)
     min(RMSEtmp(:))
 end
 
-predD = squeeze(defocus875predAll(:,:,10,4));
+predD = squeeze(defocus875predAll(:,:,9,6,end));
 predD = predD(:);
-actD = squeeze(defocus875all(:,:,10,4));
+actD = squeeze(defocus875all(:,:,9,6,end));
 actD = actD(:);
 figure; 
 hold on;

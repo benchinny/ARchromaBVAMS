@@ -174,10 +174,10 @@ indBad = cAll(:,4)==0;
 meanC = mean(cAll(~indBad,:),1); % TAKE MEAN OF COEFFICIENTS
 % meanC = cAll(1,:);
 % meanC = zeros([1 65]);
-% meanC(3) = 0.1;
+% meanC(3) = -0.2;
 % meanC(4) = 0;
 
-defocusAll = -1:0.25:0;
+defocusAll = 0;
 xCorrMetric = [];
 
 for i = 1:length(defocusAll)
@@ -210,7 +210,7 @@ for i = 1:length(defocusAll)
     colormap gray;
     title(['Defocus = ' num2str(defocusAll(i)) ', x-correlation = ' num2str(xCorrMetric(i))]);
     subplot(1,2,2);
-    imagesc(flipud(fftshift(ifft2(squeeze(oi.optics.OTF.OTF(:,:,101)))))); 
+    imagesc(fftshift(ifft2(squeeze(oi.optics.OTF.OTF(:,:,61))))); 
     axis square; 
     colormap gray;
     pause;
