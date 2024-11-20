@@ -3,6 +3,16 @@ ieInit;
 
 %% Set up display struct and build Ben's stimulus
 
+if strcmp(getenv('USER'),'benjaminchin')
+    calPath = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/ARChroma/BVAMS_calibration_files/display calibration on August3/';
+    stimPath = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/stimuli/';
+end
+
+if strcmp(getenv('USER'),'benchin')
+    calPath = '/Users/benchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/ARChroma/BVAMS_calibration_files/display calibration on August3/';
+    stimPath = '/Users/benchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/stimuli/';
+end
+
 % Setting up display properties
 d = displayCreate('OLED-Samsung');
 d = displaySet(d, 'name', 'my display');
@@ -45,14 +55,18 @@ gammaR = 2.5;
 gammaG = 2.7;
 gammaB = 2.3;
 
-acuStimOrig1 = ARC2Dgabor(smpPos(260,260),[],0,0,[frqCpd 3*frqCpd 5*frqCpd 7*frqCpd], ...
-               [contrast contrast/3 contrast/5 contrast/7],15,90,0.2,0.2, ...
-               [rgbAll(k0,1)^gammaR rgbAll(k0,2)^gammaG rgbAll(k0,3)^gammaB],1,1,0,0);
-
-acuStimOrig1(:,:,1) = acuStimOrig1(:,:,1).^(1/gammaR);
-acuStimOrig1(:,:,2) = acuStimOrig1(:,:,2).^(1/gammaG);
-acuStimOrig1(:,:,3) = acuStimOrig1(:,:,3).^(1/gammaB);
-I = acuStimOrig1;
+rVal = 0.56;
+gVal = 0;
+bVal = 1.00;
+im = imread([stimPath '/word_image_01.png']);
+im = double(im);
+imPattern = squeeze(im(:,:,3));
+imPattern = [zeros([60 size(imPattern,2)]); imPattern; zeros([60 size(imPattern,2)])];
+imPattern = [zeros([size(imPattern,1) 30]) imPattern zeros([size(imPattern,1) 30])];
+I(:,:,3) = bVal.*imPattern;
+I(:,:,2) = gVal.*imPattern;
+I(:,:,1) = rVal.*imPattern;
+I = I./255;
 
 % Turn image into 'scene'
 s = sceneFromFile(I, 'rgb', [], d);  % The display is included here
@@ -177,7 +191,7 @@ meanC = mean(cAll(~indBad,:),1); % TAKE MEAN OF COEFFICIENTS
 % meanC(3) = -0.2;
 % meanC(4) = 0;
 
-defocusAll = 0;
+defocusAll = -0.8:0.1:-0.2;
 xCorrMetric = [];
 
 for i = 1:length(defocusAll)
