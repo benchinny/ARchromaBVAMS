@@ -1,29 +1,26 @@
 %%
 
-RMSEall = zeros([11 11 9]);
-SvaluesAll = [-0.6 -0.4 -0.2 0 0.2 0.4 0.6 0.8 1];
+RMSEall = zeros([11 11 1]);
+SvaluesAll = [0];
+loadStr = {'0'};
+folderPath = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/coneWeightsError/';
+blockNums = 3:8;
+rgbAll = [];
 
-for i = 1:5
-    load(['/Users/benjaminchin/Documents/ARchromaScraps/wvInFocusModelResults' num2str(i) '.mat']);
-    if i==1
-        RMSEall(:,:,3) = RMSE(:,:,1);
-        RMSEall(:,:,4) = RMSE(:,:,2);
-    end
-    if i==2
-        RMSEall(:,:,1) = RMSE(:,:,1);
-        RMSEall(:,:,2) = RMSE(:,:,2);
-        RMSEall(:,:,5) = RMSE(:,:,3);
-        RMSEall(:,:,6) = RMSE(:,:,4);
-    end    
-    if i==3
-        RMSEall(:,:,7) = RMSE(:,:,1);
-    end
-    if i==4
-        RMSEall(:,:,8) = RMSE(:,:,1);
-    end    
-    if i==5
-        RMSEall(:,:,9) = RMSE(:,:,1);
-    end        
+for i = 1:length(blockNums)
+    AFCp = ARCloadFileBVAMS(20,blockNums(i));
+    rgbAll = [rgbAll; AFCp.rgb100];
+end
+
+rgbAllGammaCorrected = [];
+rgbAllGammaCorrected(:,1) = (rgbAll(:,1).^2.5)./0.2442;
+rgbAllGammaCorrected(:,2) = (rgbAll(:,2).^2.7)./0.1037;
+rgbAllGammaCorrected(:,3) = (rgbAll(:,3).^2.3)./1;
+rgbAllGammaCorrected(rgbAllGammaCorrected>1) = 1;
+
+for i = 1:length(loadStr)
+    load([folderPath 'wvInFocusModelResults' num2str(loadStr{i}) '.mat']);
+    RMSEall(:,:,i) = RMSE;
 end
 
 for i = 1:size(RMSEall,3)
@@ -42,34 +39,17 @@ for i = 1:size(RMSEall,3)
     min(RMSEtmp(:))
 end
 
-%%
-
-clear;
-
-%%
-
-fileNum = 2;
-Svalues = {[-0.2 0] [-0.6 -0.4 0.2 0.4] [0.6]};
-SvaluesTmp = Svalues{fileNum};
-
-load(['/Users/benjaminchin/Documents/ARchromaScraps/wvInFocusModelResults' num2str(fileNum) '.mat']);
-
-
-for i = 1:size(RMSE,3)
-
-    RMSEtmp = squeeze(RMSE(:,:,i)); 
-
-    figure; 
-    imagesc(RMSEtmp);
-    xlabel('M weight');
-    ylabel('L weight');
-    axis square;
-    set(gca,'FontSize',12);
-    set(gca,'XTick',1:11);
-    set(gca,'XTickLabel',{'-1' '-0.8' '-0.6' '-0.4' '-0.2' '0' '0.2' '0.4' '0.6' '0.8' '1'});
-    set(gca,'YTickLabel',{'-1' '-0.8' '-0.6' '-0.4' '-0.2' '0' '0.2' '0.4' '0.6' '0.8' '1'});
-    title(['S weight = ' num2str(SvaluesTmp(i))]);
+predD = squeeze(defocus875predAll(:,:,10,4));
+predD = predD(:);
+actD = squeeze(defocus875all(:,:,10,4));
+actD = actD(:);
+figure; 
+hold on;
+for i = 1:length(predD)
+    plot(predD(i),actD(i),'.','MarkerSize',12,'Color',rgbAllGammaCorrected(i,:)); 
 end
+axis square;
+formatFigure('Predicted Defocus (D)','Actual Defocus (D)');
 
 %%
 
