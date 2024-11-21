@@ -191,7 +191,7 @@ meanC = mean(cAll(~indBad,:),1); % TAKE MEAN OF COEFFICIENTS
 % meanC(3) = -0.2;
 % meanC(4) = 0;
 
-defocusAll = -0.8:0.1:-0.2;
+defocusAll = -0.5;
 xCorrMetric = [];
 
 for i = 1:length(defocusAll)
@@ -208,7 +208,14 @@ for i = 1:length(defocusAll)
     % Convert to siData format as well as wavefront object
     [siPSFData, wvfP] = wvf2SiPsfARC(wvfP,'showBar',false,'nPSFSamples',size(I,2),'umPerSample',1.1512); % 1.1512
     oi = wvf2oi(wvfP); % CONVERT TO OPTICS OBJECT
-    oi.optics.OTF.OTF = siPSFData.otf;
+    paddingXCpsf = round((size(siPSFData.psf,2)-size(s.data.photons,2))/2);
+    paddingYRpsf = round((size(siPSFData.psf,1)-size(s.data.photons,1))/2);
+    indNotPadded = {(paddingYRpsf+1):(size(siPSFData.psf,1)-paddingYRpsf) ...
+                    (paddingXCpsf+1):(size(siPSFData.psf,2)-paddingXCpsf)};
+    oi.optics.OTF = [];
+    for j = 1:size(siPSFData.psf,3)
+        oi.optics.OTF.OTF(:,:,j) = fft2(fftshift(squeeze(siPSFData.psf(indNotPadded{1},indNotPadded{2},j))));
+    end
     oi = oiCompute(oi, s); % compute optical image of stimulus
 
     photonsXW = RGB2XWFormat(oi.data.photons); % FORMATTING
