@@ -74,6 +74,61 @@ elseif subjNum==10
     nTrialTotal = 216;
 end
 
+%%
+
+cAll = [];
+
+for l = 1:length(blockNums) % LOOP OVER BLOCK
+    for k = 1:36 % LOOP OVER TRIAL
+        blockNumInd = l;
+        blockNumTmp = blockNums(blockNumInd);
+        trialNumTmp = trialNums(k,blockNumInd);
+        
+        AFCp = ARCloadFileBVAMS(subjNumEncode,blockNumTmp); % LOAD BVAMS DATA
+        % LOAD ZERNIKE TABLE AND TIMESTAMPS
+        [ZernikeTable, ~, ~, TimeStamp] = ARCloadFileFIAT(subjName,blockNumTmp,trialNumTmp,0);
+
+        NumCoeffs = width(ZernikeTable)-8; % determine how many coefficients are in the cvs file. 
+        c=zeros(size(ZernikeTable,1),65); %this is the vector that contains the Zernike polynomial coefficients. We can work with up to 65. 
+        PARAMS = struct;
+        PARAMS.PupilSize=mean(table2array(ZernikeTable(:,5))); %default setting is the pupil size that the Zernike coeffs define, PARAMS(3)
+        PARAMS.PupilFitSize=mean(table2array(ZernikeTable(:,5))); 
+        PARAMS.PupilFieldSize=PARAMS.PupilSize*2; %automatically compute the field size
+        c(:,3:NumCoeffs)=table2array(ZernikeTable(:,11:width(ZernikeTable)));
+        cAll = [cAll; c];
+    end
+end
+
+indBad = cAll(:,4)==0;
+% meanC = mean(c(~indBad,:),1); % TAKE MEAN OF COEFFICIENTS
+
+%%
+
+figure;
+set(gcf,'Position',[163 358 1304 588]);
+for i = 1:10
+    subplot(2,5,i);
+    hist(cAll(~indBad,i+2),linspace(-0.5,2,101));
+    axis square;
+end
+
+figure;
+set(gcf,'Position',[117 149 1393 773]);
+subplot(2,1,1);
+hold on;
+for i = 1:65
+    bar(i,mean(cAll(~indBad,i)));
+end
+formatFigure('Zernike polynomial #','Mean coefficient');
+subplot(2,1,2);
+hold on;
+for i = 1:65
+    bar(i,std(cAll(~indBad,i)));
+end
+formatFigure('Zernike polynomial #','Std dev coefficient');
+
+%%
+
 for l = 3 % LOOP OVER BLOCK
     for k = 1:36 % LOOP OVER TRIAL
         % LOADING DATA
