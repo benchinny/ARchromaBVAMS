@@ -283,7 +283,7 @@ for k = 1:size(rgb00,1) % LOOP OVER TRIAL
         
         % absorptions = absorptions(55:128,6:177,:);
 
-        display(['Peak correlation loop ' num2str(i) ' block ' num2str(blockNumTmp) ' trial ' num2str(k)]);
+        display(['Peak correlation loop ' num2str(i) ' stimulus ' num2str(k)]);
         absorptions = single(absorptions);
         S = struct;
         S.absorptions = absorptions;
