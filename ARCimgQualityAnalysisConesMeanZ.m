@@ -241,12 +241,12 @@ for k = 1:size(rgb00,1) % LOOP OVER TRIAL
     
     wave2 = 380:4:780;
 
-    parfor i = 1:length(wave2)
+    for i = 46 % 1:length(wave2)
         zCoeffs = [0 meanC(1:end-1)];
         wvfP = wvfCreate('calc wavelengths', wave, ...
             'measured wavelength', wave2(i), ...
             'zcoeffs', zCoeffs, 'measured pupil', PARAMS.PupilSize, ...
-            'name', sprintf('human-%d', PARAMS.PupilSize),'spatial samples',size(im,2));
+            'name', sprintf('human-%d', PARAMS.PupilSize),'spatial samples',size(I,2));
         wvfP.calcpupilMM = PARAMS.PupilSize;
         defocusFromLCA = max(abs([humanWaveDefocusS10(wave2(i),min(wave)) ...
                                   humanWaveDefocusS10(wave2(i),max(wave))]));
@@ -259,7 +259,7 @@ for k = 1:size(rgb00,1) % LOOP OVER TRIAL
         wvfP = wvfSet(wvfP, 'customlca', @humanWaveDefocusS10);
         
         % Convert to siData format as well as wavefront object
-        [siPSFData, wvfP] = wvf2SiPsfARC(wvfP,'showBar',false,'nPSFSamples',size(im,2),'umPerSample',1.1512); 
+        [siPSFData, wvfP] = wvf2SiPsfARC(wvfP,'showBar',false,'nPSFSamples',size(I,2),'umPerSample',1.1512); 
         oi = wvf2oi(wvfP); % CONVERT TO OPTICS OBJECT
         paddingXCpsf = round((size(siPSFData.psf,2)-size(s.data.photons,2))/2);
         paddingYRpsf = round((size(siPSFData.psf,1)-size(s.data.photons,1))/2);
