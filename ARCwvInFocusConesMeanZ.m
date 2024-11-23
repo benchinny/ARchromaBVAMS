@@ -1,4 +1,4 @@
-function wvInFocus = ARCwvInFocusConesMeanZ(subjNum,blockNum,trialNum,wLMS)
+function wvInFocus = ARCwvInFocusConesMeanZ(subjNum,stimNum,wLMS)
 
 wave = 380:4:780;
 nFocus = length(wave);
@@ -11,7 +11,7 @@ coneImgOrig = sum(absorptionsOrig,3);
 peakCorr = [];
 
 for i = 1:nFocus
-    fnameConeRsp = ['subj' num2str(subjNum) 'block' num2str(blockNum) 'stimulus' num2str(trialNum) 'focusInd' num2str(i)];
+    fnameConeRsp = ['subj' num2str(subjNum) 'stimulus' num2str(stimNum) 'focusInd' num2str(i)];
     load([foldernameCones 'S' num2str(subjNum) '/' fnameConeRsp]);
     absorptions(:,:,1) = absorptions(:,:,1).*wLMS(1);
     absorptions(:,:,2) = absorptions(:,:,2).*wLMS(2);
