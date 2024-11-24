@@ -6,9 +6,9 @@ if subjNum==10
 end
 blockNumAll = 3:8;
 trialNumAll = 1:36;
-wLunq = 1;
-wMunq = 1;
-wSunq = 0;
+wLunq = -1:0.2:1;
+wMunq = -1:0.2:1;
+wSunq = [-1 1];
 RMSE = [];
 defocus875all = [];
 defocus875predAll = [];
@@ -47,8 +47,6 @@ for Sindex = 1:length(wSunq)
             wL = wLunq(i);
             wM = wMunq(j);
             wS = wSunq(Sindex);
-            defocus875 = zeros([length(blockNumAll) length(trialNumAll)]);
-            defocus875pred = zeros([length(blockNumAll) length(trialNumAll)]); 
             rgbAll = [];
             optDistAll = [];
             for k = 1:length(blockNumAll)
@@ -63,15 +61,21 @@ for Sindex = 1:length(wSunq)
                 wvInFocus(l,:) = ARCwvInFocusConesMeanZ(subjNum,l,[wL wM wS]);
                 display(['wL = ' num2str(wL) ' wM = ' num2str(wM) ' wS = ' num2str(wS) ' stim ' num2str(l)]);
             end
+            wvInFocusTmp = zeros([length(optDistAll) 1]);
             for l = 1:size(rgbUnq,1)
                 indStiml = abs(rgbAll(:,1)-rgbUnq(l,1))<0.001 & ...
                 abs(rgbAll(:,2)-rgbUnq(l,2))<0.001 & ...
                 abs(rgbAll(:,3)-rgbUnq(l,3))<0.001;
                 defocus875predTmp(indStiml) = optDistAll(indStiml)-humanWaveDefocusS10(wvInFocus(l),875);
+                wvInFocusTmp(indStiml) = wvInFocus(l);
             end
+            RMSE(i,j,Sindex) = sqrt(mean((defocus875predTmp(:)-defocus875(:)).^2));
+            defocus875predAll(:,i,j,Sindex) = defocus875predTmp;
+            defocus875all(:,i,j,Sindex) = defocus875;
+            wvInFocusAll(:,i,j,Sindex) = wvInFocusTmp;
         end
     end
-    % save([savePath 'wvInFocusModelResults' num2str(round(wSunq(Sindex)*10)) '.mat'],'defocus875all','defocus875predAll','wvInFocusAll','RMSE','wSunq'); 
+    save([savePath 'wvInFocusModelResults' num2str(round(wSunq(Sindex)*10)) '.mat'],'defocus875all','defocus875predAll','wvInFocusAll','RMSE','wSunq'); 
 end
 
 % RMSE(i,j,Sindex) = sqrt(mean((defocus875pred(:)-defocus875(:)).^2));

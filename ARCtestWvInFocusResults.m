@@ -5,13 +5,13 @@ clear;
 %%
 
 subjNum = 20;
-RMSEall = zeros([11 11 8]);
-SvaluesAll = [-0.6 -0.4 -0.2 0.0 0.2 0.4 0.6 0.8];
-loadStr = {'-6' '-4' '-2' '0' '2' '4' '6' '8'};
+RMSEall = zeros([11 11 11]);
+SvaluesAll = [-1 -0.8 -0.6 -0.4 -0.2 0.0 0.2 0.4 0.6 0.8 1];
+loadStr = {'-10' '-8' '-6' '-4' '-2' '0' '2' '4' '6' '8' '10'};
 folderPath = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/coneWeightsError/';
 blockNums = 3:8;
 rgbAll = [];
-ind2examine = 1;
+ind2examine = 1:11;
 optDistStim = [];
 
 for i = 1:length(blockNums)
@@ -47,9 +47,9 @@ for i = ind2examine
     min(RMSEtmp(:))
 end
 
-predD = squeeze(defocus875predAll(:,:,9,6,end))';
+predD = squeeze(defocus875predAll(:,7,7,end))';
 predD = predD(:);
-actD = squeeze(defocus875all(:,:,9,6,end))';
+actD = squeeze(defocus875all(:,7,7,end))';
 actD = actD(:);
 figure; 
 hold on;
