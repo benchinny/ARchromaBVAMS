@@ -1,7 +1,7 @@
 %% LOAD MAIN EXPERIMENT FILES
 
-subjNum = 30;
-bSave = true;
+subjNum = 20;
+bSave = false;
 filePath = '/Users/benjaminchin/Documents/ARchromaScraps/meeting_Sept25/';
 
 if subjNum==11
@@ -187,6 +187,69 @@ for j = 1:length(optDistToCheckAll)
        saveas(gcf,[filePath 'colorConditions/S' num2str(subjNum) 'ColorSplitDistInd' num2str(j)],'epsc');
     end
 end
+
+%% PLOTTING WAVELENGTH IN FOCUS
+
+lumScaleRGB = [4.0888 9.6669 1];
+
+gammaRGB = [2.5 2.7 2.3];
+
+rgbLumNorm = [lumScaleRGB(1).*rgb1all(:,1).^gammaRGB(1) lumScaleRGB(2).*rgb1all(:,2).^gammaRGB(2) lumScaleRGB(3).*rgb1all(:,3).^gammaRGB(3)];
+
+conditionsOrderedNorm = [0.25 0.00 1.00; ...
+                         0.50 0.00 1.00; ...
+                         1.00 0.00 1.00; ...
+                         1.00 0.00 0.50; ...
+                         1.00 0.00 0.25; ...
+                         0.25 0.50 1.00; ...
+                         0.50 0.50 1.00; ...
+                         1.00 0.50 1.00; ...
+                         1.00 0.50 0.50; ...
+                         1.00 0.50 0.25; ...
+                         1.00 1.00 1.00];
+
+figPositions = [14 493 560 420; ...
+                544 496 560 420; ...
+                1079 498 560 420; ...
+                ];
+optDistToCheckAll = [1.5 2.5 3.5];
+
+for j = 1:length(optDistToCheckAll)
+    figure;
+    set(gcf,'Position',figPositions(j,:));
+    hold on;
+    optDistToCheck = optDistToCheckAll(j);
+    indDist = abs(meanv00all-optDistToCheck)<0.01;
+    for i = 1:size(conditionsOrderedNorm,1)
+        ind = abs(rgbLumNorm(:,1)-conditionsOrderedNorm(i,1))<0.01 & ...
+              abs(rgbLumNorm(:,2)-conditionsOrderedNorm(i,2))<0.01 & ...
+              abs(rgbLumNorm(:,3)-conditionsOrderedNorm(i,3))<0.01 & ...
+              abs(meanv00all-optDistToCheck)<0.01;
+        diffFromOptDist = defocusAt550(ind)-meanv00all(ind);
+        wvInFocus = humanWaveDefocusInvert550anchor(diffFromOptDist);
+        if i<size(conditionsOrderedNorm,1)
+            plot(i.*ones([sum(ind) 1]),wvInFocus,'o','Color',conditionsOrderedNorm(i,:),'MarkerFaceColor',conditionsOrderedNorm(i,:));
+        else
+            plot(i.*ones([sum(ind) 1]),wvInFocus,'o','Color','k','MarkerFaceColor','k');
+        end
+        diffFromOptDistMean(i) = mean(diffFromOptDist);
+        wvInFocusMean(i) = humanWaveDefocusInvert550anchor(diffFromOptDistMean(i));
+    end
+    plot(wvInFocusMean(1:5),'k-');
+    plot(6:10,wvInFocusMean(6:10),'k-');
+    plot([0 11],wvInFocusMean(11).*[1 1],'k--','LineWidth',1);
+    xlim([0 11]);
+    ylim([400 700]);
+    title(['Subject ' num2str(subjNum-10) ', Optical Distances = ' num2str(optDistToCheck)]);
+    plot(5.5.*[1 1],ylim,'k-');
+    set(gca,'FontSize',15);
+    xlabel('Condition');
+    ylabel('Wavelength in focus (nm)');
+    if bSave
+       saveas(gcf,[filePath 'colorConditions/S' num2str(subjNum) 'ColorSplitDistInd' num2str(j)],'epsc');
+    end
+end
+
 
 %% PLOT INDIVIDUAL TRIALS FOR REFERENCE
 
