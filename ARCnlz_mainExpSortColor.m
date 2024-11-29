@@ -100,3 +100,45 @@ for i = 1:length(blockNums)
     rgb1all = [rgb1all; AFCp.rgb100(trialNumsTmp,:)];
     meanv00all = [meanv00all; AFCp.meanv00(trialNumsTmp)./1.2255];
 end
+
+% GETTING DEFOCUS AT 550NM
+defocusCorrectionFactor = (1e6/(4*sqrt(3)))*((PARAMS.PupilSize/2000)^2);
+defocusAt550 = humanWaveDefocus(875)-humanWaveDefocus(550)+meanC(:,4)./defocusCorrectionFactor;
+
+% SORTING CONDITIONS BY COLOR
+lumScaleRGB = [4.0888 9.6669 1];
+
+gammaRGB = [2.5 2.7 2.3];
+
+rgbLumNorm = [lumScaleRGB(1).*rgb1all(:,1).^gammaRGB(1) lumScaleRGB(2).*rgb1all(:,2).^gammaRGB(2) lumScaleRGB(3).*rgb1all(:,3).^gammaRGB(3)];
+
+conditionsOrderedNorm = [0.25 0.00 1.00; ...
+                         0.50 0.00 1.00; ...
+                         1.00 0.00 1.00; ...
+                         1.00 0.00 0.50; ...
+                         1.00 0.00 0.25; ...
+                         0.25 0.50 1.00; ...
+                         0.50 0.50 1.00; ...
+                         1.00 0.50 1.00; ...
+                         1.00 0.50 0.50; ...
+                         1.00 0.50 0.25; ...
+                         1.00 1.00 1.00];
+
+optDistToCheckAll = [1.5 2.5 3.5];
+
+for j = 1:length(optDistToCheckAll)
+    optDistToCheck = optDistToCheckAll(j);
+    indDist = abs(meanv00all-optDistToCheck)<0.01;
+    for i = 1:size(conditionsOrderedNorm,1)
+        ind = abs(rgbLumNorm(:,1)-conditionsOrderedNorm(i,1))<0.01 & ...
+              abs(rgbLumNorm(:,2)-conditionsOrderedNorm(i,2))<0.01 & ...
+              abs(rgbLumNorm(:,3)-conditionsOrderedNorm(i,3))<0.01 & ...
+              abs(meanv00all-optDistToCheck)<0.01;
+        if i<size(conditionsOrderedNorm,1)
+            plot(i.*ones([sum(ind) 1]),defocusAt550(ind),'o','Color',conditionsOrderedNorm(i,:),'MarkerFaceColor',conditionsOrderedNorm(i,:));
+        else
+            plot(i.*ones([sum(ind) 1]),defocusAt550(ind),'o','Color','k','MarkerFaceColor','k');
+        end
+        defocusAt550mean(i) = mean(defocusAt550(ind));
+    end
+end
