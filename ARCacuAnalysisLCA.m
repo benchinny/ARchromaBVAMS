@@ -272,6 +272,13 @@ for rgbAcuCnd = 1:3
             end
             PCfitSupportBoots = min(unqFocDst.*scaleFac):0.01:max(unqFocDst.*scaleFac);
             PCfitBoots = spline(unqFocDst.*scaleFac,PCboots(:,j),PCfitSupportBoots);
+            if subj==5 && (rgbAcuCnd==2 || rgbAcuCnd==1)
+                PCfitBoots(PCfitSupportBoots>0.6) = 0;
+            elseif subj==5 && rgbAcuCnd==3
+                PCfitBoots(PCfitSupportBoots<0.6) = 0;
+            elseif subj==18 && rgbAcuCnd==2
+                PCfitBoots(PCfitSupportBoots<-0.5) = 0;
+            end
             [~,indLCAboots] = max(PCfitBoots);
             defocusLCAmeasuredBoots(rgbAcuCnd,j) = PCfitSupportBoots(indLCAboots);
         end
