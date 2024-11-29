@@ -1,6 +1,6 @@
 %%
 
-function ARCacuAnalysisLCA(subj)
+function [defocusLCAmeasured, q1best, q2best, q3best] = ARCacuAnalysisLCA(subj,bPLOT)
 % filePath = 'G:\My Drive\exp_bvams\code_repo\ARC\';
 filePath = 'H:\Shared drives\CIVO_BVAMS\data\ARC\';
 
@@ -250,8 +250,10 @@ scaleFac = 0.816;
 % meanFocInt = 5;
 defocusLCAmeasured = [];
 
-figure;
-set(gcf,'Position',[149 495 1277 420]);
+if bPLOT
+    figure;
+    set(gcf,'Position',[149 495 1277 420]);
+end
 for rgbAcuCnd = 1:3
     for i = 1:length(unqFocDst)
         indAnalysis = focStmOptDstIncr==unqFocDst(i) & indAcuRB==rgbAcuCnd;
@@ -269,18 +271,20 @@ for rgbAcuCnd = 1:3
         [~,indLCA] = max(PCfit);
         defocusLCAmeasured(rgbAcuCnd) = PCfitSupport(indLCA);
     end
-    subplot(1,3,rgbAcuCnd);
-    % set(gcf,'Position',figPositions(rgbAcuCnd,:));
-    hold on;
-    plot(unqFocDst.*scaleFac,PC,'o','Color',rgbUnq(rgbAcuCnd,:),'MarkerFaceColor','w','LineWidth',1.5,'MarkerSize',10);
-    errorbar(unqFocDst.*scaleFac,PC,PC-PCci(1,:),PCci(2,:)-PC,'o','Color',rgbUnq(rgbAcuCnd,:),'MarkerFaceColor','w','LineWidth',1.5,'MarkerSize',10);
-    plot(PCfitSupport,PCfit,'-','Color',rgbUnq(rgbAcuCnd,:),'MarkerFaceColor','w','LineWidth',1.5,'MarkerSize',10);
-    axis square;
-    ylim([0.4 1]);
-    if rgbAcuCnd==1
-       formatFigure('Relative optical distance (D)','Proportion Correct',['Subject ' num2str(subj)]);
-    else
-       formatFigure('Relative optical distance (D)','Proportion Correct'); 
+    if bPLOT
+        subplot(1,3,rgbAcuCnd);
+        % set(gcf,'Position',figPositions(rgbAcuCnd,:));
+        hold on;
+        plot(unqFocDst.*scaleFac,PC,'o','Color',rgbUnq(rgbAcuCnd,:),'MarkerFaceColor','w','LineWidth',1.5,'MarkerSize',10);
+        errorbar(unqFocDst.*scaleFac,PC,PC-PCci(1,:),PCci(2,:)-PC,'o','Color',rgbUnq(rgbAcuCnd,:),'MarkerFaceColor','w','LineWidth',1.5,'MarkerSize',10);
+        plot(PCfitSupport,PCfit,'-','Color',rgbUnq(rgbAcuCnd,:),'MarkerFaceColor','w','LineWidth',1.5,'MarkerSize',10);
+        axis square;
+        ylim([0.4 1]);
+        if rgbAcuCnd==1
+           formatFigure('Relative optical distance (D)','Proportion Correct',['Subject ' num2str(subj)]);
+        else
+           formatFigure('Relative optical distance (D)','Proportion Correct'); 
+        end
     end
 end
 
@@ -311,15 +315,17 @@ q1best = q1all(indBestFit);
 q2best = q2all(indBestFit);
 q3best = q3all(indBestFit);
 
-figure; 
-hold on;
-plot(wavePlotLCA,humanWaveDefocusParameterized(wavePlotLCA,q1best,q2best,q3best),'k-','LineWidth',1); 
-plot(wavePlotPrimaries,-defocusLCAmeasured,'ko','MarkerSize',15,'MarkerFaceColor','w');
-axis square; 
-set(gca,'FontSize',15); 
-xlabel('Wavelength (\lambda)'); 
-ylabel('Relative Defocus (D)');
-xlim([400 875]);
+if bPLOT
+    figure; 
+    hold on;
+    plot(wavePlotLCA,humanWaveDefocusParameterized(wavePlotLCA,q1best,q2best,q3best),'k-','LineWidth',1); 
+    plot(wavePlotPrimaries,-defocusLCAmeasured,'ko','MarkerSize',15,'MarkerFaceColor','w');
+    axis square; 
+    set(gca,'FontSize',15); 
+    xlabel('Wavelength (\lambda)'); 
+    ylabel('Relative Defocus (D)');
+    xlim([400 875]);
+end
 
 if bSave
    saveas(gcf,[filePathSave 'LCA/S' num2str(subj) 'LCAfit'],'epsc');
