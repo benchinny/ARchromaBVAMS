@@ -1,6 +1,6 @@
 %%
 
-function [defocusLCAmeasured, q1best, q2best, q3best] = ARCacuAnalysisLCA(subj,bPLOT)
+function [defocusLCAmeasured, q1best, q2best, q3best,defocusLCAmeasuredBoots] = ARCacuAnalysisLCA(subj,bPLOT,nBoots)
 % filePath = 'G:\My Drive\exp_bvams\code_repo\ARC\';
 filePath = 'H:\Shared drives\CIVO_BVAMS\data\ARC\';
 
@@ -224,6 +224,7 @@ focStmOptDstIncr = [];
 rspAcu = [];
 stimOrientation = [];
 indAcuRB = [];
+defocusLCAmeasuredBoots = [];
 
 for i = 1:length(filenames)
     load(filenames{i});
@@ -262,7 +263,21 @@ for rgbAcuCnd = 1:3
          PCci(:,i) = binoinv([0.16 0.84],sum(focStmOptDstIncr==unqFocDst(i)),PC(i))./sum(focStmOptDstIncr==unqFocDst(i));
     end
     
-    PCfitSupport = min(unqFocDst.*scaleFac):0.02:max(unqFocDst.*scaleFac);
+    if nBoots>0
+        for j = 1:nBoots
+            for i = 1:length(unqFocDst)
+                indAnalysis = focStmOptDstIncr==unqFocDst(i) & indAcuRB==rgbAcuCnd;
+                indBoots = randsample(find(indAnalysis),sum(indAnalysis),'true');
+                PCboots(i,j) = sum(rspAcu(indBoots)==stimOrientation(indBoots))./length(indBoots);
+            end
+            PCfitSupportBoots = min(unqFocDst.*scaleFac):0.01:max(unqFocDst.*scaleFac);
+            PCfitBoots = spline(unqFocDst.*scaleFac,PCboots(:,j),PCfitSupportBoots);
+            [~,indLCAboots] = max(PCfitBoots);
+            defocusLCAmeasuredBoots(rgbAcuCnd,j) = PCfitSupportBoots(indLCAboots);
+        end
+    end
+
+    PCfitSupport = min(unqFocDst.*scaleFac):0.01:max(unqFocDst.*scaleFac);
     PCfit = spline(unqFocDst.*scaleFac,PC,PCfitSupport);
     [~,indLCA] = max(PCfit);
     defocusLCAmeasured(rgbAcuCnd) = PCfitSupport(indLCA);
