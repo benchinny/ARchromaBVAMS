@@ -1,6 +1,7 @@
 %% LOAD MAIN EXPERIMENT FILES
 
-subjNum = 20;
+function [wvInFocusCell, defocusAt550cell, optDistCnd, rgbLumNormCnd] = ARCnlz_mainExpSortColor(subjNum)
+
 bSave = false;
 filePath = '/Users/benjaminchin/Documents/ARchromaScraps/meeting_Sept25/';
 
@@ -146,4 +147,6 @@ for j = 1:length(optDistToCheckAll)
         optDistCnd(end+1,:) = optDistToCheckAll(j);
         rgbLumNormCnd(end+1,:) = conditionsOrderedNorm(i,:);
     end
+end
+
 end
