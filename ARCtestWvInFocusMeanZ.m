@@ -1,14 +1,17 @@
 %%
 
-subjNum = 10;
+subjNum = 3;
 if subjNum==10
     subjName = 'S20-OD';
+    blockNumAll = 3:8;
+elseif subjNum==3
+    subjName = 'S13-OD';
+    blockNumAll = 12:17;
 end
-blockNumAll = 3:8;
 trialNumAll = 1:36;
 wLunq = -1:0.2:1;
 wMunq = -1:0.2:1;
-wSunq = [-1 1];
+wSunq = [-1 -0.6 -0.2 0.2 0.6 1];
 RMSE = [];
 defocus875all = [];
 defocus875predAll = [];
@@ -60,7 +63,7 @@ for Sindex = 1:length(wSunq)
             parfor l = 1:size(rgbUnq,1)
                 wvInFocus(l,:) = ARCwvInFocusConesMeanZ(subjNum,l,[wL wM wS]);
                 display(['wL = ' num2str(wL) ' wM = ' num2str(wM) ' wS = ' num2str(wS) ' stim ' num2str(l)]);
-            end
+            end 
             wvInFocusTmp = zeros([length(optDistAll) 1]);
             for l = 1:size(rgbUnq,1)
                 indStiml = abs(rgbAll(:,1)-rgbUnq(l,1))<0.001 & ...
@@ -75,7 +78,7 @@ for Sindex = 1:length(wSunq)
             wvInFocusAll(:,i,j,Sindex) = wvInFocusTmp;
         end
     end
-    save([savePath 'wvInFocusModelResults' num2str(round(wSunq(Sindex)*10)) '.mat'],'defocus875all','defocus875predAll','wvInFocusAll','RMSE','wSunq'); 
+    save([savePath 'S' num2str(subjNum) 'wvInFocusModelResults' num2str(round(wSunq(Sindex)*10)) '.mat'],'defocus875all','defocus875predAll','wvInFocusAll','RMSE','wSunq'); 
 end
 
 % RMSE(i,j,Sindex) = sqrt(mean((defocus875pred(:)-defocus875(:)).^2));

@@ -3,7 +3,7 @@ ieInit;
 
 %% Set up display struct and build Ben's stimulus
 
-subjNum = 10;
+subjNum = 3;
 subjNumEncode = subjNum+10;
 bPlotCoefficients = false;
 
@@ -241,22 +241,22 @@ for k = 1:size(rgb00,1) % LOOP OVER TRIAL
     
     wave2 = 380:4:780;
 
-    for i = 46 % 1:length(wave2)
+    parfor i = 1:length(wave2)
         zCoeffs = [0 meanC(1:end-1)];
         wvfP = wvfCreate('calc wavelengths', wave, ...
             'measured wavelength', wave2(i), ...
             'zcoeffs', zCoeffs, 'measured pupil', PARAMS.PupilSize, ...
             'name', sprintf('human-%d', PARAMS.PupilSize),'spatial samples',size(I,2));
         wvfP.calcpupilMM = PARAMS.PupilSize;
-        defocusFromLCA = max(abs([humanWaveDefocusS10(wave2(i),min(wave)) ...
-                                  humanWaveDefocusS10(wave2(i),max(wave))]));
+        defocusFromLCA = max(abs([humanWaveDefocusS3(wave2(i),min(wave)) ...
+                                  humanWaveDefocusS3(wave2(i),max(wave))]));
         if defocusFromLCA<1
             wvfP.refSizeOfFieldMM = 12;
         else
             wvfP.refSizeOfFieldMM = 6;
         end
         wvfP = wvfSet(wvfP, 'zcoeff', 0, 'defocus');
-        wvfP = wvfSet(wvfP, 'customlca', @humanWaveDefocusS10);
+        wvfP = wvfSet(wvfP, 'customlca', @humanWaveDefocusS3);
         
         % Convert to siData format as well as wavefront object
         [siPSFData, wvfP] = wvf2SiPsfARC(wvfP,'showBar',false,'nPSFSamples',size(I,2),'umPerSample',1.1512); 

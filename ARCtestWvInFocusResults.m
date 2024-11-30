@@ -4,18 +4,27 @@ clear;
 
 %%
 
-subjNum = 20;
-RMSEall = zeros([11 11 11]);
-SvaluesAll = [-1 -0.8 -0.6 -0.4 -0.2 0.0 0.2 0.4 0.6 0.8 1];
-loadStr = {'-10' '-8' '-6' '-4' '-2' '0' '2' '4' '6' '8' '10'};
+subjNum = 13;
+
+if subjNum==20
+    RMSEall = zeros([11 11 11]);
+    SvaluesAll = [-1 -0.8 -0.6 -0.4 -0.2 0.0 0.2 0.4 0.6 0.8 1];
+    loadStr = {'-10' '-8' '-6' '-4' '-2' '0' '2' '4' '6' '8' '10'};
+    blockNums = 3:8;
+    ind2examine = 1:11;
+elseif subjNum==13
+    RMSEall = zeros([11 11 5]);
+    SvaluesAll = [-1 -0.8 -0.6 -0.4 -0.2 0.0 0.2 0.4 0.6 0.8 1];
+    loadStr = {'-10' '-8' '-6' '-4' '-2' '0' '2' '4' '6' '8' '10'};
+    blockNums = 12:17;
+    ind2examine = 1:11;    
+end
 folderPath = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/coneWeightsError/';
-blockNums = 3:8;
 rgbAll = [];
-ind2examine = 1:11;
 optDistStim = [];
 
 for i = 1:length(blockNums)
-    AFCp = ARCloadFileBVAMS(20,blockNums(i));
+    AFCp = ARCloadFileBVAMS(subjNum,blockNums(i));
     rgbAll = [rgbAll; AFCp.rgb100];
     optDistStim = [optDistStim; AFCp.meanv00./1.2255];
 end
@@ -27,7 +36,7 @@ rgbLumNorm(:,3) = (rgbAll(:,3).^2.3)./1;
 rgbLumNorm(rgbLumNorm>1) = 1;
 
 for i = ind2examine
-    load([folderPath 'wvInFocusModelResults' num2str(loadStr{i}) '.mat']);
+    load([folderPath 'S' num2str(subjNum-10) 'wvInFocusModelResults' num2str(loadStr{i}) '.mat']);
     RMSEall(:,:,i) = RMSE(:,:,end);
 end
 
