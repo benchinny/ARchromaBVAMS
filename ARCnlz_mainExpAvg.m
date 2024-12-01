@@ -160,3 +160,81 @@ axis square;
 formatFigure('Color Condition','Relative defocus (D)');
 xlim([0.5 5.5]);
 ylim([-0.6 0.4]);
+
+%% ONE DATA POINT PER TRIAL (AVERAGE ACROSS SUBJECTS)
+
+rgbLumNormCndUnq = [0.2500         0    1.0000; ...
+                    0.5000         0    1.0000; ...
+                    1.0000         0    1.0000; ...
+                    1.0000         0    0.5000; ...
+                    1.0000         0    0.2500; ...
+                    0.2500    0.5000    1.0000; ...
+                    0.5000    0.5000    1.0000; ...
+                    1.0000    0.5000    1.0000; ...
+                    1.0000    0.5000    0.5000; ...
+                    1.0000    0.5000    0.2500; ...
+                    1.0000    1.0000    1.0000];
+
+defocusAt550objDistCenteredCell = {};
+
+for i = 1:size(rgbLumNormCndUnq,1)
+    % GET ALL CELL INDICES WITH UNIQUE COLOR
+    indRgbLumNormCnd = find(abs(rgbLumNormCndAll(:,1)-rgbLumNormCndUnq(i,1))<0.001 & ...
+                            abs(rgbLumNormCndAll(:,2)-rgbLumNormCndUnq(i,2))<0.001 & ...
+                            abs(rgbLumNormCndAll(:,3)-rgbLumNormCndUnq(i,3))<0.001);
+    defocusAt550objDistCentered = [];
+    trialTag = [];
+    subjNumUnq = unique(subjNumTag);
+    trialCounter = zeros(size(subjNumUnq));
+    for j = 1:length(indRgbLumNormCnd)
+        defocusAt550objDistCentered = [defocusAt550objDistCentered; defocusAt550cellAll{indRgbLumNormCnd(j)}-optDistCndAll(indRgbLumNormCnd(j))];
+        trialTag = [trialTag; trialCounter(subjNumUnq==subjNumTag(indRgbLumNormCnd(j)))+ ...
+                    [1:length(defocusAt550cellAll{indRgbLumNormCnd(j)})]'];
+        trialCounter(subjNumUnq==subjNumTag(indRgbLumNormCnd(j))) = ...
+        trialCounter(subjNumUnq==subjNumTag(indRgbLumNormCnd(j)))+length(defocusAt550cellAll{indRgbLumNormCnd(j)});        
+    end
+    trialTagUnq = unique(trialTag);
+    for j = 1:length(trialTagUnq)
+        defocusAt550objDistCenteredMeanAcrossSubj(j) = mean(defocusAt550objDistCentered(trialTag==trialTagUnq(j)));
+    end
+    defocusAt550objDistCenteredCell{i} = defocusAt550objDistCenteredMeanAcrossSubj;
+end
+
+figure;
+set(gcf,'Position',[353 426 988 420]);
+subplot(1,2,1);
+hold on;
+for i = 1:5 % size(rgbLumNormCndUnq,1)
+    plot(i,mean(defocusAt550objDistCenteredCell{i}),'ko','MarkerFaceColor', ...
+        rgbLumNormCndUnq(i,:),'MarkerSize',12,'LineWidth',1);
+end
+for i = 1:5 %size(rgbLumNormCndUnq,1)
+    CIrgb = quantile(defocusAt550objDistCenteredCell{i},[0.16 0.84]);
+    errorbar(i,mean(defocusAt550objDistCenteredCell{i}), ...
+             std(defocusAt550objDistCenteredCell{i}), ...
+             'ko','MarkerFaceColor', ...
+            rgbLumNormCndUnq(i,:),'Color',rgbLumNormCndUnq(i,:),'MarkerSize',12,'LineWidth',1);
+end
+plot([0.5 5.5],mean(defocusAt550objDistCenteredCell{end}).*[1 1],'k--','LineWidth',1);
+axis square;
+formatFigure('Color Condition','Relative defocus (D)');
+xlim([0.5 5.5]);
+ylim([-0.6 0.4]);
+subplot(1,2,2);
+hold on;
+for i = 1:5 % size(rgbLumNormCndUnq,1)
+    plot(i,mean(defocusAt550objDistCenteredCell{i+5}),'ko','MarkerFaceColor', ...
+        rgbLumNormCndUnq(i+5,:),'MarkerSize',12,'LineWidth',1);
+end
+for i = 1:5 %size(rgbLumNormCndUnq,1)
+    CIrgb = quantile(defocusAt550objDistCenteredCell{i+5},[0.16 0.84]);
+    errorbar(i,mean(defocusAt550objDistCenteredCell{i+5}), ...
+             std(defocusAt550objDistCenteredCell{i+5}), ...
+             'ko','MarkerFaceColor', ...
+            rgbLumNormCndUnq(i+5,:),'Color',rgbLumNormCndUnq(i+5,:),'MarkerSize',12,'LineWidth',1);
+end
+plot([0.5 5.5],mean(defocusAt550objDistCenteredCell{end}).*[1 1],'k--','LineWidth',1);
+axis square;
+formatFigure('Color Condition','Relative defocus (D)');
+xlim([0.5 5.5]);
+ylim([-0.6 0.4]);
