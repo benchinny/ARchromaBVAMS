@@ -141,7 +141,9 @@ for j = 1:length(optDistToCheckAll)
               abs(meanv00all-optDistToCheck)<0.01;
         defocusAt550tmp = defocusAt550(ind);
         diffFromOptDist = defocusAt550tmp-meanv00all(ind);
-        indGood = abs(diffFromOptDist)<1;
+        indGood = abs(diffFromOptDist)<1 & ...
+                  humanWaveDefocusInvertARC(550,diffFromOptDist,subjNum-10)>380 & ...
+                  humanWaveDefocusInvertARC(550,diffFromOptDist,subjNum-10)<780;
         wvInFocusCell{end+1} =  humanWaveDefocusInvertARC(550,diffFromOptDist(indGood),subjNum-10);
         defocusAt550cell{end+1} = defocusAt550tmp(indGood);
         optDistCnd(end+1,:) = optDistToCheckAll(j);

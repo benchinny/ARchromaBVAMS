@@ -262,7 +262,7 @@ end
 axis square;
 formatFigure('Color Condition','Wavelength (\lambda)');
 xlim([0.5 5.5]);
-% ylim([-0.6 0.4]);
+ylim([460 620]);
 subplot(1,2,2);
 hold on;
 for i = 1:5 % size(rgbLumNormCndUnq,1)
@@ -280,4 +280,4 @@ end
 axis square;
 formatFigure('Color Condition','Wavelength (\lambda)');
 xlim([0.5 5.5]);
-% ylim([-0.6 0.4]);
+ylim([460 620]);
