@@ -82,13 +82,14 @@ rgb1all = [];
 meanv00all = [];
 nIndBadTracker = [];
 c4all = {};
+timeCell = {};
 
 for i = 1:length(blockNums)
     blockNumTmp = blockNums(i);
     trialNumsTmp = trialNums{i};
     AFCp = ARCloadFileBVAMS(subjNum,blockNumTmp);
     for j = 1:length(trialNumsTmp)
-        [ZernikeTable, ~, ~, ~] = ARCloadFileFIAT(subjName,blockNumTmp,trialNumsTmp(j),0);
+        [ZernikeTable, ~, ~, TimeStamp] = ARCloadFileFIAT(subjName,blockNumTmp,trialNumsTmp(j),0);
         NumCoeffs = width(ZernikeTable)-8; % determine how many coefficients are in the cvs file. 
         c=zeros(size(ZernikeTable,1),65); %this is the vector that contains the Zernike polynomial coefficients. We can work with up to 65.
         indBadPupil = table2array(ZernikeTable(:,5))==0;
@@ -105,6 +106,7 @@ for i = 1:length(blockNums)
            meanC(end+1,:) = mean(c(1:end,:),1); % TAKE MEAN OF COEFFICIENTS    
         end
         c4all{end+1} = c(:,4);
+        timeCell{end+1} = seconds(TimeStamp)-seconds(TimeStamp(1));
     end
     rgb1all = [rgb1all; AFCp.rgb100(trialNumsTmp,:)];
     meanv00all = [meanv00all; AFCp.meanv00(trialNumsTmp)./1.2255];
@@ -275,9 +277,11 @@ for k = 1:length(optDistToCheckAll)
             trialTmp(1:length(c4all{ind(j)})) = c4all{ind(j)};
             trialTmp(trialTmp==0) = NaN;
             trialTmp550 = humanWaveDefocus(875)-humanWaveDefocus(550)+trialTmp./defocusCorrectionFactor;
-            plot(1:lengthTrialMax,trialTmp550,'-','Color',conditionsOrderedNorm(i,:));
+            timeStampTmp = timeCell{ind(j)};
+            plot(timeStampTmp,trialTmp550(1:length(timeStampTmp)),'-','Color',conditionsOrderedNorm(i,:));
         end
         axis square;
+        xlim([0 3.1]);
         if subjNum==18
             ylim(mean(defocusAt550(indDist))+[-1.2 1.2]);
             yBuffer = 1.2;
