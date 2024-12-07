@@ -144,6 +144,8 @@ for i = 1:size(rgbLumNormCndUnq,1)
     standardError95wvInFocus(i) = 1.96*std(wvInFocusAvg)/sqrt(length(wvInFocusAvg));
 end
 
+subjSymbols = 'sd+x*^><v';
+
 figure;
 set(gcf,'Position',[353 426 988 420]);
 subplot(1,2,1);
@@ -151,8 +153,11 @@ hold on;
 for i = 1:5 % size(rgbLumNormCndUnq,1)
     plot(i,mean(defocusAt550objDistCenteredCell{i}),'ko','MarkerFaceColor', ...
         rgbLumNormCndUnq(i,:),'MarkerSize',12,'LineWidth',1);
-    plot(i.*ones(size(defocusAt550objDistCenteredCell{i})),defocusAt550objDistCenteredCell{i}, ...
-        '.','MarkerSize',12,'Color',rgbLumNormCndUnq(i,:));
+    defocusAt550objDistCenteredCellContent = defocusAt550objDistCenteredCell{i};
+    for j = 1:length(subjSymbols)
+        plot(i,defocusAt550objDistCenteredCellContent(j), ...
+            subjSymbols(j),'MarkerSize',12,'Color',rgbLumNormCndUnq(i,:));
+    end
 end
 for i = 1:5 %size(rgbLumNormCndUnq,1)
     % errorbar(i,mean(defocusAt550objDistCenteredCell{i}), ...
@@ -172,8 +177,11 @@ hold on;
 for i = 1:5 % size(rgbLumNormCndUnq,1)
     plot(i,mean(defocusAt550objDistCenteredCell{i+5}),'ko','MarkerFaceColor', ...
         rgbLumNormCndUnq(i+5,:),'MarkerSize',12,'LineWidth',1);
-    plot(i.*ones(size(defocusAt550objDistCenteredCell{i+5})),defocusAt550objDistCenteredCell{i+5}, ...
-        '.','MarkerSize',12,'Color',rgbLumNormCndUnq(i+5,:));    
+    defocusAt550objDistCenteredCellContent = defocusAt550objDistCenteredCell{i+5};
+    for j = 1:length(subjSymbols)
+        plot(i,defocusAt550objDistCenteredCellContent(j), ...
+            subjSymbols(j),'MarkerSize',12,'Color',rgbLumNormCndUnq(i+5,:));  
+    end
 end
 for i = 1:5 %size(rgbLumNormCndUnq,1)
     % errorbar(i,mean(defocusAt550objDistCenteredCell{i+5}), ...
@@ -196,8 +204,11 @@ hold on;
 for i = 1:5 % size(rgbLumNormCndUnq,1)
     plot(i,mean(wvInFocusSortedCell{i}),'ko','MarkerFaceColor', ...
         rgbLumNormCndUnq(i,:),'MarkerSize',12,'LineWidth',1);
-    plot(i.*ones(size(wvInFocusSortedCell{i})),wvInFocusSortedCell{i}, ...
-        '.','MarkerSize',12,'Color',rgbLumNormCndUnq(i,:));    
+    wvInFocusSortedCellContent = wvInFocusSortedCell{i};
+    for j = 1:length(subjSymbols)
+        plot(i,wvInFocusSortedCellContent(j), ...
+            subjSymbols(j),'MarkerSize',12,'Color',rgbLumNormCndUnq(i,:));    
+    end
 end
 for i = 1:5 %size(rgbLumNormCndUnq,1)
     CIrgb = quantile(wvInFocusSortedCell{i},[0.16 0.84]);
@@ -218,8 +229,11 @@ hold on;
 for i = 1:5 % size(rgbLumNormCndUnq,1)
     plot(i,mean(wvInFocusSortedCell{i+5}),'ko','MarkerFaceColor', ...
         rgbLumNormCndUnq(i+5,:),'MarkerSize',12,'LineWidth',1);
-    plot(i.*ones(size(wvInFocusSortedCell{i+5})),wvInFocusSortedCell{i+5}, ...
-        '.','MarkerSize',12,'Color',rgbLumNormCndUnq(i,:));        
+    wvInFocusSortedCellContent = wvInFocusSortedCell{i+5};
+    for j = 1:length(subjSymbols)
+        plot(i,wvInFocusSortedCellContent(j), ...
+            subjSymbols(j),'MarkerSize',12,'Color',rgbLumNormCndUnq(i,:));        
+    end
 end
 for i = 1:5 %size(rgbLumNormCndUnq,1)
     CIrgb = quantile(wvInFocusSortedCell{i+5},[0.16 0.84]);
