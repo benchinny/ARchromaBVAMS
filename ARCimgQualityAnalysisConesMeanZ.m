@@ -1,9 +1,10 @@
+function ARCimgQualityAnalysisConesMeanZ(subjNum)
+
 %% Initialize and clear
 ieInit;
 
 %% Set up display struct and build Ben's stimulus
 
-subjNum = 3;
 subjNumEncode = subjNum+10;
 bPlotCoefficients = false;
 
@@ -65,6 +66,36 @@ elseif subjNum==10
     % blockNums = [2 3];
     % trialNums = [[1:20]' [1:20]'];     
     nTrialTotal = 216;
+elseif subjNum==1
+   blockNums = 11:16;
+   trialNums = [[1:36]' [1:36]' [1:36]' [1:36]' [1:36]' [1:36]']; 
+   subjName = ['S' num2str(subjNum+10) '-OD'];
+   nTrialTotal = 216;
+elseif subjNum==5
+   blockNums = 3:8;
+   trialNums = [[1:36]' [1:36]' [1:36]' [1:36]' [1:36]' [1:36]']; 
+   subjName = ['S' num2str(subjNum+10) '-OD'];
+   nTrialTotal = 216;   
+elseif subjNum==9
+   blockNums = 2:7;
+   trialNums = [[1:36]' [1:36]' [1:36]' [1:36]' [1:36]' [1:36]']; 
+   subjName = ['S' num2str(subjNum+10) '-OD'];
+   nTrialTotal = 216;      
+elseif subjNum==16
+   blockNums = 2:7;
+   trialNums = [[1:36]' [1:36]' [1:36]' [1:36]' [1:36]' [1:36]'];
+   subjName = ['S' num2str(subjNum+10) '-OD'];
+   nTrialTotal = 216;
+elseif subjNum==17
+   blockNums = 2:7;
+   trialNums = [[1:36]' [1:36]' [1:36]' [1:36]' [1:36]' [1:36]'];
+   subjName = ['S' num2str(subjNum+10) '-OD'];
+   nTrialTotal = 216;   
+elseif subjNum==20
+   blockNums = 2:7;
+   trialNums = [[1:36]' [1:36]' [1:36]' [1:36]' [1:36]' [1:36]'];
+   subjName = ['S' num2str(subjNum+10) '-OD'];
+   nTrialTotal = 216;      
 end
 
 %%
@@ -241,22 +272,59 @@ for k = 1:size(rgb00,1) % LOOP OVER TRIAL
     
     wave2 = 380:4:780;
 
-    parfor i = 1:length(wave2)
+    for i = 46 % 1:length(wave2)
+        % zCoeffs = [0 zeros(size(meanC(1:end-1)))];
         zCoeffs = [0 meanC(1:end-1)];
         wvfP = wvfCreate('calc wavelengths', wave, ...
             'measured wavelength', wave2(i), ...
             'zcoeffs', zCoeffs, 'measured pupil', PARAMS.PupilSize, ...
             'name', sprintf('human-%d', PARAMS.PupilSize),'spatial samples',size(I,2));
         wvfP.calcpupilMM = PARAMS.PupilSize;
-        defocusFromLCA = max(abs([humanWaveDefocusS3(wave2(i),min(wave)) ...
-                                  humanWaveDefocusS3(wave2(i),max(wave))]));
+        if subjNum==1
+            defocusFromLCA = max(abs([humanWaveDefocusS1(wave2(i),min(wave)) ...
+                                      humanWaveDefocusS1(wave2(i),max(wave))]));
+            wvfP = wvfSet(wvfP, 'customlca', @humanWaveDefocusS1);
+        elseif subjNum==3
+            defocusFromLCA = max(abs([humanWaveDefocusS3(wave2(i),min(wave)) ...
+                                      humanWaveDefocusS3(wave2(i),max(wave))]));  
+            wvfP = wvfSet(wvfP, 'customlca', @humanWaveDefocusS3);
+        elseif subjNum==5
+            defocusFromLCA = max(abs([humanWaveDefocusS5(wave2(i),min(wave)) ...
+                                      humanWaveDefocusS5(wave2(i),max(wave))]));  
+            wvfP = wvfSet(wvfP, 'customlca', @humanWaveDefocusS5); 
+        elseif subjNum==9
+            defocusFromLCA = max(abs([humanWaveDefocusS9(wave2(i),min(wave)) ...
+                                      humanWaveDefocusS9(wave2(i),max(wave))]));  
+            wvfP = wvfSet(wvfP, 'customlca', @humanWaveDefocusS9); 
+        elseif subjNum==10
+            defocusFromLCA = max(abs([humanWaveDefocusS10(wave2(i),min(wave)) ...
+                                      humanWaveDefocusS10(wave2(i),max(wave))]));  
+            wvfP = wvfSet(wvfP, 'customlca', @humanWaveDefocusS10); 
+        elseif subjNum==16
+            defocusFromLCA = max(abs([humanWaveDefocusS16(wave2(i),min(wave)) ...
+                                      humanWaveDefocusS16(wave2(i),max(wave))]));  
+            wvfP = wvfSet(wvfP, 'customlca', @humanWaveDefocusS16); 
+        elseif subjNum==17
+            defocusFromLCA = max(abs([humanWaveDefocusS17(wave2(i),min(wave)) ...
+                                      humanWaveDefocusS17(wave2(i),max(wave))]));  
+            wvfP = wvfSet(wvfP, 'customlca', @humanWaveDefocusS17); 
+        elseif subjNum==18
+            defocusFromLCA = max(abs([humanWaveDefocusS18(wave2(i),min(wave)) ...
+                                      humanWaveDefocusS18(wave2(i),max(wave))]));  
+            wvfP = wvfSet(wvfP, 'customlca', @humanWaveDefocusS18); 
+        elseif subjNum==20
+            defocusFromLCA = max(abs([humanWaveDefocusS20(wave2(i),min(wave)) ...
+                                      humanWaveDefocusS20(wave2(i),max(wave))]));  
+            wvfP = wvfSet(wvfP, 'customlca', @humanWaveDefocusS20); 
+        else
+            error('Subject number with no LCA function?');
+        end
         if defocusFromLCA<1
             wvfP.refSizeOfFieldMM = 12;
         else
             wvfP.refSizeOfFieldMM = 6;
         end
         wvfP = wvfSet(wvfP, 'zcoeff', 0, 'defocus');
-        wvfP = wvfSet(wvfP, 'customlca', @humanWaveDefocusS3);
         
         % Convert to siData format as well as wavefront object
         [siPSFData, wvfP] = wvf2SiPsfARC(wvfP,'showBar',false,'nPSFSamples',size(I,2),'umPerSample',1.1512); 
@@ -288,8 +356,9 @@ for k = 1:size(rgb00,1) % LOOP OVER TRIAL
         S = struct;
         S.absorptions = absorptions;
         fnameCone = ['subj' num2str(subjNum) 'stimulus' num2str(k) 'focusInd' num2str(i)];
-        save([savePath num2str(subjNum) '/' fnameCone '.mat'],"-fromstruct",S);
+        % save([savePath num2str(subjNum) '/' fnameCone '.mat'],"-fromstruct",S);
     end
 end
 
+end
 % save('/Users/benjaminchin/Documents/ARchromaScraps/ARCmodelOutput2_5.mat','meanv00all','wvInFocus1all','rgb1all','defocusBasic');
