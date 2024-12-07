@@ -90,7 +90,12 @@ elseif subjNum==17
    blockNums = 2:7;
    trialNums = [[1:36]' [1:36]' [1:36]' [1:36]' [1:36]' [1:36]'];
    subjName = ['S' num2str(subjNum+10) '-OD'];
-   nTrialTotal = 216;   
+   nTrialTotal = 216;
+elseif subjNum==18
+   blockNums = 2:7;
+   trialNums = [[1:36]' [1:36]' [1:36]' [1:36]' [1:36]' [1:36]'];
+   subjName = ['S' num2str(subjNum+10) '-OD'];
+   nTrialTotal = 216; 
 elseif subjNum==20
    blockNums = 2:7;
    trialNums = [[1:36]' [1:36]' [1:36]' [1:36]' [1:36]' [1:36]'];
