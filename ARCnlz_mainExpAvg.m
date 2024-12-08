@@ -4,7 +4,13 @@ clear;
 
 %% LOADING DATA FROM SUBJECTS AND CONCATENATING
 
-subjNumAll = [1 3 5 9 10 16 17 18 20];
+bLCAest = true;
+
+if bLCAest
+    subjNumAll = [1 3 5 9 10 16 17 18 20];
+else
+    subjNumAll = [1 3 5 9 10 16 17 18 20 4 7 11 12];
+end
 
 wvInFocusCellAll = {};
 defocusAt550cellAll = {};
@@ -27,7 +33,13 @@ save('/Users/benjaminchin/Documents/allExp1DataRGB.mat','wvInFocusCellAll','defo
 
 %%
 
-load('/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/ARChroma/Meetings/meeting_Sept25/allExp1DataRGB.mat');
+bLCAest = true;
+
+if bLCAest
+   load('/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/ARChroma/Meetings/meeting_Sept25/allExp1DataRGB.mat');
+else
+   load('/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/ARChroma/Meetings/meeting_Sept25/allExp1DataRGBunscreened.mat');
+end
 
 % %% SEPARATE TRIALS
 % 
@@ -144,7 +156,11 @@ for i = 1:size(rgbLumNormCndUnq,1)
     standardError95wvInFocus(i) = 1.96*std(wvInFocusAvg)/sqrt(length(wvInFocusAvg));
 end
 
-subjSymbols = 'sd+x*^><v';
+if bLCAest
+   subjSymbols = 'sd+x*^><v';
+else
+   subjSymbols = 'sd+x*^><vph.-';
+end
 
 figure;
 set(gcf,'Position',[353 426 988 420]);
@@ -171,7 +187,7 @@ end
 axis square;
 formatFigure('Color Condition','Relative defocus (D)');
 xlim([0.5 5.5]);
-ylim([-0.55 0.2]);
+ylim([-1 0.3]);
 subplot(1,2,2);
 hold on;
 for i = 1:5 % size(rgbLumNormCndUnq,1)
@@ -195,7 +211,7 @@ end
 axis square;
 formatFigure('Color Condition','Relative defocus (D)');
 xlim([0.5 5.5]);
-ylim([-0.55 0.2]);
+ylim([-1 0.3]);
 
 figure;
 set(gcf,'Position',[353 426 988 420]);

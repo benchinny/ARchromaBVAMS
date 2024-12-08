@@ -77,6 +77,10 @@ elseif subjNum==20
     q1= 1.5436;
     q2 = 0.9764;
     q3 = 0.01;    
+else
+    q1 = 1.7312;
+    q2 = 0.63346;
+    q3 = 0.21410;    
 end
 
 % This is the human defocus as a function of wavelength. This formula
