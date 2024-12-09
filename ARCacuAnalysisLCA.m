@@ -1,6 +1,6 @@
 %%
 
-function [defocusLCAmeasured, q1best, q2best, q3best,defocusLCAmeasuredBoots] = ARCacuAnalysisLCA(subj,bPLOT,nBoots)
+function [defocusLCAmeasured, q1best, q2best, q3best,defocusLCAmeasuredBoots,Dgreen] = ARCacuAnalysisLCA(subj,bPLOT,nBoots)
 % filePath = 'G:\My Drive\exp_bvams\code_repo\ARC\';
 filePath = 'H:\Shared drives\CIVO_BVAMS\data\ARC\';
 
@@ -336,6 +336,7 @@ end
 q1best = q1all(indBestFit);
 q2best = q2all(indBestFit);
 q3best = q3all(indBestFit);
+Dgreen = humanWaveDefocusParameterized(532,q1best,q2best,q3best);
 
 if bPLOT
     figure; 

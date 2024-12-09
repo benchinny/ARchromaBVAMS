@@ -278,7 +278,7 @@ for k = 1:length(optDistToCheckAll)
             trialTmp(trialTmp==0) = NaN;
             trialTmp550 = humanWaveDefocus(875)-humanWaveDefocus(550)+trialTmp./defocusCorrectionFactor;
             timeStampTmp = timeCell{ind(j)};
-            plot(timeStampTmp,trialTmp550(1:length(timeStampTmp)),'-','Color',conditionsOrderedNorm(i,:));
+            plot(timeStampTmp,-trialTmp550(1:length(timeStampTmp)),'-','Color',conditionsOrderedNorm(i,:));
         end
         axis square;
         xlim([0 3.1]);
@@ -292,7 +292,7 @@ for k = 1:length(optDistToCheckAll)
             ylim(mean(defocusAt550(indDist))+[-1.2 1.2]);   
             yBuffer = 1.2;
         else
-            ylim(mean(defocusAt550(indDist))+[-0.6 0.6]);
+            ylim(mean(-defocusAt550(indDist))+[-0.6 0.6]);
             yBuffer = 0.6;
         end
         set(gca,'FontSize',15);

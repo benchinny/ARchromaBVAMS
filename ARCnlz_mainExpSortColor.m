@@ -145,7 +145,7 @@ for j = 1:length(optDistToCheckAll)
                   humanWaveDefocusInvertARC(550,diffFromOptDist,subjNum-10)>380 & ...
                   humanWaveDefocusInvertARC(550,diffFromOptDist,subjNum-10)<780;
         wvInFocusCell{end+1} =  humanWaveDefocusInvertARC(550,diffFromOptDist(indGood),subjNum-10);
-        defocusAt550cell{end+1} = defocusAt550tmp(indGood);
+        defocusAt550cell{end+1} = -defocusAt550tmp(indGood);
         optDistCnd(end+1,:) = optDistToCheckAll(j);
         rgbLumNormCnd(end+1,:) = conditionsOrderedNorm(i,:);
     end

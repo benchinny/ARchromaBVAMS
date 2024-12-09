@@ -22,7 +22,7 @@ for i = 1:length(subjNumAll)
     [wvInFocusCell, defocusAt550cell, optDistCnd, rgbLumNormCnd] = ARCnlz_mainExpSortColor(subjNumAll(i)+10);
     wvInFocusCellAll = [wvInFocusCellAll wvInFocusCell];
     defocusAt550cellAll = [defocusAt550cellAll defocusAt550cell];
-    optDistCndAll = [optDistCndAll; optDistCnd];
+    optDistCndAll = [optDistCndAll; -optDistCnd];
     rgbLumNormCndAll = [rgbLumNormCndAll; rgbLumNormCnd];
     subjNumTag = [subjNumTag; subjNumAll(i).*ones([size(optDistCnd,1) 1])];
 end
@@ -187,7 +187,7 @@ end
 axis square;
 formatFigure('Color Condition','Relative defocus (D)');
 xlim([0.5 5.5]);
-ylim([-1 0.3]);
+ylim([-0.3 1]);
 subplot(1,2,2);
 hold on;
 for i = 1:5 % size(rgbLumNormCndUnq,1)
@@ -211,7 +211,7 @@ end
 axis square;
 formatFigure('Color Condition','Relative defocus (D)');
 xlim([0.5 5.5]);
-ylim([-1 0.3]);
+ylim([-0.3 1]);
 
 figure;
 set(gcf,'Position',[353 426 988 420]);
