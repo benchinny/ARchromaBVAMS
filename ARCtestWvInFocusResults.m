@@ -4,16 +4,28 @@ clear;
 
 %%
 
-subjNum = 13;
+subjNum = 20;
 
 if subjNum==20
-    RMSEall = zeros([11 11 11]);
-    SvaluesAll = [-1 -0.8 -0.6 -0.4 -0.2 0.0 0.2 0.4 0.6 0.8 1];
-    loadStr = {'-10' '-8' '-6' '-4' '-2' '0' '2' '4' '6' '8' '10'};
+    % RMSEall = zeros([11 11 11]);
+    % SvaluesAll = [-1 -0.8 -0.6 -0.4 -0.2 0.0 0.2 0.4 0.6 0.8 1];
+    % loadStr = {'-10' '-8' '-6' '-4' '-2' '0' '2' '4' '6' '8' '10'};
+    % blockNums = 3:8;
+    % ind2examine = 1:11;
+
+    % RMSEall = zeros([11 11 1]);
+    % SvaluesAll = [-0.8];
+    % loadStr = {'-8'};
+    % blockNums = 3:8;
+    % ind2examine = 1;    
+    
+    RMSEall = zeros([11 11 1]);
+    SvaluesAll = [0];
+    loadStr = {'0'};
     blockNums = 3:8;
-    ind2examine = 1:11;
+    ind2examine = 1;        
 elseif subjNum==13
-    RMSEall = zeros([11 11 5]);
+    RMSEall = zeros([11 11 11]);
     SvaluesAll = [-1 -0.8 -0.6 -0.4 -0.2 0.0 0.2 0.4 0.6 0.8 1];
     loadStr = {'-10' '-8' '-6' '-4' '-2' '0' '2' '4' '6' '8' '10'};
     blockNums = 12:17;
@@ -40,11 +52,14 @@ for i = ind2examine
     RMSEall(:,:,i) = RMSE(:,:,end);
 end
 
+globalMinRMSE = min(RMSEall(:));
+
 for i = ind2examine
     RMSEtmp = squeeze(RMSEall(:,:,i)); 
 
     figure; 
     imagesc(RMSEtmp);
+    clim([min(RMSEall(:)) max(RMSEall(:))]);
     xlabel('M weight');
     ylabel('L weight');
     axis square;
@@ -53,12 +68,16 @@ for i = ind2examine
     set(gca,'XTickLabel',{'-1' '-0.8' '-0.6' '-0.4' '-0.2' '0' '0.2' '0.4' '0.6' '0.8' '1'});
     set(gca,'YTickLabel',{'-1' '-0.8' '-0.6' '-0.4' '-0.2' '0' '0.2' '0.4' '0.6' '0.8' '1'});
     title(['S weight = ' num2str(SvaluesAll(i))]);   
-    min(RMSEtmp(:))
+    minRMSE = min(RMSEtmp(:));
+    if minRMSE==globalMinRMSE
+        minCoordinates = RMSEtmp == minRMSE;
+        SvalueMin = SvaluesAll(i);
+    end
 end
 
-predD = squeeze(defocus875predAll(:,7,7,end))';
+predD = squeeze(defocus875predAll(:,11,11,end))';
 predD = predD(:);
-actD = squeeze(defocus875all(:,7,7,end))';
+actD = squeeze(defocus875all(:,11,11,end))';
 actD = actD(:);
 figure; 
 hold on;
