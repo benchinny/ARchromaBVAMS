@@ -1,4 +1,4 @@
-function ARCimgQualityAnalysisConesMeanZ(subjNum)
+function oi = ARCimgQualityAnalysisConesMeanZ(subjNum)
 
 %% Initialize and clear
 ieInit;
@@ -241,7 +241,7 @@ for k = 1:size(rgb00,1) % LOOP OVER TRIAL
     im = imread([stimPath '/word_image_01.png']);
     im = double(im);
     imPattern = squeeze(im(:,:,3));
-    imPattern = [zeros([60 size(imPattern,2)]); imPattern; zeros([60 size(imPattern,2)])];
+    imPattern = [zeros([100 size(imPattern,2)]); imPattern; zeros([100 size(imPattern,2)])];
     imPattern = [zeros([size(imPattern,1) 30]) imPattern zeros([size(imPattern,1) 30])];
     I(:,:,3) = bVal.*imPattern;
     I(:,:,2) = gVal.*imPattern;
@@ -277,7 +277,7 @@ for k = 1:size(rgb00,1) % LOOP OVER TRIAL
     
     wave2 = 380:4:780;
 
-    for i = 46 % 1:length(wave2)
+    parfor i = 1:length(wave2)
         % zCoeffs = [0 zeros(size(meanC(1:end-1)))];
         zCoeffs = [0 meanC(1:end-1)];
         wvfP = wvfCreate('calc wavelengths', wave, ...
@@ -361,7 +361,7 @@ for k = 1:size(rgb00,1) % LOOP OVER TRIAL
         S = struct;
         S.absorptions = absorptions;
         fnameCone = ['subj' num2str(subjNum) 'stimulus' num2str(k) 'focusInd' num2str(i)];
-        % save([savePath num2str(subjNum) '/' fnameCone '.mat'],"-fromstruct",S);
+        save([savePath num2str(subjNum) '/' fnameCone '.mat'],"-fromstruct",S);
     end
 end
 

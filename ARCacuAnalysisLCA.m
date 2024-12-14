@@ -316,14 +316,14 @@ if bSave
 end
 
 wavePlotLCA = 380:875;
-wavePlotPrimaries = [624 532 460];
+wavePlotPrimaries = [616 533 468];
 nRepeatFit = 100;
 q1all = [];
 q2all = [];
 q3all = [];
 errAll = [];
 for i = 1:nRepeatFit
-   [q1,q2,q3,err] = ARC_LCAfit([624 532 460],-defocusLCAmeasured);
+   [q1,q2,q3,err] = ARC_LCAfit(wavePlotPrimaries,-defocusLCAmeasured);
    q1all(i) = q1;
    q2all(i) = q2;
    q3all(i) = q3;

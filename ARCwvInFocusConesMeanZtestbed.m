@@ -1,4 +1,4 @@
-function [wvInFocus, wave, peakCorr] = ARCwvInFocusConesMeanZtestbed(subjNum,stimNum,wLMS,wv2examine)
+function [wvInFocus, wave, peakCorr, rmsContrast] = ARCwvInFocusConesMeanZtestbed(subjNum,stimNum,wLMS,wv2examine)
 
 % rgb00 = [0.3270         0    1.0000; ...
 %          0.3270    0.3340    1.0000; ...
@@ -23,8 +23,10 @@ foldernameCones = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@b
 fnameConeRspNoLCA = ['subj10block3stimulus1' 'focusInd1noLCA'];
 absorptionsOrig = load([foldernameCones 'S10/' fnameConeRspNoLCA]);
 absorptionsOrig = absorptionsOrig.absorptions;
+% JUST ADD THEM ALL UP--THERE IS NO DEFOCUS ANYWAY
 coneImgOrig = sum(absorptionsOrig,3);
 peakCorr = [];
+rmsContrast = [];
 
 for i = 1:nFocus
     fnameConeRsp = ['subj' num2str(subjNum) 'stimulus' num2str(stimNum) 'focusInd' num2str(i)];
@@ -34,6 +36,12 @@ for i = 1:nFocus
     absorptions(:,:,3) = absorptions(:,:,3).*wLMS(3);
     coneImg = sum(absorptions,3);
     peakCorr(i) = max(max(normxcorr2(coneImgOrig,coneImg)));
+    % TESTING OUT MEASURES OF LUMINANCE / CONTRAST
+    coneImgThresh = coneImg;
+    % rmsContrast(i) = sqrt(mean((coneImgThresh(:)-mean(coneImgThresh(:))).^2));
+    % rmsContrast(i) = max(coneImgThresh(:));
+    rmsContrast(i) = sum(coneImgThresh(:));
+    % PLOT CONE IMAGES FOR SPECIFIED WAVELENGTHS IN FOCUS
     if ismember(wave(i),wv2examine)
         figure;
         set(gcf,'Position',[377 343 701 603]);
@@ -68,6 +76,7 @@ for i = 1:nFocus
     end
 end
 
+% READ OFF THE PEAK
 [~,indPeakPeak] = max(peakCorr);
 wvInFocus = wave(indPeakPeak);
 

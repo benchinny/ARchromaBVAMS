@@ -170,10 +170,10 @@ for i = 1:5 % size(rgbLumNormCndUnq,1)
     plot(i,mean(defocusAt550objDistCenteredCell{i}),'ko','MarkerFaceColor', ...
         rgbLumNormCndUnq(i,:),'MarkerSize',12,'LineWidth',1);
     defocusAt550objDistCenteredCellContent = defocusAt550objDistCenteredCell{i};
-    for j = 1:length(subjSymbols)
-        plot(i,defocusAt550objDistCenteredCellContent(j), ...
-            subjSymbols(j),'MarkerSize',12,'Color',rgbLumNormCndUnq(i,:));
-    end
+    % for j = 1:length(subjSymbols)
+    %     plot(i,defocusAt550objDistCenteredCellContent(j), ...
+    %         subjSymbols(j),'MarkerSize',12,'Color',rgbLumNormCndUnq(i,:));
+    % end
 end
 for i = 1:5 %size(rgbLumNormCndUnq,1)
     % errorbar(i,mean(defocusAt550objDistCenteredCell{i}), ...
@@ -187,17 +187,17 @@ end
 axis square;
 formatFigure('Color Condition','Relative defocus (D)');
 xlim([0.5 5.5]);
-ylim([-0.3 1]);
+ylim([-0.2 0.5]);
 subplot(1,2,2);
 hold on;
 for i = 1:5 % size(rgbLumNormCndUnq,1)
     plot(i,mean(defocusAt550objDistCenteredCell{i+5}),'ko','MarkerFaceColor', ...
         rgbLumNormCndUnq(i+5,:),'MarkerSize',12,'LineWidth',1);
     defocusAt550objDistCenteredCellContent = defocusAt550objDistCenteredCell{i+5};
-    for j = 1:length(subjSymbols)
-        plot(i,defocusAt550objDistCenteredCellContent(j), ...
-            subjSymbols(j),'MarkerSize',12,'Color',rgbLumNormCndUnq(i+5,:));  
-    end
+    % for j = 1:length(subjSymbols)
+    %     plot(i,defocusAt550objDistCenteredCellContent(j), ...
+    %         subjSymbols(j),'MarkerSize',12,'Color',rgbLumNormCndUnq(i+5,:));  
+    % end
 end
 for i = 1:5 %size(rgbLumNormCndUnq,1)
     % errorbar(i,mean(defocusAt550objDistCenteredCell{i+5}), ...
@@ -211,7 +211,7 @@ end
 axis square;
 formatFigure('Color Condition','Relative defocus (D)');
 xlim([0.5 5.5]);
-ylim([-0.3 1]);
+ylim([-0.2 0.5]);
 
 figure;
 set(gcf,'Position',[353 426 988 420]);

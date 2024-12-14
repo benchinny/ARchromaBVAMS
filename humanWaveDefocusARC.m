@@ -42,41 +42,41 @@ function D = humanWaveDefocusARC(waveRef,wave,subjNum)
 % "The chromatic eye: a new reduced-eye model of ocular chromatic aberration 
 % in humans," Appl. Opt. 31, 3594-3600 (1992)
 if subjNum==10
-    q1 = 2;
-    q2 = 0.5201;
-    q3 = 0.2879;
+    q1 = 1.9851;
+    q2 = 0.4644;
+    q3 = 0.3135;
 elseif subjNum==1
     q1 = 2.0000;
-    q2 = 0.5791;    
-    q3 = 0.2412;
+    q2 = 0.5196;    
+    q3 = 0.2717;
 elseif subjNum==3
     q1 = 2.0000;
-    q2 = 0.5150;    
-    q3 = 0.2525;    
+    q2 = 0.4701;    
+    q3 = 0.2778;    
 elseif subjNum==5
-    q1= 1.1687;
-    q2 = 0.2783;
-    q3 = 0.3425;
+    q1= 1.1639;
+    q2 = 0.2444;
+    q3 = 0.3650;
 elseif subjNum==9
-    q1 = 0.9060;
-    q2 = 0.1328;
+    q1 = 1.0427;
+    q2 = 0.1579;
     q3 = 0.3700;    
 elseif subjNum==16
     q1= 2.0000;
-    q2 = 0.7467;
-    q3 = 0.1953;
+    q2 = 0.6764;
+    q3 = 0.2273;
 elseif subjNum==17
     q1= 2.0000;
-    q2 = 0.5514;
-    q3 = 0.2573;   
+    q2 = 0.4996;
+    q3 = 0.2842;   
 elseif subjNum==18
     q1= 2.0000;
-    q2 = 0.9096;
-    q3 = 0.1614;    
+    q2 = 0.8258;
+    q3 = 0.1967;    
 elseif subjNum==20
-    q1= 1.5436;
-    q2 = 0.9764;
-    q3 = 0.01;    
+    q1= 1.6553;
+    q2 = 0.9900;
+    q3 = 0.0337;    
 else
     q1 = 1.7312;
     q2 = 0.63346;
