@@ -42,9 +42,9 @@ function D = humanWaveDefocusS20(waveRef,wave)
 % "The chromatic eye: a new reduced-eye model of ocular chromatic aberration 
 % in humans," Appl. Opt. 31, 3594-3600 (1992)
 
-q1= 1.5436;
-q2 = 0.9764;
-q3 = 0.01; 
+q1= 1.6553;
+q2 = 0.9900;
+q3 = 0.0337;    
 
 % This is the human defocus as a function of wavelength. This formula
 % converts the wave in nanometers to wave in microns. D is in diopters.

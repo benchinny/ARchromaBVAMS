@@ -43,8 +43,8 @@ function D = humanWaveDefocusS16(waveRef,wave)
 % in humans," Appl. Opt. 31, 3594-3600 (1992)
 
 q1= 2.0000;
-q2 = 0.7467;
-q3 = 0.1953;
+q2 = 0.6764;
+q3 = 0.2273;
 
 % This is the human defocus as a function of wavelength. This formula
 % converts the wave in nanometers to wave in microns. D is in diopters.
