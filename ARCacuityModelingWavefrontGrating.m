@@ -52,13 +52,24 @@ acuStimOrig1 = ARC2Dgabor(smpPos(260,260),[],0,0,[frqCpd 3*frqCpd 5*frqCpd 7*frq
 acuStimOrig1(:,:,1) = acuStimOrig1(:,:,1).^(1/gammaR);
 acuStimOrig1(:,:,2) = acuStimOrig1(:,:,2).^(1/gammaG);
 acuStimOrig1(:,:,3) = acuStimOrig1(:,:,3).^(1/gammaB);
-I = acuStimOrig1;
+I1 = acuStimOrig1;
+
+acuStimOrig2 = ARC2Dgabor(smpPos(260,260),[],0,0,[frqCpd 3*frqCpd 5*frqCpd 7*frqCpd], ...
+               [contrast contrast/3 contrast/5 contrast/7],-15,90,0.2,0.2, ...
+               [rgbAll(k0,1)^gammaR rgbAll(k0,2)^gammaG rgbAll(k0,3)^gammaB],1,1,0,0);
+
+acuStimOrig2(:,:,1) = acuStimOrig2(:,:,1).^(1/gammaR);
+acuStimOrig2(:,:,2) = acuStimOrig2(:,:,2).^(1/gammaG);
+acuStimOrig2(:,:,3) = acuStimOrig2(:,:,3).^(1/gammaB);
+I2 = acuStimOrig2;
 
 % Turn image into 'scene'
-s = sceneFromFile(I, 'rgb', [], d);  % The display is included here
+s1 = sceneFromFile(I1, 'rgb', [], d);  % The display is included here
+s2 = sceneFromFile(I2, 'rgb', [], d);
 % I think this copies the struct into an object
-vcAddObject(s); 
-% s.data.photons(130,130,:) = ones(size(s.data.photons(130,130,:))).*4e14;
+vcAddObject(s1); 
+vcAddObject(s2); 
+% s1.data.photons(130,130,:) = ones(size(s1.data.photons(130,130,:))).*4e14;
 
 figure; 
 set(gcf,'Position',[289 428 1056 420]);
@@ -69,14 +80,14 @@ plot(d.wave,d.spd(:,3),'b','LineWidth',1.5);
 axis square;
 formatFigure('Wavelength (\lambda)','Radiance');
 subplot(1,3,2);
-imagesc(I);
+imagesc(I1);
 set(gca,'XTick',[]);
 set(gca,'YTick',[]);
 axis square;
 set(gca,'FontSize',15);
 title('Original');
 subplot(1,3,3);
-plot(s.spectrum.wave,squeeze(s.data.photons(130,130,:)),'-k','LineWidth',1);
+plot(s1.spectrum.wave,squeeze(s1.data.photons(130,130,:)),'-k','LineWidth',1);
 formatFigure('Wavelength (\lambda)','Photons');
 axis square;
 
@@ -93,12 +104,9 @@ Dall = -humanWaveDefocus(wave);
 bPlotIndvWvf = false;
 
 % PARAMETERS OF WAVEFRONT ANALYSIS
-PARAMS.PixelDimension = 512;% size of pupil aperture field in pixels (this defines the resolution of the calculation)
 PARAMS.PupilSize = 7; %default values - will be replaced depending on choices below
 PARAMS.PupilFieldSize =6; %default values - will be replaced depending on choices below
 PARAMS.PupilFitSize = 7; %default values - will be replaced depending on choices below
-PARAMS.ImagingWavelength = 0.55;% imaging wavelength in microns
-PARAMS.WavefrontResolution = 53;% increase to enhance the display of the wavefront (doesn't affect calculation)
 
 wvfFiles = { ...
             'S19-OD-Block_9-Trial_99-4_240930_100151_proc.csv' ...
@@ -153,13 +161,13 @@ for i = 1:length(wvfFiles)
         wvfPindv = wvfCreate('calc wavelengths', 875, ...
             'measured wavelength', 875, ...
             'zcoeffs', zCoeffsIndv, 'measured pupil', PARAMS.PupilSize, ...
-            'name', sprintf('human-%d', PARAMS.PupilSize),'spatial samples',size(I,2)); 
+            'name', sprintf('human-%d', PARAMS.PupilSize),'spatial samples',size(I1,2)); 
         wvfPindv.calcpupilMM = PARAMS.PupilSize;
         wvfPindv.refSizeOfFieldMM = 6;
         wvfPindv = wvfSet(wvfPindv, 'zcoeff', 0, 'defocus');
         
         % Convert to siData format as well as wavefront object
-        [siPSFDataIndv, wvfPindv] = wvf2SiPsf(wvfPindv,'showBar',false,'nPSFSamples',size(I,2),'umPerSample',1.1512); 
+        [siPSFDataIndv, wvfPindv] = wvf2SiPsf(wvfPindv,'showBar',false,'nPSFSamples',size(I1,2),'umPerSample',1.1512); 
         oiIndv = wvf2oi(wvfPindv); % CONVERT TO OPTICS OBJECT       
         figure; 
         imagesc(fftshift(ifft2(squeeze(oiIndv.optics.OTF.OTF(:,:,1))))); 
@@ -177,7 +185,7 @@ meanC = mean(cAll(~indBad,:),1); % TAKE MEAN OF COEFFICIENTS
 % meanC(3) = -0.2;
 % meanC(4) = 0;
 
-defocusAll = 0;
+defocusAll = -0.6:0.1:-0.4;
 xCorrMetric = [];
 
 for i = 1:length(defocusAll)
@@ -185,22 +193,30 @@ for i = 1:length(defocusAll)
     wvfP = wvfCreate('calc wavelengths', wave, ...
         'measured wavelength', 875, ...
         'zcoeffs', zCoeffs, 'measured pupil', PARAMS.PupilSize, ...
-        'name', sprintf('human-%d', PARAMS.PupilSize),'spatial samples',size(I,2));
+        'name', sprintf('human-%d', PARAMS.PupilSize),'spatial samples',size(I1,2));
     wvfP.calcpupilMM = PARAMS.PupilSize;
     wvfP.refSizeOfFieldMM = 6;
     wvfP = wvfSet(wvfP, 'zcoeff', defocusAll(i), 'defocus');
     % wvfP = wvfSet(wvfP, 'customlca', @humanWaveDefocusS9);
     
     % Convert to siData format as well as wavefront object
-    [siPSFData, wvfP] = wvf2SiPsfARC(wvfP,'showBar',false,'nPSFSamples',size(I,2),'umPerSample',1.1512); % 1.1512
+    [siPSFData, wvfP] = wvf2SiPsfARC(wvfP,'showBar',false,'nPSFSamples',size(I1,2),'umPerSample',1.1512); % 1.1512
     oi = wvf2oi(wvfP); % CONVERT TO OPTICS OBJECT
-    oi.optics.OTF.OTF = siPSFData.otf;
-    oi = oiCompute(oi, s); % compute optical image of stimulus
-
+    paddingXCpsf = round((size(siPSFData.psf,2)-size(s1.data.photons,2))/2);
+    paddingYRpsf = round((size(siPSFData.psf,1)-size(s1.data.photons,1))/2); 
+    indNotPadded = {(paddingYRpsf+1):(size(siPSFData.psf,1)-paddingYRpsf) ...
+                    (paddingXCpsf+1):(size(siPSFData.psf,2)-paddingXCpsf)};    
+    oi.optics.OTF = [];
+    for j = 1:size(siPSFData.psf,3)
+        oi.optics.OTF.OTF(:,:,j) = fft2(fftshift(squeeze(siPSFData.psf(indNotPadded{1},indNotPadded{2},j))));
+    end
+    oi = oiCompute(oi, s1); % compute optical image of stimulus
+    
     photonsXW = RGB2XWFormat(oi.data.photons); % FORMATTING
-    lumImgXW = sum(bsxfun(@times,photonsXW,squeeze(T_sensorXYZ(2,:))),2);
+    energyXW = Quanta2Energy(wave,photonsXW);
+    lumImgXW = sum(bsxfun(@times,energyXW,squeeze(T_sensorXYZ(2,:))),2);
     lumImgXY = reshape(lumImgXW,[size(oi.data.photons,1) size(oi.data.photons,2)]);
-    xCorrMetric(i) = max(max(xcorr2(lumImgXY,squeeze(I(:,:,1)))));
+    xCorrMetric(i) = max(max(xcorr2(lumImgXY,squeeze(I1(:,:,1)))));
 
     figure(2); 
     set(gcf,'Position',[359 443 975 420]);
