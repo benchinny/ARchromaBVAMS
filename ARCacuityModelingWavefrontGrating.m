@@ -45,7 +45,7 @@ gammaR = 2.5;
 gammaG = 2.7;
 gammaB = 2.3;
 
-acuStimOrig1 = ARC2Dgabor(smpPos(260,260),[],0,0,[frqCpd 3*frqCpd 5*frqCpd 7*frqCpd], ...
+acuStimOrig1 = ARC2Dgabor(smpPos(260,390),[],0,0,[frqCpd 3*frqCpd 5*frqCpd 7*frqCpd], ...
                [contrast contrast/3 contrast/5 contrast/7],15,90,0.2,0.2, ...
                [rgbAll(k0,1)^gammaR rgbAll(k0,2)^gammaG rgbAll(k0,3)^gammaB],1,1,0,0);
 
@@ -54,7 +54,7 @@ acuStimOrig1(:,:,2) = acuStimOrig1(:,:,2).^(1/gammaG);
 acuStimOrig1(:,:,3) = acuStimOrig1(:,:,3).^(1/gammaB);
 I1 = acuStimOrig1;
 
-acuStimOrig2 = ARC2Dgabor(smpPos(260,260),[],0,0,[frqCpd 3*frqCpd 5*frqCpd 7*frqCpd], ...
+acuStimOrig2 = ARC2Dgabor(smpPos(260,390),[],0,0,[frqCpd 3*frqCpd 5*frqCpd 7*frqCpd], ...
                [contrast contrast/3 contrast/5 contrast/7],-15,90,0.2,0.2, ...
                [rgbAll(k0,1)^gammaR rgbAll(k0,2)^gammaG rgbAll(k0,3)^gammaB],1,1,0,0);
 
@@ -185,8 +185,8 @@ meanC = mean(cAll(~indBad,:),1); % TAKE MEAN OF COEFFICIENTS
 % meanC(3) = -0.2;
 % meanC(4) = 0;
 
-defocusAll = -0.6:0.1:-0.4;
-xCorrMetric = [];
+defocusAll = -0.7:0.1:0.3;
+dprimeMetric = [];
 
 for i = 1:length(defocusAll)
     zCoeffs = [0 meanC(1:end-1)];
@@ -210,30 +210,37 @@ for i = 1:length(defocusAll)
     for j = 1:size(siPSFData.psf,3)
         oi.optics.OTF.OTF(:,:,j) = fft2(fftshift(squeeze(siPSFData.psf(indNotPadded{1},indNotPadded{2},j))));
     end
-    oi = oiCompute(oi, s1); % compute optical image of stimulus
-    
-    photonsXW = RGB2XWFormat(oi.data.photons); % FORMATTING
-    energyXW = Quanta2Energy(wave,photonsXW);
-    lumImgXW = sum(bsxfun(@times,energyXW,squeeze(T_sensorXYZ(2,:))),2);
-    lumImgXY = reshape(lumImgXW,[size(oi.data.photons,1) size(oi.data.photons,2)]);
-    xCorrMetric(i) = max(max(xcorr2(lumImgXY,squeeze(I1(:,:,1)))));
+    oig1 = oiCompute(oi, s1); % compute optical image of stimulus
+    oig2 = oiCompute(oi, s2); % compute optical image of stimulus
 
-    figure(2); 
+    photonsXW1 = RGB2XWFormat(oig1.data.photons); % FORMATTING
+    energyXW1 = Quanta2Energy(wave,photonsXW1);
+    lumImgXW1 = sum(bsxfun(@times,energyXW1,squeeze(T_sensorXYZ(2,:))),2);
+    lumImgXY1 = reshape(lumImgXW1,[size(oig1.data.photons,1) size(oig1.data.photons,2)]);
+
+    photonsXW2 = RGB2XWFormat(oig2.data.photons); % FORMATTING
+    energyXW2 = Quanta2Energy(wave,photonsXW2);
+    lumImgXW2 = sum(bsxfun(@times,energyXW2,squeeze(T_sensorXYZ(2,:))),2);
+    lumImgXY2 = reshape(lumImgXW2,[size(oig2.data.photons,1) size(oig2.data.photons,2)]);
+
+    dprimeMetric(i) = sqrt(sum((lumImgXW2-lumImgXW1).^2));
+
+    figure; 
     set(gcf,'Position',[359 443 975 420]);
     subplot(1,2,1);
-    imagesc(lumImgXY); 
+    imagesc(lumImgXY1); 
     axis square; 
     colormap gray;
-    title(['Defocus = ' num2str(defocusAll(i)) ', x-correlation = ' num2str(xCorrMetric(i))]);
+    title(['Defocus = ' num2str(defocusAll(i)) ', x-correlation = ' num2str(dprimeMetric(i))]);
     subplot(1,2,2);
-    imagesc(fftshift(ifft2(squeeze(oi.optics.OTF.OTF(:,:,61))))); 
+    imagesc(fftshift(ifft2(squeeze(oig1.optics.OTF.OTF(:,:,61))))); 
     axis square; 
     colormap gray;
-    pause;
+    display(['D-prime iteration ' num2str(i)]);
 end
 
 figure; 
-plot(defocusAll,xCorrMetric,'k-','LineWidth',1);
+plot(defocusAll,dprimeMetric,'k-','LineWidth',1);
 xlabel('Defocus term');
 ylabel('X-correlation metric');
 set(gca,'FontSize',15);
