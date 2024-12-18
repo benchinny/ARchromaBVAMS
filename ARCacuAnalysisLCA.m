@@ -1,6 +1,6 @@
 %%
 
-function [defocusLCAmeasured, q1best, q2best, q3best,defocusLCAmeasuredBoots,Dgreen] = ARCacuAnalysisLCA(subj,bPLOT,nBoots)
+function [defocusLCAmeasured, q1best, q2best, q3best,defocusLCAmeasuredBoots,Dgreen,dprimeFitAll,PCfitSupport] = ARCacuAnalysisLCA(subj,bPLOT,nBoots)
 % filePath = 'G:\My Drive\exp_bvams\code_repo\ARC\';
 filePath = 'H:\Shared drives\CIVO_BVAMS\data\ARC\';
 
@@ -250,6 +250,7 @@ unqFocDst = unique(focStmOptDstIncr);
 scaleFac = 0.816;
 % meanFocInt = 5;
 defocusLCAmeasured = [];
+dprimeFitAll = [];
 
 if bPLOT
     figure;
@@ -308,6 +309,9 @@ for rgbAcuCnd = 1:3
            formatFigure('Relative optical distance (D)','Proportion Correct'); 
         end
     end
+    epsilonPC = 0.999;
+    PCfit(PCfit>epsilonPC) = epsilonPC;
+    dprimeFitAll(rgbAcuCnd,:) = 2*norminv(PCfit);
 end
 
 filePathSave = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/ARChroma/Meetings/meeting_Sept25/';

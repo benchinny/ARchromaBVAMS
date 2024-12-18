@@ -35,9 +35,9 @@ d.gamma(:,3) = (d.gamma(:,3).^(1/2.2)).^2.3;
 
 % Ben's stimulus
 nDotsI = 260;
-rVal = 0.00;
+rVal = 0.56;
 bVal = 0.00;
-gVal = 0.432;
+gVal = 0.00;
 
 % GABOR
 frqCpd = 15;
@@ -163,9 +163,9 @@ defocusScaleFactor = 0.5774;
 
 defocusOrig = meanC(4);
 defocusOrigScaled = defocusOrig/defocusScaleFactor;
-defocusForStim = [1.9:0.1:3.1]-defocusOrigScaled;
+defocusForStim = [1.3:0.1:2.2]-defocusOrigScaled;
 wvInFocusForStim = humanWaveDefocusInvertARC(875,-defocusForStim,subjNum);
-defocusAll = humanWaveDefocusARC(875,wvInFocusForStim,subjNum);
+defocusAll = fliplr(humanWaveDefocusARC(875,wvInFocusForStim,subjNum));
 
 for i = 1:length(defocusAll)
     zCoeffs = [0 meanC(1:end-1)];
@@ -176,7 +176,13 @@ for i = 1:length(defocusAll)
     wvfP.calcpupilMM = PARAMS.PupilSize;
     wvfP.refSizeOfFieldMM = 6;
     wvfP = wvfSet(wvfP, 'zcoeff', defocusAll(i)*defocusScaleFactor, 'defocus');
-    % wvfP = wvfSet(wvfP, 'customlca', @humanWaveDefocusS9);
+    if subjNum==9
+        wvfP = wvfSet(wvfP, 'customlca', @humanWaveDefocusS9);
+    elseif subjNum==10
+        wvfP = wvfSet(wvfP, 'customlca', @humanWaveDefocusS10);
+    elseif subjNum==3
+        wvfP = wvfSet(wvfP, 'customlca', @humanWaveDefocusS3);
+    end
     
     % Convert to siData format as well as wavefront object
     [siPSFData, wvfP] = wvf2SiPsfARC(wvfP,'showBar',false,'nPSFSamples',size(I1,2),'umPerSample',1.1512); % 1.1512
@@ -217,7 +223,7 @@ for i = 1:length(defocusAll)
     colormap gray;
     display(['D-prime iteration ' num2str(i)]);
 end
-
+%%
 figure; 
 plot(defocusAll,dprimeMetric,'k-','LineWidth',1);
 xlabel('Defocus term');
