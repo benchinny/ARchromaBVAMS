@@ -40,7 +40,7 @@ for i = 1:size(defocusLCAmeasuredAll,1)
     plot(wavePlot,humanWaveDefocusARC(533,wavePlot,subjNumAll(i))+D0all(i)+defocusLCAmeasuredAll(i,2),'-','LineWidth',1);
 end
 for i = 1:size(defocusLCAmeasuredAll,1)
-    defocusLCAmeasuredBootsTmp = squeeze(defocusLCAmeasuredBootsAll(:,:,i));
+    defocusLCAmeasuredBootsTmp = squeeze(defocusLCAmeasuredBootsAll(:,:,i))-1*defocusLCAmeasuredAll(i,2);
     CIlca = -quantile(defocusLCAmeasuredBootsTmp',[0.16 0.84]);
     set(gca,'ColorOrderIndex',i);
     errorbar([616 533 468]-displacementLambda(i), ...

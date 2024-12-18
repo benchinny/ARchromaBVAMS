@@ -158,8 +158,14 @@ meanC = mean(cAll(~indBad,:),1); % TAKE MEAN OF COEFFICIENTS
 % meanC(3) = -0.2;
 % meanC(4) = 0;
 
-defocusAll = -0.8;
 dprimeMetric = [];
+defocusScaleFactor = 0.5774;
+
+defocusOrig = meanC(4);
+defocusOrigScaled = defocusOrig/defocusScaleFactor;
+defocusForStim = [1.9:0.1:3.1]-defocusOrigScaled;
+wvInFocusForStim = humanWaveDefocusInvertARC(875,-defocusForStim,subjNum);
+defocusAll = humanWaveDefocusARC(875,wvInFocusForStim,subjNum);
 
 for i = 1:length(defocusAll)
     zCoeffs = [0 meanC(1:end-1)];
@@ -169,7 +175,7 @@ for i = 1:length(defocusAll)
         'name', sprintf('human-%d', PARAMS.PupilSize),'spatial samples',size(I1,2));
     wvfP.calcpupilMM = PARAMS.PupilSize;
     wvfP.refSizeOfFieldMM = 6;
-    wvfP = wvfSet(wvfP, 'zcoeff', defocusAll(i), 'defocus');
+    wvfP = wvfSet(wvfP, 'zcoeff', defocusAll(i)*defocusScaleFactor, 'defocus');
     % wvfP = wvfSet(wvfP, 'customlca', @humanWaveDefocusS9);
     
     % Convert to siData format as well as wavefront object

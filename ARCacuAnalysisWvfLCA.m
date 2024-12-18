@@ -47,6 +47,14 @@ if subjNum==9
     subjName = 'S19-OD';
     blockNum = 9;
     trialNum = [99 89 79 69 19 29 44 54];
+elseif subjNum==10
+    subjName = 'S20-OD';
+    blockNum = 11;
+    trialNum = [27 54 81];
+elseif subjNum==3
+    subjName = 'S13-OD';
+    blockNum = 19;
+    trialNum = [27 54 81];    
 end
 
 filenameCell = {};
