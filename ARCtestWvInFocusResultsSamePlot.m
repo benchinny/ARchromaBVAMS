@@ -4,26 +4,17 @@ clear;
 
 %%
 
-subjNum = 20;
+subjNum = 13;
 
 % 1: L+M
 % 2: L-M
 % 3: L+M-S
 % 4: All
 % 5: Best fit
-mechanismType = 1;
 
-if mechanismType==1 || mechanismType==2
-    SvaluesAll = 0;
-    loadStr = {'0'};
-end
+SvaluesAll = [0 0 -1];
+loadStr = {'0' '0' '-10'};
 
-if mechanismType==3
-    SvaluesAll = -1;
-    loadStr = {'-10'};
-end
-
-mechanismNames = {'LplusM' 'LminusM' 'Spath' '' 'bestFit'};
 optDistNames = {'1pt5' '2pt5' '3pt5'};
 
 if subjNum==20
@@ -39,50 +30,19 @@ if subjNum==20
     % blockNums = 3:8;
     % ind2examine = 1;    
     
-    RMSEall = zeros([11 11 1]);
+    RMSEall = zeros([11 11 3]);
     blockNums = 3:8;
-    ind2examine = 1;        
+    ind2examine = 1:3;        
 elseif subjNum==13
-    RMSEall = zeros([11 11 1]);
+    RMSEall = zeros([11 11 3]);
     blockNums = 12:17;
-    ind2examine = 1;    
+    ind2examine = 1:3;    
 end
+coordinates2examine = [11 11; 11 1; 11 11];
 
 folderPath = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/coneWeightsError/';
 rgbAll = [];
 optDistStim = [];
-
-if mechanismType==1 || mechanismType==3
-    coordinates2examine = [11 11];
-end
-
-if mechanismType==2
-    coordinates2examine = [11 1];
-end
-
-if mechanismType==4
-    RMSEall = zeros([11 11 11]);
-    SvaluesAll = [-1 -0.8 -0.6 -0.4 -0.2 0.0 0.2 0.4 0.6 0.8 1];
-    loadStr = {'-10' '-8' '-6' '-4' '-2' '0' '2' '4' '6' '8' '10'};
-    coordinates2examine = [11 1];
-    ind2examine = 1:11;
-end
-
-if mechanismType==5 & subjNum==20
-    RMSEall = zeros([11 11 1]);
-    SvaluesAll = [-0.8];
-    loadStr = {'-8'};
-    ind2examine = 1;    
-    coordinates2examine = [7 8];
-end
-
-if mechanismType==5 & subjNum==13
-    RMSEall = zeros([11 11 1]);
-    SvaluesAll = [0.2];
-    loadStr = {'2'};
-    ind2examine = 1;    
-    coordinates2examine = [11 3];
-end
 
 for i = 1:length(blockNums)
     AFCp = ARCloadFileBVAMS(subjNum,blockNums(i));
@@ -103,6 +63,9 @@ end
 
 globalMinRMSE = min(RMSEall(:));
 
+predDall = [];
+actDall = [];
+
 for i = ind2examine
     RMSEtmp = squeeze(RMSEall(:,:,i)); 
 
@@ -122,22 +85,26 @@ for i = ind2examine
         minCoordinates = RMSEtmp == minRMSE;
         SvalueMin = SvaluesAll(i);
     end
-end
+    
+    load([folderPath 'S' num2str(subjNum-10) 'wvInFocusModelResults' num2str(loadStr{i}) '.mat']);
+    predD = squeeze(defocus875predAll(:,coordinates2examine(i,1),coordinates2examine(i,2),end))';
+    predD = predD(:);
+    actD = squeeze(defocus875all(:,coordinates2examine(i,1),coordinates2examine(i,2),end))';
+    actD = actD(:);
+    figure; 
+    hold on;
+    for j = 1:length(predD)
+        plot(predD(j),actD(j),'.','MarkerSize',12,'Color',rgbLumNorm(j,:)); 
+    end
+    plot([0 3.5],[0 3.5],'k--','LineWidth',1);
+    xlim([0 3.5]);
+    ylim([0 3.5]);
+    axis square;
+    formatFigure('Predicted Defocus (D)','Actual Defocus (D)');    
 
-predD = squeeze(defocus875predAll(:,coordinates2examine(1),coordinates2examine(2),end))';
-predD = predD(:);
-actD = squeeze(defocus875all(:,coordinates2examine(1),coordinates2examine(2),end))';
-actD = actD(:);
-figure; 
-hold on;
-for i = 1:length(predD)
-    plot(predD(i),actD(i),'.','MarkerSize',12,'Color',rgbLumNorm(i,:)); 
+    predDall(:,i) = predD;
+    actDall(:,i) = actD;
 end
-plot([0 3.5],[0 3.5],'k--','LineWidth',1);
-xlim([0 3.5]);
-ylim([0 3.5]);
-axis square;
-formatFigure('Predicted Defocus (D)','Actual Defocus (D)');
 
 %% PLOTTING ALL TRIAL MEANS PER CONDITION AND DISTANCE
 
@@ -178,12 +145,18 @@ for j = 1:length(optDistToCheckAll)
             plot(i.*ones([sum(ind) 1]),actD(ind),'o','Color','k','MarkerFaceColor','k');
         end
         defocusAt875mean(i) = mean(actD(ind));
-        defocusAt875meanPred(i) = mean(predD(ind));
+        defocusAt875meanPred(i,1) = mean(predDall(ind,1));
+        defocusAt875meanPred(i,2) = mean(predDall(ind,2));
+        defocusAt875meanPred(i,3) = mean(predDall(ind,3));
     end
     plot(defocusAt875mean(1:5),'k-');
     plot(6:10,defocusAt875mean(6:10),'k-');
-    plot(defocusAt875meanPred(1:5),'-','Color',0.*[1 1 1],'LineWidth',1.5);
-    plot(6:10,defocusAt875meanPred(6:10),'-','Color',0.*[1 1 1],'LineWidth',1.5);
+    plot(defocusAt875meanPred(1:5,1),'-','Color',0.*[1 1 1],'LineWidth',1.5);
+    plot(6:10,defocusAt875meanPred(6:10,1),'-','Color',0.*[1 1 1],'LineWidth',1.5);
+    plot(defocusAt875meanPred(1:5,2),'-','Color',1.*[0 1 0],'LineWidth',1.5);
+    plot(6:10,defocusAt875meanPred(6:10,2),'-','Color',1.*[0 1 0],'LineWidth',1.5);
+    plot(defocusAt875meanPred(1:5,3),'-','Color',1.*[0 0 1],'LineWidth',1.5);
+    plot(6:10,defocusAt875meanPred(6:10,3),'-','Color',1.*[0 0 1],'LineWidth',1.5);    
     plot([0 11],defocusAt875mean(11).*[1 1],'k--','LineWidth',1);
     xlim([0 11]);
     % ylim(mean(actD(indDist))+[-0.6 0.6]);
@@ -192,7 +165,7 @@ for j = 1:length(optDistToCheckAll)
     set(gca,'FontSize',15);
     xlabel('Condition');
     ylabel('Defocus at 875nm');
-    saveas(gcf,['/Users/benjaminchin/Documents/ARchromaScraps/colorMechPredictionsS' num2str(subjNum-10) 'dist' optDistNames{j} 'mech' mechanismNames{mechanismType}],'png');
+    % saveas(gcf,['/Users/benjaminchin/Documents/ARchromaScraps/colorMechPredictionsS' num2str(subjNum-10) 'dist' optDistNames{j} 'mech' mechanismNames{mechanismType}],'png');
 end
 
 % %% PLOTTING ALL TRIAL MEANS PER CONDITION AND DISTANCE
