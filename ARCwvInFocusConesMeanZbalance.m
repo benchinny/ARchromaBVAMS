@@ -32,7 +32,7 @@ end
 [~,indPeakPeak] = max(peakCorr);
 wvInFocusQuality = wave(indPeakPeak);
 % WAVELENGTH TO FOCUS IF MAXIMIZING BALANCE
-[~,indPeakBalance] = max(LSbalance);
+[~,indPeakBalance] = min(abs(LSbalance));
 wvInFocusBalance = wave(indPeakBalance);
 
 % CONVERT WAVELENGTHS TO FOCUS TO DIOPTERS, THEN WEIGHT AND ADD

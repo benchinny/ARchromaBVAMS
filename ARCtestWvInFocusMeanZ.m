@@ -1,17 +1,88 @@
 %%
 
-subjNum = 3;
+subjNum = 20;
 if subjNum==10
     subjName = 'S20-OD';
     blockNumAll = 3:8;
 elseif subjNum==3
     subjName = 'S13-OD';
     blockNumAll = 12:17;
+elseif subjNum==1
+    subjName = 'S11-OD';
+    blockNumAll = 11:16;
+elseif subjNum==5
+    subjName = 'S15-OD';
+    blockNumAll = 3:8;
+elseif subjNum==9
+    subjName = 'S19-OD';
+    blockNumAll = 2:7;
+elseif subjNum==16
+    subjName = 'S26-OD';
+    blockNumAll = 2:7;
+elseif subjNum==17
+    subjName = 'S27-OD';
+    blockNumAll = 2:7;
+elseif subjNum==18
+    subjName = 'S28-OD';
+    blockNumAll = 2:7;
+elseif subjNum==20
+    subjName = 'S30-OD';
+    blockNumAll = 2:7;
+end
+
+if subjNum==20
+    % RMSEall = zeros([11 11 11]);
+    % SvaluesAll = [-1 -0.8 -0.6 -0.4 -0.2 0.0 0.2 0.4 0.6 0.8 1];
+    % loadStr = {'-10' '-8' '-6' '-4' '-2' '0' '2' '4' '6' '8' '10'};
+    % blockNums = 3:8;
+    % ind2examine = 1:11;
+
+    % RMSEall = zeros([11 11 1]);
+    % SvaluesAll = [-0.8];
+    % loadStr = {'-8'};
+    % blockNums = 3:8;
+    % ind2examine = 1;    
+    
+    RMSEall = zeros([11 11 3]);
+    blockNums = 3:8;
+    ind2examine = 1:3;     
+elseif subjNum==13
+    RMSEall = zeros([11 11 3]);
+    blockNums = 12:17;
+    ind2examine = 1:3; 
+elseif subjNum==11
+    RMSEall = zeros([11 11 3]);
+    ind2examine = 1:3;
+    blockNums = 11:16;
+elseif subjNum==15
+    RMSEall = zeros([11 11 3]);
+    ind2examine = 1:3;
+    blockNums = 3:8;
+elseif subjNum==19
+    RMSEall = zeros([11 11 3]);
+    ind2examine = 1:3;
+    blockNums = 2:7;
+elseif subjNum==26
+    RMSEall = zeros([11 11 3]);
+    ind2examine = 1:3;
+    blockNums = 2:7;
+elseif subjNum==27
+    RMSEall = zeros([11 11 3]);
+    ind2examine = 1:3;
+    blockNums = 2:7;
+elseif subjNum==28
+    RMSEall = zeros([11 11 3]);
+    ind2examine = 1:3;
+    blockNums = 2:7;
+elseif subjNum==30    
+    RMSEall = zeros([11 11 3]);
+    ind2examine = 1:3;
+    blockNums = 2:7;
 end
 trialNumAll = 1:36;
-wLunq = -1:0.2:1;
-wMunq = -1:0.2:1;
-wSunq = [-1 -0.6 -0.2 0.2 0.6 1];
+wLunq = [1 -1];
+wMunq = [1 -1];
+wSunq = [0 -1];
 RMSE = [];
 defocus875all = [];
 defocus875predAll = [];

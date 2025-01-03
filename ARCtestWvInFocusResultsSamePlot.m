@@ -4,7 +4,7 @@ clear;
 
 %%
 
-subjNum = 13;
+subjNum = 20;
 
 % 1: L+M
 % 2: L-M
@@ -13,8 +13,7 @@ subjNum = 13;
 % 5: Best fit
 
 SvaluesAll = [0 0 -1];
-loadStr = {'0' '0' '-10'};
-
+loadStr = {'0' '0' '-10'};    
 optDistNames = {'1pt5' '2pt5' '3pt5'};
 
 if subjNum==20
@@ -29,16 +28,51 @@ if subjNum==20
     % loadStr = {'-8'};
     % blockNums = 3:8;
     % ind2examine = 1;    
-    
     RMSEall = zeros([11 11 3]);
     blockNums = 3:8;
-    ind2examine = 1:3;        
+    ind2examine = 1:3;     
+    coordinates2examine = [11 11; 11 1; 11 11];
 elseif subjNum==13
     RMSEall = zeros([11 11 3]);
     blockNums = 12:17;
     ind2examine = 1:3;    
+    coordinates2examine = [11 11; 11 1; 11 11];
+elseif subjNum==11
+    RMSEall = zeros([2 2 2]);
+    ind2examine = 1:3;
+    blockNums = 11:16;
+    coordinates2examine = [1 1; 1 2; 1 1];
+elseif subjNum==15
+    RMSEall = zeros([2 2 2]);
+    ind2examine = 1:3;
+    blockNums = 3:8;
+    coordinates2examine = [1 1; 1 2; 1 1];
+elseif subjNum==19
+    RMSEall = zeros([2 2 2]);
+    ind2examine = 1:3;
+    blockNums = 2:7;
+    coordinates2examine = [1 1; 1 2; 1 1];
+elseif subjNum==26
+    RMSEall = zeros([2 2 2]);
+    ind2examine = 1:3;
+    blockNums = 2:7;
+    coordinates2examine = [1 1; 1 2; 1 1];
+elseif subjNum==27
+    RMSEall = zeros([2 2 2]);
+    ind2examine = 1:3;
+    blockNums = 2:7;
+    coordinates2examine = [1 1; 1 2; 1 1];
+elseif subjNum==28
+    RMSEall = zeros([2 2 2]);
+    ind2examine = 1:3;
+    blockNums = 2:7;
+    coordinates2examine = [1 1; 1 2; 1 1];
+elseif subjNum==30    
+    RMSEall = zeros([2 2 2]);
+    ind2examine = 1:3;
+    blockNums = 2:7;
+    coordinates2examine = [1 1; 1 2; 1 1];
 end
-coordinates2examine = [11 11; 11 1; 11 11];
 
 folderPath = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/coneWeightsError/';
 rgbAll = [];
@@ -127,9 +161,10 @@ figPositions = [14 493 560 420; ...
 optDistToCheckAll = [1.5 2.5 3.5];
 indGoodOpt = abs(actD+1-optDistStim)<1;
 
+figure;
+set(gcf,'Position',[95 155 1089 751]);
 for j = 1:length(optDistToCheckAll)
-    figure;
-    set(gcf,'Position',figPositions(j,:));
+    subplot(2,2,j);
     hold on;
     optDistToCheck = optDistToCheckAll(j);
     indDist = abs(optDistStim-optDistToCheck)<0.01;
@@ -165,8 +200,8 @@ for j = 1:length(optDistToCheckAll)
     set(gca,'FontSize',15);
     xlabel('Condition');
     ylabel('Defocus at 875nm');
-    % saveas(gcf,['/Users/benjaminchin/Documents/ARchromaScraps/colorMechPredictionsS' num2str(subjNum-10) 'dist' optDistNames{j} 'mech' mechanismNames{mechanismType}],'png');
 end
+saveas(gcf,['/Users/benjaminchin/Documents/ARchromaScraps/colorMechPredictionsS' num2str(subjNum-10) 'mechAll'],'png');
 
 % %% PLOTTING ALL TRIAL MEANS PER CONDITION AND DISTANCE
 % 
