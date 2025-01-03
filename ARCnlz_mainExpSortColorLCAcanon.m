@@ -104,7 +104,7 @@ end
 
 % GETTING DEFOCUS AT 550NM
 defocusCorrectionFactor = (1e6/(4*sqrt(3)))*((PARAMS.PupilSize/2000)^2);
-defocusAt550 = humanWaveDefocusARC(550,875,subjNum-10)+meanC(:,4)./defocusCorrectionFactor;
+defocusAt550 = humanWaveDefocusARC(550,875,99)+meanC(:,4)./defocusCorrectionFactor;
 
 % SORTING CONDITIONS BY COLOR
 lumScaleRGB = [4.0888 9.6669 1];
@@ -142,9 +142,9 @@ for j = 1:length(optDistToCheckAll)
         defocusAt550tmp = defocusAt550(ind);
         diffFromOptDist = defocusAt550tmp-meanv00all(ind);
         indGood = abs(diffFromOptDist)<1 & ...
-                  humanWaveDefocusInvertARC(550,diffFromOptDist,subjNum-10)>380 & ...
-                  humanWaveDefocusInvertARC(550,diffFromOptDist,subjNum-10)<780;
-        wvInFocusCell{end+1} =  humanWaveDefocusInvertARC(550,diffFromOptDist(indGood),subjNum-10);
+                  humanWaveDefocusInvertARC(550,diffFromOptDist,99)>380 & ...
+                  humanWaveDefocusInvertARC(550,diffFromOptDist,99)<780;
+        wvInFocusCell{end+1} =  humanWaveDefocusInvertARC(550,diffFromOptDist(indGood),99);
         defocusAt550cell{end+1} = -defocusAt550tmp(indGood);
         optDistCnd(end+1,:) = optDistToCheckAll(j);
         rgbLumNormCnd(end+1,:) = conditionsOrderedNorm(i,:);
