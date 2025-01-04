@@ -2,7 +2,7 @@ function wvInFocus = ARCwvInFocusConesMeanZcanonLCA(subjNum,stimNum,wLMS)
 
 wave = 380:4:780;
 nFocus = length(wave);
-foldernameCones = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/coneImages/';
+foldernameCones = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/coneImagesOrigLCA/';
 
 % USE THE SAME ORIGINAL (PRE-OPTICS) IMAGE EACH TIME--THIS ONE HAPPENS TO
 % LIVE IN THE FOLDER FOR SUBJECT 10, BUT IT REALLY DOESN'T MATTER SINCE ALL

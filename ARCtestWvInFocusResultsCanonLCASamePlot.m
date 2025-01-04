@@ -4,7 +4,7 @@ clear;
 
 %%
 
-subjNum = 11;
+subjNum = 30;
 
 % 1: L+M
 % 2: L-M
@@ -74,7 +74,7 @@ elseif subjNum==30
     coordinates2examine = [1 1; 1 2; 1 1];
 end
 
-folderPath = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/coneWeightsError/';
+folderPath = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/coneWeightsErrorOrigLCA/';
 rgbAll = [];
 optDistStim = [];
 
@@ -201,7 +201,7 @@ for j = 1:length(optDistToCheckAll)
     xlabel('Condition');
     ylabel('Defocus at 875nm');
 end
-saveas(gcf,['/Users/benjaminchin/Documents/ARchromaScraps/colorMechPredictionsS' num2str(subjNum-10) 'mechAll'],'png');
+saveas(gcf,['/Users/benjaminchin/Documents/ARchromaScraps/colorMechPredictionsS' num2str(subjNum-10) 'mechAllOrigLCA'],'png');
 
 % %% PLOTTING ALL TRIAL MEANS PER CONDITION AND DISTANCE
 % 
