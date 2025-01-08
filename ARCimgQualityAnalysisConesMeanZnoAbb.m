@@ -19,13 +19,13 @@ bUseBVAMScal = 1; % if using BVAMS calibration data
 if strcmp(getenv('USER'),'benjaminchin')
     calPath = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/ARChroma/BVAMS_calibration_files/display calibration on August3/';
      stimPath = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/stimuli/';
-     savePath = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/coneImages/S';
+     savePath = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/coneImagesNoAbb/S';
 end
 
 if strcmp(getenv('USER'),'benchin')
     calPath = '/Users/benchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/ARChroma/BVAMS_calibration_files/display calibration on August3/';
     stimPath = '/Users/benchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/stimuli/';
-    savePath = '/Users/benchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/coneImages/S';
+    savePath = '/Users/benchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/coneImagesNoAbb/S';
 end
 
 if bUseBVAMScal
@@ -278,52 +278,15 @@ for k = 1:size(rgb00,1) % LOOP OVER TRIAL
     wave2 = 380:4:780;
 
     parfor i = 1:length(wave2)
-        % zCoeffs = [0 zeros(size(meanC(1:end-1)))];
-        zCoeffs = [0 meanC(1:end-1)];
+        zCoeffs = [0 zeros(size(meanC(1:end-1)))];
         wvfP = wvfCreate('calc wavelengths', wave, ...
             'measured wavelength', wave2(i), ...
             'zcoeffs', zCoeffs, 'measured pupil', PARAMS.PupilSize, ...
             'name', sprintf('human-%d', PARAMS.PupilSize),'spatial samples',size(I,2));
         wvfP.calcpupilMM = PARAMS.PupilSize;
-        if subjNum==1
-            defocusFromLCA = max(abs([humanWaveDefocusS1(wave2(i),min(wave)) ...
-                                      humanWaveDefocusS1(wave2(i),max(wave))]));
-            wvfP = wvfSet(wvfP, 'customlca', @humanWaveDefocusS1);
-        elseif subjNum==3
-            defocusFromLCA = max(abs([humanWaveDefocusS3(wave2(i),min(wave)) ...
-                                      humanWaveDefocusS3(wave2(i),max(wave))]));  
-            wvfP = wvfSet(wvfP, 'customlca', @humanWaveDefocusS3);
-        elseif subjNum==5
-            defocusFromLCA = max(abs([humanWaveDefocusS5(wave2(i),min(wave)) ...
-                                      humanWaveDefocusS5(wave2(i),max(wave))]));  
-            wvfP = wvfSet(wvfP, 'customlca', @humanWaveDefocusS5); 
-        elseif subjNum==9
-            defocusFromLCA = max(abs([humanWaveDefocusS9(wave2(i),min(wave)) ...
-                                      humanWaveDefocusS9(wave2(i),max(wave))]));  
-            wvfP = wvfSet(wvfP, 'customlca', @humanWaveDefocusS9); 
-        elseif subjNum==10
-            defocusFromLCA = max(abs([humanWaveDefocusS10(wave2(i),min(wave)) ...
-                                      humanWaveDefocusS10(wave2(i),max(wave))]));  
-            wvfP = wvfSet(wvfP, 'customlca', @humanWaveDefocusS10); 
-        elseif subjNum==16
-            defocusFromLCA = max(abs([humanWaveDefocusS16(wave2(i),min(wave)) ...
-                                      humanWaveDefocusS16(wave2(i),max(wave))]));  
-            wvfP = wvfSet(wvfP, 'customlca', @humanWaveDefocusS16); 
-        elseif subjNum==17
-            defocusFromLCA = max(abs([humanWaveDefocusS17(wave2(i),min(wave)) ...
-                                      humanWaveDefocusS17(wave2(i),max(wave))]));  
-            wvfP = wvfSet(wvfP, 'customlca', @humanWaveDefocusS17); 
-        elseif subjNum==18
-            defocusFromLCA = max(abs([humanWaveDefocusS18(wave2(i),min(wave)) ...
-                                      humanWaveDefocusS18(wave2(i),max(wave))]));  
-            wvfP = wvfSet(wvfP, 'customlca', @humanWaveDefocusS18); 
-        elseif subjNum==20
-            defocusFromLCA = max(abs([humanWaveDefocusS20(wave2(i),min(wave)) ...
-                                      humanWaveDefocusS20(wave2(i),max(wave))]));  
-            wvfP = wvfSet(wvfP, 'customlca', @humanWaveDefocusS20); 
-        else
-            error('Subject number with no LCA function?');
-        end
+        defocusFromLCA = max(abs([humanWaveDefocusAvg(wave2(i),min(wave)) ...
+                                  humanWaveDefocusAvg(wave2(i),max(wave))]));  
+        wvfP = wvfSet(wvfP, 'customlca', @humanWaveDefocusAvg); 
         if defocusFromLCA<1
             wvfP.refSizeOfFieldMM = 12;
         else
