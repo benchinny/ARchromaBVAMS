@@ -32,3 +32,19 @@ for i = 1:4
     set(gca,'XTick',[0.5 2 8 32]);
     set(gca,'YTick',[25 50 75 100]);
 end
+
+%%
+
+dataOwens1980mean = mean(dataOwens1980,3);
+
+figure;
+plot(dataOwens1980mean(:,1),dataOwens1980mean(:,2),'ko-','LineWidth',1,'MarkerSize',10,'MarkerFaceColor','w');
+axis square;
+set(gca,'FontSize',12);
+xlabel('Spatial frequency (cyc/deg)');
+ylabel('Performance');
+set(gca,'Xscale','log');
+xlim([0.4 40]);
+ylim([0 105]);
+set(gca,'XTick',[0.5 2 8 32]);
+set(gca,'YTick',[25 50 75 100]);
