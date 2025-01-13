@@ -1,6 +1,6 @@
 %%
 
-subjNum = 20;
+subjNum = 10;
 if subjNum==10
     subjName = 'S20-OD';
     blockNumAll = 3:8;
