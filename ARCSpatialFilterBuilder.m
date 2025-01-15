@@ -82,4 +82,4 @@ dataOwensContSFfftSupport = [fliplr(-dataOwensContSF(1:end-1)) 0 dataOwensContSF
 
 SFdst = sqrt(SFX.^2 + SFY.^2);
 
-freqFilterARC = a1.*exp(-0.5.*((log(SFdst) - log(m1))./s1).^2);
+freqFilterARC = 0.01.*a1.*exp(-0.5.*((log(SFdst) - log(m1))./s1).^2);

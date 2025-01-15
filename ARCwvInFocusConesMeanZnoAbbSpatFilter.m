@@ -1,5 +1,24 @@
 function wvInFocus = ARCwvInFocusConesMeanZnoAbbSpatFilter(subjNum,stimNum,wLMS)
 
+% function wvInFocus = ARCwvInFocusConesMeanZnoAbbSpatFilter(subjNum,stimNum,wLMS)
+%
+% determining wavelength in focus for spatially filtered stimulus, with no
+% aberrations and standard LCA
+
+% INPUT VARIABLE stimNum INDICES FOR TESTING: 
+% 1 : 0.3270         0    1.0000
+% 2 : 0.3270    0.3340    1.0000
+% 3 : 0.4320         0    1.0000
+% 4 : 0.4320    0.3340    1.0000
+% 5 : 0.4720         0    0.8150
+% 6 : 0.5690         0    0.5470
+% 7 : 0.5690         0    0.7400
+% 8 : 0.5690         0    1.0000
+% 9 : 0.5690    0.3340    0.5470
+% 10: 0.5690    0.3340    0.7400
+% 11: 0.5690    0.3340    1.0000
+% 12: 0.5690    0.4320    1.0000
+
 wave = 380:4:780;
 nFocus = length(wave);
 foldernameCones = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/coneImagesNoAbb/';
@@ -11,6 +30,15 @@ fnameConeRspNoLCA = ['subj10block3stimulus1' 'focusInd1noLCA'];
 absorptionsOrig = load([foldernameCones 'S10/' fnameConeRspNoLCA]);
 absorptionsOrig = absorptionsOrig.absorptions;
 coneImgOrig = sum(absorptionsOrig,3);
+
+% LOAD SPATIAL FILTER
+load('/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/modelParams/freqFilterARC.mat');
+
+coneImgOrigFFT = fft2(coneImgOrig);
+freqFilterARCfft = ifftshift(freqFilterARC);
+coneImgOrigFilteredFFT = coneImgOrigFFT.*freqFilterARCfft;
+coneImgOrigFiltered = real(ifft2(coneImgOrigFilteredFFT));
+
 peakCorr = [];
 
 for i = 1:nFocus
@@ -20,7 +48,11 @@ for i = 1:nFocus
     absorptions(:,:,2) = absorptions(:,:,2).*wLMS(2);
     absorptions(:,:,3) = absorptions(:,:,3).*wLMS(3);
     coneImg = sum(absorptions,3);
-    peakCorr(i) = max(max(normxcorr2(coneImgOrig,coneImg)));
+
+    coneImgFFT = fft2(coneImg);
+    coneImgFilteredFFT = coneImgFFT.*freqFilterARCfft;
+    coneImgFiltered = real(ifft2(coneImgFilteredFFT));
+    peakCorr(i) = max(max(normxcorr2(coneImgOrigFiltered,coneImgFiltered)));
 end
 
 [~,indPeakPeak] = max(peakCorr);
