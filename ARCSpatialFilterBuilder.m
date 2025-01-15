@@ -33,10 +33,10 @@ for i = 1:4
     set(gca,'YTick',[25 50 75 100]);
 end
 
-%%
+%% TRY FITTING FUNCTION TO OWENS (1980) DATA
 
 dataOwens1980mean = mean(dataOwens1980,3);
-dataOwensContFit = 0.01:0.1:32;
+dataOwensContSF = linspace(75/91,75,91);
 
 lgsORspline = 'lgs';
 
@@ -53,17 +53,17 @@ if strcmp(lgsORspline,'lgs')
     a1 = pFitBest(1);
     m1 = pFitBest(2);
     s1 = pFitBest(3);
-    yFit = a1.*exp(-0.5.*((dataOwensContFit - log(m1))./s1).^2);
+    yFit = a1.*exp(-0.5.*((log(dataOwensContSF) - log(m1))./s1).^2);
 end
 
 if strcmp(lgsORspline,'spline')
-    yFit = interp1(dataOwens1980mean(:,1),dataOwens1980mean(:,2),dataOwensContFit,'spline','extrap');
+    yFit = interp1(dataOwens1980mean(:,1),dataOwens1980mean(:,2),dataOwensContSF,'spline','extrap');
 end
 
 figure;
 hold on;
-plot(dataOwensContFit,yFit,'k-');
-plot(dataOwens1980mean(:,1),dataOwens1980mean(:,2),'ko-','LineWidth',1,'MarkerSize',10,'MarkerFaceColor','w');
+plot(dataOwensContSF,yFit,'k-');
+plot(dataOwens1980mean(:,1),dataOwens1980mean(:,2),'ko','LineWidth',1,'MarkerSize',10,'MarkerFaceColor','w');
 axis square;
 set(gca,'FontSize',12);
 xlabel('Spatial frequency (cyc/deg)');
@@ -73,3 +73,13 @@ xlim([0.4 40]);
 ylim([0 105]);
 set(gca,'XTick',[0.5 2 8 32]);
 set(gca,'YTick',[25 50 75 100]);
+
+%%
+
+dataOwensContSFfftSupport = [fliplr(-dataOwensContSF(1:end-1)) 0 dataOwensContSF];
+
+[SFX, SFY] = meshgrid(dataOwensContSFfftSupport);
+
+SFdst = sqrt(SFX.^2 + SFY.^2);
+
+freqFilterARC = a1.*exp(-0.5.*((log(SFdst) - log(m1))./s1).^2);
