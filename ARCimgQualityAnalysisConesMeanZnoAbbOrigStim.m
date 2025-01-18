@@ -19,13 +19,13 @@ bUseBVAMScal = 1; % if using BVAMS calibration data
 if strcmp(getenv('USER'),'benjaminchin')
     calPath = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/ARChroma/BVAMS_calibration_files/display calibration on August3/';
      stimPath = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/stimuli/';
-     savePath = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/coneImagesNoAbb/S';
+     savePath = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/coneImagesNoAbbOldStim/S';
 end
 
 if strcmp(getenv('USER'),'benchin')
     calPath = '/Users/benchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/ARChroma/BVAMS_calibration_files/display calibration on August3/';
     stimPath = '/Users/benchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/stimuli/';
-    savePath = '/Users/benchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/coneImagesNoAbb/S';
+    savePath = '/Users/benchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/coneImagesNoAbbOldStim/S';
 end
 
 if bUseBVAMScal
@@ -233,16 +233,17 @@ end
 
 %%
 
-for k = 3 % LOOP OVER TRIAL
+for k = 1:size(rgb00,1) % LOOP OVER TRIAL
     % recreate stimulus
     rVal = rgb00(k,1);
     gVal = rgb00(k,2);
     bVal = rgb00(k,3);
-    im = imread([stimPath '/word_image_01.png']);
+    im = imread([stimPath '/word_image_thick.png']);
     im = double(im);
-    imPattern = squeeze(im(:,:,3));
-    imPattern = [zeros([100 size(imPattern,2)]); imPattern; zeros([100 size(imPattern,2)])];
-    imPattern = [zeros([size(imPattern,1) 30]) imPattern zeros([size(imPattern,1) 30])];
+    imPattern = squeeze(im(166:715,311:860,2));
+    imPattern = imresize(imPattern,[318 318],'nearest');
+    % imPattern = [zeros([100 size(imPattern,2)]); imPattern; zeros([100 size(imPattern,2)])];
+    % imPattern = [zeros([size(imPattern,1) 30]) imPattern zeros([size(imPattern,1) 30])];
     I(:,:,3) = bVal.*imPattern;
     I(:,:,2) = gVal.*imPattern;
     I(:,:,1) = rVal.*imPattern;
@@ -277,7 +278,7 @@ for k = 3 % LOOP OVER TRIAL
     
     wave2 = 380:4:780;
 
-    for i = 21
+    parfor i = 1:length(wave2)
         zCoeffs = [0 zeros(size(meanC(1:end-1)))];
         wvfP = wvfCreate('calc wavelengths', wave, ...
             'measured wavelength', wave2(i), ...
@@ -324,7 +325,7 @@ for k = 3 % LOOP OVER TRIAL
         S = struct;
         S.absorptions = absorptions;
         fnameCone = ['subj' num2str(subjNum) 'stimulus' num2str(k) 'focusInd' num2str(i)];
-        % save([savePath num2str(subjNum) '/' fnameCone '.mat'],"-fromstruct",S);
+        save([savePath num2str(subjNum) '/' fnameCone '.mat'],"-fromstruct",S);
     end
 end
 
