@@ -7,7 +7,7 @@ foldernameCones = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@b
 % USE THE SAME ORIGINAL (PRE-OPTICS) IMAGE EACH TIME--THIS ONE HAPPENS TO
 % LIVE IN THE FOLDER FOR SUBJECT 10, BUT IT REALLY DOESN'T MATTER SINCE ALL
 % SUBJECTS SAW THE SAME ON-SCREEN STIMULUS
-fnameConeRspNoLCA = ['subj10stimulus1' 'focusInd1noLCA.mat'];
+fnameConeRspNoLCA = ['subj10stimulus8' 'focusInd1noLCA.mat'];
 absorptionsOrig = load([foldernameCones 'S10/' fnameConeRspNoLCA]);
 absorptionsOrig = absorptionsOrig.absorptions;
 coneImgOrig = sum(absorptionsOrig,3);

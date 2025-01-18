@@ -233,7 +233,7 @@ end
 
 %%
 
-for k = 1:size(rgb00,1) % LOOP OVER TRIAL
+for k = 8 % 1:size(rgb00,1) % LOOP OVER TRIAL
     % recreate stimulus
     rVal = rgb00(k,1);
     gVal = rgb00(k,2);
@@ -241,6 +241,7 @@ for k = 1:size(rgb00,1) % LOOP OVER TRIAL
     im = imread([stimPath '/word_image_thick.png']);
     im = double(im);
     imPattern = squeeze(im(166:715,311:860,2));
+    % imPattern = squeeze(im(346:535,491:680,2));
     imPattern = imresize(imPattern,[318 318],'nearest');
     % imPattern = [zeros([100 size(imPattern,2)]); imPattern; zeros([100 size(imPattern,2)])];
     % imPattern = [zeros([size(imPattern,1) 30]) imPattern zeros([size(imPattern,1) 30])];
