@@ -1,27 +1,8 @@
-function wvInFocus = ARCwvInFocusConesMeanZnoAbbSpatFilter(subjNum,stimNum,wLMS)
-
-% function wvInFocus = ARCwvInFocusConesMeanZnoAbbSpatFilter(subjNum,stimNum,wLMS)
-%
-% determining wavelength in focus for spatially filtered stimulus, with no
-% aberrations and standard LCA
-
-% INPUT VARIABLE stimNum INDICES FOR TESTING: 
-% 1 : 0.3270         0    1.0000
-% 2 : 0.3270    0.3340    1.0000
-% 3 : 0.4320         0    1.0000
-% 4 : 0.4320    0.3340    1.0000
-% 5 : 0.4720         0    0.8150
-% 6 : 0.5690         0    0.5470
-% 7 : 0.5690         0    0.7400
-% 8 : 0.5690         0    1.0000
-% 9 : 0.5690    0.3340    0.5470
-% 10: 0.5690    0.3340    0.7400
-% 11: 0.5690    0.3340    1.0000
-% 12: 0.5690    0.4320    1.0000
+function wvInFocus = ARCwvInFocusConesMeanZspatFilter(subjNum,stimNum,wLMS)
 
 wave = 380:4:780;
 nFocus = length(wave);
-foldernameCones = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/coneImagesNoAbb/';
+foldernameCones = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/coneImages/';
 
 % USE THE SAME ORIGINAL (PRE-OPTICS) IMAGE EACH TIME--THIS ONE HAPPENS TO
 % LIVE IN THE FOLDER FOR SUBJECT 10, BUT IT REALLY DOESN'T MATTER SINCE ALL
@@ -51,7 +32,8 @@ for i = 1:nFocus
     coneImgFFT = fftshift(fft2(coneImg));
     coneImgFilteredFFT = coneImgFFT.*freqFilterARC;
     coneImgFiltered = real(ifft2(ifftshift(coneImgFilteredFFT)));
-    peakCorr(i) = max(max(normxcorr2(coneImgOrig,coneImg)));
+
+    peakCorr(i) = max(max(normxcorr2(coneImgFiltered,coneImgOrigFiltered)));
 end
 
 [~,indPeakPeak] = max(peakCorr);
