@@ -36,7 +36,7 @@ end
 %% TRY FITTING FUNCTION TO OWENS (1980) DATA
 
 dataOwens1980mean = mean(dataOwens1980,3);
-dataOwensContSF = linspace(75/91,75,91);
+dataOwensContSF = linspace(75/182,75,182);
 
 lgsORspline = 'lgs';
 
@@ -74,12 +74,18 @@ ylim([0 105]);
 set(gca,'XTick',[0.5 2 8 32]);
 set(gca,'YTick',[25 50 75 100]);
 
-%%
+%% BUILDING 2D FILTER
 
-dataOwensContSFfftSupport = [fliplr(-dataOwensContSF(1:end-1)) 0 dataOwensContSF];
+dataOwensContSF = linspace(75/91,75,91);
+
+dataOwensContSFfftSupport = [fliplr(-dataOwensContSF) 0 dataOwensContSF(1:end-1)];
 
 [SFX, SFY] = meshgrid(dataOwensContSFfftSupport);
 
 SFdst = sqrt(SFX.^2 + SFY.^2);
 
 freqFilterARC = 0.01.*a1.*exp(-0.5.*((log(SFdst) - log(m1))./s1).^2);
+
+%%
+
+save('/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/modelParams/freqFilterARC.mat','freqFilterARC');

@@ -51,7 +51,7 @@ for i = 1:nFocus
     coneImgFFT = fftshift(fft2(coneImg));
     coneImgFilteredFFT = coneImgFFT.*freqFilterARC;
     coneImgFiltered = real(ifft2(ifftshift(coneImgFilteredFFT)));
-    peakCorr(i) = max(max(normxcorr2(coneImgOrig,coneImg)));
+    peakCorr(i) = max(max(normxcorr2(coneImgOrigFiltered,coneImgFiltered)));
 end
 
 [~,indPeakPeak] = max(peakCorr);
