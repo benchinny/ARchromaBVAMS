@@ -19,6 +19,17 @@ coneImgOrigFFT = fftshift(fft2(coneImgOrig));
 coneImgOrigFilteredFFT = coneImgOrigFFT.*freqFilterARC;
 coneImgOrigFiltered = real(ifft2(ifftshift(coneImgOrigFilteredFFT)));
 
+coneImgOrigFFT2 = fft2(fftshift(coneImgOrig));
+freqFilterARCfft2 = fftshift(freqFilterARC);
+coneImgOrigFilteredFFT2 = coneImgOrigFFT2.*freqFilterARCfft2;
+coneImgOrigFiltered2 = real(ifftshift(ifft2(coneImgOrigFilteredFFT2)));
+
+% % Put the image center in (1, 1) and take the transform.
+% imgFFT = fft2(fftshift(img));
+% % Multiply the transformed otf and the image.
+% % Then invert and put the image center in  the center of the matrix
+% filteredIMG = abs(ifftshift(ifft2(otf .* imgFFT)));
+
 peakCorr = [];
 
 for i = 1:nFocus
