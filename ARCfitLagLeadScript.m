@@ -1,6 +1,7 @@
 %%
 
-subjNumAll = [1 3 5 10 16 17 18 20];
+% subjNumAll = [1 3 5 10 16 17 18 20];
+subjNumAll = [20];
 bSpatFilter = true;
 
 SvaluesAll = [0 0 -1];
@@ -87,7 +88,70 @@ for i = 1:length(subjNumAll)
         predD = predD(:);
         actD = squeeze(defocus875all(:,coordinates2examine(j,1),coordinates2examine(j,2),end))';
         actD = actD(:); 
+        [pFit,rms] = ARCfitLagLead(predD,actD,optDistStim);
+        pFitAll(:,j) = pFit';
         predDall(:,j) = predD;
         actDall(:,j) = actD;        
+    end
+
+    conditionsOrderedNorm = [0.25 0.00 1.00; ...
+                             0.50 0.00 1.00; ...
+                             1.00 0.00 1.00; ...
+                             1.00 0.00 0.50; ...
+                             1.00 0.00 0.25; ...
+                             0.25 0.50 1.00; ...
+                             0.50 0.50 1.00; ...
+                             1.00 0.50 1.00; ...
+                             1.00 0.50 0.50; ...
+                             1.00 0.50 0.25; ...
+                             1.00 1.00 1.00];
+    
+    figPositions = [14 493 560 420; ...
+                    544 496 560 420; ...
+                    1079 498 560 420; ...
+                    ];
+    optDistToCheckAll = [1.5 2.5 3.5];
+    indGoodOpt = abs(actD+1-optDistStim)<1; 
+
+    figure;
+    set(gcf,'Position',[95 155 1089 751]);
+    for j = 1:length(optDistToCheckAll)
+        subplot(2,2,j);
+        hold on;
+        optDistToCheck = optDistToCheckAll(j);
+        for k = 1:size(conditionsOrderedNorm,1)
+            ind = abs(rgbLumNorm(:,1)-conditionsOrderedNorm(k,1))<0.01 & ...
+                  abs(rgbLumNorm(:,2)-conditionsOrderedNorm(k,2))<0.01 & ...
+                  abs(rgbLumNorm(:,3)-conditionsOrderedNorm(k,3))<0.01 & ...
+                  abs(optDistStim-optDistToCheck)<0.01 & ...
+                  indGoodOpt;
+            if k<size(conditionsOrderedNorm,1)
+                plot(k.*ones([sum(ind) 1]),actD(ind),'o','Color',conditionsOrderedNorm(k,:),'MarkerFaceColor',conditionsOrderedNorm(k,:));
+            else
+                plot(k.*ones([sum(ind) 1]),actD(ind),'o','Color','k','MarkerFaceColor','k');
+            end
+            defocusAt875mean(k) = mean(actD(ind));
+            defocusAt875meanPred(k,1) = mean(predDall(ind,1));
+            defocusAt875meanPred(k,2) = mean(predDall(ind,2));
+            defocusAt875meanPred(k,3) = mean(predDall(ind,3));
+        end
+        plot(defocusAt875mean(1:5),'k-');
+        plot(6:10,defocusAt875mean(6:10),'k-');
+
+        plot(defocusAt875meanPred(1:5,1)-pFitAll(j,1),'-','Color',0.*[1 1 1],'LineWidth',1.5);
+        plot(6:10,defocusAt875meanPred(6:10,1)-pFitAll(j,1),'-','Color',0.*[1 1 1],'LineWidth',1.5);
+        plot(defocusAt875meanPred(1:5,2)-pFitAll(j,2),'-','Color',1.*[0 1 0],'LineWidth',1.5);
+        plot(6:10,defocusAt875meanPred(6:10,2)-pFitAll(j,2),'-','Color',1.*[0 1 0],'LineWidth',1.5);
+        plot(defocusAt875meanPred(1:5,3)-pFitAll(j,3),'-','Color',1.*[0 0 1],'LineWidth',1.5);
+        plot(6:10,defocusAt875meanPred(6:10,3)-pFitAll(j,3),'-','Color',1.*[0 0 1],'LineWidth',1.5); 
+
+        plot([0 11],defocusAt875mean(11).*[1 1],'k--','LineWidth',1);
+        xlim([0 11]);
+        % ylim(mean(actD(indDist))+[-0.6 0.6]);
+        title(['Subject ' num2str(subjNum) ', Optical Distances = ' num2str(optDistToCheck)]);
+        plot(5.5.*[1 1],ylim,'k-');
+        set(gca,'FontSize',15);
+        xlabel('Condition');
+        ylabel('Defocus at 875nm');
     end
 end

@@ -1,7 +1,7 @@
 function rms = ARCfitLagLeadFunc(x,y,d,p)
 
 dUnq = unique(d);
-if size(dUnq)~=size(p)
+if length(dUnq)~=length(p)
     error('ARCfitLagLeadFunc: fewer lag/lead parameters than unique stimulus distances!');
 end
 
