@@ -1,7 +1,7 @@
 %%
 
-% subjNumAll = [1 3 5 10 16 17 18 20];
-subjNumAll = [20];
+subjNumAll = [1 3 5 10 16 17 18 20];
+% subjNumAll = [10];
 bSpatFilter = true;
 
 SvaluesAll = [0 0 -1];
@@ -12,6 +12,11 @@ if bSpatFilter
 else
     coneWeightsFolder = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/coneWeightsError/';
 end
+
+rmsAllSubj = [];
+rmsBalanceSubj = [];
+rmsMeanAllSubj = [];
+rmsMeanBalanceSubj = [];
 
 for i = 1:length(subjNumAll)
     subjNum = subjNumAll(i);
@@ -91,8 +96,13 @@ for i = 1:length(subjNumAll)
         [pFit,rms] = ARCfitLagLead(predD,actD,optDistStim);
         pFitAll(:,j) = pFit';
         predDall(:,j) = predD;
-        actDall(:,j) = actD;        
+        actDall(:,j) = actD; 
+        rmsAll(:,j) = rms;
+        rmsAllSubj(i,j) = rms;
     end
+    
+    [pFitBalance,rmsBalance] = ARCfitLagLead(optDistStim,actD,optDistStim);
+    rmsBalanceSubj(i,:) = rmsBalance;
 
     conditionsOrderedNorm = [0.25 0.00 1.00; ...
                              0.50 0.00 1.00; ...
@@ -112,6 +122,12 @@ for i = 1:length(subjNumAll)
                     ];
     optDistToCheckAll = [1.5 2.5 3.5];
     indGoodOpt = abs(actD+1-optDistStim)<1; 
+    
+    pFitMeanAll = [];
+    rmsMeanAll = [];
+    defocusAt875meanPredAll = [];
+    defocusAt875meanAll = [];
+    defocusAt875meanPredBalanceAll = [];
 
     figure;
     set(gcf,'Position',[95 155 1089 751]);
@@ -135,15 +151,30 @@ for i = 1:length(subjNumAll)
             defocusAt875meanPred(k,2) = mean(predDall(ind,2));
             defocusAt875meanPred(k,3) = mean(predDall(ind,3));
         end
-        plot(defocusAt875mean(1:5),'k-');
-        plot(6:10,defocusAt875mean(6:10),'k-');
 
-        plot(defocusAt875meanPred(1:5,1)-pFitAll(j,1),'-','Color',0.*[1 1 1],'LineWidth',1.5);
-        plot(6:10,defocusAt875meanPred(6:10,1)-pFitAll(j,1),'-','Color',0.*[1 1 1],'LineWidth',1.5);
-        plot(defocusAt875meanPred(1:5,2)-pFitAll(j,2),'-','Color',1.*[0 1 0],'LineWidth',1.5);
-        plot(6:10,defocusAt875meanPred(6:10,2)-pFitAll(j,2),'-','Color',1.*[0 1 0],'LineWidth',1.5);
-        plot(defocusAt875meanPred(1:5,3)-pFitAll(j,3),'-','Color',1.*[0 0 1],'LineWidth',1.5);
-        plot(6:10,defocusAt875meanPred(6:10,3)-pFitAll(j,3),'-','Color',1.*[0 0 1],'LineWidth',1.5); 
+        for k = 1:size(predDall,2)
+            [pFitMean,rmsMean] = ARCfitLagLead(defocusAt875meanPred(:,k),defocusAt875mean',optDistToCheck.*ones(size(defocusAt875mean')));
+            pFitMeanAll(j,k) = pFitMean;
+        end
+
+        [pFitMeanBalance(j,:),rmsMeanBalance(j,:)] = ARCfitLagLead(optDistToCheck.*ones(size(defocusAt875mean')),defocusAt875mean',optDistToCheck.*ones(size(defocusAt875mean')));
+
+        defocusAt875meanAll = [defocusAt875meanAll; defocusAt875mean'];
+        defocusAt875meanPredAll = [defocusAt875meanPredAll; ...
+                                   defocusAt875meanPred(:,1)-pFitMeanAll(j,1) ...
+                                   defocusAt875meanPred(:,2)-pFitMeanAll(j,2) ...
+                                   defocusAt875meanPred(:,3)-pFitMeanAll(j,3)];
+        defocusAt875meanPredBalanceAll = [defocusAt875meanPredBalanceAll; optDistToCheck.*ones(size(defocusAt875mean'))-pFitMeanBalance(j)];
+
+        plot(defocusAt875mean(1:5),'-','LineWidth',1,'Color',0.7.*[1 1 1]);
+        plot(6:11,defocusAt875mean(6:11),'-','LineWidth',1,'Color',0.7*[1 1 1]);
+
+        plot(defocusAt875meanPred(1:5,1)-pFitMeanAll(j,1),'-','Color',0.*[1 1 1],'LineWidth',1.5);
+        plot(6:11,defocusAt875meanPred(6:11,1)-pFitMeanAll(j,1),'-','Color',0.*[1 1 1],'LineWidth',1.5);
+        plot(defocusAt875meanPred(1:5,2)-pFitMeanAll(j,2),'-','Color',1.*[0 1 0],'LineWidth',1.5);
+        plot(6:11,defocusAt875meanPred(6:11,2)-pFitMeanAll(j,2),'-','Color',1.*[0 1 0],'LineWidth',1.5);
+        plot(defocusAt875meanPred(1:5,3)-pFitMeanAll(j,3),'-','Color',1.*[0 0 1],'LineWidth',1.5);
+        plot(6:11,defocusAt875meanPred(6:11,3)-pFitMeanAll(j,3),'-','Color',1.*[0 0 1],'LineWidth',1.5); 
 
         plot([0 11],defocusAt875mean(11).*[1 1],'k--','LineWidth',1);
         xlim([0 11]);
@@ -154,4 +185,8 @@ for i = 1:length(subjNumAll)
         xlabel('Condition');
         ylabel('Defocus at 875nm');
     end
+    rmsMeanAllSubj(i,1) = sqrt(mean((defocusAt875meanAll-defocusAt875meanPredAll(:,1)).^2));
+    rmsMeanAllSubj(i,2) = sqrt(mean((defocusAt875meanAll-defocusAt875meanPredAll(:,2)).^2));
+    rmsMeanAllSubj(i,3) = sqrt(mean((defocusAt875meanAll-defocusAt875meanPredAll(:,3)).^2));
+    rmsMeanBalanceSubj(i,:) = sqrt(mean((defocusAt875meanAll-defocusAt875meanPredBalanceAll).^2));
 end
