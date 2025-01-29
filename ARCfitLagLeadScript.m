@@ -176,6 +176,8 @@ for i = 1:length(subjNumAll)
         plot(defocusAt875meanPred(1:5,3)-pFitMeanAll(j,3),'-','Color',1.*[0 0 1],'LineWidth',1.5);
         plot(6:11,defocusAt875meanPred(6:11,3)-pFitMeanAll(j,3),'-','Color',1.*[0 0 1],'LineWidth',1.5); 
 
+        % [defocusAt875meanPred(:,1)-pFitMeanAll(j,1) defocusAt875mean']
+
         plot([0 11],defocusAt875mean(11).*[1 1],'k--','LineWidth',1);
         xlim([0 11]);
         % ylim(mean(actD(indDist))+[-0.6 0.6]);
