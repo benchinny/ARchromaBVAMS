@@ -29,3 +29,28 @@ for i = 1:size(rmsMeanAllSubjComb,1)
     ylabel('RMS');
     title(['Subject ' num2str(subjNumAll(i))]);
 end
+
+%% PLOT LAGS AND LEADS
+
+subjNumAll = [1 3 5 10 16 17 18 20];
+
+figure;
+set(gcf,'Position',[141 322 1398 658]);
+for i = 1:size(pFitMeanAllSubj,3)
+    subplot(2,4,i);
+    hold on;
+    plot([1.5 2.5 3.5],pFitMeanAllSubj(:,1,i),'-ko','LineWidth',1.5,'MarkerFaceColor','w','MarkerSize',10);
+    plot([1.5 2.5 3.5],pFitMeanAllSubj(:,2,i),'-go','LineWidth',1.5,'MarkerFaceColor','w','MarkerSize',10);
+    plot([1.5 2.5 3.5],pFitMeanAllSubj(:,3,i),'-bo','LineWidth',1.5,'MarkerFaceColor','w','MarkerSize',10);
+    axis square;
+    plot([1 4],[0 0],'k--','LineWidth',1);
+    xlim([1 4]);
+    set(gca,'FontSize',15);
+    if i==5
+        xlabel('Stimulus distance (D)');
+    end
+    if i==1
+        ylabel('Prediction correction (D)');
+    end
+end
+

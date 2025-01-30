@@ -2,21 +2,25 @@
 
 subjNumAll = [1 3 5 10 16 17 18 20];
 % subjNumAll = [10];
-bSpatFilter = true;
+bSpatFilter = false;
 
 SvaluesAll = [0 0 -1];
 loadStr = {'0' '0' '-10'};    
 
 if bSpatFilter
     coneWeightsFolder = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/coneWeightsErrorSpatFilter/';
+    figTag = 'filtered';
 else
     coneWeightsFolder = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/coneWeightsError/';
+    figTag = 'unfiltered';
 end
 
 rmsAllSubj = [];
 rmsBalanceSubj = [];
 rmsMeanAllSubj = [];
 rmsMeanBalanceSubj = [];
+pFitMeanBalanceAll = [];
+pFitMeanAllSubj = [];
 
 for i = 1:length(subjNumAll)
     subjNum = subjNumAll(i);
@@ -191,4 +195,7 @@ for i = 1:length(subjNumAll)
     rmsMeanAllSubj(i,2) = sqrt(mean((defocusAt875meanAll-defocusAt875meanPredAll(:,2)).^2));
     rmsMeanAllSubj(i,3) = sqrt(mean((defocusAt875meanAll-defocusAt875meanPredAll(:,3)).^2));
     rmsMeanBalanceSubj(i,:) = sqrt(mean((defocusAt875meanAll-defocusAt875meanPredBalanceAll).^2));
+    pFitMeanBalanceAll(:,i) = pFitMeanBalance;
+    pFitMeanAllSubj(:,:,i) = pFitMeanAll;
+    % saveas(gcf,[coneWeightsFolder 'colorMechPredictionsS' num2str(subjNum) figTag],'png');
 end
