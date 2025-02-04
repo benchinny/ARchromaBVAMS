@@ -59,5 +59,11 @@ for k = 1:length(blockNumAll)
     end
 end
 
-RMSE = ARCtestWvInFocusMeanZspatFilterObjFunc(subjNum,defocus875,rgbAll,optDistAll,[1 1 0]);
+wLM = 0:0.1:1;
+wS = 1-wLM;
+
+for i = 1:length(wLM)
+    RMSE(i) = ARCtestWvInFocusMeanZspatFilterObjFunc(subjNum,defocus875,rgbAll,optDistAll,[wLM(i).*[1 1] -wS(i)]);
+    display(['Weight index' num2str(i)]);
+end
 

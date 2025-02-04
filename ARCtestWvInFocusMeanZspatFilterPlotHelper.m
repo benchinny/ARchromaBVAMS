@@ -1,4 +1,4 @@
-function RMSE = ARCtestWvInFocusMeanZspatFilterObjFunc(subjNum,defocus875,rgbAll,optDistAll,w)
+function RMSE = ARCtestWvInFocusMeanZspatFilterPlotHelper(subjNum,defocus875,rgbAll,optDistAll,w)
 
 bFitMeans = true;
 
