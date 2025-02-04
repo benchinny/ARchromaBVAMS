@@ -1,6 +1,6 @@
-%%
+%% LOADING DATA
 
-subjNum = 10;
+subjNum = 20;
 
 if subjNum==10
     subjName = 'S20-OD';
@@ -59,6 +59,8 @@ for k = 1:length(blockNumAll)
     end
 end
 
+%% RMSE FOR DIFFERENT WEIGHTS
+
 wLM = 0:0.1:1;
 wS = 1-wLM;
 RMSE = zeros(size(wLM));
@@ -68,51 +70,62 @@ parfor i = 1:length(wLM)
     display(['Weight index' num2str(i)]);
 end
 
-%%
+%% VISUALIZING PREDICTIONS VS ACTUAL DEFOCUS FOR DIFFERENT WEIGHTS
 
-rgbLumNorm = [];
-rgbLumNorm(:,1) = (rgbUnq(:,1).^2.5)./0.2442;
-rgbLumNorm(:,2) = (rgbUnq(:,2).^2.7)./0.1037;
-rgbLumNorm(:,3) = (rgbUnq(:,3).^2.3)./1;
-rgbLumNorm(rgbLumNorm>1) = 1;
+wLM = 0:0.1:1;
+wS = 1-wLM;
+coneWeightsFolder = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/coneWeightsErrorSpatFilter/colorMechPredictions/';
 
-conditionsOrderedNorm = [0.25 0.00 1.00; ...
-                         0.50 0.00 1.00; ...
-                         1.00 0.00 1.00; ...
-                         1.00 0.00 0.50; ...
-                         1.00 0.00 0.25; ...
-                         0.25 0.50 1.00; ...
-                         0.50 0.50 1.00; ...
-                         1.00 0.50 1.00; ...
-                         1.00 0.50 0.50; ...
-                         1.00 0.50 0.25; ...
-                         1.00 1.00 1.00];
-
-for i = 1:size(conditionsOrderedNorm,1)
-    ind(i) = find(abs(rgbLumNorm(:,1)-conditionsOrderedNorm(i,1))<0.01 & ...
-                  abs(rgbLumNorm(:,2)-conditionsOrderedNorm(i,2))<0.01 & ...
-                  abs(rgbLumNorm(:,3)-conditionsOrderedNorm(i,3))<0.01);
-end
-
-figure;
-set(gcf,'Position',[118 470 1453 420]);
-for i = 1:size(defocus875predTmp,2)
-    subplot(1,3,i);
-    hold on;
-    plot(1:length(ind),defocus875predTmp(ind,i),'b-');
-    plot(1:length(ind),defocus875mean(ind,i),'k-');
-    for j = 1:length(ind)
-        plot(j,defocus875mean(ind(j),i),'ko','MarkerFaceColor',conditionsOrderedNorm(j,:), ...
-             'MarkerSize',10);
+for k = 1:length(wLM)
+    [RMSE, defocus875mean, defocus875predTmp, rgbUnq, optDistUnq] = ARCtestWvInFocusMeanZspatFilterPlotHelper(subjNum,defocus875,rgbAll,optDistAll,[wLM(k).*[1 1] -wS(k)]);
+    
+    rgbLumNorm = [];
+    rgbLumNorm(:,1) = (rgbUnq(:,1).^2.5)./0.2442;
+    rgbLumNorm(:,2) = (rgbUnq(:,2).^2.7)./0.1037;
+    rgbLumNorm(:,3) = (rgbUnq(:,3).^2.3)./1;
+    rgbLumNorm(rgbLumNorm>1) = 1;
+    
+    conditionsOrderedNorm = [0.25 0.00 1.00; ...
+                             0.50 0.00 1.00; ...
+                             1.00 0.00 1.00; ...
+                             1.00 0.00 0.50; ...
+                             1.00 0.00 0.25; ...
+                             0.25 0.50 1.00; ...
+                             0.50 0.50 1.00; ...
+                             1.00 0.50 1.00; ...
+                             1.00 0.50 0.50; ...
+                             1.00 0.50 0.25; ...
+                             1.00 1.00 1.00];
+    
+    for i = 1:size(conditionsOrderedNorm,1)
+        ind(i) = find(abs(rgbLumNorm(:,1)-conditionsOrderedNorm(i,1))<0.01 & ...
+                      abs(rgbLumNorm(:,2)-conditionsOrderedNorm(i,2))<0.01 & ...
+                      abs(rgbLumNorm(:,3)-conditionsOrderedNorm(i,3))<0.01);
     end
-    axis square;
-    set(gca,'FontSize',15);
-    set(gca,'XTick',[]);
-    xlabel('Condition');
-    ylabel('Defocus at 875nm (D)');
-    if i==1
-        title(['Subject ' num2str(subjNum) ', Distance = ' num2str(optDistUnq(i))]);
-    else
-        title(['Distance = ' num2str(optDistUnq(i))]);
+    
+    figure;
+    set(gcf,'Position',[118 470 1453 420]);
+    for i = 1:size(defocus875predTmp,2)
+        subplot(1,3,i);
+        hold on;
+        plot(1:length(ind),defocus875predTmp(ind,i),'b-');
+        plot(1:length(ind),defocus875mean(ind,i),'k-');
+        for j = 1:length(ind)
+            plot(j,defocus875mean(ind(j),i),'ko','MarkerFaceColor',conditionsOrderedNorm(j,:), ...
+                 'MarkerSize',10);
+        end
+        axis square;
+        set(gca,'FontSize',15);
+        set(gca,'XTick',[]);
+        xlabel('Condition');
+        ylabel('Defocus at 875nm (D)');
+        if i==1
+            title(['Subject ' num2str(subjNum) ', Distance = ' num2str(optDistUnq(i))]);
+        elseif i==2
+            title(['Weights = [' num2str(wLM(k)) ' ' num2str(wLM(k)) ' ' num2str(wS(k)) '], Distance = ' num2str(optDistUnq(i))]);
+        else
+            title(['Distance = ' num2str(optDistUnq(i))]);
+        end
     end
+    saveas(gcf,[coneWeightsFolder 'LplusMminusSpredCont' num2str(subjNum) 'weight' num2str(k)],'png');
 end
