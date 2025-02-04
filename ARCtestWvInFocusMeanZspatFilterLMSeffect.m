@@ -1,5 +1,7 @@
 %%
 
+subjNum = 10;
+
 if subjNum==10
     subjName = 'S20-OD';
     blockNumAll = 3:8;
@@ -38,6 +40,7 @@ rgbAll = [];
 for k = 1:length(blockNumAll)
     AFCp = ARCloadFileBVAMS(subjNum+10,blockNumAll(k));
     optDistAll = [optDistAll; AFCp.meanv00./1.2255];
+    rgbAll = [rgbAll; AFCp.rgb100];
     for l = 1:length(trialNumAll)
         % LOAD ZERNIKE TABLE AND TIMESTAMPS
         [ZernikeTable, ~, ~, TimeStamp] = ARCloadFileFIAT(subjName,blockNumAll(k),trialNumAll(l),0);
@@ -55,3 +58,6 @@ for k = 1:length(blockNumAll)
         defocus875(end+1,:) = meanC(4)./defocusCorrectionFactor;
     end
 end
+
+RMSE = ARCtestWvInFocusMeanZspatFilterObjFunc(subjNum,defocus875,rgbAll,optDistAll,[1 1 0]);
+

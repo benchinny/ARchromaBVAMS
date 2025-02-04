@@ -57,7 +57,7 @@ else
                        abs(rgbAll(:,2)-rgbUnq(l,2))<0.001 & ...
                        abs(rgbAll(:,3)-rgbUnq(l,3))<0.001 & ...
                        abs(optDistAll-optDistUnq(k))<0.001;
-            defocus875mean(l,k) = defocus875(indStiml);
+            defocus875mean(l,k) = mean(defocus875(indStiml));
             if subjNum==10
                 defocus875predTmp(l,k) = optDistUnq(k)-humanWaveDefocusS10(wvInFocus(l),875);
             end
