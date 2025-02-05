@@ -92,7 +92,7 @@ else
             end
         end
     end
-    defocus875mean = bsxfun(@minus,defocus875mean,lagLeadTerm);
+    % defocus875mean = bsxfun(@minus,defocus875mean,lagLeadTerm);
     RMSE = sqrt(mean((defocus875predTmp(:)-defocus875mean(:)).^2));
 end
 

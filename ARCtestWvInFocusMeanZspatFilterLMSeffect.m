@@ -70,6 +70,15 @@ parfor i = 1:length(wLM)
     display(['Weight index' num2str(i)]);
 end
 
+%%
+
+figure;
+plot(wLM,RMSE,'k-','LineWidth',1);
+axis square;
+set(gca,'FontSize',12);
+ylabel('RMSE');
+xlabel('Weight on L+M');
+
 %% VISUALIZING PREDICTIONS VS ACTUAL DEFOCUS FOR DIFFERENT WEIGHTS
 
 wLM = 0:0.1:1;
@@ -77,8 +86,10 @@ wS = 1-wLM;
 coneWeightsFolder = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/coneWeightsErrorSpatFilter/colorMechPredictions/';
 
 for k = 1:length(wLM)
-    [RMSE, defocus875mean, defocus875predTmp, rgbUnq, optDistUnq] = ARCtestWvInFocusMeanZspatFilterPlotHelper(subjNum,defocus875,rgbAll,optDistAll,[wLM(k).*[1 1] -wS(k)]);
-    
+    [~, defocus875mean, defocus875predTmp, rgbUnq, optDistUnq] = ARCtestWvInFocusMeanZspatFilterPlotHelper(subjNum,defocus875,rgbAll,optDistAll,[wLM(k).*[1 1] -wS(k)]);
+    optDistTag = imresize(optDistUnq',size(defocus875mean),'nearest');
+    [pFit,RMSE(k)] = ARCfitLagLead(defocus875predTmp(:),defocus875mean(:),optDistTag(:));
+
     rgbLumNorm = [];
     rgbLumNorm(:,1) = (rgbUnq(:,1).^2.5)./0.2442;
     rgbLumNorm(:,2) = (rgbUnq(:,2).^2.7)./0.1037;
@@ -108,7 +119,7 @@ for k = 1:length(wLM)
     for i = 1:size(defocus875predTmp,2)
         subplot(1,3,i);
         hold on;
-        plot(1:length(ind),defocus875predTmp(ind,i),'b-');
+        plot(1:length(ind),defocus875predTmp(ind,i)-pFit(i),'b-');
         plot(1:length(ind),defocus875mean(ind,i),'k-');
         for j = 1:length(ind)
             plot(j,defocus875mean(ind(j),i),'ko','MarkerFaceColor',conditionsOrderedNorm(j,:), ...
@@ -127,5 +138,5 @@ for k = 1:length(wLM)
             title(['Distance = ' num2str(optDistUnq(i))]);
         end
     end
-    saveas(gcf,[coneWeightsFolder 'LplusMminusSpredCont' num2str(subjNum) 'weight' num2str(k)],'png');
+    % saveas(gcf,[coneWeightsFolder 'LplusMminusSpredCont' num2str(subjNum) 'weight' num2str(k)],'png');
 end
