@@ -6,7 +6,7 @@ rgbUnq = unique(rgbAll,'rows');
 wvInFocus = zeros([size(rgbUnq,1) 1]);
 for l = 1:size(rgbUnq,1)
     wvInFocus(l,:) = ARCwvInFocusConesMeanZspatFilter(subjNum,l,w);
-    % display(['wL = ' num2str(wL) ' wM = ' num2str(wM) ' wS = ' num2str(wS) ' stim ' num2str(l)]);
+    display(['stim ' num2str(l)]);
 end 
 
 if ~bFitMeans

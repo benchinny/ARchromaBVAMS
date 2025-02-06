@@ -59,6 +59,8 @@ for k = 1:length(blockNumAll)
     end
 end
 
+rgbUnq = unique(rgbAll,'rows');
+
 %% RMSE FOR DIFFERENT WEIGHTS
 
 wLM = 0:0.1:1;
@@ -73,9 +75,11 @@ end
 %%
 
 figure;
-plot(wLM,RMSE,'k-','LineWidth',1);
+hold on;
+plot(wLM(3:end),RMSE(3:end),'k-','LineWidth',1);
+plot(xlim,RMSE(1).*[1 1],'k--');
 axis square;
-set(gca,'FontSize',12);
+set(gca,'FontSize',15);
 ylabel('RMSE');
 xlabel('Weight on L+M');
 
@@ -85,34 +89,34 @@ wLM = 0:0.1:1;
 wS = 1-wLM;
 coneWeightsFolder = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/coneWeightsErrorSpatFilter/colorMechPredictions/';
 
-for k = 1:length(wLM)
+rgbLumNorm = [];
+rgbLumNorm(:,1) = (rgbUnq(:,1).^2.5)./0.2442;
+rgbLumNorm(:,2) = (rgbUnq(:,2).^2.7)./0.1037;
+rgbLumNorm(:,3) = (rgbUnq(:,3).^2.3)./1;
+rgbLumNorm(rgbLumNorm>1) = 1;
+
+conditionsOrderedNorm = [0.25 0.00 1.00; ...
+                         0.50 0.00 1.00; ...
+                         1.00 0.00 1.00; ...
+                         1.00 0.00 0.50; ...
+                         1.00 0.00 0.25; ...
+                         0.25 0.50 1.00; ...
+                         0.50 0.50 1.00; ...
+                         1.00 0.50 1.00; ...
+                         1.00 0.50 0.50; ...
+                         1.00 0.50 0.25; ...
+                         1.00 1.00 1.00];
+
+for i = 1:size(conditionsOrderedNorm,1)
+    ind(i) = find(abs(rgbLumNorm(:,1)-conditionsOrderedNorm(i,1))<0.01 & ...
+                  abs(rgbLumNorm(:,2)-conditionsOrderedNorm(i,2))<0.01 & ...
+                  abs(rgbLumNorm(:,3)-conditionsOrderedNorm(i,3))<0.01);
+end
+
+parfor k = 1:length(wLM)
     [~, defocus875mean, defocus875predTmp, rgbUnq, optDistUnq] = ARCtestWvInFocusMeanZspatFilterPlotHelper(subjNum,defocus875,rgbAll,optDistAll,[wLM(k).*[1 1] -wS(k)]);
     optDistTag = imresize(optDistUnq',size(defocus875mean),'nearest');
     [pFit,RMSE(k)] = ARCfitLagLead(defocus875predTmp(:),defocus875mean(:),optDistTag(:));
-
-    rgbLumNorm = [];
-    rgbLumNorm(:,1) = (rgbUnq(:,1).^2.5)./0.2442;
-    rgbLumNorm(:,2) = (rgbUnq(:,2).^2.7)./0.1037;
-    rgbLumNorm(:,3) = (rgbUnq(:,3).^2.3)./1;
-    rgbLumNorm(rgbLumNorm>1) = 1;
-    
-    conditionsOrderedNorm = [0.25 0.00 1.00; ...
-                             0.50 0.00 1.00; ...
-                             1.00 0.00 1.00; ...
-                             1.00 0.00 0.50; ...
-                             1.00 0.00 0.25; ...
-                             0.25 0.50 1.00; ...
-                             0.50 0.50 1.00; ...
-                             1.00 0.50 1.00; ...
-                             1.00 0.50 0.50; ...
-                             1.00 0.50 0.25; ...
-                             1.00 1.00 1.00];
-    
-    for i = 1:size(conditionsOrderedNorm,1)
-        ind(i) = find(abs(rgbLumNorm(:,1)-conditionsOrderedNorm(i,1))<0.01 & ...
-                      abs(rgbLumNorm(:,2)-conditionsOrderedNorm(i,2))<0.01 & ...
-                      abs(rgbLumNorm(:,3)-conditionsOrderedNorm(i,3))<0.01);
-    end
     
     figure;
     set(gcf,'Position',[118 470 1453 420]);
@@ -138,5 +142,6 @@ for k = 1:length(wLM)
             title(['Distance = ' num2str(optDistUnq(i))]);
         end
     end
-    % saveas(gcf,[coneWeightsFolder 'LplusMminusSpredCont' num2str(subjNum) 'weight' num2str(k)],'png');
+    saveas(gcf,[coneWeightsFolder 'LplusMminusSpredCont' num2str(subjNum) 'weight' num2str(k)],'png');
+    display(['Cone weights ' num2str(k)]);
 end
