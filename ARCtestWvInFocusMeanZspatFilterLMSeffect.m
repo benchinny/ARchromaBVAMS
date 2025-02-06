@@ -1,6 +1,6 @@
 %% LOADING DATA
 
-subjNum = 20;
+subjNum = 10;
 
 if subjNum==10
     subjName = 'S20-OD';
@@ -72,7 +72,7 @@ parfor i = 1:length(wLM)
     display(['Weight index' num2str(i)]);
 end
 
-%%
+%% PLOTTING WEIGHTS VS RMSE
 
 figure;
 hold on;
@@ -144,4 +144,118 @@ parfor k = 1:length(wLM)
     end
     saveas(gcf,[coneWeightsFolder 'LplusMminusSpredCont' num2str(subjNum) 'weight' num2str(k)],'png');
     display(['Cone weights ' num2str(k)]);
+end
+
+%% SEARCH INDIVIDUAL CONE WEIGHTS
+
+wL = -1:0.2:1;
+wM = -1:0.2:1;
+wS = -1;
+coneWeightsFolder = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/coneWeightsErrorSpatFilter/colorMechPredictions/';
+
+rgbLumNorm = [];
+rgbLumNorm(:,1) = (rgbUnq(:,1).^2.5)./0.2442;
+rgbLumNorm(:,2) = (rgbUnq(:,2).^2.7)./0.1037;
+rgbLumNorm(:,3) = (rgbUnq(:,3).^2.3)./1;
+rgbLumNorm(rgbLumNorm>1) = 1;
+
+conditionsOrderedNorm = [0.25 0.00 1.00; ...
+                         0.50 0.00 1.00; ...
+                         1.00 0.00 1.00; ...
+                         1.00 0.00 0.50; ...
+                         1.00 0.00 0.25; ...
+                         0.25 0.50 1.00; ...
+                         0.50 0.50 1.00; ...
+                         1.00 0.50 1.00; ...
+                         1.00 0.50 0.50; ...
+                         1.00 0.50 0.25; ...
+                         1.00 1.00 1.00];
+
+for i = 1:size(conditionsOrderedNorm,1)
+    ind(i) = find(abs(rgbLumNorm(:,1)-conditionsOrderedNorm(i,1))<0.01 & ...
+                  abs(rgbLumNorm(:,2)-conditionsOrderedNorm(i,2))<0.01 & ...
+                  abs(rgbLumNorm(:,3)-conditionsOrderedNorm(i,3))<0.01);
+end
+
+RMSEall = zeros([length(wL) length(wM)]);
+
+for l = 1:length(wL)
+    parfor k = 1:length(wM)
+        [~, defocus875mean, defocus875predTmp, rgbUnq, optDistUnq] = ARCtestWvInFocusMeanZspatFilterPlotHelper(subjNum,defocus875,rgbAll,optDistAll,[wL(l) wM(k) wS]);
+        optDistTag = imresize(optDistUnq',size(defocus875mean),'nearest');
+        [pFit,RMSE(k)] = ARCfitLagLead(defocus875predTmp(:),defocus875mean(:),optDistTag(:));
+        
+        display(['Weights = [' num2str(wL(l)) ' ' num2str(wM(k)) ' ' num2str(wS)]);
+    end
+    RMSEall(l,:) = RMSE;
+end
+
+save([coneWeightsFolder 'S' num2str(subjNum) 'wvInFocusModelResults' num2str(round(wS*10)) '.mat'],'RMSEall','wS');
+
+%% VISUALIZE BEST WEIGHTS
+
+wL = -0.4;
+wM = -1;
+wS = -1;
+coneWeightsFolder = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/coneWeightsErrorSpatFilter/colorMechPredictions/';
+
+rgbLumNorm = [];
+rgbLumNorm(:,1) = (rgbUnq(:,1).^2.5)./0.2442;
+rgbLumNorm(:,2) = (rgbUnq(:,2).^2.7)./0.1037;
+rgbLumNorm(:,3) = (rgbUnq(:,3).^2.3)./1;
+rgbLumNorm(rgbLumNorm>1) = 1;
+
+conditionsOrderedNorm = [0.25 0.00 1.00; ...
+                         0.50 0.00 1.00; ...
+                         1.00 0.00 1.00; ...
+                         1.00 0.00 0.50; ...
+                         1.00 0.00 0.25; ...
+                         0.25 0.50 1.00; ...
+                         0.50 0.50 1.00; ...
+                         1.00 0.50 1.00; ...
+                         1.00 0.50 0.50; ...
+                         1.00 0.50 0.25; ...
+                         1.00 1.00 1.00];
+
+for i = 1:size(conditionsOrderedNorm,1)
+    ind(i) = find(abs(rgbLumNorm(:,1)-conditionsOrderedNorm(i,1))<0.01 & ...
+                  abs(rgbLumNorm(:,2)-conditionsOrderedNorm(i,2))<0.01 & ...
+                  abs(rgbLumNorm(:,3)-conditionsOrderedNorm(i,3))<0.01);
+end
+
+RMSEall = zeros([length(wL) length(wM)]);
+
+for l = 1:length(wL)
+    for k = 1:length(wM)
+        [~, defocus875mean, defocus875predTmp, rgbUnq, optDistUnq] = ARCtestWvInFocusMeanZspatFilterPlotHelper(subjNum,defocus875,rgbAll,optDistAll,[wL(l) wM(k) wS]);
+        optDistTag = imresize(optDistUnq',size(defocus875mean),'nearest');
+        [pFit,RMSE(k)] = ARCfitLagLead(defocus875predTmp(:),defocus875mean(:),optDistTag(:));
+        
+        figure;
+        set(gcf,'Position',[118 470 1453 420]);
+        for i = 1:size(defocus875predTmp,2)
+            subplot(1,3,i);
+            hold on;
+            plot(1:length(ind),defocus875predTmp(ind,i)-pFit(i),'b-');
+            plot(1:length(ind),defocus875mean(ind,i),'k-');
+            for j = 1:length(ind)
+                plot(j,defocus875mean(ind(j),i),'ko','MarkerFaceColor',conditionsOrderedNorm(j,:), ...
+                     'MarkerSize',10);
+            end
+            axis square;
+            set(gca,'FontSize',15);
+            set(gca,'XTick',[]);
+            xlabel('Condition');
+            ylabel('Defocus at 875nm (D)');
+            if i==1
+                title(['Subject ' num2str(subjNum) ', Distance = ' num2str(optDistUnq(i))]);
+            elseif i==2
+                title(['Weights = [' num2str(wL(l)) ' ' num2str(wM(k)) ' ' num2str(wS) '], Distance = ' num2str(optDistUnq(i))]);
+            else
+                title(['Distance = ' num2str(optDistUnq(i))]);
+            end
+        end
+        % saveas(gcf,[coneWeightsFolder 'LplusMminusSpredCont' num2str(subjNum) 'weight' num2str(k)],'png');
+        display(['Weights = [' num2str(wL(l)) ' ' num2str(wM(k)) ' ' num2str(wS)]);
+    end
 end
