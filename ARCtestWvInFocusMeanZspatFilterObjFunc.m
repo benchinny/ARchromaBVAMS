@@ -85,11 +85,6 @@ else
             if subjNum==20
                 defocus875predTmp(l,k) = optDistUnq(k)-humanWaveDefocusS20(wvInFocus(l),875);
             end
-            % if abs(rgbUnq(l,1)-min(rgbUnq(:,1)))<0.001 && ...
-            %     abs(rgbUnq(l,3)-max(rgbUnq(:,3)))<0.001 && ...
-            %     rgbUnq(l,2)==0
-            %     lagLeadTerm(k) = defocus875mean(l,k)-defocus875predTmp(l,k);
-            % end
         end
     end
     % defocus875mean = bsxfun(@minus,defocus875mean,lagLeadTerm);

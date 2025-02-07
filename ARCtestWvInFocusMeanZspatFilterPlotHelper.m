@@ -6,6 +6,9 @@ rgbUnq = unique(rgbAll,'rows');
 wvInFocus = zeros([size(rgbUnq,1) 1]);
 for l = 1:size(rgbUnq,1)
     wvInFocus(l,:) = ARCwvInFocusConesMeanZspatFilter(subjNum,l,w);
+    if wvInFocus(l,:)<400 || wvInFocus(l,:)>720
+        wvInFocus(l,:) = NaN;
+    end
     display(['stim ' num2str(l)]);
 end 
 
@@ -84,11 +87,6 @@ else
             end
             if subjNum==20
                 defocus875predTmp(l,k) = optDistUnq(k)-humanWaveDefocusS20(wvInFocus(l),875);
-            end
-            if abs(rgbUnq(l,1)-min(rgbUnq(:,1)))<0.001 && ...
-                abs(rgbUnq(l,3)-max(rgbUnq(:,3)))<0.001 && ...
-                rgbUnq(l,2)==0
-                lagLeadTerm(k) = defocus875mean(l,k)-defocus875predTmp(l,k);
             end
         end
     end
