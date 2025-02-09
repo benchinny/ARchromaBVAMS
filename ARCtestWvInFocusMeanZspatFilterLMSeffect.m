@@ -154,7 +154,7 @@ end
 
 wLM = 0.4:0.1:1.4;
 wLprop = 0.3:0.05:0.75;
-wS = -1;
+wS = -0.5;
 coneWeightsFolder = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/coneWeightsErrorSpatFilter/colorMechPredictions/';
 
 rgbLumNorm = [];
@@ -199,12 +199,12 @@ for l = 1:length(wLM)
     RMSEall(l,:) = RMSE;
 end
 
-save([coneWeightsFolder 'S' num2str(subjNum) 'wvInFocusModelResults' num2str(round(-wS*10)) '.mat'],'RMSEall','wS');
+save([coneWeightsFolder 'S' num2str(subjNum) 'wvInFocusModelResults' num2str(round(-wS*10)) '.mat'],'RMSEall','wS','wLM','wLprop');
 
 %% VISUALIZE BEST WEIGHTS
 
-wL = 0.36;
-wM = 0.44;
+wL = 0.675;
+wM = 0.225;
 wS = -1;
 coneWeightsFolder = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/coneWeightsErrorSpatFilter/colorMechPredictions/';
 
