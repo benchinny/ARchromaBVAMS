@@ -1,4 +1,4 @@
-function [pFit,rms] = ARCfitLagLead(x,y,d)
+function [pFit,rms] = ARCfitLagLead(x,y,d,bFITLINE)
 
 % SET FMINCON OPTIONS
 opts             = optimset('fmincon');
@@ -8,8 +8,15 @@ opts.LargeScale  = 'off';
 opts.Display     = 'off';
 opts.MaxIter     = 500;
 
-p0 = rand([1 length(unique(d))]);
-lb = -20.*ones([1 length(unique(d))]);
-[pFit,rms] = fmincon(   @(p) ARCfitLagLeadFunc(x,y,d,p),p0,[],[],[],[],lb,[],[],opts);
+if bFITLINE
+    p0 = rand([1 2]);
+    lb = [-5 -5];
+    ub = [5 5];
+    [pFit,rms] = fmincon(   @(p) ARCfitLagLeadFuncLin(x,y,d,p),p0,[],[],[],[],lb,ub,[],opts);
+else
+    p0 = rand([1 length(unique(d))]);
+    lb = -20.*ones([1 length(unique(d))]);
+    [pFit,rms] = fmincon(   @(p) ARCfitLagLeadFunc(x,y,d,p),p0,[],[],[],[],lb,[],[],opts);    
+end
 
 end
