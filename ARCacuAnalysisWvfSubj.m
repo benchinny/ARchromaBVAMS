@@ -1,11 +1,11 @@
 function filenameCell = ARCacuAnalysisWvfSubj(subjNum)
 
 if strcmp(getenv("USER"),'ben')
-   dataFolder= '/home/ben/Documents/ARchroma/FIAT/csvFiles/';
+   dataFolder= '/home/ben/Documents/ARchroma/FIAT/csvFiles/SUBJ/';
 elseif strcmp(getenv("USER"),'benchin')
-   dataFolder = '/Users/benchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/csvFiles/';
+   dataFolder = '/Users/benchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/csvFiles/SUBJ/';
 else
-   dataFolder = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/csvFiles/';
+   dataFolder = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/csvFiles/SUBJ/';
 end
 
 dirAll = dir(dataFolder);
@@ -49,12 +49,20 @@ if subjNum==9
     trialNum = [99 89 79 69 19 29 44 54];
 elseif subjNum==10
     subjName = 'S20-OD';
-    blockNum = 11;
-    trialNum = [27 54 81];
+    blockNum = 10;
+    trialNum = [1 17 33 49 65 81 97 108];
+elseif subjNum==1
+    subjName = 'S11-OD';
+    blockNum = 18;
+    trialNum = 1:13:183;
 elseif subjNum==3
     subjName = 'S13-OD';
     blockNum = 19;
-    trialNum = [27 54 81];    
+    trialNum = 1:13:105;
+elseif subjNum==5
+    subjName = 'S15-OD';
+    blockNum = 19;
+    trialNum = 1:13:105;    
 end
 
 filenameCell = {};
@@ -64,7 +72,7 @@ for i = 1:length(trialNum)
 
     ind = find(contains(filenamesAll,filenameTmp) & ~contains(filenamesAll,'FullPupil'));
     for j = 1:length(ind)
-        if contains(filenamesAll{ind(j)},'csv')
+        if contains(filenamesAll{ind(j)},'csv') && ~ismember(filenamesAll{ind(j)},filenameCell)
             filenameCell{end+1} = filenamesAll{ind(j)};
         end
     end

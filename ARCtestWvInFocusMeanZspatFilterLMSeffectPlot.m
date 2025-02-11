@@ -2,6 +2,9 @@ function ARCtestWvInFocusMeanZspatFilterLMSeffectPlot(subjNum)
 
 coneWeightsFolder = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/coneWeightsErrorSpatFilter/colorMechPredictions/';
 wS = -1;
+if subjNum==20
+    wS = -0.25;
+end
 load([coneWeightsFolder 'S' num2str(subjNum) 'wvInFocusModelResults' num2str(round(-wS*10)) '.mat'],'RMSEall','wS','wLM','wLprop');
 
 [wLpropGrid,wLMgrid] = meshgrid(wLprop,wLM);
@@ -39,7 +42,6 @@ elseif subjNum==18
 elseif subjNum==20
     subjName = 'S30-OD';
     blockNumAll = 2:7;
-    wS = -1;
 end
 
 trialNumAll = 1:36;
@@ -106,6 +108,8 @@ for l = 1:length(wL)
         
         if k==1
             [pFitFlat,RMSEflat(k)] = ARCfitLagLead(optDistTag(:),defocus875mean(:),optDistTag(:),true);
+            RMSE0 = load([coneWeightsFolder 'S' num2str(subjNum) 'wvInFocusModelResults0.mat'],'RMSEall');
+            RMSElum = min(RMSE0.RMSEall(1,:));
         end
 
         figure;
@@ -130,7 +134,7 @@ for l = 1:length(wL)
             elseif i==2
                 title(['Weights = [' num2str(wL(l)) ' ' num2str(wM(k)) ' ' num2str(wS) '], Distance = ' num2str(optDistUnq(i))]);
             elseif i==3
-                title(['RMSE = ' num2str(RMSE,3) ', RMSE_{flat} = ' num2str(RMSEflat,3)])
+                title(['RMSE = ' num2str(RMSE,3) ', RMSE_{flat} = ' num2str(RMSEflat,3) ', RMSE_{lum} = ' num2str(RMSElum,3)])
             else
                 title(['Distance = ' num2str(optDistUnq(i))]);
             end

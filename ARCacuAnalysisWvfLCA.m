@@ -1,11 +1,11 @@
 function filenameCell = ARCacuAnalysisWvfLCA(subjNum)
 
 if strcmp(getenv("USER"),'ben')
-   dataFolder= '/home/ben/Documents/ARchroma/FIAT/csvFiles/';
+   dataFolder= '/home/ben/Documents/ARchroma/FIAT/csvFiles/LCA/';
 elseif strcmp(getenv("USER"),'benchin')
-   dataFolder = '/Users/benchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/csvFiles/';
+   dataFolder = '/Users/benchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/csvFiles/LCA/';
 else
-   dataFolder = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/csvFiles/';
+   dataFolder = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/csvFiles/LCA/';
 end
 
 dirAll = dir(dataFolder);
@@ -64,7 +64,7 @@ for i = 1:length(trialNum)
 
     ind = find(contains(filenamesAll,filenameTmp) & ~contains(filenamesAll,'FullPupil'));
     for j = 1:length(ind)
-        if contains(filenamesAll{ind(j)},'csv')
+        if contains(filenamesAll{ind(j)},'csv') && ~ismember(filenamesAll{ind(j)},filenameCell)
             filenameCell{end+1} = filenamesAll{ind(j)};
         end
     end
