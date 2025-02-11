@@ -39,6 +39,7 @@ elseif subjNum==18
 elseif subjNum==20
     subjName = 'S30-OD';
     blockNumAll = 2:7;
+    wS = -1;
 end
 
 trialNumAll = 1:36;
@@ -112,6 +113,7 @@ for l = 1:length(wL)
         for i = 1:size(defocus875predTmp,2)
             subplot(1,3,i);
             hold on;
+            plot([0 length(ind)],optDistUnq(i)-(optDistUnq(i).*pFitFlat(1)+pFitFlat(2)).*[1 1],'k--','LineWidth',1);
             plot(1:length(ind),defocus875predTmp(ind,i)-optDistUnq(i)*pFit(1)-pFit(2),'k-');
             % plot(1:length(ind),defocus875mean(ind,i),'k-');
             for j = 1:length(ind)
@@ -127,6 +129,8 @@ for l = 1:length(wL)
                 title(['Subject ' num2str(subjNum) ', Distance = ' num2str(optDistUnq(i))]);
             elseif i==2
                 title(['Weights = [' num2str(wL(l)) ' ' num2str(wM(k)) ' ' num2str(wS) '], Distance = ' num2str(optDistUnq(i))]);
+            elseif i==3
+                title(['RMSE = ' num2str(RMSE,3) ', RMSE_{flat} = ' num2str(RMSEflat,3)])
             else
                 title(['Distance = ' num2str(optDistUnq(i))]);
             end
