@@ -1,5 +1,5 @@
 %%
-function ARCacuAnalysisSubjective
+function [unqFocDst,PC,PCci,dprimeFitAll,PCfit,PCfitSupport] = ARCacuAnalysisSubjective(subjNum)
 % filePath = 'G:\My Drive\exp_bvams\code_repo\ARC\';
 filePath = 'H:\Shared drives\CIVO_BVAMS\data\ARC\';
 
@@ -10,8 +10,6 @@ elseif strcmp(getenv("USER"),'benjaminchin')
 elseif strcmp(getenv("USER"),'emily')
    dataDirectory = '/Users/emily/Library/CloudStorage/GoogleDrive-emilyacooper@gmail.com/Shared drives/ARChroma/Analysis/';
 end
-
-subjNum = 20;
 
 if subjNum==3
     filenames = {
@@ -286,10 +284,20 @@ for i = 1:length(unqFocDst)
      PCci(:,i) = binoinv([0.16 0.84],sum(focStmOptDstIncr==unqFocDst(i)),PC(i))./sum(focStmOptDstIncr==unqFocDst(i));
 end
 
+PCfitSupport = min(unqFocDst.*scaleFac):0.01:max(unqFocDst.*scaleFac);
+PCfit = spline(unqFocDst.*scaleFac,PC,PCfitSupport);
+
+epsilonPC = 0.999;
+PCfit(PCfit>epsilonPC) = epsilonPC;
+dprimeFitAll = 2*norminv(PCfit);
+
 figure;
+hold on;
 % plot(unqFocDst.*scaleFac,PC,'o-','Color',rgbUnq,'MarkerFaceColor','w','LineWidth',1.5,'MarkerSize',10);
-errorbar(unqFocDst.*scaleFac,PC,PC-PCci(1,:),PCci(2,:)-PC,'o-','Color',rgbUnq,'MarkerFaceColor','w','LineWidth',1.5,'MarkerSize',10);
+plot(PCfitSupport,PCfit,'-','Color',rgbUnq,'LineWidth',1.5);
+errorbar(unqFocDst.*scaleFac,PC,PC-PCci(1,:),PCci(2,:)-PC,'o','Color',rgbUnq,'MarkerFaceColor','w','LineWidth',1.5,'MarkerSize',10);
 axis square;
 ylim([0.4 1]);
 formatFigure('Relative optical distance (D)','Proportion Correct',['Subject ' num2str(subjNum)]);
+
 end
