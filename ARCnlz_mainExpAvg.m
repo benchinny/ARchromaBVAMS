@@ -7,7 +7,8 @@ clear;
 bLCAest = true;
 
 if bLCAest
-    subjNumAll = [1 3 5 9 10 16 17 18 20];
+    % subjNumAll = [1 3 5 9 10 16 17 18 20];
+    subjNumAll = [1 3 5 10 16 17 18 20];
 else
     subjNumAll = [1 3 5 9 10 16 17 18 20 4 7 11 12];
 end
@@ -157,7 +158,7 @@ for i = 1:size(rgbLumNormCndUnq,1)
 end
 
 if bLCAest
-   subjSymbols = 'sd+x*^><v';
+   subjSymbols = 'sd+x^><v';
 else
    subjSymbols = 'sd+x*^><vph.-';
 end
@@ -187,7 +188,7 @@ end
 axis square;
 formatFigure('Color Condition','Relative defocus (D)');
 xlim([0.5 5.5]);
-ylim([-0.2 0.5]);
+ylim([-0.25 0.35]);
 subplot(1,2,2);
 hold on;
 for i = 1:5 % size(rgbLumNormCndUnq,1)
@@ -211,7 +212,7 @@ end
 axis square;
 formatFigure('Color Condition','Relative defocus (D)');
 xlim([0.5 5.5]);
-ylim([-0.2 0.5]);
+ylim([-0.25 0.35]);
 
 figure;
 set(gcf,'Position',[353 426 988 420]);
@@ -239,7 +240,7 @@ end
 axis square;
 formatFigure('Color Condition','Wavelength (\lambda)');
 xlim([0.5 5.5]);
-ylim([460 620]);
+ylim([450 630]);
 subplot(1,2,2);
 hold on;
 for i = 1:5 % size(rgbLumNormCndUnq,1)
@@ -265,7 +266,7 @@ end
 axis square;
 formatFigure('Color Condition','Wavelength (\lambda)');
 xlim([0.5 5.5]);
-ylim([460 620]);
+ylim([450 630]);
 
 
 % %% ONE DATA POINT PER TRIAL (AVERAGE ACROSS SUBJECTS)

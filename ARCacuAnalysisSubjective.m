@@ -1,5 +1,5 @@
 %%
-function [unqFocDst,PC,PCci,dprimeFitAll,PCfit,PCfitSupport] = ARCacuAnalysisSubjective(subjNum)
+function [unqFocDst,PC,PCci,dprime,PCfit,dprimeFitAll,PCfitSupport] = ARCacuAnalysisSubjective(subjNum)
 % filePath = 'G:\My Drive\exp_bvams\code_repo\ARC\';
 filePath = 'H:\Shared drives\CIVO_BVAMS\data\ARC\';
 
@@ -287,9 +287,14 @@ end
 PCfitSupport = min(unqFocDst.*scaleFac):0.01:max(unqFocDst.*scaleFac);
 PCfit = spline(unqFocDst.*scaleFac,PC,PCfitSupport);
 
-epsilonPC = 0.999;
+epsilonPC = 0.99;
 PCfit(PCfit>epsilonPC) = epsilonPC;
 dprimeFitAll = 2*norminv(PCfit);
+PCforDP = PC;
+PCforDP(PCforDP>epsilonPC) = epsilonPC;
+dprime = 2*norminv(PCforDP);
+PCciForDP = PCci;
+dprimeCI = 2*norminv(PCciForDP);
 
 figure;
 hold on;
@@ -299,5 +304,13 @@ errorbar(unqFocDst.*scaleFac,PC,PC-PCci(1,:),PCci(2,:)-PC,'o','Color',rgbUnq,'Ma
 axis square;
 ylim([0.4 1]);
 formatFigure('Relative optical distance (D)','Proportion Correct',['Subject ' num2str(subjNum)]);
+
+figure;
+hold on;
+% plot(unqFocDst.*scaleFac,PC,'o-','Color',rgbUnq,'MarkerFaceColor','w','LineWidth',1.5,'MarkerSize',10);
+plot(PCfitSupport,dprimeFitAll,'-','Color',rgbUnq,'LineWidth',1.5);
+errorbar(unqFocDst.*scaleFac,dprime,dprime-dprimeCI(1,:),dprimeCI(2,:)-dprime,'o','Color',rgbUnq,'MarkerFaceColor','w','LineWidth',1.5,'MarkerSize',10);
+axis square;
+formatFigure('Relative optical distance (D)','d''',['Subject ' num2str(subjNum)]);
 
 end
