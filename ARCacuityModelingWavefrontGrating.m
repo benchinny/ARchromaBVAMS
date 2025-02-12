@@ -3,7 +3,7 @@ ieInit;
 
 %% Set up display struct and build Ben's stimulus
 
-subjNum = 9;
+subjNum = 5;
 
 % Setting up display properties
 d = displayCreate('OLED-Samsung');
@@ -36,7 +36,7 @@ d.gamma(:,3) = (d.gamma(:,3).^(1/2.2)).^2.3;
 % Ben's stimulus
 nDotsI = 260;
 rVal = 0.56;
-bVal = 0.00;
+bVal = 1.00;
 gVal = 0.00;
 
 % GABOR
@@ -111,9 +111,9 @@ PARAMS.PupilSize = 7; %default values - will be replaced depending on choices be
 PARAMS.PupilFieldSize =6; %default values - will be replaced depending on choices below
 PARAMS.PupilFitSize = 7; %default values - will be replaced depending on choices below
 
-wvfFiles = ARCacuAnalysisWvfLCA(subjNum);
+wvfFiles = ARCacuAnalysisWvfSubj(subjNum);
 
-dataFolder = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/csvFiles/';
+dataFolder = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/csvFiles/SUBJ/';
 
 cAll = [];
 
@@ -165,9 +165,8 @@ defocusOrig = meanC(4);
 defocusOrigScaled = defocusOrig/defocusScaleFactor;
 defocusForStim = [1.3:0.1:2.2]-defocusOrigScaled;
 wvInFocusForStim = humanWaveDefocusInvertARC(875,-defocusForStim,subjNum);
-defocusAll = fliplr(humanWaveDefocusARC(875,wvInFocusForStim,subjNum));
 
-for i = 1:length(defocusAll)
+parfor i = 1:length(defocusForStim)
     zCoeffs = [0 meanC(1:end-1)];
     wvfP = wvfCreate('calc wavelengths', wave, ...
         'measured wavelength', 875, ...
@@ -175,13 +174,25 @@ for i = 1:length(defocusAll)
         'name', sprintf('human-%d', PARAMS.PupilSize),'spatial samples',size(I1,2));
     wvfP.calcpupilMM = PARAMS.PupilSize;
     wvfP.refSizeOfFieldMM = 6;
-    wvfP = wvfSet(wvfP, 'zcoeff', defocusAll(i)*defocusScaleFactor, 'defocus');
+    wvfP = wvfSet(wvfP, 'zcoeff', -defocusForStim(i)*defocusScaleFactor, 'defocus');
     if subjNum==9
         wvfP = wvfSet(wvfP, 'customlca', @humanWaveDefocusS9);
     elseif subjNum==10
         wvfP = wvfSet(wvfP, 'customlca', @humanWaveDefocusS10);
     elseif subjNum==3
         wvfP = wvfSet(wvfP, 'customlca', @humanWaveDefocusS3);
+    elseif subjNum==5
+        wvfP = wvfSet(wvfP, 'customlca', @humanWaveDefocusS5);
+    elseif subjNum==1
+        wvfP = wvfSet(wvfP, 'customlca', @humanWaveDefocusS1);
+    elseif subjNum==16
+        wvfP = wvfSet(wvfP, 'customlca', @humanWaveDefocusS16);
+    elseif subjNum==17
+        wvfP = wvfSet(wvfP, 'customlca', @humanWaveDefocusS17); 
+    elseif subjNum==18
+        wvfP = wvfSet(wvfP, 'customlca', @humanWaveDefocusS18); 
+    elseif subjNum==20
+        wvfP = wvfSet(wvfP, 'customlca', @humanWaveDefocusS20);         
     end
     
     % Convert to siData format as well as wavefront object
@@ -216,7 +227,7 @@ for i = 1:length(defocusAll)
     imagesc(lumImgXY1); 
     axis square; 
     colormap gray;
-    title(['Defocus = ' num2str(defocusAll(i)) ', x-correlation = ' num2str(dprimeMetric(i))]);
+    title(['Defocus = ' num2str(defocusForStim(i)) ', x-correlation = ' num2str(dprimeMetric(i))]);
     subplot(1,2,2);
     imagesc(fftshift(ifft2(squeeze(oig1.optics.OTF.OTF(:,:,61))))); 
     axis square; 
@@ -225,8 +236,8 @@ for i = 1:length(defocusAll)
 end
 %%
 figure; 
-plot(defocusAll,dprimeMetric,'k-','LineWidth',1);
-xlabel('Defocus term');
-ylabel('X-correlation metric');
+plot(defocusForStim+defocusOrigScaled,dprimeMetric,'k-','LineWidth',1);
+xlabel('Distance');
+ylabel('D-prime metric');
 set(gca,'FontSize',15);
 

@@ -61,7 +61,7 @@ elseif subjNum==3
     trialNum = 1:13:105;
 elseif subjNum==5
     subjName = 'S15-OD';
-    blockNum = 19;
+    blockNum = 10;
     trialNum = 1:13:105;    
 end
 
