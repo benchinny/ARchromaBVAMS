@@ -4,7 +4,8 @@ clear;
 
 %%
 
-subjNumAll = [1 3 5 9 10 16 17 18 20];
+% subjNumAll = [1 3 5 9 10 16 17 18 20];
+subjNumAll = [1 3 5 10 16 17 18 20];
 defocusLCAmeasuredAll = [];
 q1bestAll = [];
 q2bestAll = [];
@@ -61,4 +62,4 @@ end
 xlim([460 620]);
 ylim([-1.5 1]);
 formatFigure('Wavelength (\lambda)','Defocus (D)');
-legend('','','','','','','','','','','','','','','','','','','','S1','S2','S3','S4','S5','S6','S7','S8','S9','Location','SouthEast');
+legend('','','','','','','','','','','','','','','','','','S1','S2','S3','S4','S5','S6','S7','S8','Location','SouthEast');
