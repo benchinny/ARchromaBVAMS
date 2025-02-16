@@ -1,6 +1,6 @@
 %% LOAD MAIN EXPERIMENT FILES
 
-function [wvInFocusCell, defocusAt550cell, optDistCnd, rgbLumNormCnd] = ARCnlz_mainExpSortColor(subjNum)
+function [wvInFocusCell, defocusAt550cell, defocusAt875cell, optDistCnd, rgbLumNormCnd] = ARCnlz_mainExpSortColor(subjNum)
 
 bSave = false;
 filePath = '/Users/benjaminchin/Documents/ARchromaScraps/meeting_Sept25/';
@@ -105,6 +105,7 @@ end
 % GETTING DEFOCUS AT 550NM
 defocusCorrectionFactor = (1e6/(4*sqrt(3)))*((PARAMS.PupilSize/2000)^2);
 defocusAt550 = humanWaveDefocusARC(550,875,subjNum-10)+meanC(:,4)./defocusCorrectionFactor;
+defocusAt875 = meanC(:,4)./defocusCorrectionFactor;
 
 % SORTING CONDITIONS BY COLOR
 lumScaleRGB = [4.0888 9.6669 1];
@@ -129,6 +130,7 @@ optDistToCheckAll = [1.5 2.5 3.5];
 optDistCnd = [];
 rgbLumNormCnd = [];
 defocusAt550cell = {};
+defocusAt875cell = {};
 wvInFocusCell = {};
 
 for j = 1:length(optDistToCheckAll)
@@ -140,12 +142,14 @@ for j = 1:length(optDistToCheckAll)
               abs(rgbLumNorm(:,3)-conditionsOrderedNorm(i,3))<0.01 & ...
               abs(meanv00all-optDistToCheck)<0.01;
         defocusAt550tmp = defocusAt550(ind);
+        defocusAt875tmp = defocusAt875(ind);
         diffFromOptDist = defocusAt550tmp-meanv00all(ind);
         indGood = abs(diffFromOptDist)<1 & ...
                   humanWaveDefocusInvertARC(550,diffFromOptDist,subjNum-10)>380 & ...
                   humanWaveDefocusInvertARC(550,diffFromOptDist,subjNum-10)<780;
         wvInFocusCell{end+1} =  humanWaveDefocusInvertARC(550,diffFromOptDist(indGood),subjNum-10);
         defocusAt550cell{end+1} = -defocusAt550tmp(indGood);
+        defocusAt875cell{end+1} = -defocusAt875tmp(indGood);
         optDistCnd(end+1,:) = optDistToCheckAll(j);
         rgbLumNormCnd(end+1,:) = conditionsOrderedNorm(i,:);
     end
