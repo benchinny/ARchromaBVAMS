@@ -3,7 +3,7 @@ ieInit;
 
 %% Set up display struct and build Ben's stimulus
 
-subjNum = 5;
+subjNum = 20;
 
 % Setting up display properties
 d = displayCreate('OLED-Samsung');
@@ -151,7 +151,7 @@ for i = 1:length(wvfFiles)
     end
 end
 
-indBad = cAll(:,4)==0;
+indBad = cAll(:,4)==0 | cAll(:,4)<-10;
 meanC = mean(cAll(~indBad,:),1); % TAKE MEAN OF COEFFICIENTS
 % meanC = cAll(1,:);
 % meanC = zeros([1 65]);

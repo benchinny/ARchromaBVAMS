@@ -62,7 +62,23 @@ elseif subjNum==3
 elseif subjNum==5
     subjName = 'S15-OD';
     blockNum = 10;
-    trialNum = 1:13:105;    
+    trialNum = 1:13:105; 
+elseif subjNum==16
+    subjName = 'S26-OD';
+    blockNum = 8;
+    trialNum = 1:15:106; 
+elseif subjNum==17
+    subjName = 'S27-OD';
+    blockNum = 9;
+    trialNum = 1:15:106; 
+elseif subjNum==18
+    subjName = 'S28-OD';
+    blockNum = 9;
+    trialNum = 1:15:106; 
+elseif subjNum==20
+    subjName = 'S30-OD';
+    blockNum = 8;
+    trialNum = 1:15:121;     
 end
 
 filenameCell = {};
