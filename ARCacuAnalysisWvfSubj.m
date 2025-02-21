@@ -50,35 +50,35 @@ if subjNum==9
 elseif subjNum==10
     subjName = 'S20-OD';
     blockNum = 10;
-    trialNum = [1 17 33 49 65 81 97 108];
+    trialNum = [1 17 33 49 65 81 97 108 6];
 elseif subjNum==1
     subjName = 'S11-OD';
     blockNum = 18;
-    trialNum = 1:13:183;
+    trialNum = [1:13:183 7 20 214 216];
 elseif subjNum==3
     subjName = 'S13-OD';
     blockNum = 19;
-    trialNum = 1:13:105;
+    trialNum = [1:13:105 7 108];
 elseif subjNum==5
     subjName = 'S15-OD';
     blockNum = 10;
-    trialNum = 1:13:105; 
+    trialNum = [1:15:106 7 108]; 
 elseif subjNum==16
     subjName = 'S26-OD';
     blockNum = 8;
-    trialNum = 1:15:106; 
+    trialNum = [1:15:106 7 108]; 
 elseif subjNum==17
     subjName = 'S27-OD';
     blockNum = 9;
-    trialNum = 1:15:106; 
+    trialNum = [1:15:106 7 108]; 
 elseif subjNum==18
     subjName = 'S28-OD';
     blockNum = 9;
-    trialNum = 1:15:106; 
+    trialNum = [1:15:106 7 108]; 
 elseif subjNum==20
     subjName = 'S30-OD';
     blockNum = 8;
-    trialNum = 1:15:121;     
+    trialNum = [1:15:121 7 112 126];     
 end
 
 filenameCell = {};
