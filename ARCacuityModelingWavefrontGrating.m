@@ -163,7 +163,7 @@ defocusScaleFactor = 0.5774;
 
 defocusOrig = meanC(4);
 defocusOrigScaled = defocusOrig/defocusScaleFactor;
-defocusForStim = 0.5+[1.3:0.1:3.2]-defocusOrigScaled;
+defocusForStim = 0.5+[0.7:0.1:3.2]-defocusOrigScaled;
 wvInFocusForStim = humanWaveDefocusInvertARC(875,-defocusForStim,subjNum);
 
 parfor i = 1:length(defocusForStim)
@@ -235,10 +235,17 @@ parfor i = 1:length(defocusForStim)
     display(['D-prime iteration ' num2str(i)]);
 end
 %%
+
+[unqFocDst,PC,PCci,dprime,dprimeCI,PCfit,dprimeFitAll,PCfitSupport] = ARCacuAnalysisSubjective(subjNum,0);
+
 figure;
 set(gcf,'Position',[342 460 1052 440]);
 subplot(1,2,1);
-plot(defocusForStim+defocusOrigScaled,dprimeMetric,'k-','LineWidth',1);
+hold on;
+plot(defocusForStim+defocusOrigScaled,dprimeMetric,'-','Color',[0.56 0 1],'LineWidth',1);
+scaleFac = 0.8;
+dprimeScale = max(dprime(:)./max(dprimeMetric));
+errorbar(2.5+unqFocDst.*scaleFac,dprime./dprimeScale,(dprime-dprimeCI(1,:))./dprimeScale,(dprimeCI(2,:)-dprime)./dprimeScale,'o','Color',[0.56 0 1],'MarkerFaceColor','w','LineWidth',1.5,'MarkerSize',10);
 xlabel('Distance');
 ylabel('D-prime metric');
 set(gca,'FontSize',15);

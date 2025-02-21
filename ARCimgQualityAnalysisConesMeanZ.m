@@ -17,24 +17,24 @@ d = displaySet(d,'dpi',378); % simulated screen distance
 bUseBVAMScal = 1; % if using BVAMS calibration data
 
 if strcmp(getenv('USER'),'benjaminchin')
-    calPath = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/ARChroma/BVAMS_calibration_files/display calibration on August3/';
+    calPath = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/ARChroma/BVAMS_calibration_files/Ben_calibration_July_6_2024/';
      stimPath = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/stimuli/';
      savePath = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/coneImages/S';
 end
 
 if strcmp(getenv('USER'),'benchin')
-    calPath = '/Users/benchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/ARChroma/BVAMS_calibration_files/display calibration on August3/';
+    calPath = '/Users/benchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/ARChroma/BVAMS_calibration_files/Ben_calibration_July_6_2024/';
     stimPath = '/Users/benchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/stimuli/';
     savePath = '/Users/benchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/coneImages/S';
 end
 
 if bUseBVAMScal
-    load([calPath 'Right_disp_Red.mat']);
-    d.spd(:,1) = CurrentSpectrum.Spectral.emission_data;
-    load([calPath 'Right_disp_Green.mat']);
-    d.spd(:,2) = CurrentSpectrum.Spectral.emission_data;
-    load([calPath 'Right_disp_Blue.mat']);
-    d.spd(:,3) = CurrentSpectrum.Spectral.emission_data;
+    load([calPath 'redPrimaryJuly0624_initialPositionFocus3_100.mat']);
+    d.spd(:,1) = energy;
+    load([calPath 'greenPrimaryJuly0624_initialPositionFocus3_100.mat']);
+    d.spd(:,2) = energy;
+    load([calPath 'bluePrimaryJuly0624_initialPositionFocus3_100.mat']);
+    d.spd(:,3) = energy;
 end
 d.gamma(:,1) = (d.gamma(:,1).^(1/2.2)).^2.5;
 d.gamma(:,2) = (d.gamma(:,2).^(1/2.2)).^2.7;

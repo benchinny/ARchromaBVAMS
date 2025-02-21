@@ -1,5 +1,5 @@
 %%
-function [unqFocDst,PC,PCci,dprime,PCfit,dprimeFitAll,PCfitSupport] = ARCacuAnalysisSubjective(subjNum)
+function [unqFocDst,PC,PCci,dprime,dprimeCI,PCfit,dprimeFitAll,PCfitSupport] = ARCacuAnalysisSubjective(subjNum,bPLOT)
 % filePath = 'G:\My Drive\exp_bvams\code_repo\ARC\';
 filePath = 'H:\Shared drives\CIVO_BVAMS\data\ARC\';
 
@@ -288,29 +288,33 @@ PCfitSupport = min(unqFocDst.*scaleFac):0.01:max(unqFocDst.*scaleFac);
 PCfit = spline(unqFocDst.*scaleFac,PC,PCfitSupport);
 
 epsilonPC = 0.99;
-PCfit(PCfit>epsilonPC) = epsilonPC;
-dprimeFitAll = 2*norminv(PCfit);
+PCfitDP = PCfit;
+PCfitDP(PCfitDP>epsilonPC) = epsilonPC;
+dprimeFitAll = 2*norminv(PCfitDP);
 PCforDP = PC;
 PCforDP(PCforDP>epsilonPC) = epsilonPC;
 dprime = 2*norminv(PCforDP);
 PCciForDP = PCci;
+PCciForDP(PCciForDP>epsilonPC) = epsilonPC;
 dprimeCI = 2*norminv(PCciForDP);
 
-figure;
-hold on;
-% plot(unqFocDst.*scaleFac,PC,'o-','Color',rgbUnq,'MarkerFaceColor','w','LineWidth',1.5,'MarkerSize',10);
-plot(PCfitSupport,PCfit,'-','Color',rgbUnq,'LineWidth',1.5);
-errorbar(unqFocDst.*scaleFac,PC,PC-PCci(1,:),PCci(2,:)-PC,'o','Color',rgbUnq,'MarkerFaceColor','w','LineWidth',1.5,'MarkerSize',10);
-axis square;
-ylim([0.4 1]);
-formatFigure('Relative optical distance (D)','Proportion Correct',['Subject ' num2str(subjNum)]);
-
-figure;
-hold on;
-% plot(unqFocDst.*scaleFac,PC,'o-','Color',rgbUnq,'MarkerFaceColor','w','LineWidth',1.5,'MarkerSize',10);
-plot(PCfitSupport,dprimeFitAll,'-','Color',rgbUnq,'LineWidth',1.5);
-errorbar(unqFocDst.*scaleFac,dprime,dprime-dprimeCI(1,:),dprimeCI(2,:)-dprime,'o','Color',rgbUnq,'MarkerFaceColor','w','LineWidth',1.5,'MarkerSize',10);
-axis square;
-formatFigure('Relative optical distance (D)','d''',['Subject ' num2str(subjNum)]);
+if bPLOT
+    figure;
+    hold on;
+    % plot(unqFocDst.*scaleFac,PC,'o-','Color',rgbUnq,'MarkerFaceColor','w','LineWidth',1.5,'MarkerSize',10);
+    plot(PCfitSupport,PCfit,'-','Color',rgbUnq,'LineWidth',1.5);
+    errorbar(unqFocDst.*scaleFac,PC,PC-PCci(1,:),PCci(2,:)-PC,'o','Color',rgbUnq,'MarkerFaceColor','w','LineWidth',1.5,'MarkerSize',10);
+    axis square;
+    ylim([0.4 1]);
+    formatFigure('Relative optical distance (D)','Proportion Correct',['Subject ' num2str(subjNum)]);
+    
+    figure;
+    hold on;
+    % plot(unqFocDst.*scaleFac,PC,'o-','Color',rgbUnq,'MarkerFaceColor','w','LineWidth',1.5,'MarkerSize',10);
+    plot(PCfitSupport,dprimeFitAll,'-','Color',rgbUnq,'LineWidth',1.5);
+    errorbar(unqFocDst.*scaleFac,dprime,dprime-dprimeCI(1,:),dprimeCI(2,:)-dprime,'o','Color',rgbUnq,'MarkerFaceColor','w','LineWidth',1.5,'MarkerSize',10);
+    axis square;
+    formatFigure('Relative optical distance (D)','d''',['Subject ' num2str(subjNum)]);
+end
 
 end
