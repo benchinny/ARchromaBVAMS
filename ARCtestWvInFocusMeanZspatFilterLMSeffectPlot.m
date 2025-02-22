@@ -5,6 +5,9 @@ wS = -1;
 if subjNum==20
     wS = -0.25;
 end
+if subjNum==5
+    wS = -0.5;
+end
 load([coneWeightsFolder 'S' num2str(subjNum) 'wvInFocusModelResults' num2str(round(-wS*10)) '.mat'],'RMSEall','wS','wLM','wLprop');
 
 [wLpropGrid,wLMgrid] = meshgrid(wLprop,wLM);
