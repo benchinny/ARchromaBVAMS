@@ -43,7 +43,7 @@ indAcc = abs(optDistCndAll+2.5)<0.001 & abs(rgbLumNormCndAll(:,1)-1)<0.001 & ...
 defocus875acc = mean(defocusAt875cellAll{indAcc});
 diff875 = -defocus875acc-defocusOrigScaled;
 
-%%
+%% PLOT ACUITY PERFORMANCE VS DISTANCE INCREMENT
 
 figure;
 hold on;
@@ -59,6 +59,46 @@ legend('Acuity','Accommodation');
 
 [~,indPeak] = max(PCfit);
 acuPeak = PCfitSupport(indPeak)+diff875;
+
+%% COMPARE ACCOMMODATION AND ACUITY EXPERIMENT FOR PURPLE 2.5D CONDITION
+
+modelPredictionPurpleAt2pt5 = [1.36 1.756 1.864 1.633 1.463 1.815 1.355 1.603];
+defocus875accAll = [1.138 1.659 1.828 1.522 1.294 1.629 1.155 1.604];
+defocusOrigScaledAll = [1.224 1.4785 1.8230 1.4982 1.6005 1.5845 1.3686 1.6974];
+defocusOrigScaledCIall = [1.1022 1.3805; 1.3391 1.6280; 1.7148 1.9500; 1.3001 1.6979; ...
+                          1.4398 1.7393; 1.3628 1.7745; 1.1458 1.5710; 1.5912 1.8037];
+defocusOrigScaledCI95 = [0.8100 1.5203; 1.1545 1.7632; 1.5140 2.0659; 1.1073 1.8363; ...
+                         1.2657 1.8167; 1.1812 2.1370; 1.0553 1.7222; 1.4949 1.9042];
+
+plotIndModelPredictionPurpleAt2pt5 = 1:4:29;
+plotIndDefocus875accAll = 2:4:30;
+plotIndDefocusOrigScaled = 3:4:31;
+
+figure;
+hold on;
+plot(plotIndModelPredictionPurpleAt2pt5,modelPredictionPurpleAt2pt5,'o','MarkerFaceColor','w','MarkerSize',15,'LineWidth',1);
+plot(plotIndDefocus875accAll,defocus875accAll,'o','MarkerFaceColor','w','MarkerSize',15,'LineWidth',1);
+errorbar(plotIndDefocusOrigScaled,defocusOrigScaledAll,defocusOrigScaledAll-defocusOrigScaledCI95(:,1)',defocusOrigScaledCI95(:,2)'-defocusOrigScaledAll,'o','MarkerFaceColor','w','MarkerSize',15,'LineWidth',1);
+set(gca,'FontSize',15);
+ylim([0 2.5]);
+ylabel('Defocus at 875nm');
+xlabel('Subject');
+set(gca,'XTick',2:4:30);
+set(gca,'XTickLabel',{'S1' 'S3' 'S5' 'S10' 'S16' 'S17' 'S18' 'S20'});
+legend('Model prediction','Accommodation exp','Acuity exp');
+
+figure;
+hold on;
+plot(plotIndModelPredictionPurpleAt2pt5,modelPredictionPurpleAt2pt5,'o','MarkerFaceColor','w','MarkerSize',15,'LineWidth',1);
+plot(plotIndDefocus875accAll,defocus875accAll,'o','MarkerFaceColor','w','MarkerSize',15,'LineWidth',1);
+errorbar(plotIndDefocusOrigScaled,defocusOrigScaledAll,defocusOrigScaledAll-defocusOrigScaledCIall(:,1)',defocusOrigScaledCIall(:,2)'-defocusOrigScaledAll,'o','MarkerFaceColor','w','MarkerSize',15,'LineWidth',1);
+set(gca,'FontSize',15);
+ylim([0 2.5]);
+ylabel('Defocus at 875nm');
+xlabel('Subject');
+set(gca,'XTick',2:4:30);
+set(gca,'XTickLabel',{'S1' 'S3' 'S5' 'S10' 'S16' 'S17' 'S18' 'S20'});
+legend('Model prediction','Accommodation exp','Acuity exp');
 
 %%
 
