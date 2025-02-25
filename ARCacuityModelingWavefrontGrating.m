@@ -3,7 +3,7 @@ ieInit;
 
 %% Set up display struct and build Ben's stimulus
 
-subjNum = 20;
+subjNum = 16;
 
 % Setting up display properties
 d = displayCreate('OLED-Samsung');
@@ -14,16 +14,13 @@ d = displaySet(d,'dpi',378); % simulated screen distance
 bUseBVAMScal = 1; % if using BVAMS calibration data
 
 if bUseBVAMScal
-    drivePath = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/ARChroma/BVAMS_calibration_files/display calibration on August3/';
-    load([drivePath 'Right_disp_Red.mat']);
-    d.spd(:,1) = CurrentSpectrum.Spectral.emission_data;
-    load([drivePath 'Right_disp_Green.mat']);
-    d.spd(:,2) = CurrentSpectrum.Spectral.emission_data;
-    load([drivePath 'Right_disp_Blue.mat']);
-    d.spd(:,3) = CurrentSpectrum.Spectral.emission_data;
-    [maxR,indMaxR] = max(d.spd(:,1));
-    % d.spd(:,1) = zeros(size(d.spd(:,1)));
-    % d.spd(indMaxR,1) = maxR;
+    drivePath = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/ARChroma/BVAMS_calibration_files/Ben_calibration_July_6_2024/';
+    load([drivePath 'redPrimaryJuly0624_initialPositionFocus3_100.mat']);
+    d.spd(:,1) = energy;
+    load([drivePath 'greenPrimaryJuly0624_initialPositionFocus3_100.mat']);
+    d.spd(:,2) = energy;
+    load([drivePath 'bluePrimaryJuly0624_initialPositionFocus3_100.mat']);
+    d.spd(:,3) = energy;
 end
 d.gamma(:,1) = (d.gamma(:,1).^(1/2.2)).^2.5;
 d.gamma(:,2) = (d.gamma(:,2).^(1/2.2)).^2.7;
