@@ -1,22 +1,47 @@
-function ARCtestWvInFocusMeanZspatFilterLMSeffectPlot(subjNum)
+function aic = ARCtestWvInFocusMeanZspatFilterLMSeffectPlot(subjNum,modelType)
 
 coneWeightsFolder = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/coneWeightsErrorSpatFilter/colorMechPredictions/';
-wS = -1;
-if subjNum==20
-    wS = -0.25;
-end
-if subjNum==5
-    wS = -0.5;
-end
-load([coneWeightsFolder 'S' num2str(subjNum) 'wvInFocusModelResults' num2str(round(-wS*10)) '.mat'],'RMSEall','wS','wLM','wLprop');
 
-[wLpropGrid,wLMgrid] = meshgrid(wLprop,wLM);
+if strcmp(modelType,'LMS')
+    wS = -1;
+    if subjNum==20
+        wS = -0.25;
+    end
+    if subjNum==5
+        wS = -0.5;
+    end
+    load([coneWeightsFolder 'S' num2str(subjNum) 'wvInFocusModelResults' num2str(round(-wS*10)) '.mat'],'RMSEall','wS','wLM','wLprop');
+    
+    [wLpropGrid,wLMgrid] = meshgrid(wLprop,wLM);
+    
+    indMin = RMSEall==min(RMSEall(:));
+    wLMmin = wLMgrid(indMin);
+    wLpropMin = wLpropGrid(indMin);
+    wL = wLMmin*wLpropMin;
+    wM = wLMmin-wL;
+    nParams = 4;
+end
 
-indMin = RMSEall==min(RMSEall(:));
-wLMmin = wLMgrid(indMin);
-wLpropMin = wLpropGrid(indMin);
-wL = wLMmin*wLpropMin;
-wM = wLMmin-wL;
+if strcmp(modelType,'LM')
+    wS = 0;
+    load([coneWeightsFolder 'S' num2str(subjNum) 'wvInFocusModelResults' num2str(round(-wS*10)) '.mat'],'RMSEall','wS','wLM','wLprop');
+    
+    [wLpropGrid,wLMgrid] = meshgrid(wLprop,wLM);
+    
+    indMin = RMSEall==min(RMSEall(:));
+    wLMmin = wLMgrid(indMin);
+    wLpropMin = wLpropGrid(indMin);
+    wL = wLMmin*wLpropMin;
+    wM = wLMmin-wL;
+    nParams = 3;
+end
+
+if strcmp(modelType,'Lum')
+    wL = 0.72;
+    wM = 0.28;
+    wS = 0;
+    nParams = 2;
+end
 
 if subjNum==10
     subjName = 'S20-OD';
@@ -146,5 +171,14 @@ for l = 1:length(wL)
         display(['Weights = [' num2str(wL(l)) ' ' num2str(wM(k)) ' ' num2str(wS)]);
     end
 end
+
+errorIndividual = defocus875mean(:)-defocus875predTmp(:);
+for i = 1:200
+   [stdTmp(i),LLtmp(i)] = ARCfitStdGauss(errorIndividual);
+end
+[~,bestInd] = min(LLtmp);
+estResidualStd = stdTmp(bestInd);
+LL = sum(log(normpdf(defocus875mean(:),defocus875predTmp(:),estResidualStd)));
+aic = 2*nParams-2*LL;
 
 end
