@@ -1,9 +1,13 @@
 function [dprimeMetric, dprime, dprimeCI] = ARCacuityModelingPrediction(subjNum)
 
+% MAKE SURE LENS TRANSMITTANCE IN ISETBIO IS SET TO 1 EVERYWHERE!
+
 %% Initialize and clear
 ieInit;
 
 %% Set up display struct and build Ben's stimulus
+
+saveFolder = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/acuityModeling/';
 
 % Setting up display properties
 d = displayCreate('OLED-Samsung');
@@ -114,6 +118,9 @@ dataFolder = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkel
 
 cAll = [];
 
+% HARD CODED MODEL PREDICTIONS FROM ARCtestWvInFocusMeanZspatFilterLMSeffectFitOnly
+modelPrediction875nmPurpleAt2pt5all = [1.36 1.756 1.864 1.633 1.463 1.815 1.355 1.603];
+
 for i = 1:length(wvfFiles)
     ZernikeTable = readtable([dataFolder wvfFiles{i}]);
     NumCoeffs = width(ZernikeTable)-8; % determine how many coefficients are in the cvs file. 
@@ -124,43 +131,38 @@ for i = 1:length(wvfFiles)
     PARAMS.PupilFieldSize=PARAMS.PupilSize*2; %automatically compute the field size
     c(:,3:NumCoeffs)=table2array(ZernikeTable(:,11:width(ZernikeTable)));
     cAll = [cAll; c];
-    if bPlotIndvWvf
-        indBadIndv = c(:,4)==0;
-        meanCindv = mean(c(~indBadIndv,:),1);
-        zCoeffsIndv = [0 meanCindv(1:end-1)];
-        wvfPindv = wvfCreate('calc wavelengths', 875, ...
-            'measured wavelength', 875, ...
-            'zcoeffs', zCoeffsIndv, 'measured pupil', PARAMS.PupilSize, ...
-            'name', sprintf('human-%d', PARAMS.PupilSize),'spatial samples',size(I1,2)); 
-        wvfPindv.calcpupilMM = PARAMS.PupilSize;
-        wvfPindv.refSizeOfFieldMM = 6;
-        wvfPindv = wvfSet(wvfPindv, 'zcoeff', 0, 'defocus');
-        
-        % Convert to siData format as well as wavefront object
-        [siPSFDataIndv, wvfPindv] = wvf2SiPsf(wvfPindv,'showBar',false,'nPSFSamples',size(I1,2),'umPerSample',1.1512); 
-        oiIndv = wvf2oi(wvfPindv); % CONVERT TO OPTICS OBJECT       
-        figure; 
-        imagesc(fftshift(ifft2(squeeze(oiIndv.optics.OTF.OTF(:,:,1))))); 
-        axis square; 
-        colormap gray;
-        pause;
-        close;
-    end
 end
 
 indBad = cAll(:,4)==0 | cAll(:,4)<-10;
 meanC = mean(cAll(~indBad,:),1); % TAKE MEAN OF COEFFICIENTS
-% meanC = cAll(1,:);
-% meanC = zeros([1 65]);
-% meanC(3) = -0.2;
-% meanC(4) = 0;
 
 dprimeMetric = [];
 defocusScaleFactor = 0.5774;
 
 defocusOrig = meanC(4);
 defocusOrigScaled = defocusOrig/defocusScaleFactor;
-defocusForStim = 0.5+[0.7:0.1:3.2]-defocusOrigScaled;
+
+if subjNum==1
+    modelPrediction875nmPurpleAt2pt5 = modelPrediction875nmPurpleAt2pt5all(1);
+elseif subjNum==3
+    modelPrediction875nmPurpleAt2pt5 = modelPrediction875nmPurpleAt2pt5all(2);
+elseif subjNum==5
+    modelPrediction875nmPurpleAt2pt5 = modelPrediction875nmPurpleAt2pt5all(3);
+elseif subjNum==10
+    modelPrediction875nmPurpleAt2pt5 = modelPrediction875nmPurpleAt2pt5all(4);
+elseif subjNum==16
+    modelPrediction875nmPurpleAt2pt5 = modelPrediction875nmPurpleAt2pt5all(5);
+elseif subjNum==17
+    modelPrediction875nmPurpleAt2pt5 = modelPrediction875nmPurpleAt2pt5all(6);
+elseif subjNum==18
+    modelPrediction875nmPurpleAt2pt5 = modelPrediction875nmPurpleAt2pt5all(7);
+elseif subjNum==20
+    modelPrediction875nmPurpleAt2pt5 = modelPrediction875nmPurpleAt2pt5all(8);
+else
+    error('ARCacuityModelingPrediction: invalid subject number!');
+end
+
+defocusForStim = [1.2:0.1:3.8]-modelPrediction875nmPurpleAt2pt5;
 wvInFocusForStim = humanWaveDefocusInvertARC(875,-defocusForStim,subjNum);
 
 parfor i = 1:length(defocusForStim)
@@ -239,17 +241,21 @@ figure;
 set(gcf,'Position',[342 460 1052 440]);
 subplot(1,2,1);
 hold on;
-plot(defocusForStim+defocusOrigScaled,dprimeMetric,'-','Color',[0.56 0 1],'LineWidth',1);
+plot(defocusForStim+modelPrediction875nmPurpleAt2pt5,dprimeMetric,'-','Color',[0.56 0 1],'LineWidth',1);
 scaleFac = 0.8;
 dprimeScale = max(dprime(:)./max(dprimeMetric));
 errorbar(2.5+unqFocDst.*scaleFac,dprime./dprimeScale,(dprime-dprimeCI(1,:))./dprimeScale,(dprimeCI(2,:)-dprime)./dprimeScale,'o','Color',[0.56 0 1],'MarkerFaceColor','w','LineWidth',1.5,'MarkerSize',10);
 xlabel('Distance');
 ylabel('D-prime metric');
 set(gca,'FontSize',15);
-title(['Mean defocus at 875nm = ' num2str(defocusOrigScaled,3) 'D']);
+title(['Mean defocus at 875nm = ' num2str(modelPrediction875nmPurpleAt2pt5,3) 'D']);
 subplot(1,2,2);
 plot(wvInFocusForStim,dprimeMetric,'k-','LineWidth',1);
 xlabel('Wavelength in focus (nm)');
 ylabel('D-prime metric');
 set(gca,'FontSize',15);
 
+save([saveFolder 'acuityModelingPredictionS' num2str(subjNum)],'dprimeMetric','defocusForStim', ...
+    'modelPrediction875nmPurpleAt2pt5','dprime','dprimeCI','unqFocDst','wvInFocusForStim');
+
+end
