@@ -1,4 +1,4 @@
-function rms = ARCfitLagLeadFunc(x,y,d,p)
+function val = ARCfitLagLeadFunc(x,y,d,p,objFunc)
 
 dUnq = unique(d);
 if length(dUnq)~=length(p)
@@ -10,6 +10,13 @@ for i = 1:length(dUnq)
     y(ind) = y(ind)+p(i);
 end
 
-rms = sqrt(mean((y-x).^2));
+if strcmp(objFunc,'RMS')
+    val = sqrt(mean((y-x).^2));
+elseif strcmp(objFunc,'NLL')
+    estStd = std(y-x);
+    val = -sum(log(normpdf(y-x,0,estStd)));
+else
+    error('ARCfitLagLeadFuncLin: invalid objective function! Either RMS or NLL');
+end
 
 end

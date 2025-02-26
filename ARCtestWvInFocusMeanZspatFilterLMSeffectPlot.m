@@ -1,6 +1,7 @@
 function aic = ARCtestWvInFocusMeanZspatFilterLMSeffectPlot(subjNum,modelType)
 
 coneWeightsFolder = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/coneWeightsErrorSpatFilter/colorMechPredictions/';
+objFunc = 'RMS';
 
 if strcmp(modelType,'LMS')
     wS = -1;
@@ -132,14 +133,16 @@ for l = 1:length(wL)
     for k = 1:length(wM)
         [~, defocus875mean, defocus875predTmp, rgbUnq, optDistUnq] = ARCtestWvInFocusMeanZspatFilterPlotHelper(subjNum,defocus875,rgbAll,optDistAll,[wL(l) wM(k) wS]);
         optDistTag = imresize(optDistUnq',size(defocus875mean),'nearest');
-        [pFit,RMSE(k)] = ARCfitLagLead(defocus875predTmp(:),defocus875mean(:),optDistTag(:),true);
+        [pFit,RMSE(k)] = ARCfitLagLead(defocus875predTmp(:),defocus875mean(:),optDistTag(:),true,objFunc);
         
         if k==1
-            [pFitFlat,RMSEflat(k)] = ARCfitLagLead(optDistTag(:),defocus875mean(:),optDistTag(:),true);
+            [pFitFlat,RMSEflat(k)] = ARCfitLagLead(optDistTag(:),defocus875mean(:),optDistTag(:),true,objFunc);
             RMSE0 = load([coneWeightsFolder 'S' num2str(subjNum) 'wvInFocusModelResults0.mat'],'RMSEall');
             RMSElum = min(RMSE0.RMSEall(1,:));
         end
-
+        
+        defocus875pred = [];
+        defocus875mean2fit = [];
         figure;
         set(gcf,'Position',[118 470 1453 420]);
         for i = 1:size(defocus875predTmp,2)
@@ -147,10 +150,12 @@ for l = 1:length(wL)
             hold on;
             plot([0 length(ind)],optDistUnq(i)-(optDistUnq(i).*pFitFlat(1)+pFitFlat(2)).*[1 1],'k--','LineWidth',1);
             plot(1:length(ind),defocus875predTmp(ind,i)-optDistUnq(i)*pFit(1)-pFit(2),'k-');
+            defocus875pred(:,i) = defocus875predTmp(ind,i)-optDistUnq(i)*pFit(1)-pFit(2);
             % plot(1:length(ind),defocus875mean(ind,i),'k-');
             for j = 1:length(ind)
                 plot(j,defocus875mean(ind(j),i),'ko','MarkerFaceColor',conditionsOrderedNorm(j,:), ...
                      'MarkerSize',10);
+                defocus875mean2fit(j,i) = defocus875mean(ind(j),i);
             end
             axis square;
             set(gca,'FontSize',15);
@@ -172,13 +177,13 @@ for l = 1:length(wL)
     end
 end
 
-errorIndividual = defocus875mean(:)-defocus875predTmp(:);
+errorIndividual = defocus875mean2fit(:)-defocus875pred(:);
 for i = 1:200
    [stdTmp(i),LLtmp(i)] = ARCfitStdGauss(errorIndividual);
 end
 [~,bestInd] = min(LLtmp);
 estResidualStd = stdTmp(bestInd);
-LL = sum(log(normpdf(defocus875mean(:),defocus875predTmp(:),estResidualStd)));
+LL = sum(log(normpdf(defocus875mean2fit(:),defocus875pred(:),estResidualStd)));
 aic = 2*nParams-2*LL;
 
 end

@@ -85,7 +85,7 @@ ylabel('Defocus at 875nm');
 xlabel('Subject');
 set(gca,'XTick',2:4:30);
 set(gca,'XTickLabel',{'S1' 'S3' 'S5' 'S10' 'S16' 'S17' 'S18' 'S20'});
-legend('Model prediction','Accommodation exp','Acuity exp');
+legend('Model fit (acc exp)','Accommodation exp','Acuity exp');
 
 figure;
 hold on;
@@ -98,7 +98,7 @@ ylabel('Defocus at 875nm');
 xlabel('Subject');
 set(gca,'XTick',2:4:30);
 set(gca,'XTickLabel',{'S1' 'S3' 'S5' 'S10' 'S16' 'S17' 'S18' 'S20'});
-legend('Model prediction','Accommodation exp','Acuity exp');
+legend('Model fit (acc exp)','Accommodation exp','Acuity exp');
 
 %%
 

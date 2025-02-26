@@ -1,6 +1,7 @@
 %% LOADING DATA
 
 subjNum = 10;
+objFunc = 'NLL';
 
 if subjNum==10
     subjName = 'S20-OD';
@@ -116,10 +117,10 @@ end
 parfor k = 1:length(wLM)
     [~, defocus875mean, defocus875predTmp, rgbUnq, optDistUnq] = ARCtestWvInFocusMeanZspatFilterPlotHelper(subjNum,defocus875,rgbAll,optDistAll,[wLM(k).*[1 1] -wS(k)]);
     optDistTag = imresize(optDistUnq',size(defocus875mean),'nearest');
-    [pFit,RMSE(k)] = ARCfitLagLead(defocus875predTmp(:),defocus875mean(:),optDistTag(:),true);
+    [pFit,RMSE(k)] = ARCfitLagLead(defocus875predTmp(:),defocus875mean(:),optDistTag(:),true,objFunc);
     
     if k==1
-       [pFitFlat,RMSEflat(k)] = ARCfitLagLead(optDistTag(:),defocus875mean(:),optDistTag(:),true);
+       [pFitFlat,RMSEflat(k)] = ARCfitLagLead(optDistTag(:),defocus875mean(:),optDistTag(:),true,objFunc);
     end
 
     figure;
@@ -189,9 +190,9 @@ for l = 1:length(wLM)
         wM = wLM(l)-wL;
         [~, defocus875mean, defocus875predTmp, rgbUnq, optDistUnq] = ARCtestWvInFocusMeanZspatFilterPlotHelper(subjNum,defocus875,rgbAll,optDistAll,[wL wM wS]);
         optDistTag = imresize(optDistUnq',size(defocus875mean),'nearest');
-        [pFit,RMSE(k)] = ARCfitLagLead(defocus875predTmp(:),defocus875mean(:),optDistTag(:),true);
+        [pFit,RMSE(k)] = ARCfitLagLead(defocus875predTmp(:),defocus875mean(:),optDistTag(:),true,objFunc);
         if k==1
-            [pFitFlat,RMSEflat(k)] = ARCfitLagLead(optDistTag(:),defocus875mean(:),optDistTag(:),true);
+            [pFitFlat,RMSEflat(k)] = ARCfitLagLead(optDistTag(:),defocus875mean(:),optDistTag(:),true,objFunc);
         end
         
         display(['Weights = [' num2str(wL) ' ' num2str(wM) ' ' num2str(wS)]);
@@ -238,10 +239,10 @@ for l = 1:length(wL)
     for k = 1:length(wM)
         [~, defocus875mean, defocus875predTmp, rgbUnq, optDistUnq] = ARCtestWvInFocusMeanZspatFilterPlotHelper(subjNum,defocus875,rgbAll,optDistAll,[wL(l) wM(k) wS]);
         optDistTag = imresize(optDistUnq',size(defocus875mean),'nearest');
-        [pFit,RMSE(k)] = ARCfitLagLead(defocus875predTmp(:),defocus875mean(:),optDistTag(:),true);
+        [pFit,RMSE(k)] = ARCfitLagLead(defocus875predTmp(:),defocus875mean(:),optDistTag(:),true,objFunc);
         
         if k==1
-            [pFitFlat,RMSEflat(k)] = ARCfitLagLead(optDistTag(:),defocus875mean(:),optDistTag(:),true);
+            [pFitFlat,RMSEflat(k)] = ARCfitLagLead(optDistTag(:),defocus875mean(:),optDistTag(:),true,objFunc);
         end
 
         figure;
