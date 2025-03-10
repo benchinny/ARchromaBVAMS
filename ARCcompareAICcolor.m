@@ -29,3 +29,9 @@ ylabel('AIC');
 set(gca,'XTick',2:4:30);
 set(gca,'XTickLabel',{'S1' 'S3' 'S5' 'S10' 'S16' 'S17' 'S18' 'S20'});
 legend('(L+M)-S','L+M');
+
+figure; 
+boxplot(aicLM-aicLMS); 
+set(gca,'FontSize',15);
+set(gca,'XTick',[]);
+ylabel('AIC_{LM}-AIC_{LMS}');

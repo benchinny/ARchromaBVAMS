@@ -1,4 +1,4 @@
-%%
+%% LOAD DATA
 
 subjNum = 20;
 
@@ -60,6 +60,35 @@ legend('Acuity','Accommodation');
 [~,indPeak] = max(PCfit);
 acuPeak = PCfitSupport(indPeak)+diff875;
 
+%% ACUITY VS DISTANCE INCREMENT IN TERMS OF D-PRIME
+
+figure;
+hold on;
+% plot(unqFocDst.*scaleFac,PC,'o-','Color',rgbUnq,'MarkerFaceColor','w','LineWidth',1.5,'MarkerSize',10);
+plot(PCfitSupport,dprimeFitAll,'-','Color',[0.56 0 1],'LineWidth',1.5);
+errorbar(unqFocDst.*scaleFac,dprime,dprimeCI-dprimeCI(1,:),dprimeCI(2,:)-dprime,'o','Color',[0.56 0 1],'MarkerFaceColor','w','LineWidth',1.5,'MarkerSize',10);
+axis square;
+% ylim([0.4 1]);
+xlim([-1.2 1.2]);
+formatFigure('Relative optical distance (D)','D-prime',['Subject ' num2str(subjNum) ', D_{acu} = ' num2str(defocusOrigScaled,3) ', D_{acc} = ' num2str(-defocus875acc,3)]);
+
+dprimeMax = max(dprimeFitAll);
+dprime0 = interp1(PCfitSupport,dprimeFitAll,0);
+dprimeRatio = dprime0/dprimeMax;
+
+%%
+
+dprimeRatioAll = [0.4039 1.000 0.8928 0.6935 0.9599 0.5051 0.5645 0.6952];
+
+figure;
+bar(dprimeRatioAll,'LineWidth',1,'FaceColor',[0.56 0 1]);
+set(gca,'FontSize',15);
+set(gca,'XTick',1:8);
+set(gca,'XTickLabel',{'S1' 'S3' 'S5' 'S10' 'S16' 'S17' 'S18' 'S20'});
+xlabel('Subject');
+ylabel('d''_{0}/d''_{max}');
+ylim([0 1]);
+
 %% COMPARE ACCOMMODATION AND ACUITY EXPERIMENT FOR PURPLE 2.5D CONDITION
 
 modelPredictionPurpleAt2pt5 = [1.36 1.756 1.864 1.633 1.463 1.815 1.355 1.603];
@@ -100,7 +129,7 @@ set(gca,'XTick',2:4:30);
 set(gca,'XTickLabel',{'S1' 'S3' 'S5' 'S10' 'S16' 'S17' 'S18' 'S20'});
 legend('Model fit (acc exp)','Accommodation exp','Acuity exp');
 
-%%
+%% DISTANCE OF PEAK ACUITY PLOT
 
 peakAcuityAll = [-0.7102 -0.4229 0.1432 -0.3498 -0.1546 -0.6124 -0.8071 -0.2844];
 
