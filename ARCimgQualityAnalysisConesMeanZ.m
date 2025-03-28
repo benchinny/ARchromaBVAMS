@@ -1,5 +1,14 @@
 function oi = ARCimgQualityAnalysisConesMeanZ(subjNum)
 
+% NOTE SUBJECT NUMBER CONVENTION: SUBTRACT 10 FROM subjNum TO GET ACTUAL
+% SUBJECT NUMBER. subjNum VALUES <=10 WERE INTENTIONALLY NOT USED FOR
+% ACTUAL PARTICIPANTS. NOTE ALSO THAT PARTICIPANTS WHO DID NOT PASS
+% SCREENING OR HAD TO BE EXCLUDED FROM THE ACTUAL ANALYSIS ARE STILL
+% INCLUDED IN THIS FUNCTION. 
+
+% subjNum values for participants who passed screening: 11, 13, 15, 20, 26,
+% 27, 28, 30. That is, subjects S1, S3, S5, S10, S16, S17, S18, S20. 
+
 %% Initialize and clear
 ieInit;
 
@@ -334,10 +343,13 @@ for k = 1:size(rgb00,1) % LOOP OVER TRIAL
         % Convert to siData format as well as wavefront object
         [siPSFData, wvfP] = wvf2SiPsfARC(wvfP,'showBar',false,'nPSFSamples',size(I,2),'umPerSample',1.1512); 
         oi = wvf2oi(wvfP); % CONVERT TO OPTICS OBJECT
+        % PADDING PSF NECESSARY TO ENSURE SAME SIZE AS STIMULUS
         paddingXCpsf = round((size(siPSFData.psf,2)-size(s.data.photons,2))/2);
         paddingYRpsf = round((size(siPSFData.psf,1)-size(s.data.photons,1))/2);
         indNotPadded = {(paddingYRpsf+1):(size(siPSFData.psf,1)-paddingYRpsf) ...
                         (paddingXCpsf+1):(size(siPSFData.psf,2)-paddingXCpsf)};
+        % I HAD TO WRITE NEW CODE TO SET PSF BECAUSE I COULDN'T FIGURE OUT
+        % HOW TO DO WHAT I WANTED WITHIN ISETBIO FRAMEWORK
         oi.optics.OTF = [];
         for j = 1:size(siPSFData.psf,3)
             oi.optics.OTF.OTF(:,:,j) = fft2(fftshift(squeeze(siPSFData.psf(indNotPadded{1},indNotPadded{2},j))));

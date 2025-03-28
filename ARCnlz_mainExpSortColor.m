@@ -2,6 +2,21 @@
 
 function [wvInFocusCell, defocusAt550cell, defocusAt875cell, optDistCnd, rgbLumNormCnd] = ARCnlz_mainExpSortColor(subjNum)
 
+% NOTE SUBJECT NUMBER CONVENTION: SUBTRACT 10 FROM subjNum TO GET ACTUAL
+% SUBJECT NUMBER. subjNum VALUES <=10 WERE INTENTIONALLY NOT USED FOR
+% ACTUAL PARTICIPANTS. NOTE ALSO THAT PARTICIPANTS WHO DID NOT PASS
+% SCREENING OR HAD TO BE EXCLUDED FROM THE ACTUAL ANALYSIS ARE STILL
+% INCLUDED IN THIS FUNCTION. 
+
+% subjNum values for participants who passed screening: 11, 13, 15, 20, 26,
+% 27, 28, 30. That is, subjects S1, S3, S5, S10, S16, S17, S18, S20. 
+
+% This function grabs all raw wavefront data from Experiment 1 for a
+% particular subject and returns mean defocus values (both at 550nm and 875nm),
+% wavelength-in-focus values, and the optical distances and color
+% conditions corresponding to those values. The 'c' variable contains the
+% raw traces of every coefficient on each of the 65 Zernike terms. 
+
 bSave = false;
 filePath = '/Users/benjaminchin/Documents/ARchromaScraps/meeting_Sept25/';
 
@@ -74,11 +89,12 @@ elseif subjNum==30
 end
 
 meanC = [];
-rgb1all = [];
-meanv00all = [];
+rgb1all = []; % RGB VALUES
+meanv00all = []; % OPTOTUNE VALUE (TO GET STIMULUS DISTANCE, DIVIDE BY 1.2255)
 nIndBadTracker = [];
 c4all = {};
 
+% GRABBING ZERNIKE VALUES FROM DATA REPOSITORY
 for i = 1:length(blockNums)
     blockNumTmp = blockNums(i);
     trialNumsTmp = trialNums{i};
@@ -92,11 +108,11 @@ for i = 1:length(blockNums)
         PARAMS.PupilFitSize=mean(table2array(ZernikeTable(~indBadPupil,5))); 
         PARAMS.PupilFieldSize=PARAMS.PupilSize*2; %automatically compute the field size
         c(:,3:NumCoeffs)=table2array(ZernikeTable(:,11:width(ZernikeTable)));
-        indBad = c(:,4)==0;
+        indBad = c(:,4)==0; % VALUE OF EXACTLY 0 MEANS BLINK
         nIndBadTracker(end+1) = sum(indBad);
         c(indBad,4) = mean(c(~indBad,4));
         meanC(end+1,:) = mean(c(1:end,:),1); % TAKE MEAN OF COEFFICIENTS    
-        c4all{end+1} = c(:,4);
+        c4all{end+1} = c(:,4); % COEFFICIENTS ON DEFOCUS TERM
     end
     rgb1all = [rgb1all; AFCp.rgb100(trialNumsTmp,:)];
     meanv00all = [meanv00all; AFCp.meanv00(trialNumsTmp)./1.2255];
@@ -114,6 +130,9 @@ gammaRGB = [2.5 2.7 2.3];
 
 rgbLumNorm = [lumScaleRGB(1).*rgb1all(:,1).^gammaRGB(1) lumScaleRGB(2).*rgb1all(:,2).^gammaRGB(2) lumScaleRGB(3).*rgb1all(:,3).^gammaRGB(3)];
 
+% EACH TRIPLET INDICATES THE LUMINANCE OF THE RED, GREEN, AND BLUE PIXELS
+% RESPECTIVELY AS A PROPORTION OF THE MAXIMUM VALUE ALLOWED IN THE
+% EXPERIMENT
 conditionsOrderedNorm = [0.25 0.00 1.00; ...
                          0.50 0.00 1.00; ...
                          1.00 0.00 1.00; ...
@@ -144,6 +163,8 @@ for j = 1:length(optDistToCheckAll)
         defocusAt550tmp = defocusAt550(ind);
         defocusAt875tmp = defocusAt875(ind);
         diffFromOptDist = defocusAt550tmp-meanv00all(ind);
+        % EXCLUDE DATA FOR WHICH PARTICIPANT WAS ACCOMMODATING OUTSIDE OF
+        % VISIBLE RANGE
         indGood = abs(diffFromOptDist)<1 & ...
                   humanWaveDefocusInvertARC(550,diffFromOptDist,subjNum-10)>380 & ...
                   humanWaveDefocusInvertARC(550,diffFromOptDist,subjNum-10)<780;
