@@ -8,11 +8,22 @@ dprime2regress = interp1(defocusForStim+modelPrediction875nmPurpleAt2pt5,dprimeM
 % dprimeScale = max(dprime(:)./max(dprimeMetric));
 dprimeScale = dprime2regress\dprime';
 
+shiftVals = -0.25:0.05:0.25;
+
+for i = 1:length(shiftVals)
+    dprime2regressTmp = interp1(defocusForStim+modelPrediction875nmPurpleAt2pt5+shiftVals(i),dprimeMetric,2.5+unqFocDst.*scaleFac);
+    dprimeScaleTmp(i) = dprime2regressTmp\dprime';
+    errorDP(i) = sqrt(mean((dprimeScaleTmp(i).*dprime2regressTmp-dprime').^2));
+end
+[~,indMinShift] = min(errorDP);
+shiftValBestFit = shiftVals(indMinShift);
+dprimeScaleBestFit = dprimeScaleTmp(indMinShift);
+
 figure;
 set(gcf,'Position',[342 460 1052 440]);
 subplot(1,2,1);
 hold on;
-plot(defocusForStim+modelPrediction875nmPurpleAt2pt5,dprimeMetric.*dprimeScale,'-','Color',[0.56 0 1],'LineWidth',1);
+plot(shiftValBestFit+defocusForStim+modelPrediction875nmPurpleAt2pt5,dprimeMetric.*dprimeScaleBestFit,'-','Color',[0.56 0 1],'LineWidth',1);
 errorbar(2.5+unqFocDst.*scaleFac,dprime,(dprime-dprimeCI(1,:)),(dprimeCI(2,:)-dprime),'o','Color',[0.56 0 1],'MarkerFaceColor','w','LineWidth',1.5,'MarkerSize',10);
 xlabel('Distance');
 ylabel('D-prime metric');
@@ -26,14 +37,31 @@ ylabel('D-prime metric');
 set(gca,'FontSize',15);
 axis square;
 
+figure;
+set(gcf,'Position',[342 460 1052 440]);
+subplot(1,2,1);
+hold on;
+plot(shiftValBestFit+defocusForStim+modelPrediction875nmPurpleAt2pt5-2.5,normcdf(dprimeMetric.*dprimeScaleBestFit/2),'-','Color',[0.56 0 1],'LineWidth',1);
+xlabel('Distance');
+ylabel('D-prime metric');
+set(gca,'FontSize',15);
+axis square;
+title(['Mean defocus at 875nm = ' num2str(modelPrediction875nmPurpleAt2pt5,3) 'D']);
+subplot(1,2,2);
+plot(wvInFocusForStim,dprimeMetric,'k-','LineWidth',1);
+xlabel('Wavelength in focus (nm)');
+ylabel('D-prime metric');
+set(gca,'FontSize',15);
+axis square;
+
 stimDistanceSmp = 1.2:0.01:3.8;
-dprimeMetricSmooth = interp1(defocusForStim+modelPrediction875nmPurpleAt2pt5,dprimeMetric,stimDistanceSmp,'spline');
+dprimeMetricSmooth = interp1(defocusForStim+modelPrediction875nmPurpleAt2pt5+shiftVals(indMinShift),dprimeMetric,stimDistanceSmp,'spline');
 [~,indPeak] = max(dprimeMetricSmooth);
 peakLocModelPrediction = stimDistanceSmp(indPeak);
 
 %%
 
-peakLocModelPredictionAll = [1.79 1.87 2.19 2.04 1.98 2.17 2.22 1.89];
+peakLocModelPredictionAll = [1.84 2.07 2.39 2.19 2.23 1.92 1.97 2.14];
 peakLocActualAll = [1.8635 1.9435 2.6335 2.1235 2.6435 1.9035 1.8935 2.3235];
 
 figure;

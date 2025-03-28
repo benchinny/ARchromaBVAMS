@@ -31,7 +31,10 @@ set(gca,'XTickLabel',{'S1' 'S3' 'S5' 'S10' 'S16' 'S17' 'S18' 'S20'});
 legend('(L+M)-S','L+M');
 
 figure; 
-boxplot(aicLM-aicLMS); 
+hold on;
+boxplot((aicLM-aicLMS)/2); 
+plot(xlim,[0 0],'k-');
 set(gca,'FontSize',15);
 set(gca,'XTick',[]);
-ylabel('AIC_{LM}-AIC_{LMS}');
+ylabel('(AIC_{(L+M)-S}-AIC_{(L+M)})/2');
+ylim([-5 45]);

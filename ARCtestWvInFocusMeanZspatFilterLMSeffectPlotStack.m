@@ -128,6 +128,7 @@ for i = 1:size(conditionsOrderedNorm,1)
 end
 
 RMSEall = zeros([length(wL) length(wM)]);
+markerPlotSpeed = 'sod';
 
 for l = 1:length(wL)
     for k = 1:length(wM)
@@ -149,10 +150,10 @@ for l = 1:length(wL)
         hold on;
         for i = 1:size(defocus875predTmp,2)
             hold on;
-            plot(1:5,defocus875predTmp(ind(1:5),i)-optDistUnq(i)*pFit(1)-pFit(2),'k-');
+            plot(1:5,-(defocus875predTmp(ind(1:5),i)-optDistUnq(i)*pFit(1)-pFit(2)),'k-');
             % plot(1:length(ind),defocus875mean(ind,i),'k-');
             for j = 1:5
-                plot(j,defocus875mean(ind(j),i),'ko','MarkerFaceColor',conditionsOrderedNorm(j,:), ...
+                plot(j,-defocus875mean(ind(j),i),['k' markerPlotSpeed(i)],'MarkerFaceColor',conditionsOrderedNorm(j,:), ...
                      'MarkerSize',10);
                 defocus875mean2fit(j,i) = defocus875mean(ind(j),i);
             end
@@ -169,15 +170,15 @@ for l = 1:length(wL)
         for i = 1:size(defocus875predTmp,2)
             hold on;
             % plot([0 length(ind)],optDistUnq(i)-(optDistUnq(i).*pFitFlat(1)+pFitFlat(2)).*[1 1],'k--','LineWidth',1);
-            plot(1:5,defocus875predTmp(ind(6:10),i)-optDistUnq(i)*pFit(1)-pFit(2),'k-');
+            plot(1:5,-(defocus875predTmp(ind(6:10),i)-optDistUnq(i)*pFit(1)-pFit(2)),'k-');
             defocus875pred(:,i) = defocus875predTmp(ind,i)-optDistUnq(i)*pFit(1)-pFit(2);
             % plot(1:length(ind),defocus875mean(ind,i),'k-');
             for j = 6:11
-                plot(j-5,defocus875mean(ind(j),i),'ko','MarkerFaceColor',conditionsOrderedNorm(j,:), ...
+                plot(j-5,-defocus875mean(ind(j),i),['k' markerPlotSpeed(i)],'MarkerFaceColor',conditionsOrderedNorm(j,:), ...
                      'MarkerSize',10);
                 defocus875mean2fit(j,i) = defocus875mean(ind(j),i);
             end
-            plot(6,defocus875predTmp(ind(11),i)-optDistUnq(i)*pFit(1)-pFit(2),'kp','MarkerSize',12);
+            plot(6,-(defocus875predTmp(ind(11),i)-optDistUnq(i)*pFit(1)-pFit(2)),'kp','MarkerSize',12);
         end
         set(gca,'FontSize',15);
         set(gca,'XTick',[]);

@@ -78,16 +78,17 @@ dprimeRatio = dprime0/dprimeMax;
 
 %%
 
-dprimeRatioAll = [0.4039 1.000 0.8928 0.6935 0.9599 0.5051 0.5645 0.6952];
+dprimeRatioAll = 1./[0.4039 1.000 0.8928 0.6935 0.9599 0.5051 0.5645 0.6952];
 
 figure;
-bar(dprimeRatioAll,'LineWidth',1,'FaceColor',[0.56 0 1]);
+% boxplot(dprimeRatioAll,'LineWidth',1,'FaceColor',[0.56 0 1]);
+boxplot(dprimeRatioAll);
 set(gca,'FontSize',15);
-set(gca,'XTick',1:8);
-set(gca,'XTickLabel',{'S1' 'S3' 'S5' 'S10' 'S16' 'S17' 'S18' 'S20'});
-xlabel('Subject');
-ylabel('d''_{0}/d''_{max}');
-ylim([0 1]);
+% set(gca,'XTick',1:8);
+% set(gca,'XTickLabel',{'S1' 'S3' 'S5' 'S10' 'S16' 'S17' 'S18' 'S20'});
+% xlabel('Subject');
+ylabel('d''_{max}/d''_{0}');
+% ylim([0 1]);
 
 %% COMPARE ACCOMMODATION AND ACUITY EXPERIMENT FOR PURPLE 2.5D CONDITION
 

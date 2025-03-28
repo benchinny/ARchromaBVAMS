@@ -15,10 +15,10 @@ T_sensorXYZ = 683*SplineCmf(S_xyz1931,T_xyz1931,S);
 % colorsCal = {'calRed050_closest.mat' 'calRed060_closest.mat' 'calRed070_closest.mat' 'calRed080_closest.mat' 'calRed090_closest.mat' 'calRed100_closest.mat'};
 % colorsCal = {'calBlue050_closest.mat' 'calBlue060_closest.mat' 'calBlue070_closest.mat' 'calBlue080_closest.mat' 'calBlue090_closest.mat' 'calBlue100_closest.mat'};
 % colorsCal = {'calGreen050_closest.mat' 'calGreen060_closest.mat' 'calGreen070_closest.mat' 'calGreen080_closest.mat' 'calGreen090_closest.mat' 'calGreen100_closest.mat'};
-% colorsCal = {'calRed100_closest.mat' 'calGreen100_closest.mat' 'calBlue100_closest.mat'};
+colorsCal = {'redPrimaryJuly0624_initialPositionFocus3_100.mat' 'greenPrimaryJuly0624_initialPositionFocus3_100.mat' 'bluePrimaryJuly0624_initialPositionFocus3_100.mat'};
 % colorsCal = {'bluePrimaryJuly0624_initialPositionFocus3_060.mat' 'bluePrimaryJuly0624_initialPositionFocus3_070.mat' 'bluePrimaryJuly0624_initialPositionFocus3_080.mat' 'bluePrimaryJuly0624_initialPositionFocus3_090.mat' 'bluePrimaryJuly0624_initialPositionFocus3_100.mat'};
 % colorsCal = {'greenPrimaryJuly0624_initialPositionFocus3_060.mat' 'greenPrimaryJuly0624_initialPositionFocus3_070.mat' 'greenPrimaryJuly0624_initialPositionFocus3_080.mat' 'greenPrimaryJuly0624_initialPositionFocus3_090.mat' 'greenPrimaryJuly0624_initialPositionFocus3_100.mat'};
-colorsCal = {'redPrimaryJuly0624_initialPositionFocus3_060.mat' 'redPrimaryJuly0624_initialPositionFocus3_070.mat' 'redPrimaryJuly0624_initialPositionFocus3_080.mat' 'redPrimaryJuly0624_initialPositionFocus3_090.mat' 'redPrimaryJuly0624_initialPositionFocus3_100.mat'};
+% colorsCal = {'redPrimaryJuly0624_initialPositionFocus3_060.mat' 'redPrimaryJuly0624_initialPositionFocus3_070.mat' 'redPrimaryJuly0624_initialPositionFocus3_080.mat' 'redPrimaryJuly0624_initialPositionFocus3_090.mat' 'redPrimaryJuly0624_initialPositionFocus3_100.mat'};
 
 Meas1xyY = [];
 for i = 1:length(colorsCal)

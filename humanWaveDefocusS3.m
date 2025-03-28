@@ -50,7 +50,9 @@ q3 = 0.2778;
 % converts the wave in nanometers to wave in microns. D is in diopters.
 Dref = q1 - (q2 ./ (waveRef * 1e-3 - q3));
 D = q1 - (q2 ./ (wave * 1e-3 - q3))-Dref;
-
+% waveScale = wave*1e-3;
+% waveRefScale = waveRef*1e-3;
+% Dtest = q2.*(waveScale-waveRefScale)./((waveRefScale-q3).*(waveScale-q3));
 % plot(wave, D);
 % grid;
 % xlabel('Wavelength (nm)');

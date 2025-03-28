@@ -162,7 +162,7 @@ else
     error('ARCacuityModelingPrediction: invalid subject number!');
 end
 
-defocusForStim = [1.2:0.1:3.8]-modelPrediction875nmPurpleAt2pt5;
+defocusForStim = [0.6:0.1:4.4]-modelPrediction875nmPurpleAt2pt5;
 wvInFocusForStim = humanWaveDefocusInvertARC(875,-defocusForStim,subjNum);
 
 parfor i = 1:length(defocusForStim)
