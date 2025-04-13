@@ -1,6 +1,6 @@
 %% LOAD MAIN EXPERIMENT FILES
 
-subjNum = 20;
+subjNum = 13;
 bSave = false;
 filePath = '/Users/benjaminchin/Documents/ARchromaScraps/meeting_Sept25/';
 
@@ -116,6 +116,7 @@ end
 
 defocusCorrectionFactor = (1e6/(4*sqrt(3)))*((PARAMS.PupilSize/2000)^2);
 defocusAt550 = humanWaveDefocus(875)-humanWaveDefocus(550)+meanC(:,4)./defocusCorrectionFactor;
+defocusAt875 = meanC(:,4)./defocusCorrectionFactor;
 
 figure 
 plot(meanv00all,defocusAt550,'ko');
@@ -271,35 +272,39 @@ for k = 1:length(optDistToCheckAll)
                    abs(rgbLumNorm(:,2)-conditionsOrderedNorm(i,2))<0.01 & ...
                    abs(rgbLumNorm(:,3)-conditionsOrderedNorm(i,3))<0.01 & ...
                    abs(meanv00all-optDistToCheck)<0.01);
+        trialTmp875All = [];
         for j = 1:length(ind)
         % for j = 2
             trialTmp = zeros([1 lengthTrialMax]);
             trialTmp(1:length(c4all{ind(j)})) = c4all{ind(j)};
             trialTmp(trialTmp==0) = NaN;
             trialTmp550 = humanWaveDefocus(875)-humanWaveDefocus(550)+trialTmp./defocusCorrectionFactor;
+            trialTmp875 = trialTmp./defocusCorrectionFactor;
             timeStampTmp = timeCell{ind(j)};
-            plot(timeStampTmp,-trialTmp550(1:length(timeStampTmp)),'-','Color',conditionsOrderedNorm(i,:));
+            plot(timeStampTmp,-trialTmp875(1:length(timeStampTmp)),'-','Color',conditionsOrderedNorm(i,:));
+            trialTmp875All = [trialTmp875All; trialTmp875'];
         end
+        plot([timeStampTmp(1) timeStampTmp(end)],-mean(trialTmp875All(~isnan(trialTmp875All))).*[1 1],'-','Color',conditionsOrderedNorm(i,:),'LineWidth',2);
         axis square;
         xlim([0 3.1]);
         if subjNum==18
-            ylim(mean(defocusAt550(indDist))+[-1.2 1.2]);
+            ylim(mean(defocusAt875(indDist))+[-1.2 1.2]);
             yBuffer = 1.2;
         elseif subjNum==19
-            ylim(mean(defocusAt550(indDist))+[-3 3]);  
+            ylim(mean(defocusAt875(indDist))+[-3 3]);  
             yBuffer = 3;
         elseif subjNum==17
-            ylim(mean(defocusAt550(indDist))+[-1.2 1.2]);   
+            ylim(mean(defocusAt875(indDist))+[-1.2 1.2]);   
             yBuffer = 1.2;
         else
-            ylim(mean(-defocusAt550(indDist))+[-0.6 0.6]);
+            ylim(mean(-defocusAt875(indDist))+[-0.6 0.6]);
             yBuffer = 0.6;
         end
         set(gca,'FontSize',15);
         trialStr = [];
         for l = 1:length(ind)
             trialStr = [trialStr ' ' num2str(ind(l))];
-            text(50,mean(defocusAt550(indDist))+0.5,trialStr);
+            text(50,mean(defocusAt875(indDist))+0.5,trialStr);
         end
         if i==1
             xlabel('Frame');

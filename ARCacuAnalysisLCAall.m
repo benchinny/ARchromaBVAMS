@@ -26,12 +26,12 @@ end
 
 %%
 
-wave2fit = 460:624;
+wave2fit = 460:5:875;
 standardLCAfit = humanWaveDefocus(wave2fit);
 val532 = humanWaveDefocus(532);
 standardLCAfit = standardLCAfit-val532;
 displacementLambda = -4:4;
-wavePlot = 380:4:900;
+wavePlot = 380:5:875;
 
 figure;
 hold on;
@@ -39,6 +39,7 @@ plot(wave2fit,standardLCAfit,'k-','LineWidth',1);
 for i = 1:size(defocusLCAmeasuredAll,1)
     set(gca,'ColorOrderIndex',i);
     plot(wavePlot,humanWaveDefocusARC(533,wavePlot,subjNumAll(i))+D0all(i)+defocusLCAmeasuredAll(i,2),'-','LineWidth',1);
+    defocus875to620(i,:) = humanWaveDefocusARC(533,wavePlot([48 100]),subjNumAll(i))+D0all(i)+defocusLCAmeasuredAll(i,2);
 end
 for i = 1:size(defocusLCAmeasuredAll,1)
     defocusLCAmeasuredBootsTmp = squeeze(defocusLCAmeasuredBootsAll(:,:,i))-1*defocusLCAmeasuredAll(i,2);
@@ -59,7 +60,17 @@ for i = 1:size(defocusLCAmeasuredAll,1)
         'LineWidth',1,'MarkerFaceColor','w');
 end
 % axis square;
-xlim([460 620]);
-ylim([-1.5 1]);
+xlim([460 875]);
+ylim([-1.5 1.6]);
 formatFigure('Wavelength (\lambda)','Defocus (D)');
 legend('','','','','','','','','','','','','','','','','','S1','S2','S3','S4','S5','S6','S7','S8','Location','SouthEast');
+
+figure;
+hold on;
+plot(ones([1 8]),defocus875to620(:,2)-defocus875to620(:,1),'ko','LineWidth',1);
+plot(1,humanWaveDefocus(875)-humanWaveDefocus(620),'k*','LineWidth',1);
+plot(1,mean(defocus875to620(:,2)-defocus875to620(:,1)),'kp','LineWidth',1);
+ylim([0 0.8]);
+ylabel('D_{875}-D_{620}');
+set(gca,'FontSize',15);
+set(gca,'XTick',[]);
