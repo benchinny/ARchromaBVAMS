@@ -1,6 +1,6 @@
 %% LOADING DATA
 
-function ARCtestWvInFocusMeanZspatFilterLminusMeffectFitOnly(subjNum,wS)
+function ARCtestWvInFocusMeanZspatFilterLminusMeffectFitOnly(subjNum)
 
 objFunc = 'RMS';
 
@@ -65,8 +65,8 @@ rgbUnq = unique(rgbAll,'rows');
 
 %% SEARCH INDIVIDUAL CONE WEIGHTS
 
-wLM = 0.4:0.05:1.4;
-wLprop = 0.25:0.025:0.85;
+wLall = 0.25:0.025:0.75;
+wMall = 0.25:0.025:0.75;
 coneWeightsFolder = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/coneWeightsErrorSpatFilter/colorMechPredictions/';
 
 rgbLumNorm = [];
@@ -93,12 +93,13 @@ for i = 1:size(conditionsOrderedNorm,1)
                   abs(rgbLumNorm(:,3)-conditionsOrderedNorm(i,3))<0.01);
 end
 
-RMSEall = zeros([length(wLM) length(wLprop)]);
+RMSEall = zeros([length(wLall) length(wMall)]);
 
-for l = 1:length(wLM)
-    parfor k = 1:length(wLprop)
-        wL = wLM(l)*wLprop(k);
-        wM = wLM(l)-wL;
+for l = 1:length(wLall)
+    parfor k = 1:length(wMall)
+        wL = wLall(l);
+        wM = wMall(k);
+        wS = 0;
         [~, defocus875mean, defocus875predTmp, rgbUnq, optDistUnq] = ARCtestWvInFocusMeanZspatFilterPlotHelper(subjNum,defocus875,rgbAll,optDistAll,[wL wM wS]);
         optDistTag = imresize(optDistUnq',size(defocus875mean),'nearest');
         [pFit,RMSE(k)] = ARCfitLagLead(defocus875predTmp(:),defocus875mean(:),optDistTag(:),true,objFunc);
@@ -111,6 +112,6 @@ for l = 1:length(wLM)
     RMSEall(l,:) = RMSE;
 end
 
-save([coneWeightsFolder 'S' num2str(subjNum) 'wvInFocusModelResults' num2str(round(-wS*10)) '.mat'],'RMSEall','wS','wLM','wLprop');
+save([coneWeightsFolder 'S' num2str(subjNum) 'wvInFocusModelResultsLminusM.mat'],'RMSEall','wLall','wMall');
 
 end
