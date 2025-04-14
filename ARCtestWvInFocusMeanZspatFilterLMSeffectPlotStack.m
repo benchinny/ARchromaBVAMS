@@ -39,13 +39,15 @@ end
 
 if strcmp(modelType,'LminusM')
     wS = 0;
-    load([coneWeightsFolder 'S' num2str(subjNum) 'wvInFocusModelResultsLminusM.mat'],'RMSEall','wLall','wMall');
+    load([coneWeightsFolder 'S' num2str(subjNum) 'wvInFocusModelResultsLminusM.mat'],'RMSEall','wLM','wLprop');
     
-    [wLgrid,wMgrid] = meshgrid(wLall,wMall);
+    [wLpropGrid,wLMgrid] = meshgrid(wLprop,wLM);
     
     indMin = RMSEall==min(RMSEall(:));
-    wL = wLgrid(indMin);
-    wM = wMgrid(indMin);
+    wLMmin = wLMgrid(indMin);
+    wLpropMin = wLpropGrid(indMin);
+    wL = wLMmin*wLpropMin;
+    wM = -(wLMmin-wL);    
     nParams = 3;
 end
 
