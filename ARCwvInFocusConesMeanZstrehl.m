@@ -1,4 +1,4 @@
-function wvInFocus = ARCwvInFocusMeanZstrehl(subjNum,rgb,wLMS)
+function wvInFocus = ARCwvInFocusConesMeanZstrehl(subjNum,rgb,wLMS)
 
 % DEFINING WAVELENGTH
 wave = 380:4:780;
