@@ -1,28 +1,42 @@
-function wvInFocus = ARCwvInFocusMeanZstrehl(subjNum,stimNum,wLMS)
+function wvInFocus = ARCwvInFocusMeanZstrehl(subjNum,rgb,wLMS)
 
 wave = 380:4:780;
 nFocus = length(wave);
 foldernameCones = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/coneImages/';
 
-% USE THE SAME ORIGINAL (PRE-OPTICS) IMAGE EACH TIME--THIS ONE HAPPENS TO
-% LIVE IN THE FOLDER FOR SUBJECT 10, BUT IT REALLY DOESN'T MATTER SINCE ALL
-% SUBJECTS SAW THE SAME ON-SCREEN STIMULUS
-fnameConeRspNoLCA = ['subj10block3stimulus1' 'focusInd1noLCA'];
-absorptionsOrig = load([foldernameCones 'S10/' fnameConeRspNoLCA]);
-absorptionsOrig = absorptionsOrig.absorptions;
-coneImgOrig = sum(absorptionsOrig,3);
+% Setting up display properties
+d = struct;
 
-% LOAD SPATIAL FILTER
-load('/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/modelParams/freqFilterARC.mat');
+bUseBVAMScal = 1; % if using BVAMS calibration data
 
-coneImgOrigFFT = fftshift(fft2(coneImgOrig));
-coneImgOrigFilteredFFT = coneImgOrigFFT.*freqFilterARC;
-coneImgOrigFiltered = real(ifft2(ifftshift(coneImgOrigFilteredFFT)));
+if strcmp(getenv('USER'),'benjaminchin')
+    calPath = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/ARChroma/BVAMS_calibration_files/Ben_calibration_July_6_2024/';
+     stimPath = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/stimuli/';
+     savePath = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/coneImages/S';
+end
 
-coneImgOrigFFT2 = fft2(fftshift(coneImgOrig));
-freqFilterARCfft2 = fftshift(freqFilterARC);
-coneImgOrigFilteredFFT2 = coneImgOrigFFT2.*freqFilterARCfft2;
-coneImgOrigFiltered2 = real(ifftshift(ifft2(coneImgOrigFilteredFFT2)));
+if strcmp(getenv('USER'),'benchin')
+    calPath = '/Users/benchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/ARChroma/BVAMS_calibration_files/Ben_calibration_July_6_2024/';
+    stimPath = '/Users/benchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/stimuli/';
+    savePath = '/Users/benchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/coneImages/S';
+end
+
+if bUseBVAMScal
+    load([calPath 'redPrimaryJuly0624_initialPositionFocus3_100.mat']);
+    d.spd(:,1) = energy;
+    load([calPath 'greenPrimaryJuly0624_initialPositionFocus3_100.mat']);
+    d.spd(:,2) = energy;
+    load([calPath 'bluePrimaryJuly0624_initialPositionFocus3_100.mat']);
+    d.spd(:,3) = energy;
+end
+d.gamma(:,1) = (d.gamma(:,1).^(1/2.2)).^2.5;
+d.gamma(:,2) = (d.gamma(:,2).^(1/2.2)).^2.7;
+d.gamma(:,3) = (d.gamma(:,3).^(1/2.2)).^2.3;
+
+% COLOR MATCHING FUNCTIONS
+S = [380 4 101]; % weird convention used by Brainard lab for defining wavelengths
+load T_xyz1931; % load color matching functions
+T_sensorXYZ = 683*SplineCmf(S_xyz1931,T_xyz1931,S); % interpolate and scale
 
 % % Put the image center in (1, 1) and take the transform.
 % imgFFT = fft2(fftshift(img));

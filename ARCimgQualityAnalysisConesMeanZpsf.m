@@ -242,7 +242,7 @@ end
 
 %%
 
-for k = 1:size(rgb00,1) % LOOP OVER TRIAL
+for k = 12 % LOOP OVER TRIAL
     % recreate stimulus
     rVal = rgb00(k,1);
     gVal = rgb00(k,2);
@@ -354,27 +354,30 @@ for k = 1:size(rgb00,1) % LOOP OVER TRIAL
         for j = 1:size(siPSFData.psf,3)
             oi.optics.OTF.OTF(:,:,j) = fft2(fftshift(squeeze(siPSFData.psf(indNotPadded{1},indNotPadded{2},j))));
         end
-        % oi = oiCreateARC('human',wave,Dall(i)); % create optics
-        oi = oiCompute(oi, s); % compute optical image of stimulus
+        % oi = oiCompute(oi, s); % compute optical image of stimulus
     
         % Create the coneMosaic object
-        cMosaic = coneMosaic;
+        % cMosaic = coneMosaic;
 
         % Set size to show relevant portion of scene
-        cMosaic.setSizeToFOV(1 * sceneGet(s, 'fov'));
+        % cMosaic.setSizeToFOV(1 * sceneGet(s, 'fov'));
 
         % key line for computing absorptions
-        absorptions = cMosaic.computeSingleFrame(oi, 'fullLMS', true);            
+        % absorptions = cMosaic.computeSingleFrame(oi, 'fullLMS', true);            
         
         % absorptions = absorptions(55:128,6:177,:);
 
         display(['Peak correlation loop ' num2str(i) ' stimulus ' num2str(k)]);
-        absorptions = single(absorptions);
+        % absorptions = single(absorptions);
         S = struct;
         % S.absorptions = absorptions;
 
         S.psf = single(siPSFData.psf(134:184,134:184,:));
-
+        OTFzeroCentered = [];
+        for j = 1:size(siPSFData.psf,3)
+            OTFzeroCentered(:,:,j) = ifftshift(squeeze(oi.optics.OTF.OTF(:,:,j)));
+        end
+        S.otf = single(OTFzeroCentered(116:175,130:189,:));
         fnameCone = ['subj' num2str(subjNum) 'stimulus' num2str(k) 'focusInd' num2str(i) 'psf'];
         save([savePath num2str(subjNum) '/' fnameCone '.mat'],"-fromstruct",S);
     end

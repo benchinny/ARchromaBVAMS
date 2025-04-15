@@ -65,8 +65,8 @@ rgbUnq = unique(rgbAll,'rows');
 
 %% SEARCH INDIVIDUAL CONE WEIGHTS
 
-wLM = [0.25 0.5 0.75 1];
-wLprop = 0.25:0.025:0.75;
+wLM = [0.5 1];
+wLprop = 0:0.025:1;
 
 coneWeightsFolder = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/coneWeightsErrorSpatFilter/colorMechPredictions/';
 
