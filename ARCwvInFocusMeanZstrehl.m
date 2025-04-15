@@ -33,10 +33,14 @@ d.gamma(:,1) = (d.gamma(:,1).^(1/2.2)).^2.5;
 d.gamma(:,2) = (d.gamma(:,2).^(1/2.2)).^2.7;
 d.gamma(:,3) = (d.gamma(:,3).^(1/2.2)).^2.3;
 
+rgbGammaCorrected = rgb.^[2.5 2.7 2.3];
+stimSPD = d.spd(:,1).*rgbGammaCorrected(1)+d.spd(:,2).*rgbGammaCorrected(2)+d.spd(:,3).*rgbGammaCorrected(3);
+
 % COLOR MATCHING FUNCTIONS
 S = [380 4 101]; % weird convention used by Brainard lab for defining wavelengths
 load T_xyz1931; % load color matching functions
 T_sensorXYZ = 683*SplineCmf(S_xyz1931,T_xyz1931,S); % interpolate and scale
+stimLum = stimSpd.*T_sensorXYZ;
 
 % % Put the image center in (1, 1) and take the transform.
 % imgFFT = fft2(fftshift(img));
@@ -44,24 +48,18 @@ T_sensorXYZ = 683*SplineCmf(S_xyz1931,T_xyz1931,S); % interpolate and scale
 % % Then invert and put the image center in  the center of the matrix
 % filteredIMG = abs(ifftshift(ifft2(otf .* imgFFT)));
 
-peakCorr = [];
+strehlNorm = [];
 
 for i = 1:nFocus
     fnameConeRsp = ['subj' num2str(subjNum) 'stimulus' num2str(stimNum) 'focusInd' num2str(i)];
     load([foldernameCones 'S' num2str(subjNum) '/' fnameConeRsp]);
-    absorptions(:,:,1) = absorptions(:,:,1).*wLMS(1);
-    absorptions(:,:,2) = absorptions(:,:,2).*wLMS(2);
-    absorptions(:,:,3) = absorptions(:,:,3).*wLMS(3);
-    coneImg = sum(absorptions,3);
-
-    coneImgFFT = fftshift(fft2(coneImg));
-    coneImgFilteredFFT = coneImgFFT.*freqFilterARC;
-    coneImgFiltered = real(ifft2(ifftshift(coneImgFilteredFFT)));
-
-    peakCorr(i) = max(max(normxcorr2(coneImgFiltered,coneImgOrigFiltered)));
+    psfRC = reshape(psf,[size(psf,1)*size(psf,2) size(psf,3)]);
+    psfPolyLumRC = sum(bsxfun(@times,psfRC,stimLum),2);
+    psfPolyLumXY = reshape(psfPolyLumRC,[size(psf,1) size(psf,2) size(psf,3)]);
+    strehlNorm(i) = max(psfPolyLumXY(:));
 end
 
-[~,indPeakPeak] = max(peakCorr);
+[~,indPeakPeak] = max(strehlNorm);
 wvInFocus = wave(indPeakPeak);
 
 end
