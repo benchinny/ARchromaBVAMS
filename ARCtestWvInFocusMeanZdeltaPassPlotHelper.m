@@ -1,11 +1,11 @@
-function [RMSE, defocus875mean, defocus875predTmp, rgbUnq, optDistUnq] = ARCtestWvInFocusMeanZdeltaPassPlotHelper(subjNum,defocus875,rgbAll,optDistAll,w)
+function [RMSE, defocus875mean, defocus875predTmp, rgbUnq, optDistUnq] = ARCtestWvInFocusMeanZdeltaPassPlotHelper(subjNum,defocus875,rgbAll,optDistAll,w,frqCpd)
 
 bFitMeans = true;
 
 rgbUnq = unique(rgbAll,'rows');
 wvInFocus = zeros([size(rgbUnq,1) 1]);
 for l = 1:size(rgbUnq,1)
-    wvInFocus(l,:) = ARCwvInFocusConesMeanZstrehl(subjNum,rgbUnq(l,:),w);
+    wvInFocus(l,:) = ARCwvInFocusConesMeanZdeltaPass(subjNum,rgbUnq(l,:),w,frqCpd);
     if wvInFocus(l,:)<400 || wvInFocus(l,:)>720
         wvInFocus(l,:) = NaN;
     end

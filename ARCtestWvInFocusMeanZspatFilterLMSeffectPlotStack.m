@@ -2,6 +2,7 @@ function aic = ARCtestWvInFocusMeanZspatFilterLMSeffectPlotStack(subjNum,modelTy
 
 coneWeightsFolder = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/coneWeightsErrorSpatFilter/colorMechPredictions/';
 objFunc = 'RMS';
+modelCompFolder = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/AICmodelComparisons/';
 
 if strcmp(modelType,'LMS')
     wS = -1;
@@ -204,6 +205,8 @@ for l = 1:length(wL)
         display(['Weights = [' num2str(wL(l)) ' ' num2str(wM(k)) ' ' num2str(wS)]);
     end
 end
+
+saveas(gcf,[modelCompFolder 'fitStackSpatFilter' modelType num2str(subjNum)],'png');
 
 errorIndividual = defocus875mean2fit(:)-defocus875pred(:);
 for i = 1:200

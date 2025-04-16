@@ -1,6 +1,8 @@
-function aic = ARCtestWvInFocusMeanZdeltaPassPlotStack(subjNum,modelType)
+function aic = ARCtestWvInFocusMeanZdeltaPassPlotStack(subjNum,modelType,frqCpd)
 
 coneWeightsFolder = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/coneWeightsErrorSpatFilter/colorMechPredictions/';
+modelCompFolder = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/AICmodelComparisons/';
+
 objFunc = 'RMS';
 
 if strcmp(modelType,'LMS')
@@ -146,7 +148,7 @@ markerPlotSpeed = 'sod';
 
 for l = 1:length(wL)
     for k = 1:length(wM)
-        [~, defocus875mean, defocus875predTmp, rgbUnq, optDistUnq] = ARCtestWvInFocusMeanZstrehlPlotHelper(subjNum,defocus875,rgbAll,optDistAll,[wL(l) wM(k) wS]);
+        [~, defocus875mean, defocus875predTmp, rgbUnq, optDistUnq] = ARCtestWvInFocusMeanZdeltaPassPlotHelper(subjNum,defocus875,rgbAll,optDistAll,[wL(l) wM(k) wS],frqCpd);
         optDistTag = imresize(optDistUnq',size(defocus875mean),'nearest');
         [pFit,RMSE(k)] = ARCfitLagLead(defocus875predTmp(:),defocus875mean(:),optDistTag(:),true,objFunc);
         
@@ -204,6 +206,8 @@ for l = 1:length(wL)
         display(['Weights = [' num2str(wL(l)) ' ' num2str(wM(k)) ' ' num2str(wS)]);
     end
 end
+
+saveas(gcf,[modelCompFolder 'fitStackDeltaPassS' num2str(subjNum) 'Frq' num2str(frqCpd)],'png');
 
 errorIndividual = defocus875mean2fit(:)-defocus875pred(:);
 for i = 1:200
