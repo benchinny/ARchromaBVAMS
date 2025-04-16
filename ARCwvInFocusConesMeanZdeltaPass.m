@@ -76,13 +76,17 @@ for i = 1:nFocus % FOR EACH WAVELENGTH
         mtfCone(:,:,j) = sum(bsxfun(@times,mtfIrradianceScaled,sQEsingleCone),3);
     end
     mtfMech = wLMS(1).*mtfCone(:,:,1) + wLMS(2).*mtfCone(:,:,2) + wLMS(3).*mtfCone(:,:,3);
-    totalEnergy(i) = mean(mtfMech(:));
+    % totalEnergy(i) = mean(mtfMech(:));
+
+    % MTF IS TYPICALLY NORMALIZED
     energy0(i) = mtfMech(size(mtfMech,1)/2,size(mtfMech,2)/2);
     contrastAtFrqCpd(i) = mean(interp2(fxx,fyy,mtfMech,xcoord,ycoord))./mtfMech(size(mtfMech,1)/2,size(mtfMech,2)/2);
 end
 
-contrastAtFrqCpdInRange = contrastAtFrqCpd(wave>430);
-waveInRange = wave(wave>430);
+% REMOVE VALUES FOR WHICH AMPLITUDE AT 0 IS TOO SMALL--CAUSES INSTABILITIES
+energy0threshold = 0.0004;
+contrastAtFrqCpdInRange = contrastAtFrqCpd(energy0>energy0threshold);
+waveInRange = wave(energy0>energy0threshold);
 [~,indPeakPeak] = max(contrastAtFrqCpdInRange);
 wvInFocus = waveInRange(indPeakPeak);
 
