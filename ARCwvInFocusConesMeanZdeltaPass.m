@@ -59,6 +59,10 @@ fx = -29:30;
 fy = -29:30;
 [fxx, fyy] = meshgrid(fx,fy);
 angle2interp = 0:360;
+xcoord = frqCpd.*cosd(angle2interp);
+ycoord = frqCpd.*sind(angle2interp);
+
+totalEnergy = [];
 
 for i = 1:nFocus % FOR EACH WAVELENGTH
     % LOAD POINT SPREAD FUNCTIONS
@@ -72,10 +76,14 @@ for i = 1:nFocus % FOR EACH WAVELENGTH
         mtfCone(:,:,j) = sum(bsxfun(@times,mtfIrradianceScaled,sQEsingleCone),3);
     end
     mtfMech = wLMS(1).*mtfCone(:,:,1) + wLMS(2).*mtfCone(:,:,2) + wLMS(3).*mtfCone(:,:,3);
-    contrastAtFrqCpd(i) = mtfMech(size(mtfMech,1)/2,size(mtfMech,1)/2+frqCpd);
+    totalEnergy(i) = mean(mtfMech(:));
+    energy0(i) = mtfMech(size(mtfMech,1)/2,size(mtfMech,2)/2);
+    contrastAtFrqCpd(i) = mean(interp2(fxx,fyy,mtfMech,xcoord,ycoord))./mtfMech(size(mtfMech,1)/2,size(mtfMech,2)/2);
 end
 
-[~,indPeakPeak] = max(contrastAtFrqCpd);
-wvInFocus = wave(indPeakPeak);
+contrastAtFrqCpdInRange = contrastAtFrqCpd(wave>430);
+waveInRange = wave(wave>430);
+[~,indPeakPeak] = max(contrastAtFrqCpdInRange);
+wvInFocus = waveInRange(indPeakPeak);
 
 end
