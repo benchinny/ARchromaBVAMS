@@ -1,4 +1,8 @@
-function wvInFocus = ARCwvInFocusConesMeanZdeltaPass(subjNum,rgb,wLMS)
+function wvInFocus = ARCwvInFocusConesMeanZdeltaPass(subjNum,rgb,wLMS,frqCpd)
+
+if mod(frqCpd,1)~=0
+    error('ARCwvInFocusConesMeanZdeltaPass: frqCpd has to be integer for now');
+end
 
 % DEFINING WAVELENGTH
 wave = 380:4:780;
@@ -50,24 +54,28 @@ stimSPDtransmitted = bsxfun(@times,stimSPD,transmittance);
 % % Then invert and put the image center in  the center of the matrix
 % filteredIMG = abs(ifftshift(ifft2(otf .* imgFFT)));
 
-strehlNorm = [];
+contrastAtFrqCpd = [];
+fx = -29:30;
+fy = -29:30;
+[fxx, fyy] = meshgrid(fx,fy);
+angle2interp = 0:360;
 
 for i = 1:nFocus % FOR EACH WAVELENGTH
     % LOAD POINT SPREAD FUNCTIONS
     fnameConeRsp = ['subj' num2str(subjNum) 'stimulus12focusInd' num2str(i) 'psf'];
     S = load([foldernameCones 'S' num2str(subjNum) '/' fnameConeRsp]);
     % SCALE EACH POINT SPREAD FUNCTION BY ENERGY GETTING PAST LENS
-    psfIrradianceScaled = bsxfun(@times,S.psf,stimSPDtransmitted);
-    psfCone = [];
+    mtfIrradianceScaled = bsxfun(@times,abs(S.otf),stimSPDtransmitted);
+    mtfCone = [];
     for j = 1:size(sQE,2) % FOR EACH CONE TYPE
         sQEsingleCone = reshape(sQE(:,j),[1 1 length(wave)]);
-        psfCone(:,:,j) = sum(bsxfun(@times,psfIrradianceScaled,sQEsingleCone),3);
+        mtfCone(:,:,j) = sum(bsxfun(@times,mtfIrradianceScaled,sQEsingleCone),3);
     end
-    psfMech = wLMS(1).*psfCone(:,:,1) + wLMS(2).*psfCone(:,:,2) + wLMS(3).*psfCone(:,:,3);
-    strehlNorm(i) = max(psfMech(:));
+    mtfMech = wLMS(1).*mtfCone(:,:,1) + wLMS(2).*mtfCone(:,:,2) + wLMS(3).*mtfCone(:,:,3);
+    contrastAtFrqCpd(i) = mtfMech(size(mtfMech,1)/2,size(mtfMech,1)/2+frqCpd);
 end
 
-[~,indPeakPeak] = max(strehlNorm);
+[~,indPeakPeak] = max(contrastAtFrqCpd);
 wvInFocus = wave(indPeakPeak);
 
 end
