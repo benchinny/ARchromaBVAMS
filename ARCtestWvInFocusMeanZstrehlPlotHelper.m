@@ -6,9 +6,9 @@ rgbUnq = unique(rgbAll,'rows');
 wvInFocus = zeros([size(rgbUnq,1) 1]);
 for l = 1:size(rgbUnq,1)
     wvInFocus(l,:) = ARCwvInFocusConesMeanZstrehl(subjNum,rgbUnq(l,:),w);
-    if wvInFocus(l,:)<400 || wvInFocus(l,:)>720
-        wvInFocus(l,:) = NaN;
-    end
+    % if wvInFocus(l,:)<400 || wvInFocus(l,:)>720
+    %     wvInFocus(l,:) = NaN;
+    % end
     display(['stim ' num2str(l)]);
 end 
 
