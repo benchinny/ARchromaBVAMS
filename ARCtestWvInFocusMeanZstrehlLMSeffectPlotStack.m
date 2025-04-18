@@ -40,7 +40,7 @@ end
 
 if strcmp(modelType,'LminusM')
     wS = 0;
-    load([coneWeightsFolder 'S' num2str(subjNum) 'wvInFocusModelResultsLminusM.mat'],'RMSEall','wLM','wLprop');
+    load([coneWeightsFolder 'S' num2str(subjNum) 'wvInFocusModelResultsLminusMstrehl.mat'],'RMSEall','wLM','wLprop');
     
     [wLpropGrid,wLMgrid] = meshgrid(wLprop,wLM);
     
@@ -206,7 +206,7 @@ for l = 1:length(wL)
     end
 end
 
-saveas(gcf,[modelCompFolder 'fitStackStrehlLMS' num2str(subjNum)],'png');
+saveas(gcf,[modelCompFolder 'fitStackStrehl' modelType num2str(subjNum)],'png');
 
 errorIndividual = defocus875mean2fit(:)-defocus875pred(:);
 for i = 1:200

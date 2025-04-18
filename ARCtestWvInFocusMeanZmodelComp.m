@@ -24,19 +24,19 @@
 % 
 % save('/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/AICmodelComparisons/aicDeltaPass4.mat','aicDeltaPass4');
 
-% %%
-% 
-% subjNumAll = [1 3 5 10 16 17 18 20];
-% 
-% aicStrehlLMS = [];
-% 
-% for i = 1:length(subjNumAll)
-%     aic = ARCtestWvInFocusMeanZstrehlLMSeffectPlotStack(subjNumAll(i),'LMS');
-%     aicStrehlLMS(i) = aic;
-% end
-% 
-% save('/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/AICmodelComparisons/aicStrehlLMS.mat','aicStrehlLMS');
-% 
+%%
+
+subjNumAll = [1 3 5 10 16 17 18 20];
+
+aicStrehlLMS = [];
+
+for i = 1:length(subjNumAll)
+    aic = ARCtestWvInFocusMeanZstrehlLMSeffectPlotStack(subjNumAll(i),'LMS');
+    aicStrehlLMS(i) = aic;
+end
+
+save('/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/AICmodelComparisons/aicStrehlLMS.mat','aicStrehlLMS');
+
 % %%
 % 
 % subjNumAll = [1 3 5 10 16 17 18 20];
@@ -76,6 +76,19 @@
 % 
 % save('/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/AICmodelComparisons/aicSpatFilterLminusM.mat','aicSpatFilterLminusM');
 
+% %%
+% 
+% subjNumAll = [1 3 5 10 16 17 18 20];
+% 
+% aicStrehlLminusM = [];
+% 
+% for i = 1:length(subjNumAll)
+%     aic = ARCtestWvInFocusMeanZstrehlLMSeffectPlotStack(subjNumAll(i),'LminusM');
+%     aicStrehlLminusM(i) = aic;
+% end
+% 
+% save('/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/AICmodelComparisons/aicStrehlLminusM.mat','aicStrehlLminusM');
+
 %%
 
 load('/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/AICmodelComparisons/aicDeltaPass2.mat')
@@ -84,6 +97,7 @@ load('/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/S
 load('/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/AICmodelComparisons/aicSpatFilterLminusM.mat')
 load('/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/AICmodelComparisons/aicSpatFilterLMS.mat')
 load('/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/AICmodelComparisons/aicStrehlLMS.mat')
+load('/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/AICmodelComparisons/aicStrehlLminusM.mat')
 
 barWidth = 0.1;
 
@@ -96,6 +110,7 @@ bar(3:9:66,aicSpatFilterLM,barWidth,'FaceColor','w');
 bar(4:9:67,aicStrehlLMS,barWidth);
 bar(5:9:68,aicDeltaPass2,barWidth,'FaceColor',0.7.*[1 1 1]);
 bar(6:9:69,aicDeltaPass4,barWidth,'FaceColor',0.4.*[1 1 1]);
+bar(7:9:70,aicStrehlLminusM,barWidth,'FaceColor',1.*[0.7 0.45 0]);
 plot(-1.*[1 1],[-100 50],'k-','LineWidth',1);
 plot(8.*[1 1],[-100 50],'k-','LineWidth',1);
 plot(17.*[1 1],[-100 50],'k-','LineWidth',1);
@@ -105,10 +120,11 @@ plot(44.*[1 1],[-100 50],'k-','LineWidth',1);
 plot(53.*[1 1],[-100 50],'k-','LineWidth',1);
 plot(62.*[1 1],[-100 50],'k-','LineWidth',1);
 plot(71.*[1 1],[-100 50],'k-','LineWidth',1);
+plot(80.*[1 1],[-100 50],'k-','LineWidth',1);
 xlim([-2 72]);
 set(gca,'XTick',3.5:9:66.5);
 set(gca,'FontSize',15);
 set(gca,'XTickLabel',{'S1' 'S2' 'S3' 'S4' 'S5' 'S6' 'S7' 'S8'})
 ylabel('AIC');
-legend('L+M-S','L-M','L+M','L+M-S Strehl','L+M 2cpd','L+M 4cpd','Location','NorthEastOutside');
+legend('L+M-S','L-M','L+M','L+M-S Strehl','L+M 2cpd','L+M 4cpd','L-M Strehl','Location','NorthEastOutside');
 
