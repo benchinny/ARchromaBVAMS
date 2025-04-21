@@ -1,4 +1,6 @@
-function [wvInFocus, coneImgFiltered] = ARCwvInFocusConesMeanZsandbox(subjNum,stimNum,wLMS)
+function [wvInFocus, coneImgFilteredEg, coneImgOrigFilteredEg, wvInFocus2, wave, peakCorr] = ARCwvInFocusConesMeanZsandbox(subjNum,stimNum,wLMS,waveInd)
+
+% [wvInFocus, LminusMmechImg, coneImgOrigFiltered] = ARCwvInFocusConesMeanZsandbox(3,8,[0.375 -0.125 0]);
 
 wave = 380:4:780;
 nFocus = length(wave);
@@ -19,10 +21,11 @@ coneImgOrigFFT = fftshift(fft2(coneImgOrig));
 coneImgOrigFilteredFFT = coneImgOrigFFT.*freqFilterARC;
 coneImgOrigFiltered = real(ifft2(ifftshift(coneImgOrigFilteredFFT)));
 
-coneImgOrigFFT2 = fft2(fftshift(coneImgOrig));
-freqFilterARCfft2 = fftshift(freqFilterARC);
-coneImgOrigFilteredFFT2 = coneImgOrigFFT2.*freqFilterARCfft2;
-coneImgOrigFiltered2 = real(ifftshift(ifft2(coneImgOrigFilteredFFT2)));
+% THE FOLLOWING LINES ARE JUST SANITY CHECKS
+% coneImgOrigFFT2 = fft2(fftshift(coneImgOrig));
+% freqFilterARCfft2 = fftshift(freqFilterARC);
+% coneImgOrigFilteredFFT2 = coneImgOrigFFT2.*freqFilterARCfft2;
+% coneImgOrigFiltered2 = real(ifftshift(ifft2(coneImgOrigFilteredFFT2)));
 
 % % Put the image center in (1, 1) and take the transform.
 % imgFFT = fft2(fftshift(img));
@@ -31,8 +34,16 @@ coneImgOrigFiltered2 = real(ifftshift(ifft2(coneImgOrigFilteredFFT2)));
 % filteredIMG = abs(ifftshift(ifft2(otf .* imgFFT)));
 
 peakCorr = [];
+coneImgFilteredEg = [];
+coneImgOrigFilteredEg = [];
 
-for i = 52
+if ~isempty(waveInd)
+    waveInd2examine = waveInd;
+else
+    waveInd2examine = 1:nFocus;
+end
+
+for i = waveInd2examine
     fnameConeRsp = ['subj' num2str(subjNum) 'stimulus' num2str(stimNum) 'focusInd' num2str(i)];
     load([foldernameCones 'S' num2str(subjNum) '/' fnameConeRsp]);
     absorptions(:,:,1) = absorptions(:,:,1).*wLMS(1);
@@ -44,10 +55,20 @@ for i = 52
     coneImgFilteredFFT = coneImgFFT.*freqFilterARC;
     coneImgFiltered = real(ifft2(ifftshift(coneImgFilteredFFT)));
 
+    if i==waveInd
+        coneImgFilteredEg = coneImgFiltered;
+        coneImgOrigFilteredEg = coneImgOrigFiltered;
+    end
+
     peakCorr(i) = max(max(normxcorr2(coneImgFiltered,coneImgOrigFiltered)));
 end
 
 [~,indPeakPeak] = max(peakCorr);
 wvInFocus = wave(indPeakPeak);
+
+wave2 = wave(1:33);
+peakCorr2 = peakCorr(1:33);
+[~,indPeakPeak2] = max(peakCorr2);
+wvInFocus2 = wave2(indPeakPeak2);
 
 end
