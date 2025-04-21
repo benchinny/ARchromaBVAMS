@@ -94,6 +94,7 @@ ylim([1.5 2.8]);
 plot([1.5 2.8],[1.5 2.8],'k--','LineWidth',1);
 xlabel(['Predicted Peak Location (D)']);
 ylabel(['Actual Peak Location (D)']);
+title(['Correlation = ' num2str(corr(peakLocModelPredictionAll',peakLocActualAll'),3)]);
 
 %%
 

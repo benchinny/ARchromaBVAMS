@@ -9,8 +9,6 @@ LMSweights = [0.5467    0.2533   -1.0000; ...
               1.1050    0.1950   -1.0000; ...
               1.1433    0.2567   -0.2500];
 
-%%
-
 LMweights = [0.8250    0.1750         0; ...
              0.8500    0.1500         0; ...
              0.8500    0.1500         0; ...
@@ -19,8 +17,6 @@ LMweights = [0.8250    0.1750         0; ...
              0.8250    0.1750         0; ...
              0.8500    0.1500         0; ...
              0.7500    0.2500         0];
-
-%%
 
 LminusMweights = [0.3250   -0.1750         0; ...
                   0.3750   -0.1250         0; ...
@@ -31,7 +27,7 @@ LminusMweights = [0.3250   -0.1750         0; ...
                   0.6250   -0.3750         0; ...
                   0.4875   -0.0125         0];
 
-%%
+%% GET WAVELENGTH-IN-FOCUS PREDICTIONS FROM EACH MODEL
 
 subjNumAll = [1 3 5 10 16 17 18 20];
 wvInFocusLMS8 = [];
@@ -80,11 +76,95 @@ for i = 1:size(LMSweights,1)
     disp(['Subj ' num2str(i) ' done']);
 end
 
+%% MAKE EXAMPLE CONE IMAGES FOR SUBJECT 2 AT INFORMATIVE WAVELENGTHS
 
-%%
+wave = 380:4:780;
+wv2vis = [608 584 540 480];
+stimInd = [1 8 6];
+coneImgFilteredEgLMS = [];
+coneImgFilteredEgLM = [];
 
-% redblue = make_red_blue_colormap(1);
-% axisLims = [min([LMSmechImg(:); LMmechImg(:); LminusMmechImg(:)]) max([LMSmechImg(:); LMmechImg(:); LminusMmechImg(:)])];
-% figure; imagesc(LMSmechImg); axis square; colormap(redblue); xlim([50 120]); ylim([55 125]); colorbar; caxis(axisLims(2).*[-1 1])
-% figure; imagesc(LMmechImg); axis square; colormap(redblue); xlim([50 120]); ylim([55 125]); colorbar; caxis(axisLims(2).*[-1 1])
+for i = 1:length(stimInd)
+    for j = 1:length(wv2vis)
+        [wvInFocus, coneImgFilteredEg, coneImgOrigFilteredEg, wvInFocus2, wave, peakCorr] = ...
+         ARCwvInFocusConesMeanZsandbox(3,stimInd(i),LMSweights(2,:),find(wave==wv2vis(j)));
+         coneImgFilteredEgLMS(:,:,i,j) = coneImgFilteredEg;
 
+        [wvInFocus, coneImgFilteredEg, coneImgOrigFilteredEg, wvInFocus2, wave, peakCorr] = ...
+         ARCwvInFocusConesMeanZsandbox(3,stimInd(i),LMweights(2,:),find(wave==wv2vis(j))); 
+        coneImgFilteredEgLM(:,:,i,j) = coneImgFilteredEg;
+    end
+end
+
+%% PLOT DIFFERENT CONE IMAGES FOR BUILDING MODEL INTUITIONS
+
+redblue = make_red_blue_colormap(1);
+axisLims = [min([coneImgFilteredEgLM(:); coneImgFilteredEgLMS(:)]) ...
+            max([coneImgFilteredEgLM(:); coneImgFilteredEgLMS(:)])];
+stimCell = {'More blue' 'Equal' 'More red'};
+
+figure;
+set(gcf,'Position',[16 103 558 868]);
+for i = 1:length(wv2vis)
+    subplot(4,2,(i-1)*2+1);
+    imagesc(squeeze(coneImgFilteredEgLMS(:,:,1,i))); 
+    axis square; 
+    colormap(redblue); 
+    xlim([50 120]); 
+    ylim([55 125]); 
+    colorbar; 
+    clim(axisLims(2).*[-1 1])
+    title(['\lambda_{focus} = ' num2str(wv2vis(i)) ', ' stimCell{1}]);
+    subplot(4,2,(i-1)*2+2);
+    imagesc(squeeze(coneImgFilteredEgLM(:,:,1,i))); 
+    axis square; 
+    colormap(redblue); 
+    xlim([50 120]); 
+    ylim([55 125]); 
+    colorbar; 
+    clim(axisLims(2).*[-1 1])    
+end
+
+figure;
+set(gcf,'Position',[551 99 558 868]);
+for i = 1:length(wv2vis)
+    subplot(4,2,(i-1)*2+1);
+    imagesc(squeeze(coneImgFilteredEgLMS(:,:,2,i))); 
+    axis square; 
+    colormap(redblue); 
+    xlim([50 120]); 
+    ylim([55 125]); 
+    colorbar; 
+    clim(axisLims(2).*[-1 1])
+    title(['\lambda_{focus} = ' num2str(wv2vis(i)) ', ' stimCell{2}]);
+    subplot(4,2,(i-1)*2+2);
+    imagesc(squeeze(coneImgFilteredEgLM(:,:,2,i))); 
+    axis square; 
+    colormap(redblue); 
+    xlim([50 120]); 
+    ylim([55 125]); 
+    colorbar; 
+    clim(axisLims(2).*[-1 1])    
+end
+
+figure;
+set(gcf,'Position',[1073 96 558 868]);
+for i = 1:length(wv2vis)
+    subplot(4,2,(i-1)*2+1);
+    imagesc(squeeze(coneImgFilteredEgLMS(:,:,3,i))); 
+    axis square; 
+    colormap(redblue); 
+    xlim([50 120]); 
+    ylim([55 125]); 
+    colorbar; 
+    clim(axisLims(2).*[-1 1])
+    title(['\lambda_{focus} = ' num2str(wv2vis(i)) ', ' stimCell{3}]);
+    subplot(4,2,(i-1)*2+2);
+    imagesc(squeeze(coneImgFilteredEgLM(:,:,3,i))); 
+    axis square; 
+    colormap(redblue); 
+    xlim([50 120]); 
+    ylim([55 125]); 
+    colorbar; 
+    clim(axisLims(2).*[-1 1])    
+end

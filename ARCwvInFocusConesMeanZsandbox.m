@@ -63,12 +63,17 @@ for i = waveInd2examine
     peakCorr(i) = max(max(normxcorr2(coneImgFiltered,coneImgOrigFiltered)));
 end
 
-[~,indPeakPeak] = max(peakCorr);
-wvInFocus = wave(indPeakPeak);
-
-wave2 = wave(1:33);
-peakCorr2 = peakCorr(1:33);
-[~,indPeakPeak2] = max(peakCorr2);
-wvInFocus2 = wave2(indPeakPeak2);
+if isempty(waveInd)
+    [~,indPeakPeak] = max(peakCorr);
+    wvInFocus = wave(indPeakPeak);
+    
+    wave2 = wave(1:33);
+    peakCorr2 = peakCorr(1:33);
+    [~,indPeakPeak2] = max(peakCorr2);
+    wvInFocus2 = wave2(indPeakPeak2);
+else
+    wvInFocus = [];
+    wvInFocus2 = [];
+end
 
 end
