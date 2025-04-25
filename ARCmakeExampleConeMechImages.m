@@ -57,6 +57,11 @@ for i = 1:size(LMSweights,1)
     disp(['Subj ' num2str(i) ' done']);
 end
 
+%% SAVE RESULTS OF PREVIOUS BLOCK
+
+save('/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/helperFiles/wvInFocusAllStimAndSubj.mat', ...
+     'wvInFocusLMS','wvInFocusLminusM','wvInFocusLM','peakCorrLMS','peakCorrLminusM','peakCorrLM');
+
 %% MAKE EXAMPLE CONE IMAGES FOR SUBJECT 2 AT INFORMATIVE WAVELENGTHS
 
 wave = 380:4:780;
@@ -65,7 +70,7 @@ stimInd = [1 8 6];
 coneImgFilteredEgLMS = [];
 coneImgFilteredEgLM = [];
 absorptionsS_LMS = [];
-absorptionsS_LM = [];
+absorptionsLM_LMS = [];
 
 for i = 1:length(stimInd)
     for j = 1:length(wv2vis)
@@ -73,11 +78,11 @@ for i = 1:length(stimInd)
          ARCwvInFocusConesMeanZsandbox(3,stimInd(i),LMSweights(2,:),find(wave==wv2vis(j)));
          coneImgFilteredEgLMS(:,:,i,j) = coneImgFilteredEg;
          absorptionsS_LMS(:,:,i,j) = absorptions(:,:,3);
+         absorptionsLM_LMS(:,:,i,j) = LMSweights(2,1).*absorptions(:,:,1)+LMSweights(2,2).*absorptions(:,:,2);
 
         [wvInFocus, coneImgFilteredEg, coneImgOrigFilteredEg, wvInFocus2, wave, peakCorr, absorptions] = ...
          ARCwvInFocusConesMeanZsandbox(3,stimInd(i),LMweights(2,:),find(wave==wv2vis(j))); 
         coneImgFilteredEgLM(:,:,i,j) = coneImgFilteredEg;
-        absorptionsS_LM(:,:,i,j) = absorptions(:,:,3);
     end
 end
 
@@ -153,9 +158,77 @@ for i = 1:length(wv2vis)
     xlim([50 120]); 
     ylim([55 125]); 
     colorbar; 
-    clim(axisLims(2).*[-1 1])    
+    clim(axisLims(2).*[-1 1]);
 end
 
+figure;
+set(gcf,'Position',[16 103 558 868]);
+for i = 1:length(wv2vis)
+    subplot(4,2,(i-1)*2+1);
+    imagesc(squeeze(absorptionsS_LMS(:,:,1,i)));
+    axis square; 
+    colormap(redblue); 
+    xlim([50 120]); 
+    ylim([55 125]); 
+    colorbar; 
+    clim(axisLims(2).*[-1 1]);  
+    title(['\lambda_{focus} = ' num2str(wv2vis(i)) ', ' stimCell{1} ', S image']);
+    subplot(4,2,(i-1)*2+2);
+    imagesc(squeeze(absorptionsLM_LMS(:,:,1,i)));
+    axis square; 
+    colormap(redblue); 
+    xlim([50 120]); 
+    ylim([55 125]); 
+    colorbar; 
+    clim(axisLims(2).*[-1 1]);
+    title('L+M image');
+end
+
+figure;
+set(gcf,'Position',[551 99 558 868]);
+for i = 1:length(wv2vis)
+    subplot(4,2,(i-1)*2+1);
+    imagesc(squeeze(absorptionsS_LMS(:,:,2,i)));
+    axis square; 
+    colormap(redblue); 
+    xlim([50 120]); 
+    ylim([55 125]); 
+    colorbar; 
+    clim(axisLims(2).*[-1 1]);  
+    title(['\lambda_{focus} = ' num2str(wv2vis(i)) ', ' stimCell{2} ', S image']);
+    subplot(4,2,(i-1)*2+2);
+    imagesc(squeeze(absorptionsLM_LMS(:,:,2,i)));
+    axis square; 
+    colormap(redblue); 
+    xlim([50 120]); 
+    ylim([55 125]); 
+    colorbar; 
+    clim(axisLims(2).*[-1 1]);
+    title('L+M image');
+end
+
+figure;
+set(gcf,'Position',[1073 96 558 868]);
+for i = 1:length(wv2vis)
+    subplot(4,2,(i-1)*2+1);
+    imagesc(squeeze(absorptionsS_LMS(:,:,3,i)));
+    axis square; 
+    colormap(redblue); 
+    xlim([50 120]); 
+    ylim([55 125]); 
+    colorbar; 
+    clim(axisLims(2).*[-1 1]);  
+    title(['\lambda_{focus} = ' num2str(wv2vis(i)) ', ' stimCell{3} ', S image']);
+    subplot(4,2,(i-1)*2+2);
+    imagesc(squeeze(absorptionsLM_LMS(:,:,3,i)));
+    axis square; 
+    colormap(redblue); 
+    xlim([50 120]); 
+    ylim([55 125]); 
+    colorbar; 
+    clim(axisLims(2).*[-1 1]);
+    title('L+M image');
+end
 %% PLOT WAVELENGTH-IN-FOCUS FOR BLUE-YELLOW OPPONENT MODEL
 
 load('/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/helperFiles/wvInFocusAllModel.mat','wvInFocusAllTable','peakCorr8LMS','peakCorr8LM','peakCorr1LMS','peakCorr1LM','peakCorr6LMS','peakCorr6LM');
@@ -180,7 +253,7 @@ ylabel('Wavelength in focus (nm)');
 legend({'S1' 'S2' 'S3' 'S4' 'S5' 'S6' 'S7' 'S8' 'Average'},'Location','SouthEast');
 title('No green model predictions');
 
-%% PLOT PEAK CORRELATION AS A FUNCTION OF WAVELENGTH
+%% PLOT PEAK CORRELATION AS A FUNCTION OF WAVELENGTH FOR ALL SUBJECTS
 
 load('/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/helperFiles/wvInFocusAllModel.mat','wvInFocusAllTable','peakCorr8LMS','peakCorr8LM','peakCorr1LMS','peakCorr1LM','peakCorr6LMS','peakCorr6LM');
 wave = 380:4:780;
@@ -232,4 +305,13 @@ for i = 1:8
    axis square; 
    title('Purple');
 end
+
+%% PLOT CORRELATION AS A FUNCTION OF WAVELENGTH FOR DIFFERENT STIMULI
+
+load('/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/helperFiles/wvInFocusAllStimAndSubj.mat', ...
+'wvInFocusLMS','wvInFocusLminusM','wvInFocusLM','peakCorrLMS','peakCorrLminusM','peakCorrLM');
+
+figure; plot(wave,squeeze(peakCorrLM(2,:,:)));
+figure; plot(wave,squeeze(peakCorrLMS(2,:,:)));
+figure; plot(wave,squeeze(peakCorrLminusM(2,:,:)));
 
