@@ -1,4 +1,4 @@
-function [wvInFocus, coneImgFilteredEg, coneImgOrigFilteredEg, wvInFocus2, wave, peakCorr] = ARCwvInFocusConesMeanZsandbox(subjNum,stimNum,wLMS,waveInd)
+function [wvInFocus, coneImgFilteredEg, coneImgOrigFilteredEg, wvInFocus2, wave, peakCorr, absorptionsReturn] = ARCwvInFocusConesMeanZsandbox(subjNum,stimNum,wLMS,waveInd)
 
 % [wvInFocus, LminusMmechImg, coneImgOrigFiltered] = ARCwvInFocusConesMeanZsandbox(3,8,[0.375 -0.125 0]);
 
@@ -36,6 +36,7 @@ coneImgOrigFiltered = real(ifft2(ifftshift(coneImgOrigFilteredFFT)));
 peakCorr = [];
 coneImgFilteredEg = [];
 coneImgOrigFilteredEg = [];
+absorptionsReturn = [];
 
 if ~isempty(waveInd)
     waveInd2examine = waveInd;
@@ -58,6 +59,7 @@ for i = waveInd2examine
     if i==waveInd
         coneImgFilteredEg = coneImgFiltered;
         coneImgOrigFilteredEg = coneImgOrigFiltered;
+        absorptionsReturn = absorptions;
     end
 
     peakCorr(i) = max(max(normxcorr2(coneImgFiltered,coneImgOrigFiltered)));

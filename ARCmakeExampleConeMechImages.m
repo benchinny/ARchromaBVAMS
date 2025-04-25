@@ -1,4 +1,4 @@
-%%
+%% RECORD OF BEST FIT CONE WEIGHTS
 
 LMSweights = [0.5467    0.2533   -1.0000; ...
               0.4725    0.5775   -1.0000; ...
@@ -30,79 +30,54 @@ LminusMweights = [0.3250   -0.1750         0; ...
 %% GET WAVELENGTH-IN-FOCUS PREDICTIONS FROM EACH MODEL
 
 subjNumAll = [1 3 5 10 16 17 18 20];
-wvInFocusLMS8 = [];
-wvInFocusLM8 = [];
-wvInFocusLminusM8 = [];
-wvInFocusLMS1 = [];
-wvInFocusLM1 = [];
-wvInFocusLminusM1 = [];
-wvInFocusLMS6 = [];
-wvInFocusLM6 = [];
-wvInFocusLminusM6 = [];
-peakCorr8LM = [];
-peakCorr8LMS = [];
-peakCorr1LM = [];
-peakCorr1LMS = [];
-peakCorr6LM = [];
-peakCorr6LMS = [];
+stimNum = [1 3 8 7 6];
+wvInFocusLMS = [];
+wvInFocusLM = [];
+wvInFocusLminusM = [];
+peakCorrLM = [];
+peakCorrLMS = [];
+peakCorrLminusM = [];
 
 for i = 1:size(LMSweights,1)
-    [wvInFocus, coneImgFilteredEg, coneImgOrigFilteredEg, wvInFocus2, wave, peakCorr] = ...
-     ARCwvInFocusConesMeanZsandbox(subjNumAll(i),8,LMSweights(i,:),[]);
-    wvInFocusLMS8(i,:) = wvInFocus;
-    peakCorr8LMS(i,:) = peakCorr;
-    [wvInFocus, coneImgFilteredEg, coneImgOrigFilteredEg, wvInFocus2, wave, peakCorr] = ...
-     ARCwvInFocusConesMeanZsandbox(subjNumAll(i),8,LMweights(i,:),[]);
-    wvInFocusLM8(i,:) = [wvInFocus wvInFocus2];
-    peakCorr8LM(i,:) = peakCorr;
-    [wvInFocus, coneImgFilteredEg, coneImgOrigFilteredEg, wvInFocus2, wave, peakCorr] = ...
-     ARCwvInFocusConesMeanZsandbox(subjNumAll(i),8,LminusMweights(i,:),[]);
-    wvInFocusLminusM8(i,:) = wvInFocus; 
-
-    [wvInFocus, coneImgFilteredEg, coneImgOrigFilteredEg, wvInFocus2, wave, peakCorr] = ...
-     ARCwvInFocusConesMeanZsandbox(subjNumAll(i),1,LMSweights(i,:),[]);
-    wvInFocusLMS1(i,:) = wvInFocus;
-    peakCorr1LMS(i,:) = peakCorr;
-    [wvInFocus, coneImgFilteredEg, coneImgOrigFilteredEg, wvInFocus2, wave, peakCorr] = ...
-     ARCwvInFocusConesMeanZsandbox(subjNumAll(i),1,LMweights(i,:),[]);
-    wvInFocusLM1(i,:) = [wvInFocus wvInFocus2];
-    peakCorr1LM(i,:) = peakCorr;
-    [wvInFocus, coneImgFilteredEg, coneImgOrigFilteredEg, wvInFocus2, wave, peakCorr] = ...
-     ARCwvInFocusConesMeanZsandbox(subjNumAll(i),1,LminusMweights(i,:),[]);
-    wvInFocusLminusM1(i,:) = wvInFocus;
-
-    [wvInFocus, coneImgFilteredEg, coneImgOrigFilteredEg, wvInFocus2, wave, peakCorr] = ...
-     ARCwvInFocusConesMeanZsandbox(subjNumAll(i),6,LMSweights(i,:),[]);
-    wvInFocusLMS6(i,:) = wvInFocus;
-    peakCorr6LMS(i,:) = peakCorr;
-    [wvInFocus, coneImgFilteredEg, coneImgOrigFilteredEg, wvInFocus2, wave, peakCorr] = ...
-     ARCwvInFocusConesMeanZsandbox(subjNumAll(i),6,LMweights(i,:),[]);
-    wvInFocusLM6(i,:) = [wvInFocus wvInFocus2];
-    peakCorr6LM(i,:) = peakCorr;
-    [wvInFocus, coneImgFilteredEg, coneImgOrigFilteredEg, wvInFocus2, wave, peakCorr] = ...
-     ARCwvInFocusConesMeanZsandbox(subjNumAll(i),6,LminusMweights(i,:),[]);
-    wvInFocusLminusM6(i,:) = wvInFocus;    
-
+    for j = 1:length(stimNum)
+        [wvInFocus, coneImgFilteredEg, coneImgOrigFilteredEg, wvInFocus2, wave, peakCorr] = ...
+         ARCwvInFocusConesMeanZsandbox(subjNumAll(i),stimNum(j),LMSweights(i,:),[]);
+        wvInFocusLMS(i,j,:) = wvInFocus;
+        peakCorrLMS(i,j,:) = peakCorr;
+        [wvInFocus, coneImgFilteredEg, coneImgOrigFilteredEg, wvInFocus2, wave, peakCorr] = ...
+         ARCwvInFocusConesMeanZsandbox(subjNumAll(i),stimNum(j),LMweights(i,:),[]);
+        wvInFocusLM(i,j,:) = [wvInFocus wvInFocus2];
+        peakCorrLM(i,j,:) = peakCorr;
+        [wvInFocus, coneImgFilteredEg, coneImgOrigFilteredEg, wvInFocus2, wave, peakCorr] = ...
+         ARCwvInFocusConesMeanZsandbox(subjNumAll(i),stimNum(j),LminusMweights(i,:),[]);
+        wvInFocusLminusM(i,j,:) = wvInFocus;
+        peakCorrLminusM(i,j,:) = peakCorr;
+        display(['Weight index ' num2str(i) 'Stimulus index ' num2str(j)]);
+    end
     disp(['Subj ' num2str(i) ' done']);
 end
 
 %% MAKE EXAMPLE CONE IMAGES FOR SUBJECT 2 AT INFORMATIVE WAVELENGTHS
 
 wave = 380:4:780;
-wv2vis = [608 584 540 480];
+wv2vis = [620 584 540 460];
 stimInd = [1 8 6];
 coneImgFilteredEgLMS = [];
 coneImgFilteredEgLM = [];
+absorptionsS_LMS = [];
+absorptionsS_LM = [];
 
 for i = 1:length(stimInd)
     for j = 1:length(wv2vis)
-        [wvInFocus, coneImgFilteredEg, coneImgOrigFilteredEg, wvInFocus2, wave, peakCorr] = ...
+        [wvInFocus, coneImgFilteredEg, coneImgOrigFilteredEg, wvInFocus2, wave, peakCorr, absorptions] = ...
          ARCwvInFocusConesMeanZsandbox(3,stimInd(i),LMSweights(2,:),find(wave==wv2vis(j)));
          coneImgFilteredEgLMS(:,:,i,j) = coneImgFilteredEg;
+         absorptionsS_LMS(:,:,i,j) = absorptions(:,:,3);
 
-        [wvInFocus, coneImgFilteredEg, coneImgOrigFilteredEg, wvInFocus2, wave, peakCorr] = ...
+        [wvInFocus, coneImgFilteredEg, coneImgOrigFilteredEg, wvInFocus2, wave, peakCorr, absorptions] = ...
          ARCwvInFocusConesMeanZsandbox(3,stimInd(i),LMweights(2,:),find(wave==wv2vis(j))); 
         coneImgFilteredEgLM(:,:,i,j) = coneImgFilteredEg;
+        absorptionsS_LM(:,:,i,j) = absorptions(:,:,3);
     end
 end
 
@@ -111,7 +86,7 @@ end
 redblue = make_red_blue_colormap(1);
 axisLims = [min([coneImgFilteredEgLM(:); coneImgFilteredEgLMS(:)]) ...
             max([coneImgFilteredEgLM(:); coneImgFilteredEgLMS(:)])];
-stimCell = {'More blue' 'Equal' 'More red'};
+stimCell = {'More blue' 'Purple' 'More red'};
 
 figure;
 set(gcf,'Position',[16 103 558 868]);
@@ -124,7 +99,7 @@ for i = 1:length(wv2vis)
     ylim([55 125]); 
     colorbar; 
     clim(axisLims(2).*[-1 1])
-    title(['\lambda_{focus} = ' num2str(wv2vis(i)) ', ' stimCell{1}]);
+    title(['\lambda_{focus} = ' num2str(wv2vis(i)) ', ' stimCell{1} ', LMS']);
     subplot(4,2,(i-1)*2+2);
     imagesc(squeeze(coneImgFilteredEgLM(:,:,1,i))); 
     axis square; 
@@ -133,6 +108,7 @@ for i = 1:length(wv2vis)
     ylim([55 125]); 
     colorbar; 
     clim(axisLims(2).*[-1 1])    
+    title('LM');
 end
 
 figure;
@@ -146,7 +122,7 @@ for i = 1:length(wv2vis)
     ylim([55 125]); 
     colorbar; 
     clim(axisLims(2).*[-1 1])
-    title(['\lambda_{focus} = ' num2str(wv2vis(i)) ', ' stimCell{2}]);
+    title(['\lambda_{focus} = ' num2str(wv2vis(i)) ', ' stimCell{2} ', LMS']);
     subplot(4,2,(i-1)*2+2);
     imagesc(squeeze(coneImgFilteredEgLM(:,:,2,i))); 
     axis square; 
@@ -154,7 +130,8 @@ for i = 1:length(wv2vis)
     xlim([50 120]); 
     ylim([55 125]); 
     colorbar; 
-    clim(axisLims(2).*[-1 1])    
+    clim(axisLims(2).*[-1 1])   
+    title('LM');
 end
 
 figure;
@@ -179,7 +156,7 @@ for i = 1:length(wv2vis)
     clim(axisLims(2).*[-1 1])    
 end
 
-%%
+%% PLOT WAVELENGTH-IN-FOCUS FOR BLUE-YELLOW OPPONENT MODEL
 
 load('/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/helperFiles/wvInFocusAllModel.mat','wvInFocusAllTable','peakCorr8LMS','peakCorr8LM','peakCorr1LMS','peakCorr1LM','peakCorr6LMS','peakCorr6LM');
 
@@ -203,7 +180,7 @@ ylabel('Wavelength in focus (nm)');
 legend({'S1' 'S2' 'S3' 'S4' 'S5' 'S6' 'S7' 'S8' 'Average'},'Location','SouthEast');
 title('No green model predictions');
 
-%%
+%% PLOT PEAK CORRELATION AS A FUNCTION OF WAVELENGTH
 
 load('/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/helperFiles/wvInFocusAllModel.mat','wvInFocusAllTable','peakCorr8LMS','peakCorr8LM','peakCorr1LMS','peakCorr1LM','peakCorr6LMS','peakCorr6LM');
 wave = 380:4:780;
