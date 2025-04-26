@@ -65,7 +65,7 @@ save('/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/S
 %% MAKE EXAMPLE CONE IMAGES FOR SUBJECT 2 AT INFORMATIVE WAVELENGTHS
 
 wave = 380:4:780;
-wv2vis = [620 584 540 460];
+wv2vis = [620 584 460 420];
 stimInd = [1 8 6];
 coneImgFilteredEgLMS = [];
 coneImgFilteredEgLM = [];
@@ -308,10 +308,46 @@ end
 
 %% PLOT CORRELATION AS A FUNCTION OF WAVELENGTH FOR DIFFERENT STIMULI
 
+wave = 380:4:780;
 load('/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/helperFiles/wvInFocusAllStimAndSubj.mat', ...
 'wvInFocusLMS','wvInFocusLminusM','wvInFocusLM','peakCorrLMS','peakCorrLminusM','peakCorrLM');
 
-figure; plot(wave,squeeze(peakCorrLM(2,:,:)));
-figure; plot(wave,squeeze(peakCorrLMS(2,:,:)));
-figure; plot(wave,squeeze(peakCorrLminusM(2,:,:)));
+subjNumInd = 2;
+
+lumRatio = [0.25 0 1.00; ...
+            0.50 0 1.00; ...
+            1.00 0 1.00; ...
+            1.00 0 0.50; ...
+            1.00 0 0.25];
+
+figure; 
+hold on;
+for i = 1:size(peakCorrLM,2)
+    plot(wave,squeeze(peakCorrLM(subjNumInd,i,:)),'LineWidth',1,'Color',lumRatio(i,:));
+end
+yLimTmp = ylim;
+for i = 1:size(peakCorrLM,2)
+    [peakVal,indPeak] = max(peakCorrLM(subjNumInd,i,:));
+    wvInFocus = wave(indPeak);
+    plot([wvInFocus wvInFocus],[yLimTmp(1) peakVal],'--','LineWidth',1,'Color',lumRatio(i,:));
+end
+xlim([400 700]);
+set(gca,'FontSize',15);
+
+figure; 
+hold on;
+for i = 1:size(peakCorrLMS,2)
+    plot(wave,squeeze(peakCorrLMS(subjNumInd,i,:)),'LineWidth',1,'Color',lumRatio(i,:));
+end
+yLimTmp = ylim;
+for i = 1:size(peakCorrLMS,2)
+    [peakVal,indPeak] = max(peakCorrLMS(subjNumInd,i,:));
+    wvInFocus = wave(indPeak);
+    plot([wvInFocus wvInFocus],[yLimTmp(1) peakVal],'--','LineWidth',1,'Color',lumRatio(i,:));
+end
+xlim([400 700]);
+set(gca,'FontSize',15);
+
+% figure; 
+% plot(wave,squeeze(peakCorrLminusM(1,:,:)));
 
