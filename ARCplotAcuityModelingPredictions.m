@@ -1,11 +1,11 @@
 %%
 
-bRandomize = true;
+bRandomize = false;
 bPlot = false;
 subjNumAll = [1 3 5 10 16 17 18 20];
 % subjNumAllRand = subjNumAll;
 peakLocModelPredictionAll = [];
-nRepeat = 100;
+nRepeat = 10;
 corrShuffle = [];
 
 for k = 1:nRepeat
@@ -103,3 +103,14 @@ for k = 1:nRepeat
     corrShuffle(k) = corr(peakLocModelPredictionAll',peakLocActualAll');
     display(['Iteration ' num2str(k)]);
 end
+
+%%
+
+load('/Users/benjaminchin/Documents/ARchromaScraps/corrShuffle.mat','corrShuffle');
+
+edgeShuffle = linspace(-0.2,1,25);
+hShuffle = histogram(corrShuffle,edgeShuffle','FaceColor','w','LineWidth',1);
+set(gca,'FontSize',15);
+xlabel('Correlation');
+hold on;
+plot([0.886 0.886],ylim,'k--','LineWidth',1);

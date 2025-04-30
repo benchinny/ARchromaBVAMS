@@ -167,3 +167,11 @@ ylim([-25 95]);
 set(gca,'YTick',[-23.0259 0 23.0259 46.0517 69.0776 92.1034]);
 set(gca,'YTickLabel',{'10^-10' '1' '10^10' '10^20' '10^30' '10^40'});
 
+%%
+
+figure; 
+hold on;
+boxplot((aicSpatFilterLM-min([aicSpatFilterLMS; aicSpatFilterLminusM]))');
+ylim([-25 95]);
+set(gca,'YTick',[-23.0259 0 23.0259 46.0517 69.0776 92.1034]);
+set(gca,'YTickLabel',{'10^-10' '1' '10^10' '10^20' '10^30' '10^40'});
