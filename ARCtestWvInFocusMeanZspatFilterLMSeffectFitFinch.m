@@ -2,6 +2,7 @@
 
 function ARCtestWvInFocusMeanZspatFilterLMSeffectFitFinch(wS)
 
+subjNum = 3;
 objFunc = 'RMS';
 
 %% SEARCH INDIVIDUAL CONE WEIGHTS
@@ -22,7 +23,7 @@ for l = 1:length(wLM)
     for k = 1:length(wLprop)
         wL = wLM(l)*wLprop(k);
         wM = wLM(l)-wL;
-        [~, defocus550mean, defocus550predTmp, rgbUnq, optDistUnq] = ARCtestWvInFocusMeanZspatFilterPlotHelper(subjNum,defocus550,rbRatio,optDistAll,[wL wM wS]);
+        [~, defocus550mean, defocus550predTmp, rgbUnq, optDistUnq] = ARCtestWvInFocusMeanZspatFilterFinchPlotHelper(subjNum,defocus550,rbRatio,optDistAll,[wL wM wS]);
         optDistTag = imresize(optDistUnq',size(defocus550mean),'nearest');
         [pFit,RMSE(k)] = ARCfitLagLead(defocus550predTmp(:),defocus550mean(:),optDistTag(:),true,objFunc);
         if k==1
