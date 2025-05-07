@@ -26,28 +26,24 @@ d = displaySet(d,'dpi',378); % simulated screen distance
 bUseBVAMScal = 1; % if using BVAMS calibration data
 
 if strcmp(getenv('USER'),'benjaminchin')
-    calPath = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/ARChroma/BVAMS_calibration_files/Ben_calibration_July_6_2024/';
-     stimPath = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/stimuli/';
-     savePath = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/coneImages/S';
+    calPath = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/ARChroma/Meetings/Meeting_April_23/';
+    stimPath = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/ARChroma/Meetings/Meeting_April_23/';
+    savePath = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/coneImagesFinch/S';
 end
 
 if strcmp(getenv('USER'),'benchin')
-    calPath = '/Users/benchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/ARChroma/BVAMS_calibration_files/Ben_calibration_July_6_2024/';
-    stimPath = '/Users/benchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/stimuli/';
-    savePath = '/Users/benchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/coneImages/S';
+    calPath = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/ARChroma/Meetings/Meeting_April_23/';
+    stimPath = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/ARChroma/Meetings/Meeting_April_23/';
+    savePath = '/Users/benchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/coneImagesFinch/S';
 end
 
 if bUseBVAMScal
-    load([calPath 'redPrimaryJuly0624_initialPositionFocus3_100.mat']);
-    d.spd(:,1) = energy;
-    load([calPath 'greenPrimaryJuly0624_initialPositionFocus3_100.mat']);
-    d.spd(:,2) = energy;
-    load([calPath 'bluePrimaryJuly0624_initialPositionFocus3_100.mat']);
-    d.spd(:,3) = energy;
+    load([calPath 'Finch_et_al_primaries.mat']);
+    d.spd = energy;
 end
-d.gamma(:,1) = (d.gamma(:,1).^(1/2.2)).^2.5;
-d.gamma(:,2) = (d.gamma(:,2).^(1/2.2)).^2.7;
-d.gamma(:,3) = (d.gamma(:,3).^(1/2.2)).^2.3;
+d.gamma(:,1) = (d.gamma(:,1).^(1/2.2)).^2.2;
+d.gamma(:,2) = (d.gamma(:,2).^(1/2.2)).^2.2;
+d.gamma(:,3) = (d.gamma(:,3).^(1/2.2)).^2.2;
 
 % COLOR MATCHING FUNCTIONS
 S = [380 4 101]; % weird convention used by Brainard lab for defining wavelengths
@@ -114,6 +110,21 @@ end
 
 %%
 
+lumPropRB = [0.000 1.000; ...
+             0.125 0.875; ...
+             0.250 0.750; ...
+             0.375 0.625; ...
+             0.500 0.500; ...
+             0.625 0.375; ...
+             0.750 0.250; ...
+             0.875 0.125; ...
+             1.000 0.000];
+lumRB = lumPropRB;
+lumPropRB(:,2) = lumPropRB(:,2).*0.7268;
+rgb00 = zeros([9 3]);
+rgb00(:,1) = lumPropRB(:,1).^(1/2.2);
+rgb00(:,3) = lumPropRB(:,2).^(1/2.2);
+
 cAll = [];
 optDistAll = [];
 rgbAll = [];
@@ -144,7 +155,7 @@ end
 
 indBad = cAll(:,4)==0;
 meanC = mean(cAll(~indBad,:),1); % TAKE MEAN OF COEFFICIENTS
-rgb00 = unique(rgbAll,'rows');
+% rgb00 = unique(rgbAll,'rows');
 
 %% PLOTTING EACH COEFFICIENT VS DEFOCUS 
 
@@ -242,16 +253,15 @@ end
 
 %%
 
-for k = 12 % LOOP OVER TRIAL
+for k = 6:9 % LOOP OVER TRIAL
     % recreate stimulus
     rVal = rgb00(k,1);
     gVal = rgb00(k,2);
     bVal = rgb00(k,3);
-    im = imread([stimPath '/word_image_01.png']);
+    im = imread([stimPath '/Finch_et_al_stimulus.png']);
+    im = imresize(im,[390 390]);
     im = double(im);
     imPattern = squeeze(im(:,:,3));
-    imPattern = [zeros([100 size(imPattern,2)]); imPattern; zeros([100 size(imPattern,2)])];
-    imPattern = [zeros([size(imPattern,1) 30]) imPattern zeros([size(imPattern,1) 30])];
     I(:,:,3) = bVal.*imPattern;
     I(:,:,2) = gVal.*imPattern;
     I(:,:,1) = rVal.*imPattern;
@@ -286,7 +296,7 @@ for k = 12 % LOOP OVER TRIAL
     
     wave2 = 380:4:780;
 
-    for i = 41
+    parfor i = 1:length(wave2)
         % zCoeffs = [0 zeros(size(meanC(1:end-1)))];
         zCoeffs = [0 meanC(1:end-1)];
         wvfP = wvfCreate('calc wavelengths', wave, ...
@@ -373,9 +383,8 @@ for k = 12 % LOOP OVER TRIAL
         S = struct;
         S.absorptions = absorptions;
         fnameCone = ['subj' num2str(subjNum) 'stimulus' num2str(k) 'focusInd' num2str(i)];
-        % save([savePath num2str(subjNum) '/' fnameCone '.mat'],"-fromstruct",S);
+        save([savePath num2str(subjNum) '/' fnameCone '.mat'],"-fromstruct",S);
     end
 end
 
 end
-% save('/Users/benjaminchin/Documents/ARchromaScraps/ARCmodelOutput2_5.mat','meanv00all','wvInFocus1all','rgb1all','defocusBasic');
