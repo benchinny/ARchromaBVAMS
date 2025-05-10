@@ -1,4 +1,4 @@
-function [aic, pFit] = ARCtestWvInFocusMeanZspatFilterLMSeffectPlotWave(subjNum,modelType)
+function [aic, pFit, wvMeanAll, wvPredAll] = ARCtestWvInFocusMeanZspatFilterLMSeffectPlotWave(subjNum,modelType)
 
 coneWeightsFolder = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/coneWeightsErrorSpatFilter/colorMechPredictions/';
 objFunc = 'RMS';
@@ -144,6 +144,8 @@ end
 
 RMSEall = zeros([length(wL) length(wM)]);
 markerPlotSpeed = 'sod';
+wvMeanAll = zeros([10 3]);
+wvPredAll = zeros([10 3]);
 
 for l = 1:length(wL)
     for k = 1:length(wM)
@@ -165,15 +167,21 @@ for l = 1:length(wL)
         hold on;
         for i = 1:size(defocus875predTmp,2)
             hold on;
-            plot(1:5,-(defocus875predTmp(ind(1:5),i)-optDistUnq(i)*pFit(1)-pFit(2)),'k-');
+            dfPred1to5 = -(defocus875predTmp(ind(1:5),i)-optDistUnq(i)*pFit(1)-pFit(2));
+            wvPred1to5 = humanWaveDefocusInvertARC(875,-(dfPred1to5+optDistUnq(i)),subjNum);
+            dfMean1to5 = -defocus875mean(ind(1:5),i);
+            wvMean1to5 = humanWaveDefocusInvertARC(875,-(dfMean1to5+optDistUnq(i)),subjNum);
+            plot(1:5,wvPred1to5,'k-');
             % plot(1:length(ind),defocus875mean(ind,i),'k-');
             for j = 1:5
-                plot(j,-defocus875mean(ind(j),i),['k' markerPlotSpeed(i)],'MarkerFaceColor',conditionsOrderedNorm(j,:), ...
+                plot(j,wvMean1to5(j),['k' markerPlotSpeed(i)],'MarkerFaceColor',conditionsOrderedNorm(j,:), ...
                      'MarkerSize',10);
                 defocus875mean2fit(j,i) = defocus875mean(ind(j),i);
             end
             title(['Subject ' num2str(subjNum) ', Distance = ' num2str(optDistUnq(i)) ', Weights = [' num2str(wL(l)) ' ' num2str(wM(k))]);
             title(['RMSE = ' num2str(RMSE,3) ', RMSE_{flat} = ' num2str(RMSEflat,3) ', RMSE_{lum} = ' num2str(RMSElum,3)])
+            wvMeanAll(1:5,i) = wvMean1to5;
+            wvPredAll(1:5,i) = wvPred1to5;
         end
         set(gca,'FontSize',15);
         set(gca,'XTick',[]);
@@ -184,16 +192,24 @@ for l = 1:length(wL)
         subplot(1,2,2);
         for i = 1:size(defocus875predTmp,2)
             hold on;
+            dfPred6to10 = -(defocus875predTmp(ind(6:10),i)-optDistUnq(i)*pFit(1)-pFit(2));
+            wvPred6to10 = humanWaveDefocusInvertARC(875,-(dfPred6to10+optDistUnq(i)),subjNum);
+            dfMean6to10 = -defocus875mean(ind(6:10),i);
+            wvMean6to10 = humanWaveDefocusInvertARC(875,-(dfMean6to10+optDistUnq(i)),subjNum);            
             % plot([0 length(ind)],optDistUnq(i)-(optDistUnq(i).*pFitFlat(1)+pFitFlat(2)).*[1 1],'k--','LineWidth',1);
-            plot(1:5,-(defocus875predTmp(ind(6:10),i)-optDistUnq(i)*pFit(1)-pFit(2)),'k-');
+            plot(1:5,wvPred6to10,'k-');
             defocus875pred(:,i) = defocus875predTmp(ind,i)-optDistUnq(i)*pFit(1)-pFit(2);
             % plot(1:length(ind),defocus875mean(ind,i),'k-');
             for j = 6:11
-                plot(j-5,-defocus875mean(ind(j),i),['k' markerPlotSpeed(i)],'MarkerFaceColor',conditionsOrderedNorm(j,:), ...
-                     'MarkerSize',10);
+                if j<11
+                    plot(j-5,wvMean6to10(j-5),['k' markerPlotSpeed(i)],'MarkerFaceColor',conditionsOrderedNorm(j,:), ...
+                         'MarkerSize',10);
+                end
                 defocus875mean2fit(j,i) = defocus875mean(ind(j),i);
             end
-            plot(6,-(defocus875predTmp(ind(11),i)-optDistUnq(i)*pFit(1)-pFit(2)),'kp','MarkerSize',12);
+            % plot(6,-(defocus875predTmp(ind(11),i)-optDistUnq(i)*pFit(1)-pFit(2)),'kp','MarkerSize',12);
+            wvMeanAll(6:10,i) = wvMean6to10;
+            wvPredAll(6:10,i) = wvPred6to10;            
         end
         set(gca,'FontSize',15);
         set(gca,'XTick',[]);
@@ -203,6 +219,7 @@ for l = 1:length(wL)
         xlim([0 6]);
         % saveas(gcf,[coneWeightsFolder 'LplusMminusSpredCont' num2str(subjNum) 'weight' num2str(k)],'png');
         display(['Weights = [' num2str(wL(l)) ' ' num2str(wM(k)) ' ' num2str(wS)]);
+
     end
 end
 
