@@ -7,7 +7,9 @@ objFunc = 'RMS';
 
 %% SEARCH INDIVIDUAL CONE WEIGHTS
 
-wLM = 0.4:0.05:1.4;
+% wLM = 0.4:0.05:1.4;
+% wLprop = 0.25:(0.1/3):0.85;
+wLM = 1.4;
 wLprop = 0.25:(0.1/3):0.85;
 coneWeightsFolder = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/coneWeightsErrorSpatFilter/colorMechPredictions/';
 finchDataFolder = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/ARChroma/Meetings/Meeting_April_23/';
@@ -15,15 +17,15 @@ finchDataFolder = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@b
 finchData = readtable([finchDataFolder 'Finch_data.csv']);
 rbRatio = 0:0.125:1;
 defocus550 = unique(round(finchData.Var2,3));
-optDistAll = zeros(size(rbRatio));
+optDistUnq = 0;
 
 RMSEall = zeros([length(wLM) length(wLprop)]);
 
 for l = 1:length(wLM)
-    for k = 1:length(wLprop)
+    parfor k = 1:length(wLprop)
         wL = wLM(l)*wLprop(k);
         wM = wLM(l)-wL;
-        [~, defocus550mean, defocus550predTmp, rgbUnq, optDistUnq] = ARCtestWvInFocusMeanZspatFilterFinchPlotHelper(subjNum,defocus550,rbRatio,optDistAll,[wL wM wS]);
+        [~, defocus550mean, defocus550predTmp, ~, ~] = ARCtestWvInFocusMeanZspatFilterFinchPlotHelper(subjNum,defocus550,rbRatio,optDistUnq,[wL wM wS]);
         optDistTag = imresize(optDistUnq',size(defocus550mean),'nearest');
         [pFit,RMSE(k)] = ARCfitLagLead(defocus550predTmp(:),defocus550mean(:),optDistTag(:),true,objFunc);
         if k==1

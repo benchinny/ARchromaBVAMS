@@ -1,4 +1,4 @@
-function aic = ARCtestWvInFocusMeanZspatFilterLMSeffectPlotStack(subjNum,modelType)
+function [aic, pFit] = ARCtestWvInFocusMeanZspatFilterLMSeffectPlotStack(subjNum,modelType)
 
 coneWeightsFolder = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/coneWeightsErrorSpatFilter/colorMechPredictions/';
 objFunc = 'RMS';

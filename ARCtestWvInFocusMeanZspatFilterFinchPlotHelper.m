@@ -9,8 +9,8 @@ for l = 1:length(rbRatio)
     display(['stim ' num2str(l)]);
 end 
 
-defocus550predTmp = zeros([size(rgbUnq,1) length(optDistUnq)]);
-for l = 1:size(rbRatio,1)
+defocus550predTmp = zeros([size(rbRatio,1) length(optDistUnq)]);
+for l = 1:size(rbRatio,2)
     if subjNum==10
         defocus550predTmp(l) = optDistUnq-humanWaveDefocusS10(wvInFocus(l),550);
     end

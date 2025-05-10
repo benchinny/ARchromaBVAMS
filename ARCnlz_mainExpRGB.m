@@ -284,7 +284,10 @@ for k = 1:length(optDistToCheckAll)
             plot(timeStampTmp,-trialTmp875(1:length(timeStampTmp)),'-','Color',conditionsOrderedNorm(i,:));
             trialTmp875All = [trialTmp875All; trialTmp875'];
         end
-        plot([timeStampTmp(1) timeStampTmp(end)],-mean(trialTmp875All(~isnan(trialTmp875All))).*[1 1],'-','Color',conditionsOrderedNorm(i,:),'LineWidth',2);
+        % plot([timeStampTmp(1) timeStampTmp(end)],-mean(trialTmp875All(~isnan(trialTmp875All))).*[1 1],'-','Color',conditionsOrderedNorm(i,:),'LineWidth',2);
+        errorbar(1.5,-mean(trialTmp875All(~isnan(trialTmp875All))),std(trialTmp875All(~isnan(trialTmp875All))), ...
+                 'o','Color',conditionsOrderedNorm(i,:),'LineWidth',2, ...
+                 'MarkerFaceColor','w','MarkerSize',10);
         axis square;
         xlim([0 3.1]);
         if subjNum==18

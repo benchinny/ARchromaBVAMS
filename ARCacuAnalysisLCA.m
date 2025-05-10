@@ -254,7 +254,7 @@ dprimeFitAll = [];
 
 if bPLOT
     figure;
-    set(gcf,'Position',[149 495 1277 420]);
+    % set(gcf,'Position',[149 495 1277 420]);
 end
 for rgbAcuCnd = 1:3
     for i = 1:length(unqFocDst)
@@ -295,13 +295,13 @@ for rgbAcuCnd = 1:3
         defocusLCAmeasured(rgbAcuCnd) = PCfitSupport(indLCA);
     end
     if bPLOT
-        subplot(1,3,rgbAcuCnd);
+        % subplot(1,3,rgbAcuCnd);
         % set(gcf,'Position',figPositions(rgbAcuCnd,:));
         hold on;
+        plot(PCfitSupport,PCfit,'-','Color',rgbUnq(rgbAcuCnd,:),'MarkerFaceColor','w','LineWidth',1.5,'MarkerSize',10);
         plot(unqFocDst.*scaleFac,PC,'o','Color',rgbUnq(rgbAcuCnd,:),'MarkerFaceColor','w','LineWidth',1.5,'MarkerSize',10);
         errorbar(unqFocDst.*scaleFac,PC,PC-PCci(1,:),PCci(2,:)-PC,'o','Color',rgbUnq(rgbAcuCnd,:),'MarkerFaceColor','w','LineWidth',1.5,'MarkerSize',10);
-        plot(PCfitSupport,PCfit,'-','Color',rgbUnq(rgbAcuCnd,:),'MarkerFaceColor','w','LineWidth',1.5,'MarkerSize',10);
-        axis square;
+        % axis square;
         ylim([0.4 1]);
         if rgbAcuCnd==1
            formatFigure('Relative optical distance (D)','Proportion Correct',['Subject ' num2str(subj)]);
