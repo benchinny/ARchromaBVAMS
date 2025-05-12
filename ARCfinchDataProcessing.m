@@ -1,13 +1,24 @@
 %%
 
-wave = round(Finchetalprimaries.VarName1,1);
+Finch_primaries_red = readtable('/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/ARChroma/Meetings/Meeting_April_23/Finch_et_al_primaries_Red.csv');
 
-power = round(Finchetalprimaries.VarName2,3);
+%%
 
-waveBlueP = wave(1:122);
-waveRedP = wave(123:end);
-powerBlueP = power(1:122);
-powerRedP = power(123:end);
+wave = round(Finch_primaries_red.Wavelength,1);
+
+power = round(Finch_primaries_red.Intensity,3);
+
+waveUnq = unique(wave);
+powerUnq = [];
+
+for i = 1:length(waveUnq)
+    ind = abs(wave-waveUnq(i))<0.0001;
+    powerUnq(i) = mean(power(ind));
+end
+
+waveInterp = 616:1:700;
+powerInterp = interp1(waveUnq,powerUnq,waveInterp,'pchip');
+powerInterp(powerInterp<0) = 0;
 
 %%
 

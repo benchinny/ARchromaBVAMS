@@ -37,14 +37,6 @@ if strcmp(getenv('USER'),'benchin')
     savePath = '/Users/benchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/coneImagesFinch/S';
 end
 
-if bUseBVAMScal
-    load([calPath 'Finch_et_al_primaries.mat']);
-    d.spd = energy;
-end
-d.gamma(:,1) = (d.gamma(:,1).^(1/2.2)).^2.2;
-d.gamma(:,2) = (d.gamma(:,2).^(1/2.2)).^2.2;
-d.gamma(:,3) = (d.gamma(:,3).^(1/2.2)).^2.2;
-
 % COLOR MATCHING FUNCTIONS
 S = [380 4 101]; % weird convention used by Brainard lab for defining wavelengths
 load T_xyz1931; % load color matching functions
@@ -52,8 +44,24 @@ T_sensorXYZ = 683*SplineCmf(S_xyz1931,T_xyz1931,S); % interpolate and scale
 wave = S(1):S(2):S(1)+S(2)*(S(3)-1); % define wavelength vector
 % DEFOCUSES TO LOOK AT
 Dall = -humanWaveDefocus(wave);
-% WAVELENGTHS TO LOOK AT
-% wvAll = humanWaveDefocusInvert(-Dall);
+
+primaryCell = {'red' 'green'};
+if bUseBVAMScal
+    load([calPath 'Finch_et_al_primaries_' primaryCell{1} '.mat']);
+    spd1 = zeros(size(wave));
+    indSpd1 = wave>min(waveInterp) & wave<max(waveInterp);
+    spd1(indSpd1) = interp1(waveInterp,powerInterp,wave(indSpd1));
+    load([calPath 'Finch_et_al_primaries_' primaryCell{2} '.mat']);
+    spd2 = zeros(size(wave));
+    indSpd2 = wave>min(waveInterp) & wave<max(waveInterp);
+    spd2(indSpd2) = interp1(waveInterp,powerInterp,wave(indSpd2));    
+    d.spd = zeros([length(spd1) 3]);
+    d.spd(:,1) = spd1;
+    d.spd(:,3) = spd2;
+end
+d.gamma(:,1) = (d.gamma(:,1).^(1/2.2)).^2.2;
+d.gamma(:,2) = (d.gamma(:,2).^(1/2.2)).^2.2;
+d.gamma(:,3) = (d.gamma(:,3).^(1/2.2)).^2.2;
 
 %%
 
@@ -105,7 +113,12 @@ elseif subjNum==20
    blockNums = 2:7;
    trialNums = [[1:36]' [1:36]' [1:36]' [1:36]' [1:36]' [1:36]'];
    subjName = ['S' num2str(subjNum+10) '-OD'];
-   nTrialTotal = 216;      
+   nTrialTotal = 216;
+elseif subjNum==21
+   blockNums = 2:7;
+   trialNums = [[1:36]' [1:36]' [1:36]' [1:36]' [1:36]' [1:36]'];
+   subjName = ['S' num2str(subjNum+10) '-OD'];
+   nTrialTotal = 216;   
 end
 
 %%
@@ -119,8 +132,14 @@ lumPropRB = [0.000 1.000; ...
              0.750 0.250; ...
              0.875 0.125; ...
              1.000 0.000];
-lumRB = lumPropRB;
-lumPropRB(:,2) = lumPropRB(:,2).*0.7268;
+lumB = (T_sensorXYZ(2,:)*d.spd(:,3));
+lumR = (T_sensorXYZ(2,:)*d.spd(:,1));
+
+if lumB>lumR
+    lumPropRB(:,2) = lumPropRB(:,2).*(lumR./lumB);
+else
+    lumPropRB(:,1) = lumPropRB(:,1).*(lumB./lumR);
+end
 rgb00 = zeros([9 3]);
 rgb00(:,1) = lumPropRB(:,1).^(1/2.2);
 rgb00(:,3) = lumPropRB(:,2).^(1/2.2);
@@ -156,6 +175,9 @@ end
 indBad = cAll(:,4)==0;
 meanC = mean(cAll(~indBad,:),1); % TAKE MEAN OF COEFFICIENTS
 % rgb00 = unique(rgbAll,'rows');
+if subjNum==21
+    meanC = meanC.*0;
+end
 
 %% PLOTTING EACH COEFFICIENT VS DEFOCUS 
 
@@ -253,7 +275,7 @@ end
 
 %%
 
-for k = 6:9 % LOOP OVER TRIAL
+for k = 1:9 % LOOP OVER TRIAL
     % recreate stimulus
     rVal = rgb00(k,1);
     gVal = rgb00(k,2);
@@ -340,6 +362,10 @@ for k = 6:9 % LOOP OVER TRIAL
             defocusFromLCA = max(abs([humanWaveDefocusS20(wave2(i),min(wave)) ...
                                       humanWaveDefocusS20(wave2(i),max(wave))]));  
             wvfP = wvfSet(wvfP, 'customlca', @humanWaveDefocusS20); 
+        elseif subjNum==21
+            defocusFromLCA = max(abs([humanWaveDefocusS21(wave2(i),min(wave)) ...
+                                      humanWaveDefocusS21(wave2(i),max(wave))]));  
+            wvfP = wvfSet(wvfP, 'customlca', @humanWaveDefocusS21);    
         else
             error('Subject number with no LCA function?');
         end
@@ -382,7 +408,7 @@ for k = 6:9 % LOOP OVER TRIAL
         absorptions = single(absorptions);
         S = struct;
         S.absorptions = absorptions;
-        fnameCone = ['subj' num2str(subjNum) 'stimulus' num2str(k) 'focusInd' num2str(i)];
+        fnameCone = ['subj' num2str(subjNum) 'stimulus' num2str(k) primaryCell{1} primaryCell{2} 'focusInd' num2str(i)];
         save([savePath num2str(subjNum) '/' fnameCone '.mat'],"-fromstruct",S);
     end
 end
