@@ -1,4 +1,4 @@
-function oi = ARCimgQualityAnalysisConesMeanZfinch(subjNum)
+function oi = ARCimgQualityAnalysisConesMeanZfinch(subjNum,primaryCell)
 
 % NOTE SUBJECT NUMBER CONVENTION: SUBTRACT 10 FROM subjNum TO GET ACTUAL
 % SUBJECT NUMBER. subjNum VALUES <=10 WERE INTENTIONALLY NOT USED FOR
@@ -45,7 +45,7 @@ wave = S(1):S(2):S(1)+S(2)*(S(3)-1); % define wavelength vector
 % DEFOCUSES TO LOOK AT
 Dall = -humanWaveDefocus(wave);
 
-primaryCell = {'red' 'green'};
+% primaryCell = {'red' 'green'};
 if bUseBVAMScal
     load([calPath 'Finch_et_al_primaries_' primaryCell{1} '.mat']);
     spd1 = zeros(size(wave));
@@ -117,8 +117,9 @@ elseif subjNum==20
 elseif subjNum==21
    blockNums = 2:7;
    trialNums = [[1:36]' [1:36]' [1:36]' [1:36]' [1:36]' [1:36]'];
-   subjName = ['S' num2str(subjNum+10) '-OD'];
+   subjName = ['S' num2str(subjNum+9) '-OD'];
    nTrialTotal = 216;   
+   subjNumEncode = subjNum+9;
 end
 
 %%
