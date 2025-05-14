@@ -1,23 +1,25 @@
 %%
 
-bRandomize = false;
+bRandomize = true;
 bPlot = false;
 subjNumAll = [1 3 5 10 16 17 18 20];
 % subjNumAllRand = subjNumAll;
 peakLocModelPredictionAll = [];
-nRepeat = 10;
+nRepeat = 500;
 corrShuffle = [];
+subjNumInclude = [1:8];
+fileStr = 'acuityModelingPredictionLum';
 
 for k = 1:nRepeat
     for j = 1:length(subjNumAll)
     
         subjNum = subjNumAll(j);
         
-        load(['/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/acuityModeling/acuityModelingPredictionS' num2str(subjNum) '.mat']);
+        load(['/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/acuityModeling/' fileStr 'S' num2str(subjNum) '.mat']);
         
         if bRandomize
             subjNumAllRand = subjNumAll(randperm(length(subjNumAll)));
-            load(['/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/acuityModeling/acuityModelingPredictionS' ...
+            load(['/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/acuityModeling/' fileStr 'S' ...
                   num2str(subjNumAllRand(j)) '.mat'],'dprimeMetric','defocusForStim');
         end
     
@@ -90,7 +92,7 @@ for k = 1:nRepeat
     if mod(k,10)==0
         figure;
         hold on;
-        plot(peakLocModelPredictionAll,peakLocActualAll,'ko','MarkerFaceColor',[0.56 0 1],'MarkerSize',15)
+        plot(peakLocModelPredictionAll(subjNumInclude),peakLocActualAll(subjNumInclude),'ko','MarkerFaceColor',[0.56 0 1],'MarkerSize',15)
         axis square;
         set(gca,'FontSize',15);
         xlim([1.5 2.8]);
@@ -98,7 +100,7 @@ for k = 1:nRepeat
         plot([1.5 2.8],[1.5 2.8],'k--','LineWidth',1);
         xlabel(['Predicted Peak Location (D)']);
         ylabel(['Actual Peak Location (D)']);
-        title(['Correlation = ' num2str(corr(peakLocModelPredictionAll',peakLocActualAll'),3)]);
+        title(['Correlation = ' num2str(corr(peakLocModelPredictionAll(subjNumInclude)',peakLocActualAll(subjNumInclude)'),3)]);
     end
     corrShuffle(k) = corr(peakLocModelPredictionAll',peakLocActualAll');
     display(['Iteration ' num2str(k)]);
