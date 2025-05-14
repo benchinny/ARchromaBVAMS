@@ -3,6 +3,7 @@ function wvInFocus = ARCwvInFocusConesMeanZspatFilterFinch(subjNum,stimNum,wLMS)
 wave = 380:4:780;
 nFocus = length(wave);
 foldernameCones = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/coneImagesFinch/';
+colorCell = {'redgreen' 'redblue' 'redviolet' 'orangeblue' 'orangeviolet' 'greenviolet'};
 
 % USE THE SAME ORIGINAL (PRE-OPTICS) IMAGE EACH TIME--THIS ONE HAPPENS TO
 % LIVE IN THE FOLDER FOR SUBJECT 10, BUT IT REALLY DOESN'T MATTER SINCE ALL
@@ -32,22 +33,24 @@ coneImgOrigFiltered2 = real(ifftshift(ifft2(coneImgOrigFilteredFFT2)));
 
 peakCorr = [];
 
-for i = 1:nFocus
-    fnameConeRsp = ['subj' num2str(subjNum) 'stimulus' num2str(stimNum) 'focusInd' num2str(i)];
-    load([foldernameCones 'S' num2str(subjNum) '/' fnameConeRsp]);
-    absorptions(:,:,1) = absorptions(:,:,1).*wLMS(1);
-    absorptions(:,:,2) = absorptions(:,:,2).*wLMS(2);
-    absorptions(:,:,3) = absorptions(:,:,3).*wLMS(3);
-    coneImg = sum(absorptions,3);
+for j = 1:length(colorCell)
+    for i = 1:nFocus
+        fnameConeRsp = ['subj' num2str(subjNum) 'stimulus' num2str(stimNum) colorCell{j} 'focusInd' num2str(i)];
+        load([foldernameCones 'S' num2str(subjNum) '/' fnameConeRsp]);
+        absorptions(:,:,1) = absorptions(:,:,1).*wLMS(1);
+        absorptions(:,:,2) = absorptions(:,:,2).*wLMS(2);
+        absorptions(:,:,3) = absorptions(:,:,3).*wLMS(3);
+        coneImg = sum(absorptions,3);
+    
+        coneImgFFT = fftshift(fft2(coneImg));
+        coneImgFilteredFFT = coneImgFFT.*freqFilterARC;
+        coneImgFiltered = real(ifft2(ifftshift(coneImgFilteredFFT)));
+    
+        peakCorr(i) = max(max(normxcorr2(coneImgFiltered,coneImgOrigFiltered)));
+    end
 
-    coneImgFFT = fftshift(fft2(coneImg));
-    coneImgFilteredFFT = coneImgFFT.*freqFilterARC;
-    coneImgFiltered = real(ifft2(ifftshift(coneImgFilteredFFT)));
-
-    peakCorr(i) = max(max(normxcorr2(coneImgFiltered,coneImgOrigFiltered)));
+    [~,indPeakPeak] = max(peakCorr);
+    wvInFocus(j) = wave(indPeakPeak);
 end
-
-[~,indPeakPeak] = max(peakCorr);
-wvInFocus = wave(indPeakPeak);
 
 end

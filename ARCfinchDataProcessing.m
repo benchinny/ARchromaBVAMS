@@ -50,3 +50,28 @@ d.wave = wave;
 d.spd(:,1) = interp1(waveRedPunq,powerRedPunq,wave,'linear');
 d.spd(:,3) = interp1(waveBluePunq,powerBluePunq,wave,'linear');
 d.spd(:,2) = zeros(size(wave));
+
+%%
+
+colorCell = {'RedVsGreen' 'RedVsBlue' 'RedVsViolet' 'OrangeVsBlue' 'OrangeVsViolet' 'GreenVsViolet'};
+dataFolder = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/ARChroma/Meetings/Meeting_April_23/';
+lumRatiosTrue = 0:1.25:10;
+accommodationFinch = [];
+
+for i = 1:length(colorCell)
+    FinchData = readtable([dataFolder 'Finch_data_' colorCell{i} '.csv']);
+    for j = 1:length(lumRatiosTrue)
+        ind = abs(FinchData.LuminanceRatio-lumRatiosTrue(j))<0.1;
+        accommodationFinch(j,i) = mean(FinchData.Accommodation(ind));
+    end
+end
+
+FinchData = struct;
+FinchData.LumRatio = fliplr(lumRatiosTrue./10)';
+FinchData.Accommodation = accommodationFinch;
+
+save([dataFolder 'Finch_data_all.mat'],'FinchData');
+
+%%  
+
+clear all;
