@@ -78,12 +78,20 @@ dprimeRatio = dprime0/dprimeMax;
 
 %%
 
-dprimeRatioAll = 1./[0.4039 1.000 0.8928 0.6935 0.9599 0.5051 0.5645 0.6952];
+dprimeRatioAll = [2.41 1.000 1.000 1.41 1.000 1.98 1.76 1.023];
 
 figure;
 % boxplot(dprimeRatioAll,'LineWidth',1,'FaceColor',[0.56 0 1]);
 boxplot(dprimeRatioAll);
 set(gca,'FontSize',15);
+hold on;
+for i = 1:length(dprimeRatioAll)
+    if abs(dprimeRatioAll(i)-1)<0.01
+        plot(1+i*0.1,dprimeRatioAll(i),'ko','MarkerSize',10,'MarkerFaceColor',[0.56 0 1]);
+    else
+        plot(1,dprimeRatioAll(i),'ko','MarkerSize',10,'MarkerFaceColor',[0.56 0 1]);
+    end
+end
 % set(gca,'XTick',1:8);
 % set(gca,'XTickLabel',{'S1' 'S3' 'S5' 'S10' 'S16' 'S17' 'S18' 'S20'});
 % xlabel('Subject');

@@ -261,7 +261,7 @@ for rgbAcuCnd = 1:3
         indAnalysis = focStmOptDstIncr==unqFocDst(i) & indAcuRB==rgbAcuCnd;
     %    PC(i) = sum(rspAcu(focStmOptDstIncr==unqFocDst(i) & meanFocstmOptDst==meanFocInt)==stimOrientation(focStmOptDstIncr==unqFocDst(i) & meanFocstmOptDst==meanFocInt))./sum(focStmOptDstIncr==unqFocDst(i) & meanFocstmOptDst==meanFocInt); 
          PC(i) = sum(rspAcu(indAnalysis)==stimOrientation(indAnalysis))./sum(indAnalysis);
-         PCci(:,i) = binoinv([0.16 0.84],sum(focStmOptDstIncr==unqFocDst(i)),PC(i))./sum(focStmOptDstIncr==unqFocDst(i));
+         PCci(:,i) = binoinv([0.025 0.975],sum(focStmOptDstIncr==unqFocDst(i) & indAcuRB==rgbAcuCnd),PC(i))./sum(focStmOptDstIncr==unqFocDst(i) & indAcuRB==rgbAcuCnd);
     end
     
     if nBoots>0
@@ -298,9 +298,9 @@ for rgbAcuCnd = 1:3
         % subplot(1,3,rgbAcuCnd);
         % set(gcf,'Position',figPositions(rgbAcuCnd,:));
         hold on;
-        plot(PCfitSupport,PCfit,'-','Color',rgbUnq(rgbAcuCnd,:),'MarkerFaceColor','w','LineWidth',1.5,'MarkerSize',10);
-        plot(unqFocDst.*scaleFac,PC,'o','Color',rgbUnq(rgbAcuCnd,:),'MarkerFaceColor','w','LineWidth',1.5,'MarkerSize',10);
-        errorbar(unqFocDst.*scaleFac,PC,PC-PCci(1,:),PCci(2,:)-PC,'o','Color',rgbUnq(rgbAcuCnd,:),'MarkerFaceColor','w','LineWidth',1.5,'MarkerSize',10);
+        plot(PCfitSupport,PCfit,'-','Color',rgbUnq(rgbAcuCnd,:),'MarkerFaceColor','w','LineWidth',2,'MarkerSize',20);
+        plot(unqFocDst.*scaleFac,PC,'o','Color',rgbUnq(rgbAcuCnd,:),'MarkerFaceColor','w','LineWidth',2,'MarkerSize',20);
+        errorbar(unqFocDst.*scaleFac,PC,PC-PCci(1,:),PCci(2,:)-PC,'o','Color',rgbUnq(rgbAcuCnd,:),'MarkerFaceColor','w','LineWidth',2,'MarkerSize',20);
         % axis square;
         ylim([0.4 1]);
         if rgbAcuCnd==1

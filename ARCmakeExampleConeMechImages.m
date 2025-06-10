@@ -65,7 +65,7 @@ save('/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/S
 %% MAKE EXAMPLE CONE IMAGES FOR SUBJECT 2 AT INFORMATIVE WAVELENGTHS
 
 wave = 380:4:780;
-wv2vis = [620 584 460 420];
+wv2vis = [620 540 460 420];
 stimInd = [1 8 6];
 coneImgFilteredEgLMS = [];
 coneImgFilteredEgLM = [];
@@ -78,10 +78,10 @@ for i = 1:length(stimInd)
          ARCwvInFocusConesMeanZsandbox(3,stimInd(i),LMSweights(2,:),find(wave==wv2vis(j)));
          coneImgFilteredEgLMS(:,:,i,j) = coneImgFilteredEg;
          absorptionsS_LMS(:,:,i,j) = absorptions(:,:,3);
-         absorptionsLM_LMS(:,:,i,j) = LMSweights(2,1).*absorptions(:,:,1)+LMSweights(2,2).*absorptions(:,:,2);
+         absorptionsLM_LMS(:,:,i,j) = absorptions(:,:,1)+absorptions(:,:,2);
 
         [wvInFocus, coneImgFilteredEg, coneImgOrigFilteredEg, wvInFocus2, wave, peakCorr, absorptions] = ...
-         ARCwvInFocusConesMeanZsandbox(3,stimInd(i),LMweights(2,:),find(wave==wv2vis(j))); 
+         ARCwvInFocusConesMeanZsandbox(3,stimInd(i),[LMSweights(2,1) LMSweights(2,2) 0],find(wave==wv2vis(j))); 
         coneImgFilteredEgLM(:,:,i,j) = coneImgFilteredEg;
     end
 end
@@ -99,6 +99,8 @@ for i = 1:length(wv2vis)
     subplot(4,2,(i-1)*2+1);
     imagesc(squeeze(coneImgFilteredEgLMS(:,:,1,i))); 
     axis square; 
+    set(gca,'XTick',[]);
+    set(gca,'YTick',[]);
     colormap(redblue); 
     xlim([50 120]); 
     ylim([55 125]); 
@@ -108,10 +110,12 @@ for i = 1:length(wv2vis)
     subplot(4,2,(i-1)*2+2);
     imagesc(squeeze(coneImgFilteredEgLM(:,:,1,i))); 
     axis square; 
+    set(gca,'XTick',[]);
+    set(gca,'YTick',[]);
     colormap(redblue); 
     xlim([50 120]); 
     ylim([55 125]); 
-    colorbar; 
+    % colorbar; 
     clim(axisLims(2).*[-1 1])    
     title('LM');
 end
@@ -122,19 +126,23 @@ for i = 1:length(wv2vis)
     subplot(4,2,(i-1)*2+1);
     imagesc(squeeze(coneImgFilteredEgLMS(:,:,2,i))); 
     axis square; 
+    set(gca,'XTick',[]);
+    set(gca,'YTick',[]);    
     colormap(redblue); 
     xlim([50 120]); 
     ylim([55 125]); 
-    colorbar; 
+    % colorbar; 
     clim(axisLims(2).*[-1 1])
     title(['\lambda_{focus} = ' num2str(wv2vis(i)) ', ' stimCell{2} ', LMS']);
     subplot(4,2,(i-1)*2+2);
     imagesc(squeeze(coneImgFilteredEgLM(:,:,2,i))); 
     axis square; 
+    set(gca,'XTick',[]);
+    set(gca,'YTick',[]);    
     colormap(redblue); 
     xlim([50 120]); 
     ylim([55 125]); 
-    colorbar; 
+    % colorbar; 
     clim(axisLims(2).*[-1 1])   
     title('LM');
 end
@@ -145,19 +153,23 @@ for i = 1:length(wv2vis)
     subplot(4,2,(i-1)*2+1);
     imagesc(squeeze(coneImgFilteredEgLMS(:,:,3,i))); 
     axis square; 
+    set(gca,'XTick',[]);
+    set(gca,'YTick',[]);    
     colormap(redblue); 
     xlim([50 120]); 
     ylim([55 125]); 
-    colorbar; 
+    % colorbar; 
     clim(axisLims(2).*[-1 1])
     title(['\lambda_{focus} = ' num2str(wv2vis(i)) ', ' stimCell{3}]);
     subplot(4,2,(i-1)*2+2);
     imagesc(squeeze(coneImgFilteredEgLM(:,:,3,i))); 
     axis square; 
+    set(gca,'XTick',[]);
+    set(gca,'YTick',[]);    
     colormap(redblue); 
     xlim([50 120]); 
     ylim([55 125]); 
-    colorbar; 
+    % colorbar; 
     clim(axisLims(2).*[-1 1]);
 end
 
@@ -168,18 +180,22 @@ for i = 1:length(wv2vis)
     imagesc(squeeze(absorptionsS_LMS(:,:,1,i)));
     axis square; 
     colormap(redblue); 
+    set(gca,'XTick',[]);
+    set(gca,'YTick',[]);    
     xlim([50 120]); 
     ylim([55 125]); 
-    colorbar; 
+    % colorbar; 
     clim(axisLims(2).*[-1 1]);  
     title(['\lambda_{focus} = ' num2str(wv2vis(i)) ', ' stimCell{1} ', S image']);
     subplot(4,2,(i-1)*2+2);
     imagesc(squeeze(absorptionsLM_LMS(:,:,1,i)));
     axis square; 
+    set(gca,'XTick',[]);
+    set(gca,'YTick',[]);    
     colormap(redblue); 
     xlim([50 120]); 
     ylim([55 125]); 
-    colorbar; 
+    % colorbar; 
     clim(axisLims(2).*[-1 1]);
     title('L+M image');
 end
@@ -190,19 +206,23 @@ for i = 1:length(wv2vis)
     subplot(4,2,(i-1)*2+1);
     imagesc(squeeze(absorptionsS_LMS(:,:,2,i)));
     axis square; 
+    set(gca,'XTick',[]);
+    set(gca,'YTick',[]);    
     colormap(redblue); 
     xlim([50 120]); 
     ylim([55 125]); 
-    colorbar; 
+    % colorbar; 
     clim(axisLims(2).*[-1 1]);  
     title(['\lambda_{focus} = ' num2str(wv2vis(i)) ', ' stimCell{2} ', S image']);
     subplot(4,2,(i-1)*2+2);
     imagesc(squeeze(absorptionsLM_LMS(:,:,2,i)));
     axis square; 
+    set(gca,'XTick',[]);
+    set(gca,'YTick',[]);    
     colormap(redblue); 
     xlim([50 120]); 
     ylim([55 125]); 
-    colorbar; 
+    % colorbar; 
     clim(axisLims(2).*[-1 1]);
     title('L+M image');
 end
@@ -213,19 +233,23 @@ for i = 1:length(wv2vis)
     subplot(4,2,(i-1)*2+1);
     imagesc(squeeze(absorptionsS_LMS(:,:,3,i)));
     axis square; 
+    set(gca,'XTick',[]);
+    set(gca,'YTick',[]);    
     colormap(redblue); 
     xlim([50 120]); 
     ylim([55 125]); 
-    colorbar; 
+    % colorbar; 
     clim(axisLims(2).*[-1 1]);  
     title(['\lambda_{focus} = ' num2str(wv2vis(i)) ', ' stimCell{3} ', S image']);
     subplot(4,2,(i-1)*2+2);
     imagesc(squeeze(absorptionsLM_LMS(:,:,3,i)));
     axis square; 
+    set(gca,'XTick',[]);
+    set(gca,'YTick',[]);    
     colormap(redblue); 
     xlim([50 120]); 
     ylim([55 125]); 
-    colorbar; 
+    % colorbar; 
     clim(axisLims(2).*[-1 1]);
     title('L+M image');
 end

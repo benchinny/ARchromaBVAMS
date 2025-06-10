@@ -32,38 +32,41 @@ val532 = humanWaveDefocus(532);
 standardLCAfit = standardLCAfit-val532;
 displacementLambda = -4:4;
 wavePlot = 380:5:875;
+defocusAt875centered550 = [];
 
 figure;
 hold on;
-plot(wave2fit,standardLCAfit,'k-','LineWidth',1);
+% plot(wave2fit,standardLCAfit,'k-','LineWidth',1);
 for i = 1:size(defocusLCAmeasuredAll,1)
     set(gca,'ColorOrderIndex',i);
-    plot(wavePlot,humanWaveDefocusARC(533,wavePlot,subjNumAll(i))+D0all(i)+defocusLCAmeasuredAll(i,2),'-','LineWidth',1);
+    defocusAt875centered550(i) = humanWaveDefocusARC(533,wavePlot(end),subjNumAll(i)) + D0all(i)+defocusLCAmeasuredAll(i,2);
+    plot(wavePlot,(-2-defocusAt875centered550(i))+humanWaveDefocusARC(533,wavePlot,subjNumAll(i))+D0all(i)+defocusLCAmeasuredAll(i,2),'-','LineWidth',1.5);
     defocus875to620(i,:) = humanWaveDefocusARC(533,wavePlot([48 100]),subjNumAll(i))+D0all(i)+defocusLCAmeasuredAll(i,2);
 end
 for i = 1:size(defocusLCAmeasuredAll,1)
     defocusLCAmeasuredBootsTmp = squeeze(defocusLCAmeasuredBootsAll(:,:,i))-1*defocusLCAmeasuredAll(i,2);
-    CIlca = quantile(defocusLCAmeasuredBootsTmp',[0.16 0.84]);
+    CIlca = quantile(defocusLCAmeasuredBootsTmp',[0.025 0.975]);
+    defocusLCAmeasuredAll(i,:) = defocusLCAmeasuredAll(i,:);
     set(gca,'ColorOrderIndex',i);
     errorbar([616 533 468]-displacementLambda(i), ...
-             -(defocusLCAmeasuredAll(i,:)-defocusLCAmeasuredAll(i,2)), ...
+             -(defocusLCAmeasuredAll(i,:)-defocusLCAmeasuredAll(i,2))+(-2-defocusAt875centered550(i)), ...
              -(defocusLCAmeasuredAll(i,:)-defocusLCAmeasuredAll(i,2)-CIlca(2,:)), ...
              -(CIlca(1,:)-(defocusLCAmeasuredAll(i,:)-defocusLCAmeasuredAll(i,2))), ...
              '.','MarkerSize',10, ...
-        'LineWidth',1,'MarkerFaceColor','w');    
+        'LineWidth',1.5,'MarkerFaceColor','w');    
 end
 for i = 1:size(defocusLCAmeasuredAll,1)
     defocusLCAmeasuredBootsTmp = squeeze(defocusLCAmeasuredBootsAll(:,:,i));
-    CIlca = quantile(defocusLCAmeasuredBootsTmp',[0.16 0.84]);   
+    CIlca = quantile(defocusLCAmeasuredBootsTmp',[0.025 0.975]);   
     set(gca,'ColorOrderIndex',i);
-    plot([616 533 468]-displacementLambda(i),-(defocusLCAmeasuredAll(i,:)-defocusLCAmeasuredAll(i,2)),'o','MarkerSize',10, ...
-        'LineWidth',1,'MarkerFaceColor','w');
+    plot([616 533 468]-displacementLambda(i),-(defocusLCAmeasuredAll(i,:)-defocusLCAmeasuredAll(i,2))+(-2-defocusAt875centered550(i)),'o','MarkerSize',10, ...
+        'LineWidth',1.5,'MarkerFaceColor','w');
 end
 % axis square;
-xlim([460 875]);
-ylim([-1.5 1.6]);
+xlim([440 875]);
+% ylim([-1.5 2]);
 formatFigure('Wavelength (\lambda)','Defocus (D)');
-legend('','','','','','','','','','','','','','','','','','S1','S2','S3','S4','S5','S6','S7','S8','Location','SouthEast');
+legend('','','','','','','','','','','','','','','','','S1','S2','S3','S4','S5','S6','S7','S8','Location','SouthEast');
 
 figure;
 hold on;

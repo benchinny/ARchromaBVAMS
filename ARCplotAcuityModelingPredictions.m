@@ -1,14 +1,14 @@
 %%
 
-bRandomize = true;
+bRandomize = false;
 bPlot = false;
 subjNumAll = [1 3 5 10 16 17 18 20];
 % subjNumAllRand = subjNumAll;
 peakLocModelPredictionAll = [];
-nRepeat = 500;
+nRepeat = 10;
 corrShuffle = [];
 subjNumInclude = [1:8];
-fileStr = 'acuityModelingPredictionLum';
+fileStr = 'acuityModelingPrediction';
 
 for k = 1:nRepeat
     for j = 1:length(subjNumAll)
@@ -89,7 +89,7 @@ for k = 1:nRepeat
     % peakLocModelPredictionAll = [1.84 2.07 2.39 2.19 2.23 1.92 1.97 2.14];
     peakLocActualAll = [1.8635 1.9435 2.6335 2.1235 2.6435 1.9035 1.8935 2.3235];
     
-    if mod(k,10)==0
+    if mod(k,20)==0
         figure;
         hold on;
         plot(peakLocModelPredictionAll(subjNumInclude),peakLocActualAll(subjNumInclude),'ko','MarkerFaceColor',[0.56 0 1],'MarkerSize',15)
@@ -116,3 +116,12 @@ set(gca,'FontSize',15);
 xlabel('Correlation');
 hold on;
 plot([0.886 0.886],ylim,'k--','LineWidth',1);
+
+%%
+
+peakLocModelPredictionAll = [1.8400 2.0700 2.3900 2.1900 2.2300 1.9200 1.9700 2.1400];
+peakLocActualAll = [1.8635 1.9435 2.6335 2.1235 2.6435 1.9035 1.8935 2.3235];
+
+dataTableAcuity = array2table([peakLocModelPredictionAll' peakLocActualAll'], ...
+                             'VariableNames',{'Predictions' 'Actual'});
+
