@@ -1,4 +1,4 @@
-function [imgQualQuery, peakCorr]= ARCwvInFocusConesMeanZspatFilterImgQuery(subjNum,stimNum,wLMS,wvQuery)
+function imgQuery = ARCwvInFocusConesMeanZspatFilterImgQuery(subjNum,stimNum,wLMS,wvQuery)
 
 wave = 380:4:780;
 nFocus = length(wave);
@@ -30,7 +30,14 @@ coneImgOrigFiltered2 = real(ifftshift(ifft2(coneImgOrigFilteredFFT2)));
 % % Then invert and put the image center in  the center of the matrix
 % filteredIMG = abs(ifftshift(ifft2(otf .* imgFFT)));
 
+indWvAll = [];
+for i = 1:length(wvQuery)
+    [~,indWv] = min(abs(wave-wvQuery(i)));
+    indWvAll(i) = indWv(1);
+end
+
 peakCorr = [];
+imgQuery = [];
 for i = 1:nFocus
     fnameConeRsp = ['subj' num2str(subjNum) 'stimulus' num2str(stimNum) 'focusInd' num2str(i)];
     load([foldernameCones 'S' num2str(subjNum) '/' fnameConeRsp]);
@@ -45,8 +52,13 @@ for i = 1:nFocus
 
     % peakCorr(i) = max(max(abs(normxcorr2(coneImgFiltered,coneImgOrigFiltered))));
     peakCorr(i) = max(max(normxcorr2(coneImgFiltered,coneImgOrigFiltered)));
+    if ismember(i,indWvAll)
+        if isempty(imgQuery)
+           imgQuery = coneImgFiltered;
+        else
+           imgQuery(:,:,end+1) = coneImgFiltered;
+        end
+    end
 end
-
-imgQualQuery = interp1(wave,peakCorr,wvQuery);
 
 end

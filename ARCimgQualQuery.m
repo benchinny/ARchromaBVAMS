@@ -1,4 +1,4 @@
-%%
+%% SUBJECTS AND STIMULI TO ANALYZE
 
 subjNumAll = [1 3 5 10 16 17 18 20];
 stimNumAll = [1 3 5];
@@ -6,6 +6,9 @@ stimNumReal = [1 8 6];
 imgQualQueryAll = [];
 wvInFocusRawAll = [];
 imgQualAll = [];
+wLMSall = [];
+
+%% GET IMAGE QUALITY VALUES
 
 for i = 1:length(stimNumAll)
     for j = 1:length(subjNumAll)
@@ -15,10 +18,16 @@ for i = 1:length(stimNumAll)
         imgQualQueryAll(i,j,:) = imgQualQuery;
         wvInFocusRawAll(i,j,:) = [waveInFocus3raw waveInFocus3];
         imgQualAll(i,j,:) = peakCorr;
+        wLMSall(j,:) = wLMS;
     end
 end
 
-%%
+%% PLOTTING
+
+load('/Users/benjaminchin/Documents/ARchromaScraps/imgQualAll.mat');
+load('/Users/benjaminchin/Documents/ARchromaScraps/imgQualQueryAll.mat');
+load('/Users/benjaminchin/Documents/ARchromaScraps/wvInFocusRawAll.mat');
+load('/Users/benjaminchin/Documents/ARchromaScraps/wLMSall.mat');
 
 stimString = {'More blue' 'Purple' 'More red'};
 wave = 380:4:780;
@@ -40,6 +49,29 @@ for j = 1:length(stimNumAll)
         xlabel('Wavelength in focus');
         if i==1
             title(stimString{j});
+        end
+    end
+end
+
+%%
+
+subjInd = [1 6];
+stimString = {'More blue' 'Purple' 'More red'};
+
+for i = 1:length(subjInd)
+    figure;
+    set(gcf,'Position',[235 381 1241 558]);
+    for j = 1:size(wvInFocusRawAll,1)
+        imgQuery = ARCwvInFocusConesMeanZspatFilterImgQuery(subjNumAll(subjInd(i)),stimNumReal(j),wLMSall(subjInd(i),:),squeeze(wvInFocusRawAll(j,subjInd(i),:)));
+        wvInFocusTmp = flipud(squeeze(wvInFocusRawAll(j,subjInd(i),:)));
+        for k = 1:size(wvInFocusRawAll,3)
+            subplot(3,4,(j-1)*4+k);
+            imagesc(squeeze(imgQuery(:,:,k)));
+            axis square;
+            colormap gray;
+            set(gca,'XTick',[]);
+            set(gca,'YTick',[]);
+            title(['Wavelength = ' num2str(wvInFocusTmp(k),3) ', ' stimString{j}]);
         end
     end
 end
