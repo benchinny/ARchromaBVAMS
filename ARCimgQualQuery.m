@@ -53,7 +53,7 @@ for j = 1:length(stimNumAll)
     end
 end
 
-%%
+%% VISUALIZATION FOR CONE MECHANISM
 
 subjInd = [1 6];
 stimString = {'More blue' 'Purple' 'More red'};
@@ -75,6 +75,30 @@ for i = 1:length(subjInd)
         end
     end
 end
+
+%% VISUALIZATION FOR CONE MECHANISM
+
+subjInd = [1 6];
+stimString = {'More blue' 'Purple' 'More red'};
+
+for i = 1:length(subjInd)
+    figure;
+    set(gcf,'Position',[235 381 1241 558]);
+    for j = 1:size(wvInFocusRawAll,1)
+        imgQuery = ARCwvInFocusConesMeanZspatFilterImgQuery(subjNumAll(subjInd(i)),stimNumReal(j),[0.72 0.28 0],squeeze(wvInFocusRawAll(j,subjInd(i),:)));
+        wvInFocusTmp = flipud(squeeze(wvInFocusRawAll(j,subjInd(i),:)));
+        for k = 1:size(wvInFocusRawAll,3)
+            subplot(3,4,(j-1)*4+k);
+            imagesc(squeeze(imgQuery(:,:,k)));
+            axis square;
+            colormap gray;
+            set(gca,'XTick',[]);
+            set(gca,'YTick',[]);
+            title(['Wavelength = ' num2str(wvInFocusTmp(k),3) ', ' stimString{j}]);
+        end
+    end
+end
+
 
 %%
 
