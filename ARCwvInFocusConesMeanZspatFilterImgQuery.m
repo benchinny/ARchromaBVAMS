@@ -1,4 +1,4 @@
-function [imgQualQuery, peakCorr]= ARCwvInFocusConesMeanZspatFilterImgQual(subjNum,stimNum,wLMS,wvQuery)
+function [imgQualQuery, peakCorr]= ARCwvInFocusConesMeanZspatFilterImgQuery(subjNum,stimNum,wLMS,wvQuery)
 
 wave = 380:4:780;
 nFocus = length(wave);

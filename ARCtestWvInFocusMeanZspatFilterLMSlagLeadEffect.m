@@ -1,4 +1,4 @@
-function [aic, pFit] = ARCtestWvInFocusMeanZspatFilterLMSlagLeadEffect(subjNum,modelType)
+function [waveInFocus3raw, waveInFocus3, wLMS] = ARCtestWvInFocusMeanZspatFilterLMSlagLeadEffect(subjNum,modelType,stimNum)
 
 coneWeightsFolder = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/coneWeightsErrorSpatFilter/colorMechPredictions/';
 objFunc = 'RMS';
@@ -159,62 +159,15 @@ for l = 1:length(wL)
         
         defocus875pred = [];
         defocus875mean2fit = [];
-        figure;
-        set(gcf,'Position',[437 314 729 420]);
-        subplot(1,2,1);
-        hold on;
-        for i = 1:size(defocus875predTmp,2)
-            hold on;
-            plot(1:5,-(defocus875predTmp(ind(1:5),i)-optDistUnq(i)*pFit(1)-pFit(2)),'k-');
-            % plot(1:length(ind),defocus875mean(ind,i),'k-');
-            for j = 1:5
-                plot(j,-defocus875mean(ind(j),i),['k' markerPlotSpeed(i)],'MarkerFaceColor',conditionsOrderedNorm(j,:), ...
-                     'MarkerSize',10);
-                defocus875mean2fit(j,i) = defocus875mean(ind(j),i);
-            end
-            title(['Subject ' num2str(subjNum) ', Distance = ' num2str(optDistUnq(i)) ', Weights = [' num2str(wL(l)) ' ' num2str(wM(k))]);
-            title(['RMSE = ' num2str(RMSE,3) ', RMSE_{flat} = ' num2str(RMSEflat,3) ', RMSE_{lum} = ' num2str(RMSElum,3)])
-        end
-        set(gca,'FontSize',15);
-        set(gca,'XTick',[]);
-        xlabel('Condition');
-        ylabel('Defocus at 875nm (D)');
-        xlim([0 6]);
+        waveInFocus3 = [];
 
-        subplot(1,2,2);
         for i = 1:size(defocus875predTmp,2)
-            hold on;
-            % plot([0 length(ind)],optDistUnq(i)-(optDistUnq(i).*pFitFlat(1)+pFitFlat(2)).*[1 1],'k--','LineWidth',1);
-            plot(1:5,-(defocus875predTmp(ind(6:10),i)-optDistUnq(i)*pFit(1)-pFit(2)),'k-');
-            defocus875pred(:,i) = defocus875predTmp(ind,i)-optDistUnq(i)*pFit(1)-pFit(2);
-            % plot(1:length(ind),defocus875mean(ind,i),'k-');
-            for j = 6:11
-                plot(j-5,-defocus875mean(ind(j),i),['k' markerPlotSpeed(i)],'MarkerFaceColor',conditionsOrderedNorm(j,:), ...
-                     'MarkerSize',10);
-                defocus875mean2fit(j,i) = defocus875mean(ind(j),i);
-            end
-            plot(6,-(defocus875predTmp(ind(11),i)-optDistUnq(i)*pFit(1)-pFit(2)),'kp','MarkerSize',12);
+            waveInFocus3(i) = humanWaveDefocusInvertARC(875,-(-(defocus875predTmp(ind(stimNum),i)-optDistUnq(i)*pFit(1)-pFit(2))+optDistUnq(i)),subjNum);
         end
-        set(gca,'FontSize',15);
-        set(gca,'XTick',[]);
-        xlabel('Condition');
-        ylabel('Defocus at 875nm (D)');
-        title(['RMSE = ' num2str(RMSE,3) ', RMSE_{flat} = ' num2str(RMSEflat,3) ', RMSE_{lum} = ' num2str(RMSElum,3)]);
-        xlim([0 6]);
-        % saveas(gcf,[coneWeightsFolder 'LplusMminusSpredCont' num2str(subjNum) 'weight' num2str(k)],'png');
+        waveInFocus3raw = humanWaveDefocusInvertARC(875,-(-(defocus875predTmp(ind(stimNum),i))+optDistUnq(i)),subjNum);
+        wLMS = [wL(l) wM(k) wS];
         display(['Weights = [' num2str(wL(l)) ' ' num2str(wM(k)) ' ' num2str(wS)]);
     end
 end
-
-% saveas(gcf,[modelCompFolder 'fitStackSpatFilter' modelType num2str(subjNum)],'png');
-
-errorIndividual = defocus875mean2fit(:)-defocus875pred(:);
-for i = 1:200
-   [stdTmp(i),LLtmp(i)] = ARCfitStdGauss(errorIndividual);
-end
-[~,bestInd] = min(LLtmp);
-estResidualStd = stdTmp(bestInd);
-LL = sum(log(normpdf(defocus875mean2fit(:),defocus875pred(:),estResidualStd)));
-aic = 2*nParams-2*LL;
 
 end
