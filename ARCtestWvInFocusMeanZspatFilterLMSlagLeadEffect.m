@@ -1,4 +1,4 @@
-function [waveInFocus3raw, waveInFocus3, wLMS] = ARCtestWvInFocusMeanZspatFilterLMSlagLeadEffect(subjNum,modelType,stimNum)
+function [waveInFocus3raw, waveInFocus3, wLMS, lagLead] = ARCtestWvInFocusMeanZspatFilterLMSlagLeadEffect(subjNum,modelType,stimNum)
 
 coneWeightsFolder = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/coneWeightsErrorSpatFilter/colorMechPredictions/';
 objFunc = 'RMS';
@@ -157,12 +157,12 @@ for l = 1:length(wL)
             RMSElum = min(RMSE0.RMSEall(1,:));
         end
         
-        defocus875pred = [];
-        defocus875mean2fit = [];
+        lagLead = [];
         waveInFocus3 = [];
 
         for i = 1:size(defocus875predTmp,2)
             waveInFocus3(i) = humanWaveDefocusInvertARC(875,-(-(defocus875predTmp(ind(stimNum),i)-optDistUnq(i)*pFit(1)-pFit(2))+optDistUnq(i)),subjNum);
+            lagLead(i) = optDistUnq(i)*pFit(1)-pFit(2);
         end
         waveInFocus3raw = humanWaveDefocusInvertARC(875,-(-(defocus875predTmp(ind(stimNum),i))+optDistUnq(i)),subjNum);
         wLMS = [wL(l) wM(k) wS];

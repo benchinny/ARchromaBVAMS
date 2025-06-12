@@ -7,18 +7,20 @@ imgQualQueryAll = [];
 wvInFocusRawAll = [];
 imgQualAll = [];
 wLMSall = [];
+lagLeadAll = [];
 
 %% GET IMAGE QUALITY VALUES
 
 for i = 1:length(stimNumAll)
     for j = 1:length(subjNumAll)
-        [waveInFocus3raw, waveInFocus3, wLMS] = ...
+        [waveInFocus3raw, waveInFocus3, wLMS, lagLead] = ...
         ARCtestWvInFocusMeanZspatFilterLMSlagLeadEffect(subjNumAll(j),'LMS',stimNumAll(i));
         [imgQualQuery, peakCorr] = ARCwvInFocusConesMeanZspatFilterImgQual(subjNumAll(j),stimNumReal(i),wLMS,[waveInFocus3raw waveInFocus3]);
         imgQualQueryAll(i,j,:) = imgQualQuery;
         wvInFocusRawAll(i,j,:) = [waveInFocus3raw waveInFocus3];
         imgQualAll(i,j,:) = peakCorr;
         wLMSall(j,:) = wLMS;
+        lagLeadAll(i,j,:) = lagLead;
     end
 end
 
@@ -121,3 +123,11 @@ axis square;
 set(gca,'FontSize',18);
 xlabel('Wavelength-in-focus (nm)');
 ylabel('Penalty (unitless?)');
+
+%%
+
+estAcc = [];
+
+for i = 1:8
+    estAcc(:,i) = [1.5 2.5 3.5]'-squeeze(lagLeadAll(1,i,:))+1;
+end
