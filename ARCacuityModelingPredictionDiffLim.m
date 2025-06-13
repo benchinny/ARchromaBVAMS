@@ -1,4 +1,4 @@
-function [dprimeMetric, dprime, dprimeCI] = ARCacuityModelingPrediction(subjNum)
+function [dprimeMetric, dprime, dprimeCI] = ARCacuityModelingPredictionDiffLim(subjNum)
 
 % MAKE SURE LENS TRANSMITTANCE IN ISETBIO IS SET TO 1 EVERYWHERE!
 
@@ -167,7 +167,7 @@ defocusForStim = [0.6:0.1:4.4]-modelPrediction875nmPurpleAt2pt5;
 wvInFocusForStim = humanWaveDefocusInvertARC(875,-defocusForStim,subjNum);
 
 parfor i = 1:length(defocusForStim)
-    zCoeffs = [0 meanC(1:end-1)];
+    zCoeffs = 0.*[0 meanC(1:end-1)];
     wvfP = wvfCreate('calc wavelengths', wave, ...
         'measured wavelength', 875, ...
         'zcoeffs', zCoeffs, 'measured pupil', PARAMS.PupilSize, ...
