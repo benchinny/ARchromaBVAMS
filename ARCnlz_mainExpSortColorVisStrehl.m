@@ -153,6 +153,26 @@ defocusAt550cell = {};
 defocusAt875cell = {};
 wvInFocusCell = {};
 
+% % % making 2D CSF function
+f1Dhalf = 0.8105:0.8105:(0.8105*159);
+f1D = [-fliplr(f1Dhalf) 0 f1Dhalf(1:end-1)];
+[fx, fy] = meshgrid(f1D,f1D);
+df = sqrt(fx.^2 + fy.^2); % compute distance from origin
+CSF2d = 0.04992*(1+5.9375*df).*exp(-0.114*df.^1.1);
+% inverse Fourier transform of 2D CSF
+N = ifftshift(ifft2(fftshift(CSF2d)));
+
+wvfPdiffLim = wvfCreate('calc wavelengths', 875, ...
+                        'measured wavelength', 875, ...
+                        'zcoeffs', zeros([1 65]), 'measured pupil', PARAMS.PupilSize, ...
+                        'name', sprintf('human-%d', PARAMS.PupilSize),'spatial samples',318);
+wvfPdiffLim.calcpupilMM = PARAMS.PupilSize;
+wvfPdiffLim.refSizeOfFieldMM = 12;
+wvfPdiffLim = wvfSet(wvfPdiffLim, 'zcoeff', 0, 'defocus');
+[siPSFDataDiffLim, wvfPdiffLim] = wvf2SiPsfARC(wvfPdiffLim,'showBar',false,'nPSFSamples',318,'umPerSample',1.1512); 
+psfDiffLimWeighted = siPSFDataDiffLim.psf.*N;
+vsxDenom = sum(psfDiffLimWeighted(:));
+
 for j = 1:length(optDistToCheckAll)
     optDistToCheck = optDistToCheckAll(j);
     indDist = abs(meanv00all-optDistToCheck)<0.01;
@@ -175,7 +195,9 @@ for j = 1:length(optDistToCheckAll)
                 wvfP.refSizeOfFieldMM = 12;
                 wvfP = wvfSet(wvfP, 'zcoeff', defocusToTest(k)*defocusCorrectionFactor, 'defocus');
                 [siPSFData, wvfP] = wvf2SiPsfARC(wvfP,'showBar',false,'nPSFSamples',318,'umPerSample',1.1512); 
-                peakPSF(k) = max(siPSFData.psf(:));
+                psfWeighted = siPSFData.psf.*N;
+                vsxNum = sum(psfWeighted(:));
+                peakPSF(k) = vsxNum./vsxDenom;
                 display(['Iterate through defocus: ' num2str(defocusToTest(k))]);
             end
             [~,indMaxStrehl] = max(peakPSF);
