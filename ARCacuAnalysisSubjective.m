@@ -1,5 +1,5 @@
 %%
-function [unqFocDst,PC,PCci,dprime,dprimeCI,PCfit,dprimeFitAll,PCfitSupport] = ARCacuAnalysisSubjective(subjNum,bPLOT)
+function [unqFocDst,PC,PCci,dprime,dprimeCI,PCfit,dprimeFitAll,PCfitSupport,bestDist,bestDistCI] = ARCacuAnalysisSubjective(subjNum,bPLOT)
 % filePath = 'G:\My Drive\exp_bvams\code_repo\ARC\';
 filePath = 'H:\Shared drives\CIVO_BVAMS\data\ARC\';
 
@@ -286,6 +286,24 @@ end
 
 PCfitSupport = min(unqFocDst.*scaleFac):0.01:max(unqFocDst.*scaleFac);
 PCfit = spline(unqFocDst.*scaleFac,PC,PCfitSupport);
+[~,indBest] = max(PCfit);
+bestDist = PCfitSupport(indBest);
+
+nBoots = 500;
+if nBoots>0
+    for j = 1:nBoots
+        for i = 1:length(unqFocDst)
+            indAnalysis = focStmOptDstIncr==unqFocDst(i);
+            indBoots = randsample(find(indAnalysis),sum(indAnalysis),'true');
+            PCboots(i,j) = sum(rspAcu(indBoots)==stimOrientation(indBoots))./length(indBoots);
+        end
+        PCfitSupportBoots = min(unqFocDst.*scaleFac):0.01:max(unqFocDst.*scaleFac);
+        PCfitBoots = spline(unqFocDst.*scaleFac,PCboots(:,j),PCfitSupportBoots);
+        [~,indBoots] = max(PCfitBoots);
+        defocusMeasuredBoots(j) = PCfitSupportBoots(indBoots);
+    end
+end
+bestDistCI = quantile(defocusMeasuredBoots,[0.025 0.975]);
 
 epsilonPC = 0.99;
 PCfitDP = PCfit;

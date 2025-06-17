@@ -1,14 +1,14 @@
 %%
 
 bRandomize = false;
-bPlot = false;
+bPlot = true;
 subjNumAll = [1 3 5 10 16 17 18 20];
 % subjNumAllRand = subjNumAll;
 peakLocModelPredictionAll = [];
-nRepeat = 10;
+nRepeat = 1;
 corrShuffle = [];
 subjNumInclude = [1:8];
-fileStr = 'acuityModelingPrediction';
+fileStr = 'acuityModelingPredictionDiffLim';
 
 for k = 1:nRepeat
     for j = 1:length(subjNumAll)
@@ -65,10 +65,11 @@ for k = 1:nRepeat
             hold on;
             plot(shiftValBestFit+defocusForStim+modelPrediction875nmPurpleAt2pt5-2.5,normcdf(dprimeMetric.*dprimeScaleBestFit/2),'-','Color',[0.56 0 1],'LineWidth',1);
             xlabel('Distance');
-            ylabel('D-prime metric');
+            ylabel('Proportion Correct');
             set(gca,'FontSize',15);
             axis square;
             title(['Mean defocus at 875nm = ' num2str(modelPrediction875nmPurpleAt2pt5,3) 'D']);
+            ylim([0.4 1]);
             % subplot(1,2,2);
             % plot(wvInFocusForStim,dprimeMetric,'k-','LineWidth',1);
             % xlabel('Wavelength in focus (nm)');
@@ -88,11 +89,18 @@ for k = 1:nRepeat
     
     % peakLocModelPredictionAll = [1.84 2.07 2.39 2.19 2.23 1.92 1.97 2.14];
     peakLocActualAll = [1.8635 1.9435 2.6335 2.1235 2.6435 1.9035 1.8935 2.3235];
+    peakLocLBall = [1.6835 1.8135 1.5935 1.9435 2.2535 1.7935 1.5035 2.2635];
+    peakLocUBall = [3.0935 3.1835 3.5635 3.1035 2.7735 2.0535 2.4535 2.4235];
     
     if mod(k,20)==0
         figure;
         hold on;
-        plot(peakLocModelPredictionAll(subjNumInclude),peakLocActualAll(subjNumInclude),'ko','MarkerFaceColor',[0.56 0 1],'MarkerSize',15)
+        plot(peakLocModelPredictionAll(subjNumInclude),peakLocActualAll(subjNumInclude),'ko','MarkerFaceColor',[0.56 0 1],'MarkerSize',15);
+        % errorbar(peakLocModelPredictionAll(subjNumInclude), ...
+        %          peakLocActualAll(subjNumInclude), ...
+        %          peakLocActualAll(subjNumInclude)-peakLocLBall(subjNumInclude), ...
+        %          peakLocUBall(subjNumInclude)-peakLocActualAll(subjNumInclude), ...
+        %          'ko','MarkerFaceColor',[0.56 0 1],'MarkerSize',15);
         axis square;
         set(gca,'FontSize',15);
         xlim([1.5 2.8]);

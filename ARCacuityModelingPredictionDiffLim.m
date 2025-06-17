@@ -119,8 +119,8 @@ dataFolder = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkel
 cAll = [];
 
 % HARD CODED MODEL PREDICTIONS FROM ARCtestWvInFocusMeanZspatFilterLMSeffectFitOnly
-% modelPrediction875nmPurpleAt2pt5all = [1.36 1.756 1.864 1.633 1.463 1.815 1.355 1.603];
-modelPrediction875nmPurpleAt2pt5all = [1.461 1.851 1.957 1.892 1.216 1.837 1.511 1.561];
+modelPrediction875nmPurpleAt2pt5all = [1.36 1.756 1.864 1.633 1.463 1.815 1.355 1.603];
+% modelPrediction875nmPurpleAt2pt5all = [1.461 1.851 1.957 1.892 1.216 1.837 1.511 1.561];
 
 for i = 1:length(wvfFiles)
     ZernikeTable = readtable([dataFolder wvfFiles{i}]);
@@ -259,7 +259,7 @@ xlabel('Wavelength in focus (nm)');
 ylabel('D-prime metric');
 set(gca,'FontSize',15);
 
-save([saveFolder 'acuityModelingPredictionLumS' num2str(subjNum)],'dprimeMetric','defocusForStim', ...
+save([saveFolder 'acuityModelingPredictionDiffLimS' num2str(subjNum)],'dprimeMetric','defocusForStim', ...
     'modelPrediction875nmPurpleAt2pt5','dprime','dprimeCI','unqFocDst','wvInFocusForStim');
 
 end
