@@ -139,8 +139,8 @@ conditionsOrderedNorm = [0.25 0.00 1.00; ...
 diffFromOptDist = defocus875-optDistAll;
 % EXCLUDE DATA FOR WHICH PARTICIPANT WAS ACCOMMODATING OUTSIDE OF
 % VISIBLE RANGE
-indGood = humanWaveDefocusInvertARC(875,diffFromOptDist,subjNum-10)>380 & ...
-          humanWaveDefocusInvertARC(875,diffFromOptDist,subjNum-10)<780;
+indGood = humanWaveDefocusInvertARC(875,diffFromOptDist,subjNum)>380 & ...
+          humanWaveDefocusInvertARC(875,diffFromOptDist,subjNum)<780;
 defocus875 = defocus875(indGood);
 rgbAll = rgbAll(indGood,:);
 optDistAll = optDistAll(indGood);
