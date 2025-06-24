@@ -179,7 +179,7 @@ for l = 1:length(wL)
             dfPred1to5 = -(defocus875predTmp(ind(1:5),i)-optDistUnq(i)*pFit(1)-pFit(2));
             wvPred1to5 = humanWaveDefocusInvertARC(875,-(dfPred1to5+optDistUnq(i)),subjNum);
             dfMean1to5 = -defocus875mean(ind(1:5),i);
-            wvMean1to5 = humanWaveDefocusInvertARC(875,-(dfMean1to5+optDistUnq(i)),subjNum);
+            wvMean1to5 = humanWaveDefocusInvertARC(875,-(dfMean1to5+optDistUnq(i)),subjNum);     
             plot(1:5,wvPred1to5,'k-');
             % plot(1:length(ind),defocus875mean(ind,i),'k-');
             for j = 1:5
@@ -204,7 +204,9 @@ for l = 1:length(wL)
             dfPred6to10 = -(defocus875predTmp(ind(6:10),i)-optDistUnq(i)*pFit(1)-pFit(2));
             wvPred6to10 = humanWaveDefocusInvertARC(875,-(dfPred6to10+optDistUnq(i)),subjNum);
             dfMean6to10 = -defocus875mean(ind(6:10),i);
-            wvMean6to10 = humanWaveDefocusInvertARC(875,-(dfMean6to10+optDistUnq(i)),subjNum);            
+            wvMean6to10 = humanWaveDefocusInvertARC(875,-(dfMean6to10+optDistUnq(i)),subjNum);
+            dfMean11 = -defocus875mean(ind(11),i);
+            wvMean11 = humanWaveDefocusInvertARC(875,-(dfMean11+optDistUnq(i)),subjNum);
             % plot([0 length(ind)],optDistUnq(i)-(optDistUnq(i).*pFitFlat(1)+pFitFlat(2)).*[1 1],'k--','LineWidth',1);
             plot(1:5,wvPred6to10,'k-');
             defocus875pred(:,i) = defocus875predTmp(ind,i)-optDistUnq(i)*pFit(1)-pFit(2);
@@ -218,7 +220,8 @@ for l = 1:length(wL)
             end
             % plot(6,-(defocus875predTmp(ind(11),i)-optDistUnq(i)*pFit(1)-pFit(2)),'kp','MarkerSize',12);
             wvMeanAll(6:10,i) = wvMean6to10;
-            wvPredAll(6:10,i) = wvPred6to10;            
+            wvPredAll(6:10,i) = wvPred6to10;  
+            wvMeanAll(11,i) = wvMean11;
         end
         set(gca,'FontSize',15);
         set(gca,'XTick',[]);
