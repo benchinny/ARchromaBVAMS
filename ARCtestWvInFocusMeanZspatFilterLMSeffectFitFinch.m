@@ -2,7 +2,7 @@
 
 function ARCtestWvInFocusMeanZspatFilterLMSeffectFitFinch(wS)
 
-subjNum = 16;
+subjNum = 21;
 objFunc = 'RMS';
 
 %% SEARCH INDIVIDUAL CONE WEIGHTS
@@ -20,7 +20,12 @@ elseif subjNum==10
     wLprop = 0.85;
 elseif subjNum==16
     wLM = 0.8;
-    wLprop = 0.2833;    
+    wLprop = 0.2833;
+elseif subjNum==21
+    % wLM = 1./[1.00 0.90 0.80 0.70 0.60 0.50 0.40 0.30 0.20 0.10];
+    % wLprop = 0.25:0.05:0.85; 
+    wLM = 1;
+    wLprop = 0.65;
 end
 
 coneWeightsFolder = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/data/coneWeightsErrorSpatFilter/colorMechPredictions/';

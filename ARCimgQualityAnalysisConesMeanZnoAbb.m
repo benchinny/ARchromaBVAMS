@@ -233,16 +233,22 @@ end
 
 %%
 
-for k = 1:size(rgb00,1) % LOOP OVER TRIAL
+for k = 12 % LOOP OVER TRIAL
     % recreate stimulus
-    rVal = rgb00(k,1);
-    gVal = rgb00(k,2);
+    rVal = rgb00(k,1)+0.431;
+    gVal = 1.*(rgb00(k,2)+0.568);
     bVal = rgb00(k,3);
-    im = imread([stimPath '/word_image_01.png']);
+    im = imread([stimPath '/E_optotype.png']);
     im = double(im);
     imPattern = squeeze(im(:,:,3));
-    imPattern = [zeros([100 size(imPattern,2)]); imPattern; zeros([100 size(imPattern,2)])];
-    imPattern = [zeros([size(imPattern,1) 30]) imPattern zeros([size(imPattern,1) 30])];
+    imPattern = imresize(imPattern,[260 260]);
+    imPatternLightInd = imPattern>0;
+    imPattern(imPatternLightInd) = 0;
+    imPattern(~imPatternLightInd) = 255;
+
+    % imPattern = imPattern(:,76:165);
+    % imPattern = [zeros([100 size(imPattern,2)]); imPattern; zeros([100 size(imPattern,2)])];
+    % imPattern = [zeros([size(imPattern,1) 30]) imPattern zeros([size(imPattern,1) 30])];
     I(:,:,3) = bVal.*imPattern;
     I(:,:,2) = gVal.*imPattern;
     I(:,:,1) = rVal.*imPattern;
@@ -277,7 +283,7 @@ for k = 1:size(rgb00,1) % LOOP OVER TRIAL
     
     wave2 = 380:4:780;
 
-    parfor i = 1:length(wave2)
+    for i = 21
         zCoeffs = [0 zeros(size(meanC(1:end-1)))];
         wvfP = wvfCreate('calc wavelengths', wave, ...
             'measured wavelength', wave2(i), ...
@@ -312,7 +318,7 @@ for k = 1:size(rgb00,1) % LOOP OVER TRIAL
         cMosaic = coneMosaic;
 
         % Set size to show relevant portion of scene
-        cMosaic.setSizeToFOV(1 * sceneGet(s, 'fov'));
+        cMosaic.setSizeToFOV(sceneGet(s, 'fov'));
 
         % key line for computing absorptions
         absorptions = cMosaic.computeSingleFrame(oi, 'fullLMS', true);            
@@ -324,7 +330,7 @@ for k = 1:size(rgb00,1) % LOOP OVER TRIAL
         S = struct;
         S.absorptions = absorptions;
         fnameCone = ['subj' num2str(subjNum) 'stimulus' num2str(k) 'focusInd' num2str(i)];
-        save([savePath num2str(subjNum) '/' fnameCone '.mat'],"-fromstruct",S);
+        % save([savePath num2str(subjNum) '/' fnameCone '.mat'],"-fromstruct",S);
     end
 end
 

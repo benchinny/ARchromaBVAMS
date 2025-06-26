@@ -33,8 +33,8 @@ coneImgOrigFiltered2 = real(ifftshift(ifft2(coneImgOrigFilteredFFT2)));
 
 peakCorr = [];
 
-for j = 1:length(colorCell)
-    for i = 1:nFocus
+for j = 3
+    for i = 1:length(wave)
         fnameConeRsp = ['subj' num2str(subjNum) 'stimulus' num2str(stimNum) colorCell{j} 'focusInd' num2str(i)];
         load([foldernameCones 'S' num2str(subjNum) '/' fnameConeRsp]);
         absorptions(:,:,1) = absorptions(:,:,1).*wLMS(1);

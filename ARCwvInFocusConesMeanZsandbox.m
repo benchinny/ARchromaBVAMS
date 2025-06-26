@@ -57,8 +57,8 @@ for i = waveInd2examine
     coneImgFiltered = real(ifft2(ifftshift(coneImgFilteredFFT)));
 
     if i==waveInd
-        coneImgFilteredEg = coneImgFiltered;
-        coneImgOrigFilteredEg = coneImgOrigFiltered;
+        coneImgFilteredEg = coneImg;
+        coneImgOrigFilteredEg = coneImgOrig;
         absorptionsReturn = absorptions;
     end
 

@@ -1,7 +1,7 @@
 function [RMSE, defocus550, defocus550predTmp, rbRatio, optDistUnq] = ARCtestWvInFocusMeanZspatFilterFinchPlotHelper(subjNum,defocus550,rbRatio,optDistUnq,w)
 
 wvInFocus = zeros([length(rbRatio) 6]);
-for l = 1:length(rbRatio)
+for l = 5
     wvInFocus(l,:) = ARCwvInFocusConesMeanZspatFilterFinch(subjNum,l,w);
     display(['stim ' num2str(l)]);
 end 
@@ -36,6 +36,9 @@ for l = 1:size(rbRatio,2)
     end
     if subjNum==20
         defocus550predTmp = optDistUnq-humanWaveDefocusS20(wvInFocus,550);
+    end
+    if subjNum==21
+        defocus550predTmp = optDistUnq-humanWaveDefocusS21(wvInFocus,550);
     end
 end
 RMSE = sqrt(mean((defocus550predTmp(:)-defocus550(:)).^2));

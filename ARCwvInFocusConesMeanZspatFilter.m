@@ -31,7 +31,6 @@ coneImgOrigFiltered2 = real(ifftshift(ifft2(coneImgOrigFilteredFFT2)));
 % filteredIMG = abs(ifftshift(ifft2(otf .* imgFFT)));
 
 peakCorr = [];
-
 for i = 1:nFocus
     fnameConeRsp = ['subj' num2str(subjNum) 'stimulus' num2str(stimNum) 'focusInd' num2str(i)];
     load([foldernameCones 'S' num2str(subjNum) '/' fnameConeRsp]);
@@ -44,6 +43,7 @@ for i = 1:nFocus
     coneImgFilteredFFT = coneImgFFT.*freqFilterARC;
     coneImgFiltered = real(ifft2(ifftshift(coneImgFilteredFFT)));
 
+    % peakCorr(i) = max(max(abs(normxcorr2(coneImgFiltered,coneImgOrigFiltered))));
     peakCorr(i) = max(max(normxcorr2(coneImgFiltered,coneImgOrigFiltered)));
 end
 

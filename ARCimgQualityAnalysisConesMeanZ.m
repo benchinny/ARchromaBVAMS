@@ -242,7 +242,7 @@ end
 
 %%
 
-for k = 1:size(rgb00,1) % LOOP OVER TRIAL
+for k = 1 % LOOP OVER TRIAL
     % recreate stimulus
     rVal = rgb00(k,1);
     gVal = rgb00(k,2);
@@ -286,7 +286,7 @@ for k = 1:size(rgb00,1) % LOOP OVER TRIAL
     
     wave2 = 380:4:780;
 
-    parfor i = 1:length(wave2)
+    for i = 41
         % zCoeffs = [0 zeros(size(meanC(1:end-1)))];
         zCoeffs = [0 meanC(1:end-1)];
         wvfP = wvfCreate('calc wavelengths', wave, ...
@@ -373,7 +373,7 @@ for k = 1:size(rgb00,1) % LOOP OVER TRIAL
         S = struct;
         S.absorptions = absorptions;
         fnameCone = ['subj' num2str(subjNum) 'stimulus' num2str(k) 'focusInd' num2str(i)];
-        save([savePath num2str(subjNum) '/' fnameCone '.mat'],"-fromstruct",S);
+        % save([savePath num2str(subjNum) '/' fnameCone '.mat'],"-fromstruct",S);
     end
 end
 
