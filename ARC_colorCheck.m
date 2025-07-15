@@ -23,7 +23,7 @@ colorsCal = {'redPrimaryJuly0624_initialPositionFocus3_100.mat' 'greenPrimaryJul
 Meas1xyY = [];
 for i = 1:length(colorsCal)
 %    load(['/home/ben/Documents/ARchroma/Right_disp_' colorsCal{i} '.mat']);
-    load(['/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/ARChroma/BVAMS_calibration_files/Ben_calibration_July_6_2024/' colorsCal{i}]);
+    load(['/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/BVAMS_calibration_files/Ben_calibration_July_6_2024/' colorsCal{i}]);
 %    spectra(:,i) = CurrentSpectrum.Spectral.emission_data;    
 %    spectra(:,i) = nativeEnergy;
     spectra(:,i) = energy;

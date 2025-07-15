@@ -14,7 +14,7 @@ d = displaySet(d,'dpi',378); % simulated screen distance
 bUseBVAMScal = 1; % if using BVAMS calibration data
 
 if bUseBVAMScal
-    drivePath = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/ARChroma/BVAMS_calibration_files/Ben_calibration_July_6_2024/';
+    drivePath = '/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/BVAMS_calibration_files/Ben_calibration_July_6_2024/';
     load([drivePath 'redPrimaryJuly0624_initialPositionFocus3_100.mat']);
     d.spd(:,1) = energy;
     load([drivePath 'greenPrimaryJuly0624_initialPositionFocus3_100.mat']);

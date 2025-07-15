@@ -25,15 +25,15 @@ axis square;
 
 %%
 
-load('/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/ARChroma/BVAMS_calibration_files/Ben_calibration_July_6_2024/redPrimaryJuly0624_initialPositionFocus3_100.mat');
+load('/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/BVAMS_calibration_files/Ben_calibration_July_6_2024/redPrimaryJuly0624_initialPositionFocus3_100.mat');
 spectralAxisInterp = 380:780;
 energyInterp = interp1(spectralAxis,energy,spectralAxisInterp,'spline');
 figure; plot(spectralAxisInterp,energyInterp,'r-');
-load('/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/ARChroma/BVAMS_calibration_files/Ben_calibration_July_6_2024/greenPrimaryJuly0624_initialPositionFocus3_100.mat');
+load('/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/BVAMS_calibration_files/Ben_calibration_July_6_2024/greenPrimaryJuly0624_initialPositionFocus3_100.mat');
 spectralAxisInterp = 380:780;
 energyInterp = interp1(spectralAxis,energy,spectralAxisInterp,'spline');
 figure; plot(spectralAxisInterp,energyInterp,'g-');
-load('/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/ARChroma/BVAMS_calibration_files/Ben_calibration_July_6_2024/bluePrimaryJuly0624_initialPositionFocus3_100.mat');
+load('/Users/benjaminchin/Library/CloudStorage/GoogleDrive-bechin@berkeley.edu/Shared drives/CIVO_BVAMS/BVAMS_calibration_files/Ben_calibration_July_6_2024/bluePrimaryJuly0624_initialPositionFocus3_100.mat');
 spectralAxisInterp = 380:780;
 energyInterp = interp1(spectralAxis,energy,spectralAxisInterp,'spline');
 figure; plot(spectralAxisInterp,energyInterp,'b-');
